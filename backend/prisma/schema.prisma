@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  passwordHash String    @map("password_hash")
+  isLocked     Boolean   @default(false) @map("is_locked")
+  sessions     Session[]
+  roles        UserRole[]
+
+  @@map("users")
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  description String?
+  permissions RolePermission[]
+  users       UserRole[]
+
+  @@map("roles")
+}
+
+model UserRole {
+  id            Int     @id @default(autoincrement())
+  user          User    @relation(fields: [userId], references: [id])
+  userId        Int
+  role          Role    @relation(fields: [roleId], references: [id])
+  roleId        Int
+  scopeType     String  @map("scope_type")
+  scopeObjectId String  @map("scope_object_id") // geändert: war vorher optional
+  condition     String?
+
+  @@map("user_roles")
+  @@unique([userId, roleId, scopeType, scopeObjectId])
+}
+
+model Permission {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique
+  description String?
+  roles       RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id            Int         @id @default(autoincrement())
+  role          Role        @relation(fields: [roleId], references: [id])
+  roleId        Int
+  permission    Permission  @relation(fields: [permissionId], references: [id])
+  permissionId  Int
+  scopeType     String      @map("scope_type")
+  scopeObjectId String      @map("scope_object_id") // geändert: war vorher optional
+  accessLevel   String      @map("access_level")
+
+  @@map("role_permissions")
+  @@unique([roleId, permissionId, scopeType, scopeObjectId])
+}
+
+model Session {
+  id                Int      @id @default(autoincrement())
+  user              User     @relation(fields: [userId], references: [id])
+  userId            Int
+  token             String
+  createdAt         DateTime @default(now()) @map("created_at")
+  expiresAt         DateTime @map("expires_at")
+  ipHash            String?  @map("ip_hash")
+  deviceFingerprint String?  @map("device_fingerprint")
+
+  @@map("sessions")
+}
+
+model World {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  status     String   @default("upcoming")
+  createdAt  DateTime @default(now())
+  startsAt   DateTime
+  endsAt     DateTime?
+
+  @@map("worlds")
+}

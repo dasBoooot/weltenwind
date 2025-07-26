@@ -1,0 +1,128 @@
+openapi: 3.0.3
+info:
+  title: Weltenwind API
+  description: Authentifizierung, Session-Handling und Weltverwaltung mit Rechtemodell
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    World:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: string
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+          nullable: true
+
+paths:
+  /auth/login:
+    post:
+      summary: Benutzer einloggen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Erfolgreicher Login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      username:
+                        type: string
+        '401':
+          description: Ungültige Zugangsdaten
+
+  /auth/logout:
+    post:
+      summary: Benutzer ausloggen (aktuelle Session invalidieren)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich ausgeloggt
+        '401':
+          description: Kein gültiges Token
+
+  /worlds:
+    get:
+      summary: Alle sichtbaren Welten abrufen
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste nicht archivierter Welten
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/World'
+        '403':
+          description: Keine Berechtigung
+
+  /worlds/{id}/edit:
+    post:
+      summary: Status einer Welt ändern
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Welt erfolgreich aktualisiert
+        '403':
+          description: Keine Berechtigung
+        '404':
+          description: Welt nicht gefunden
+        '400':
+          description: Ungültige Eingabe
