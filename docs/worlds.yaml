@@ -2,10 +2,130 @@ openapi: 3.0.3
 info:
   title: Weltenwind API
   version: 1.0.0
+  description: |
+    ## World-Management
+    
+    ### Verbesserte API-Responses
+    Alle Endpoints verwenden eine konsistente Response-Struktur:
+    ```json
+    {
+      "success": true,
+      "code": "success",
+      "message": "Beschreibung",
+      "data": { ... }
+    }
+    ```
+    
+    ### E-Mail-Deduplizierung
+    - Automatische Deduplizierung bei Invite-Endpoints
+    - Case-insensitive Email-Behandlung
+    - Verhindert doppelte Einladungen
+    
+    ### Type-Safety
+    - Sichere User-Guards für alle authentifizierten Endpoints
+    - Robuste Token-Validierung
+    - Zentrale Prisma-Instanz für bessere Performance
+    
+    ### Rate-Limiting (geplant)
+    - Öffentliche Endpunkte werden mit Rate-Limiting geschützt
+    - Spam-Schutz für `/invites/public` und `/pre-register`
 paths:
+  /api/worlds:
+    get:
+      summary: Alle nicht archivierten Welten abrufen
+      description: |
+        **Permission:** `world.view` (global scope)
+        
+        Zeigt alle nicht archivierten Welten an.
+        Erfordert die `world.view` Permission.
+        Alle authentifizierten Benutzer haben diese Permission.
+      tags: [Worlds]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste aller Welten
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/World'
+        '403':
+          description: Keine Berechtigung zum Weltzugriff
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/worlds/{id}/edit:
+    post:
+      summary: Status einer Welt ändern
+      description: |
+        **Permission:** `world.edit` (world scope)
+        
+        Ändert den Status einer Welt.
+        Erfordert die `world.edit` Permission für die spezifische Welt.
+        Nur Admins und World-Admins haben diese Permission.
+      tags: [Worlds]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  $ref: '#/components/schemas/WorldStatus'
+      responses:
+        '200':
+          description: Welt erfolgreich aktualisiert
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  world:
+                    $ref: '#/components/schemas/World'
+        '400':
+          description: Ungültige Welt-ID oder Status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Keine Bearbeitungsberechtigung für diese Welt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Welt nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /api/worlds/{id}/join:
     post:
       summary: Einer Welt beitreten
+      description: |
+        **Permission:** `player.join` (world scope)
+        
+        Tritt einer Welt bei.
+        Erfordert die `player.join` Permission für die spezifische Welt.
+        Alle authentifizierten Benutzer haben diese Permission.
       tags: [Worlds]
       security:
         - bearerAuth: []
@@ -26,21 +146,43 @@ paths:
                   type: string
       responses:
         '200':
-          description: Beitritt erfolgreich
+          description: Beitritt erfolgreich oder bereits beigetreten
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  playerId:
-                    type: integer
+                  success:
+                    type: boolean
+                  code:
+                    type: string
+                    enum: [success, already_joined]
                   message:
                     type: string
-                example:
-                  playerId: 123
-                  message: "Beitritt erfolgreich"
+                  data:
+                    type: object
+                    properties:
+                      playerId:
+                        type: integer
+              examples:
+                success:
+                  summary: Erfolgreich beigetreten
+                  value:
+                    success: true
+                    code: "success"
+                    message: "Beitritt erfolgreich"
+                    data:
+                      playerId: 123
+                already_joined:
+                  summary: Bereits beigetreten
+                  value:
+                    success: true
+                    code: "already_joined"
+                    message: "Bereits beigetreten"
+                    data:
+                      playerId: 123
         '403':
-          description: Keine Berechtigung oder Einladung erforderlich
+          description: Keine Berechtigung zum Beitritt dieser Welt
           content:
             application/json:
               schema:
@@ -54,7 +196,13 @@ paths:
 
   /api/worlds/{id}/players/me:
     get:
-      summary: Eigenen Spielstatus in einer Welt abrufen 🔐
+      summary: Eigenen Spielstatus in einer Welt abrufen
+      description: |
+        **Permission:** `player.view_own` (world scope)
+        
+        Zeigt den eigenen Spielstatus in einer Welt an.
+        Erfordert die `player.view_own` Permission für die spezifische Welt.
+        Alle authentifizierten Benutzer haben diese Permission.
       tags: [Worlds]
       security:
         - bearerAuth: []
@@ -70,7 +218,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlayerState'
+                $ref: '#/components/schemas/Player'
+        '403':
+          description: Keine Berechtigung zum Anzeigen des eigenen Spielstatus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '404':
           description: Nicht gefunden
           content:
@@ -78,10 +232,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     delete:
-      summary: Welt verlassen (REST-konform) 🔐
+      summary: Welt verlassen
       description: |
-        Entfernt den eingeloggten Nutzer als Spieler aus der Welt (JWT erforderlich).
-        Gibt 404 zurück, wenn kein Player-Eintrag für diese Welt existiert.
+        **Permission:** `player.leave` (world scope)
+        
+        Verlässt eine Welt.
+        Erfordert die `player.leave` Permission für die spezifische Welt.
+        Alle authentifizierten Benutzer haben diese Permission.
       tags: [Worlds]
       security:
         - bearerAuth: []
@@ -99,8 +256,23 @@ paths:
               schema:
                 type: object
                 properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: string
+                    enum: [success]
                   message:
                     type: string
+                example:
+                  success: true
+                  code: "success"
+                  message: "Welt erfolgreich verlassen"
+        '403':
+          description: Keine Berechtigung zum Verlassen dieser Welt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '404':
           description: Kein Spielstatus für diese Welt gefunden
           content:
@@ -110,7 +282,13 @@ paths:
 
   /api/worlds/{id}/players:
     get:
-      summary: Alle Spieler einer Welt abrufen (Admin/Mod) 🔐
+      summary: Alle Spieler einer Welt abrufen
+      description: |
+        **Permission:** `player.view_all` (world scope)
+        
+        Zeigt alle Spieler einer Welt an.
+        Erfordert die `player.view_all` Permission für die spezifische Welt.
+        Nur Admins, Mods und World-Admins haben diese Permission.
       tags: [Worlds]
       security:
         - bearerAuth: []
@@ -130,7 +308,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/User'
         '403':
-          description: Keine Berechtigung
+          description: Keine Berechtigung zum Anzeigen aller Spieler
           content:
             application/json:
               schema:
@@ -145,6 +323,11 @@ paths:
   /api/worlds/{id}/state:
     get:
       summary: Öffentlichen Status einer Welt abrufen
+      description: |
+        **Permission:** Keine (öffentlich)
+        
+        Zeigt den öffentlichen Status einer Welt an.
+        Keine Authentifizierung oder Permission erforderlich.
       tags: [Worlds]
       parameters:
         - name: id
@@ -175,8 +358,70 @@ paths:
                 $ref: '#/components/schemas/Error'
 
   /api/worlds/{id}/invites:
+    get:
+      summary: Alle Einladungen einer Welt anzeigen
+      description: |
+        **Permission:** Keine (öffentlich)
+        
+        Zeigt alle Einladungen einer Welt an.
+        Keine Authentifizierung oder Permission erforderlich.
+        **Öffentlicher Endpoint für alle Benutzer.**
+      tags: [Worlds]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste der Einladungen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    email:
+                      type: string
+                      format: email
+                    token:
+                      type: string
+                    createdAt:
+                      type: string
+                      format: date-time
+                    expiresAt:
+                      type: string
+                      format: date-time
+                    invitedBy:
+                      type: object
+                      properties:
+                        username:
+                          type: string
+        '400':
+          description: Ungültige Welt-ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Welt nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
-      summary: Spieler zu einer Welt einladen (einzeln oder mehrere) 🔐
+      summary: Spieler zu einer Welt einladen
+      description: |
+        **Permission:** `invite.create` (world scope)
+        
+        Erstellt Einladungen für eine Welt.
+        Erfordert die `invite.create` Permission für die spezifische Welt.
+        Nur Admins, Mods und World-Admins haben diese Permission.
+        **Für authentifizierte Benutzer.**
       tags: [Worlds]
       security:
         - bearerAuth: []
@@ -216,12 +461,194 @@ paths:
               schema:
                 type: object
                 properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: string
+                    enum: [success]
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      invites:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            email:
+                              type: string
+                              format: email
+                            token:
+                              type: string
+                example:
+                  success: true
+                  code: "success"
+                  message: "Einladung(en) verschickt"
+                  data:
+                    invites:
+                      - email: "user@example.com"
+                        token: "abc123def456"
+        '403':
+          description: Keine Berechtigung zum Erstellen von Einladungen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Welt nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/worlds/{id}/invites/{inviteId}:
+    delete:
+      summary: Einladung löschen
+      description: |
+        **Hybrid-Ansatz:**
+        
+        **Für authentifizierte Benutzer:** JWT-basiert mit `invite.delete` Permission
+        **Für nicht-authentifizierte Benutzer:** Token-basiert (nur eigene Einladungen)
+        
+        - **JWT + Permission:** Privilegierte Benutzer (Admin, Mod, World-Admin) können alle Einladungen löschen
+        - **Token:** Nicht-authentifizierte Benutzer können nur ihre eigenen Einladungen löschen
+      tags: [Worlds]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: inviteId
+          in: path
+          required: true
+          description: ID der zu löschenden Einladung
+          schema:
+            type: integer
+        - name: token
+          in: query
+          required: false
+          description: Token der Einladung (nur für nicht-authentifizierte Benutzer)
+          schema:
+            type: string
+            example: "abc123def456"
+      responses:
+        '200':
+          description: Einladung erfolgreich gelöscht
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
                   message:
                     type: string
                 example:
-                  message: "Einladung(en) verschickt"
+                  message: "Einladung erfolgreich gelöscht"
+        '400':
+          description: Token erforderlich oder ungültige Parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ungültiger JWT Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '403':
-          description: Keine Berechtigung
+          description: Keine Berechtigung zum Löschen von Einladungen oder ungültiger Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Einladung nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/worlds/{id}/invites/public:
+    post:
+      summary: Öffentliche Einladungen für eine Welt erstellen
+      description: |
+        **Permission:** Keine (öffentlich)
+        
+        Erstellt öffentliche Einladungen für eine Welt.
+        Keine Authentifizierung erforderlich.
+        **Für Einladungen an nicht-registrierte Benutzer.**
+        Nur für Welten mit Status 'open' oder 'upcoming' verfügbar.
+      tags: [Worlds]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [email]
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: newuser@example.com
+                - type: object
+                  required: [emails]
+                  properties:
+                    emails:
+                      type: array
+                      items:
+                        type: string
+                        format: email
+                        example: newuser@example.com
+      responses:
+        '200':
+          description: Öffentliche Einladung(en) verschickt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: string
+                    enum: [success]
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      invites:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            email:
+                              type: string
+                              format: email
+                            token:
+                              type: string
+                example:
+                  success: true
+                  code: "success"
+                  message: "Öffentliche Einladung(en) verschickt"
+                  data:
+                    invites:
+                      - email: "newuser@example.com"
+                        token: "abc123def456"
+        '403':
+          description: Welt ist nicht für Einladungen geöffnet
           content:
             application/json:
               schema:
@@ -236,6 +663,11 @@ paths:
   /api/worlds/{id}/pre-register:
     post:
       summary: Pre-Registration für eine Welt
+      description: |
+        **Permission:** Keine (öffentlich)
+        
+        Vorregistrierung für eine Welt.
+        Keine Authentifizierung oder Permission erforderlich.
       tags: [Worlds]
       parameters:
         - name: id
@@ -256,16 +688,39 @@ paths:
                   example: user@example.com
       responses:
         '200':
-          description: Pre-Registration erfolgreich
+          description: Pre-Registration erfolgreich oder bereits registriert
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: string
+                    enum: [success, already_registered]
                   message:
                     type: string
-                example:
-                  message: "Pre-Registration erfolgreich"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+              examples:
+                success:
+                  summary: Erfolgreich registriert
+                  value:
+                    success: true
+                    code: "success"
+                    message: "Pre-Registration erfolgreich"
+                    data:
+                      id: 123
+                already_registered:
+                  summary: Bereits registriert
+                  value:
+                    success: true
+                    code: "already_registered"
+                    message: "Bereits vorregistriert"
         '400':
           description: Ungültige Eingabedaten
           content:
@@ -275,10 +730,10 @@ paths:
     delete:
       summary: Pre-Registration für eine Welt zurückziehen
       description: |
-        Löscht eine Pre-Registration für die angegebene Welt und E-Mail-Adresse. Kein JWT erforderlich.
+        **Permission:** Keine (öffentlich)
         
-        - E-Mail muss als Query-Parameter übergeben werden.
-        - Gibt 404 zurück, wenn keine Pre-Registration für diese Welt und E-Mail existiert.
+        Löscht eine Pre-Registration für die angegebene Welt und E-Mail-Adresse.
+        Keine Authentifizierung oder Permission erforderlich.
       tags: [Worlds]
       parameters:
         - name: id
@@ -301,8 +756,17 @@ paths:
               schema:
                 type: object
                 properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: string
+                    enum: [success]
                   message:
                     type: string
+                example:
+                  success: true
+                  code: "success"
+                  message: "Pre-Registration zurückgezogen"
         '400':
           description: Ungültige Welt-ID oder E-Mail fehlt
           content:
@@ -356,15 +820,25 @@ components:
         email:
           type: string
           example: user@example.com
-    PlayerState:
+    Player:
       type: object
       properties:
-        score:
+        id:
           type: integer
-        level:
+        userId:
           type: integer
-        status:
+        worldId:
+          type: integer
+        joinedAt:
           type: string
+          format: date-time
+        leftAt:
+          type: string
+          format: date-time
+          nullable: true
+        state:
+          type: string
+          nullable: true
     Error:
       type: object
       properties:

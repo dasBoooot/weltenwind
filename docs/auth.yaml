@@ -2,10 +2,37 @@ openapi: 3.0.3
 info:
   title: Weltenwind API
   version: 1.0.0
+  description: |
+    ## Token-Management
+    
+    ### Automatische Token-Erneuerung
+    Bei allen authentifizierten Endpoints wird der Token automatisch erneuert, wenn er weniger als 60 Sekunden gültig ist.
+    
+    ### Response-Headers
+    - `X-New-Token`: Neuer Token (wenn erneuert)
+    - `X-Token-Refreshed`: `true` (wenn erneuert)
+    
+    ### Status-Codes
+    - `440`: Session Timeout (Token abgelaufen)
+    - `401`: Unauthorized (ungültiges Token)
+    
+    ### Verbesserte IP-Erkennung
+    - Priorität: `x-forwarded-for` → `req.ip` → `req.socket.remoteAddress`
+    - Standardisierte Device-Fingerprints: `x-device-fingerprint` → `user-agent`
+    
+    ### Session-Management
+    - 15-Minuten Session-Dauer
+    - Automatische Inaktivitäts-Timeout nach 1 Stunde
+    - Zentrale Prisma-Instanz für bessere Performance
 paths:
   /api/auth/login:
     post:
       summary: Benutzer einloggen
+      description: |
+        **Permission:** Keine (öffentlich)
+        
+        Authentifiziert einen Benutzer und erstellt eine Session.
+        Alle Benutzer können sich einloggen.
       tags: [Auth]
       requestBody:
         required: true
@@ -47,6 +74,11 @@ paths:
   /api/auth/logout:
     post:
       summary: Benutzer ausloggen (Session beenden)
+      description: |
+        **Permission:** Keine (nur gültiges Token erforderlich)
+        
+        Beendet eine Benutzer-Session.
+        Erfordert nur ein gültiges JWT-Token.
       tags: [Auth]
       security:
         - bearerAuth: []
@@ -67,6 +99,18 @@ paths:
       responses:
         '200':
           description: Erfolgreich ausgeloggt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  deleted:
+                    type: integer
+                example:
+                  success: true
+                  deleted: 1
         '401':
           description: Nicht autorisiert
           content:
@@ -74,9 +118,84 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /api/auth/refresh:
+    post:
+      summary: Session verlängern
+      description: |
+        **Permission:** Keine (nur gültiges Token erforderlich)
+        
+        Verlängert eine aktive Benutzer-Session um weitere 15 Minuten.
+        Erfordert ein gültiges JWT-Token und eine aktive Session.
+        
+        **Response-Headers:**
+        - `X-New-Token`: Neuer Token (immer gesetzt)
+        - `X-Token-Refreshed`: `true` (immer gesetzt)
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Bearer Token
+          schema:
+            type: string
+            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Session erfolgreich verlängert
+          headers:
+            X-New-Token:
+              description: Neuer JWT-Token
+              schema:
+                type: string
+            X-Token-Refreshed:
+              description: Token wurde erneuert
+              schema:
+                type: string
+                example: "true"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  expiresIn:
+                    type: integer
+                    description: Session-Dauer in Sekunden
+                  token:
+                    type: string
+                    description: Neuer JWT-Token (auch im Body)
+                example:
+                  success: true
+                  message: "Session verlängert"
+                  expiresIn: 900
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          description: Session nicht gefunden oder abgelaufen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /api/auth/me:
     get:
-      summary: Eigene Benutzerdaten abrufen (Auto-Login)
+      summary: Eigene Benutzerdaten abrufen
+      description: |
+        **Permission:** `system.view_own` (global scope)
+        
+        Ruft die eigenen Benutzerdaten ab.
+        Erfordert die `system.view_own` Permission.
+        Alle authentifizierten Benutzer haben diese Permission.
       tags: [Auth]
       security:
         - bearerAuth: []
@@ -101,10 +220,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '403':
+          description: Keine Berechtigung zum Anzeigen der eigenen Daten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /api/auth/register:
     post:
       summary: Benutzer registrieren
+      description: |
+        **Permission:** Keine (öffentlich)
+        
+        Registriert einen neuen Benutzer.
+        Alle Benutzer können sich registrieren.
       tags: [Auth]
       requestBody:
         required: true
@@ -144,6 +274,11 @@ paths:
   /api/auth/request-reset:
     post:
       summary: Passwort-Reset anfordern
+      description: |
+        **Permission:** Keine (öffentlich)
+        
+        Fordert einen Passwort-Reset an.
+        Alle Benutzer können einen Reset anfordern.
       tags: [Auth]
       requestBody:
         required: true
@@ -159,16 +294,24 @@ paths:
       responses:
         '200':
           description: Reset-Mail verschickt (immer, um Enumeration zu verhindern)
-        '404':
-          description: E-Mail nicht gefunden
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: "Reset-Mail verschickt (falls E-Mail existiert)"
 
   /api/auth/reset-password:
     post:
       summary: Passwort zurücksetzen
+      description: |
+        **Permission:** Keine (öffentlich)
+        
+        Setzt das Passwort mit einem Reset-Token zurück.
+        Alle Benutzer können ihr Passwort zurücksetzen.
       tags: [Auth]
       requestBody:
         required: true
@@ -185,6 +328,15 @@ paths:
       responses:
         '200':
           description: Passwort erfolgreich geändert
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: "Passwort erfolgreich geändert"
         '400':
           description: Ungültiger oder abgelaufener Token
           content:
