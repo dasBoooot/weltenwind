@@ -12,12 +12,14 @@ export async function hasPermission(
   permissionName: string,
   scope: ScopeContext
 ): Promise<boolean> {
-  // 1. Hole Rollen des Users
+  // 1. Hole Rollen des Users (spezifische und Wildcard)
   const userRoles = await prisma.userRole.findMany({
     where: {
       userId,
       scopeType: scope.type,
-      scopeObjectId: scope.objectId
+      scopeObjectId: {
+        in: [scope.objectId, '*'] // Prüfe spezifische ID und Wildcard
+      }
     }
   });
 
@@ -25,12 +27,14 @@ export async function hasPermission(
 
   const roleIds = userRoles.map((r) => r.roleId);
 
-  // 2. Hole Berechtigungen dieser Rollen
+  // 2. Hole Berechtigungen dieser Rollen (spezifische und Wildcard)
   const matchingPermissions = await prisma.rolePermission.findMany({
     where: {
       roleId: { in: roleIds },
       scopeType: scope.type,
-      scopeObjectId: scope.objectId,
+      scopeObjectId: {
+        in: [scope.objectId, '*'] // Prüfe spezifische ID und Wildcard
+      },
       permission: { name: permissionName },
       accessLevel: { not: 'none' }
     }

@@ -8,12 +8,17 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  username     String    @unique
-  passwordHash String    @map("password_hash")
-  isLocked     Boolean   @default(false) @map("is_locked")
-  sessions     Session[]
-  roles        UserRole[]
+  id               Int               @id @default(autoincrement())
+  username         String            @unique
+  email            String            @unique
+  passwordHash     String            @map("password_hash")
+  isLocked         Boolean           @default(false) @map("is_locked")
+  invites          Invite[]
+  passwordResets   PasswordReset[]
+  players          Player[]
+  preRegistrations PreRegistration[]
+  sessions         Session[]
+  roles            UserRole[]
 
   @@map("users")
 }
@@ -30,21 +35,21 @@ model Role {
 
 model UserRole {
   id            Int     @id @default(autoincrement())
-  user          User    @relation(fields: [userId], references: [id])
   userId        Int
-  role          Role    @relation(fields: [roleId], references: [id])
   roleId        Int
   scopeType     String  @map("scope_type")
-  scopeObjectId String  @map("scope_object_id") // geändert: war vorher optional
+  scopeObjectId String  @map("scope_object_id")
   condition     String?
+  role          Role    @relation(fields: [roleId], references: [id])
+  user          User    @relation(fields: [userId], references: [id])
 
-  @@map("user_roles")
   @@unique([userId, roleId, scopeType, scopeObjectId])
+  @@map("user_roles")
 }
 
 model Permission {
-  id          Int               @id @default(autoincrement())
-  name        String            @unique
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
   description String?
   roles       RolePermission[]
 
@@ -52,39 +57,108 @@ model Permission {
 }
 
 model RolePermission {
-  id            Int         @id @default(autoincrement())
-  role          Role        @relation(fields: [roleId], references: [id])
+  id            Int        @id @default(autoincrement())
   roleId        Int
-  permission    Permission  @relation(fields: [permissionId], references: [id])
   permissionId  Int
-  scopeType     String      @map("scope_type")
-  scopeObjectId String      @map("scope_object_id") // geändert: war vorher optional
-  accessLevel   String      @map("access_level")
+  scopeType     String     @map("scope_type")
+  scopeObjectId String     @map("scope_object_id")
+  accessLevel   String     @map("access_level")
+  permission    Permission @relation(fields: [permissionId], references: [id])
+  role          Role       @relation(fields: [roleId], references: [id])
 
-  @@map("role_permissions")
   @@unique([roleId, permissionId, scopeType, scopeObjectId])
+  @@map("role_permissions")
 }
 
 model Session {
   id                Int      @id @default(autoincrement())
-  user              User     @relation(fields: [userId], references: [id])
   userId            Int
   token             String
   createdAt         DateTime @default(now()) @map("created_at")
   expiresAt         DateTime @map("expires_at")
+  lastAccessedAt    DateTime @default(now()) @map("last_accessed_at")
   ipHash            String?  @map("ip_hash")
   deviceFingerprint String?  @map("device_fingerprint")
+  timezone          String?  @default("UTC")
+  user              User     @relation(fields: [userId], references: [id])
 
+  @@unique([userId, token])
   @@map("sessions")
 }
 
 model World {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
-  status     String   @default("upcoming")
-  createdAt  DateTime @default(now())
-  startsAt   DateTime
-  endsAt     DateTime?
+  id               Int               @id @default(autoincrement())
+  name             String            @unique
+  status           WorldStatus       @default(upcoming)
+  createdAt        DateTime          @default(now())
+  startsAt         DateTime
+  endsAt           DateTime?
+  invites          Invite[]
+  players          Player[]
+  preRegistrations PreRegistration[]
 
   @@map("worlds")
+}
+
+model Player {
+  id       Int       @id @default(autoincrement())
+  userId   Int
+  worldId  Int
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
+  state    String?
+  user     User      @relation(fields: [userId], references: [id])
+  world    World     @relation(fields: [worldId], references: [id])
+
+  @@unique([userId, worldId])
+  @@map("players")
+}
+
+model Invite {
+  id          Int       @id @default(autoincrement())
+  worldId     Int
+  email       String
+  token       String    @unique
+  invitedById Int?
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+  expiresAt   DateTime?
+  invitedBy   User?     @relation(fields: [invitedById], references: [id])
+  world       World     @relation(fields: [worldId], references: [id])
+
+  @@map("invites")
+}
+
+model PasswordReset {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  token     String    @unique
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+  expiresAt DateTime
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@map("password_resets")
+}
+
+model PreRegistration {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  worldId   Int
+  email     String
+  config    Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+  world     World    @relation(fields: [worldId], references: [id])
+
+  @@unique([email, worldId])
+  @@map("pre_registrations")
+}
+
+enum WorldStatus {
+  upcoming
+  open
+  running
+  closed
+  archived
 }

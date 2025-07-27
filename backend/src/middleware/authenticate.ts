@@ -1,67 +1,116 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-import { getValidSession } from '../services/session.service';
+import prisma from '../libs/prisma';
+import { getValidSession, refreshSession } from '../services/session.service';
 
-const prisma = new PrismaClient();
+// Typisierung für JWT Payload
+interface JwtPayloadExtended extends jwt.JwtPayload {
+  userId: number;
+  username: string;
+}
+
+
+
+// Konfiguration für Token-Management
+const TOKEN_LIFETIME_SECONDS = parseInt(process.env.JWT_EXPIRES_IN_SECONDS || '900'); // 15 Minuten
+const REFRESH_THRESHOLD_SECONDS = 60; // 1 Minute vor Ablauf erneuern
+const INACTIVITY_LIMIT_SECONDS = 60 * 60; // 1 Stunde max Inaktivität
 
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: number;
     username: string;
-    roles: {
-      roleId: number;
-      scopeType: string;
-      scopeObjectId: string;
-    }[];
   };
 }
 
-export async function authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
+// Fingerprint aus Header extrahieren
+function extractDeviceFingerprint(req: Request): string {
+  return req.headers['x-device-fingerprint'] as string || req.headers['user-agent'] || 'unknown';
+}
 
-  if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Kein gültiges Token übergeben' });
+function verifyJWT(token: string): JwtPayloadExtended {
+  return jwt.verify(token, process.env.JWT_SECRET || 'dev-secret') as JwtPayloadExtended;
+}
+
+export async function authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  // Robuste Token-Extraktion für verschiedene Clients
+  let token = null;
+  
+  // Standard Authorization Header
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  }
+  
+  // Fallback: Token aus Query-Parameter (für Swagger UI)
+  if (!token && req.query.token) {
+    token = req.query.token as string;
+  }
+  
+  // Fallback: Token aus Body (für POST requests)
+  if (!token && req.body?.token) {
+    token = req.body.token;
   }
 
-  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: 'Token fehlt oder ungültig' });
+  }
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret') as {
-      userId: number;
-      username: string;
-    };
+    const decoded = verifyJWT(token);
 
-    // Session prüfen
-    const session = await getValidSession(payload.userId, token);
+    const fingerprint = extractDeviceFingerprint(req);
+    const session = await getValidSession(decoded.userId, token, fingerprint);
+
     if (!session) {
-      return res.status(401).json({ error: 'Session nicht gefunden oder abgelaufen' });
+      return res.status(440).json({ error: 'Session abgelaufen oder ungültig' });
     }
 
-    // User + Rollen laden
-    const user = await prisma.user.findUnique({
-      where: { id: payload.userId },
-      include: {
-        roles: true
-      }
-    });
+    const now = Math.floor(Date.now() / 1000);
+    const exp = decoded.exp as number;
+    const remaining = exp - now;
 
-    if (!user || user.isLocked) {
-      return res.status(403).json({ error: 'Zugriff gesperrt' });
+    // Session-Inaktivitäts-Check
+    const lastAccess = new Date(session.lastAccessedAt).getTime();
+    if (Date.now() - lastAccess > INACTIVITY_LIMIT_SECONDS * 1000) {
+      return res.status(440).json({ error: 'Session Timeout (>1h)' });
+    }
+
+    // Token erneuern, wenn <60s rest
+    if (remaining < REFRESH_THRESHOLD_SECONDS) {
+      await refreshSession(decoded.userId, token); // verlängert DB-Session & lastAccess
+
+      const newToken = jwt.sign(
+        {
+          userId: decoded.userId,
+          username: decoded.username,
+          iat: now
+        },
+        process.env.JWT_SECRET || 'dev-secret',
+        {
+          expiresIn: `${TOKEN_LIFETIME_SECONDS}s`,
+          issuer: 'weltenwind-api',
+          audience: 'weltenwind-client'
+        }
+      );
+
+      res.setHeader('X-New-Token', newToken);
+      res.setHeader('X-Token-Refreshed', 'true');
+    } else {
+      // Nur lastAccessedAt aktualisieren
+      await prisma.session.updateMany({
+        where: { userId: decoded.userId, token },
+        data: { lastAccessedAt: new Date() }
+      });
     }
 
     req.user = {
-      id: user.id,
-      username: user.username,
-      roles: user.roles.map((r) => ({
-        roleId: r.roleId,
-        scopeType: r.scopeType,
-        scopeObjectId: r.scopeObjectId
-      }))
+      id: decoded.userId,
+      username: decoded.username
     };
 
     next();
-  } catch (err) {
-    return res.status(401).json({ error: 'Ungültiges oder abgelaufenes Token' });
+  } catch (error) {
+    return res.status(401).json({ error: 'Token ungültig oder Fehler bei der Verarbeitung' });
   }
 }
