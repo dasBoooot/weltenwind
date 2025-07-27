@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 
 import authRoutes from './routes/auth';
 import worldRoutes from './routes/worlds';
@@ -35,15 +36,31 @@ app.use('/api/auth', authRoutes);
 app.use('/api/worlds', worldRoutes);
 
 // === API-Doku (OpenAPI) ===
-// === OpenAPI YAML gezielt bereitstellen ===
+// === API-combined.yaml direkt bereitstellen ===
 app.get('/api-combined.yaml', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../docs/api-combined.yaml'));
+  res.sendFile(path.resolve(__dirname, '../../docs/api-combined.yaml'));
 });
 
 // === Swagger Editor unter /docs ===
 // → mit require.resolve (robuster als direkter Pfad)
 const swaggerEditorPath = path.dirname(require.resolve('swagger-editor-dist/index.html'));
 app.use('/docs', express.static(swaggerEditorPath));
+
+// === Flutter-Web-App unter /game ===
+// 1. Statische Dateien aus dem Flutter-Web-Build ausliefern:
+const flutterWebPath = path.resolve(__dirname, '../../client/build/web');
+console.log(`🎮 Flutter-Web-Pfad: ${flutterWebPath}`);
+app.use('/game', express.static(flutterWebPath));
+
+// 2. Fallback für alle Flutter-Routen auf index.html:
+app.get('/game', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../../client/build/web/index.html'));
+});
+
+// Catch-all für alle anderen /game Routen
+app.get('/game/:path', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../../client/build/web/index.html'));
+});
 
 // === Info- und Status-Endpunkte ===
 app.get('/', (req, res) => {
@@ -98,6 +115,7 @@ process.on('SIGTERM', async () => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Weltenwind-API läuft auf Port ${PORT}`);
+  console.log(`🎮 Flutter-Game verfügbar unter: http://localhost:${PORT}/game`);
   console.log(`📘 Swagger Editor verfügbar unter: http://localhost:${PORT}/docs`);
   console.log(`📄 API-Doku YAML erreichbar unter: http://localhost:${PORT}/api-combined.yaml`);
   console.log(`🧹 Session-Cleanup alle 5 Minuten aktiv`);

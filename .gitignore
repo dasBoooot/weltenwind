@@ -4,3 +4,9 @@ dist/
 .env
 nohup.out
 *.log
+
+/client/.dart_tool/
+/client/.idea/
+/client/build/
+/client/.flutter-plugins
+/client/pubspec.lock
