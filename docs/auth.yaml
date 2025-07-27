@@ -1,9 +1,12 @@
+openapi: 3.0.3
+info:
+  title: Weltenwind API
+  version: 1.0.0
 paths:
-  /auth/login:
+  /api/auth/login:
     post:
       summary: Benutzer einloggen
-      tags:
-        - Auth
+      tags: [Auth]
       requestBody:
         required: true
         content:
@@ -27,24 +30,190 @@ paths:
                   token:
                     type: string
                   user:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                      username:
-                        type: string
+                    $ref: '#/components/schemas/User'
         '401':
           description: Ungültige Zugangsdaten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Konto gesperrt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
-  /auth/logout:
+  /api/auth/logout:
     post:
-      summary: Benutzer ausloggen (Session löschen)
-      tags:
-        - Auth
+      summary: Benutzer ausloggen (Session beenden)
+      tags: [Auth]
       security:
         - bearerAuth: []
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Bearer Token
+          schema:
+            type: string
+            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
       responses:
         '200':
           description: Erfolgreich ausgeloggt
         '401':
-          description: Kein gültiges oder abgelaufenes Token
+          description: Nicht autorisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/me:
+    get:
+      summary: Eigene Benutzerdaten abrufen (Auto-Login)
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Bearer Token
+          schema:
+            type: string
+            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      responses:
+        '200':
+          description: Benutzerinformationen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Nicht autorisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/register:
+    post:
+      summary: Benutzer registrieren
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, email, password]
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Benutzer erfolgreich registriert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Ungültige Eingabedaten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Benutzername oder E-Mail bereits vergeben
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/request-reset:
+    post:
+      summary: Passwort-Reset anfordern
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Reset-Mail verschickt (immer, um Enumeration zu verhindern)
+        '404':
+          description: E-Mail nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/reset-password:
+    post:
+      summary: Passwort zurücksetzen
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties:
+                token:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Passwort erfolgreich geändert
+        '400':
+          description: Ungültiger oder abgelaufener Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+          example: testuser
+        email:
+          type: string
+          example: user@example.com
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: integer

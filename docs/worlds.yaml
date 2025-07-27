@@ -1,28 +1,183 @@
+openapi: 3.0.3
+info:
+  title: Weltenwind API
+  version: 1.0.0
 paths:
-  /worlds:
-    get:
-      summary: Sichtbare Welten abrufen
-      tags:
-        - Worlds
+  /api/worlds/{id}/join:
+    post:
+      summary: Einer Welt beitreten
+      tags: [Worlds]
       security:
         - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inviteCode:
+                  type: string
       responses:
         '200':
-          description: Liste nicht archivierter Welten
+          description: Beitritt erfolgreich
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  playerId:
+                    type: integer
+                  message:
+                    type: string
+                example:
+                  playerId: 123
+                  message: "Beitritt erfolgreich"
+        '403':
+          description: Keine Berechtigung oder Einladung erforderlich
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Welt nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/worlds/{id}/players/me:
+    get:
+      summary: Eigenen Spielstatus in einer Welt abrufen 🔐
+      tags: [Worlds]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Eigener Spielstatus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerState'
+        '404':
+          description: Nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Welt verlassen (REST-konform) 🔐
+      description: |
+        Entfernt den eingeloggten Nutzer als Spieler aus der Welt (JWT erforderlich).
+        Gibt 404 zurück, wenn kein Player-Eintrag für diese Welt existiert.
+      tags: [Worlds]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Welt erfolgreich verlassen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Kein Spielstatus für diese Welt gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/worlds/{id}/players:
+    get:
+      summary: Alle Spieler einer Welt abrufen (Admin/Mod) 🔐
+      tags: [Worlds]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste der Spieler
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/World'
+                  $ref: '#/components/schemas/User'
         '403':
           description: Keine Berechtigung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Welt nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
-  /worlds/{id}/edit:
+  /api/worlds/{id}/state:
+    get:
+      summary: Öffentlichen Status einer Welt abrufen
+      tags: [Worlds]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Status der Welt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state:
+                    $ref: '#/components/schemas/WorldStatus'
+                  playerCount:
+                    type: integer
+                example:
+                  state: open
+                  playerCount: 5
+        '404':
+          description: Welt nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/worlds/{id}/invites:
     post:
-      summary: Status einer Welt ändern
-      tags:
-        - Worlds
+      summary: Spieler zu einer Welt einladen (einzeln oder mehrere) 🔐
+      tags: [Worlds]
       security:
         - bearerAuth: []
       parameters:
@@ -36,22 +191,137 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [status]
-              properties:
-                status:
-                  type: string
+              oneOf:
+                - type: object
+                  required: [email]
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: user@example.com
+                - type: object
+                  required: [emails]
+                  properties:
+                    emails:
+                      type: array
+                      items:
+                        type: string
+                        format: email
+                        example: user@example.com
       responses:
         '200':
-          description: Welt erfolgreich aktualisiert
-        '400':
-          description: Ungültige Eingabe
+          description: Einladung(en) verschickt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: "Einladung(en) verschickt"
         '403':
-          description: Keine Bearbeitungserlaubnis
+          description: Keine Berechtigung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '404':
           description: Welt nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/worlds/{id}/pre-register:
+    post:
+      summary: Pre-Registration für eine Welt
+      tags: [Worlds]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+      responses:
+        '200':
+          description: Pre-Registration erfolgreich
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: "Pre-Registration erfolgreich"
+        '400':
+          description: Ungültige Eingabedaten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Pre-Registration für eine Welt zurückziehen
+      description: |
+        Löscht eine Pre-Registration für die angegebene Welt und E-Mail-Adresse. Kein JWT erforderlich.
+        
+        - E-Mail muss als Query-Parameter übergeben werden.
+        - Gibt 404 zurück, wenn keine Pre-Registration für diese Welt und E-Mail existiert.
+      tags: [Worlds]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: email
+          in: query
+          required: true
+          description: E-Mail-Adresse für Pre-Registration
+          schema:
+            type: string
+            format: email
+      responses:
+        '200':
+          description: Pre-Registration erfolgreich zurückgezogen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Ungültige Welt-ID oder E-Mail fehlt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Keine Pre-Registration für diese Welt und E-Mail gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     World:
       type: object
@@ -61,7 +331,7 @@ components:
         name:
           type: string
         status:
-          type: string
+          $ref: '#/components/schemas/WorldStatus'
         createdAt:
           type: string
           format: date-time
@@ -72,3 +342,33 @@ components:
           type: string
           format: date-time
           nullable: true
+    WorldStatus:
+      type: string
+      enum: [upcoming, open, running, closed, archived]
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+          example: testuser
+        email:
+          type: string
+          example: user@example.com
+    PlayerState:
+      type: object
+      properties:
+        score:
+          type: integer
+        level:
+          type: integer
+        status:
+          type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: integer

@@ -1,37 +1,52 @@
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
 
+const baseFile = path.join(__dirname, 'openapi.yaml');
+const authFile = path.join(__dirname, 'auth.yaml');
+const worldsFile = path.join(__dirname, 'worlds.yaml');
 const combinedPath = path.join(__dirname, 'api-combined.yaml');
 
-const content = `openapi: 3.0.3
-info:
-  title: Weltenwind API
-  description: Auth, Session & Weltenverwaltung
-  version: 1.0.0
+// Hilfsfunktion zum Deep-Merge von Objekten
+function deepMerge(target, source) {
+  for (const key of Object.keys(source)) {
+    if (
+      source[key] &&
+      typeof source[key] === 'object' &&
+      !Array.isArray(source[key])
+    ) {
+      if (!target[key]) target[key] = {};
+      deepMerge(target[key], source[key]);
+    } else {
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
 
-servers:
-  - url: http://localhost:3000/api
+// YAML-Dateien einlesen
+const base = yaml.load(fs.readFileSync(baseFile, 'utf8'));
+const auth = yaml.load(fs.readFileSync(authFile, 'utf8'));
+const worlds = yaml.load(fs.readFileSync(worldsFile, 'utf8'));
 
-paths:
-  /auth/login:
-    $ref: './auth.yaml#/paths/~1auth~1login/post'
-  /auth/logout:
-    $ref: './auth.yaml#/paths/~1auth~1logout/post'
-  /worlds:
-    $ref: './worlds.yaml#/paths/~1worlds/get'
-  /worlds/{id}/edit:
-    $ref: './worlds.yaml#/paths/~1worlds~1{id}~1edit/post'
+// Kombinieren
+const combined = {
+  openapi: base.openapi,
+  info: base.info,
+  servers: base.servers,
+  components: {},
+  paths: {},
+};
 
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-  schemas:
-    World:
-      $ref: './worlds.yaml#/components/schemas/World'
-`;
+// paths zusammenführen
+Object.assign(combined.paths, auth.paths || {});
+Object.assign(combined.paths, worlds.paths || {});
 
-fs.writeFileSync(combinedPath, content);
+// components zusammenführen (z.B. securitySchemes, schemas)
+if (base.components) deepMerge(combined.components, base.components);
+if (auth.components) deepMerge(combined.components, auth.components);
+if (worlds.components) deepMerge(combined.components, worlds.components);
+
+// In YAML schreiben
+fs.writeFileSync(combinedPath, yaml.dump(combined, { lineWidth: 120 }));
 console.log('✅ api-combined.yaml erfolgreich generiert.');

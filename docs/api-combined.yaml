@@ -1,22 +1,7 @@
 openapi: 3.0.3
 info:
   title: Weltenwind API
-  description: Auth, Session & Weltenverwaltung
   version: 1.0.0
-
-servers:
-  - url: http://localhost:3000/api
-
-paths:
-  /auth/login:
-    $ref: './auth.yaml#/paths/~1auth~1login/post'
-  /auth/logout:
-    $ref: './auth.yaml#/paths/~1auth~1logout/post'
-  /worlds:
-    $ref: './worlds.yaml#/paths/~1worlds/get'
-  /worlds/{id}/edit:
-    $ref: './worlds.yaml#/paths/~1worlds~1{id}~1edit/post'
-
 components:
   securitySchemes:
     bearerAuth:
@@ -24,5 +9,572 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+          example: testuser
+        email:
+          type: string
+          example: user@example.com
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: integer
     World:
-      $ref: './worlds.yaml#/components/schemas/World'
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/WorldStatus'
+        createdAt:
+          type: string
+          format: date-time
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+          nullable: true
+    WorldStatus:
+      type: string
+      enum:
+        - upcoming
+        - open
+        - running
+        - closed
+        - archived
+    PlayerState:
+      type: object
+      properties:
+        score:
+          type: integer
+        level:
+          type: integer
+        status:
+          type: string
+paths:
+  /api/auth/login:
+    post:
+      summary: Benutzer einloggen
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Erfolgreicher Login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Ungültige Zugangsdaten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Konto gesperrt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/auth/logout:
+    post:
+      summary: Benutzer ausloggen (Session beenden)
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Bearer Token
+          schema:
+            type: string
+            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Erfolgreich ausgeloggt
+        '401':
+          description: Nicht autorisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/auth/me:
+    get:
+      summary: Eigene Benutzerdaten abrufen (Auto-Login)
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Bearer Token
+          schema:
+            type: string
+            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      responses:
+        '200':
+          description: Benutzerinformationen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Nicht autorisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/auth/register:
+    post:
+      summary: Benutzer registrieren
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Benutzer erfolgreich registriert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Ungültige Eingabedaten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Benutzername oder E-Mail bereits vergeben
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/auth/request-reset:
+    post:
+      summary: Passwort-Reset anfordern
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Reset-Mail verschickt (immer, um Enumeration zu verhindern)
+        '404':
+          description: E-Mail nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/auth/reset-password:
+    post:
+      summary: Passwort zurücksetzen
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+                - password
+              properties:
+                token:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Passwort erfolgreich geändert
+        '400':
+          description: Ungültiger oder abgelaufener Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/worlds/{id}/join:
+    post:
+      summary: Einer Welt beitreten
+      tags:
+        - Worlds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inviteCode:
+                  type: string
+      responses:
+        '200':
+          description: Beitritt erfolgreich
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  playerId:
+                    type: integer
+                  message:
+                    type: string
+                example:
+                  playerId: 123
+                  message: Beitritt erfolgreich
+        '403':
+          description: Keine Berechtigung oder Einladung erforderlich
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Welt nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/worlds/{id}/players/me:
+    get:
+      summary: Eigenen Spielstatus in einer Welt abrufen 🔐
+      tags:
+        - Worlds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Eigener Spielstatus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerState'
+        '404':
+          description: Nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Welt verlassen (REST-konform) 🔐
+      description: |
+        Entfernt den eingeloggten Nutzer als Spieler aus der Welt (JWT erforderlich).
+        Gibt 404 zurück, wenn kein Player-Eintrag für diese Welt existiert.
+      tags:
+        - Worlds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Welt erfolgreich verlassen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Kein Spielstatus für diese Welt gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/worlds/{id}/players:
+    get:
+      summary: Alle Spieler einer Welt abrufen (Admin/Mod) 🔐
+      tags:
+        - Worlds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste der Spieler
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '403':
+          description: Keine Berechtigung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Welt nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/worlds/{id}/state:
+    get:
+      summary: Öffentlichen Status einer Welt abrufen
+      tags:
+        - Worlds
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Status der Welt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state:
+                    $ref: '#/components/schemas/WorldStatus'
+                  playerCount:
+                    type: integer
+                example:
+                  state: open
+                  playerCount: 5
+        '404':
+          description: Welt nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/worlds/{id}/invites:
+    post:
+      summary: Spieler zu einer Welt einladen (einzeln oder mehrere) 🔐
+      tags:
+        - Worlds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required:
+                    - email
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: user@example.com
+                - type: object
+                  required:
+                    - emails
+                  properties:
+                    emails:
+                      type: array
+                      items:
+                        type: string
+                        format: email
+                        example: user@example.com
+      responses:
+        '200':
+          description: Einladung(en) verschickt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: Einladung(en) verschickt
+        '403':
+          description: Keine Berechtigung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Welt nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/worlds/{id}/pre-register:
+    post:
+      summary: Pre-Registration für eine Welt
+      tags:
+        - Worlds
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+      responses:
+        '200':
+          description: Pre-Registration erfolgreich
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: Pre-Registration erfolgreich
+        '400':
+          description: Ungültige Eingabedaten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Pre-Registration für eine Welt zurückziehen
+      description: |
+        Löscht eine Pre-Registration für die angegebene Welt und E-Mail-Adresse. Kein JWT erforderlich.
+
+        - E-Mail muss als Query-Parameter übergeben werden.
+        - Gibt 404 zurück, wenn keine Pre-Registration für diese Welt und E-Mail existiert.
+      tags:
+        - Worlds
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: email
+          in: query
+          required: true
+          description: E-Mail-Adresse für Pre-Registration
+          schema:
+            type: string
+            format: email
+      responses:
+        '200':
+          description: Pre-Registration erfolgreich zurückgezogen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Ungültige Welt-ID oder E-Mail fehlt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Keine Pre-Registration für diese Welt und E-Mail gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
