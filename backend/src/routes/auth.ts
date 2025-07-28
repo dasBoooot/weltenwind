@@ -169,48 +169,69 @@ router.post('/register', async (req: express.Request<{}, {}, { username: string;
     return res.status(400).json({ error: 'Passwort muss mindestens 8 Zeichen lang sein.' });
   }
 
-  // Prüfe auf vorhandenen User
-  const userByUsername = await prisma.user.findUnique({ where: { username } });
-  const userByEmail = await prisma.user.findUnique({ where: { email } });
-  if (userByUsername || userByEmail) {
-    return res.status(409).json({ error: 'Benutzername oder E-Mail bereits vergeben.' });
-  }
-
-  // Passwort hashen
-  const passwordHash = await bcrypt.hash(password, 10);
-
-  // User anlegen mit Standard-User-Rolle
-  const user = await prisma.user.create({
-    data: {
-      username,
-      email,
-      passwordHash,
+  try {
+    // Prüfe auf vorhandenen User
+    const userByUsername = await prisma.user.findUnique({ where: { username } });
+    const userByEmail = await prisma.user.findUnique({ where: { email } });
+    if (userByUsername || userByEmail) {
+      return res.status(409).json({ error: 'Benutzername oder E-Mail bereits vergeben.' });
     }
-  });
 
-  // Standard-User-Rolle zuweisen
-  const userRole = await prisma.role.findUnique({
-    where: { name: 'user' }
-  });
+    // Passwort hashen
+    const passwordHash = await bcrypt.hash(password, 10);
 
-  if (userRole) {
-    await prisma.userRole.create({
-      data: {
-        userId: user.id,
-        roleId: userRole.id,
-        scopeType: 'global',
-        scopeObjectId: 'global'
+    // User anlegen mit Standard-User-Rolle in einer Transaktion
+    const result = await prisma.$transaction(async (tx) => {
+      // User erstellen
+      const user = await tx.user.create({
+        data: {
+          username,
+          email,
+          passwordHash,
+        }
+      });
+
+      // Standard-User-Rolle finden
+      const userRole = await tx.role.findUnique({
+        where: { name: 'user' }
+      });
+
+      if (!userRole) {
+        throw new Error('Standard-User-Rolle nicht gefunden');
+      }
+
+      // Beide Rollen-Einträge erstellen (global und world)
+      await tx.userRole.createMany({
+        data: [
+          {
+            userId: user.id,
+            roleId: userRole.id,
+            scopeType: 'global',
+            scopeObjectId: 'global'
+          },
+          {
+            userId: user.id,
+            roleId: userRole.id,
+            scopeType: 'world',
+            scopeObjectId: '*'  // Wildcard für alle Welten
+          }
+        ]
+      });
+
+      return user;
+    });
+
+    return res.status(201).json({
+      user: {
+        id: result.id,
+        username: result.username,
+        email: result.email
       }
     });
+  } catch (error) {
+    console.error('Registration error:', error);
+    return res.status(500).json({ error: 'Fehler bei der Registrierung' });
   }
-
-  return res.status(201).json({
-    user: {
-      id: user.id,
-      username: user.username,
-      email: user.email
-    }
-  });
 });
 
 // POST /api/auth/request-reset
