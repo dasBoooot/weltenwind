@@ -47,17 +47,34 @@ const swaggerEditorPath = path.dirname(require.resolve('swagger-editor-dist/inde
 app.use('/docs', express.static(swaggerEditorPath));
 
 // === Flutter-Web-App unter /game ===
-// 1. Statische Dateien aus dem Flutter-Web-Build ausliefern:
+// 1. Statische Dateien zuerst (für Assets)
 const flutterWebPath = path.resolve(__dirname, '../../client/build/web');
 console.log(`🎮 Flutter-Web-Pfad: ${flutterWebPath}`);
+
+// Cache-Busting für kritische Flutter-Dateien
+app.use('/game', (req, res, next) => {
+  // Cache-Busting für main.dart.js und andere kritische Dateien
+  if (req.path.endsWith('main.dart.js') || 
+      req.path.endsWith('flutter.js') || 
+      req.path.endsWith('flutter_bootstrap.js') ||
+      req.path.endsWith('index.html')) {
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'ETag': `"${Date.now()}"` // Dynamischer ETag für Cache-Busting
+    });
+  }
+  next();
+});
+
 app.use('/game', express.static(flutterWebPath));
 
-// 2. Fallback für alle Flutter-Routen auf index.html:
+// 2. Fallback für alle anderen /game Routen auf index.html
 app.get('/game', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../../client/build/web/index.html'));
 });
 
-// Catch-all für alle anderen /game Routen
 app.get('/game/:path', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../../client/build/web/index.html'));
 });

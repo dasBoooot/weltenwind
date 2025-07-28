@@ -8,20 +8,20 @@ function hashIp(ip: string) {
 
 export async function createSession(
   userId: number, 
-  token: string, 
+  refreshToken: string, 
   ip: string, 
   fingerprint: string,
   timezone?: string,
   clientTime?: number
 ): Promise<Session> {
   // Immer Server-Zeit verwenden für Session-Berechnungen
-  const now = Date.now();
-  const expiresAt = new Date(now + 15 * 60 * 1000); // 15 Minuten
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 Tage
 
   return prisma.session.create({
     data: {
       userId,
-      token,
+      token: refreshToken, // Refresh-Token als Session-Token speichern
       expiresAt,
       ipHash: hashIp(ip),
       deviceFingerprint: fingerprint,
@@ -30,12 +30,12 @@ export async function createSession(
   });
 }
 
-export async function getValidSession(userId: number, token: string, fingerprint?: string): Promise<Session | null> {
+export async function getValidSession(userId: number, refreshToken: string, fingerprint?: string): Promise<Session | null> {
   // Erst versuchen ohne Device-Fingerprint (für Swagger UI, etc.)
   const session = await prisma.session.findFirst({
     where: {
       userId,
-      token,
+      token: refreshToken,
       expiresAt: {
         gt: new Date()
       }
@@ -51,7 +51,7 @@ export async function getValidSession(userId: number, token: string, fingerprint
     return prisma.session.findFirst({
       where: {
         userId,
-        token,
+        token: refreshToken,
         deviceFingerprint: fingerprint,
         expiresAt: {
           gt: new Date()
@@ -63,20 +63,17 @@ export async function getValidSession(userId: number, token: string, fingerprint
   return null;
 }
 
-export async function refreshSession(userId: number, token: string): Promise<{ count: number }> {
-  const now = new Date();
-  const newExpiresAt = new Date(now.getTime() + 15 * 60 * 1000); // 15 Minuten
-
+export async function refreshSession(userId: number, refreshToken: string): Promise<{ count: number }> {
   return prisma.session.updateMany({
     where: {
       userId,
-      token,
+      token: refreshToken,
       expiresAt: {
-        gt: now // Nur aktive Sessions aktualisieren
+        gt: new Date()
       }
     },
     data: {
-      expiresAt: newExpiresAt
+      lastAccessedAt: new Date()
     }
   });
 }
@@ -90,9 +87,25 @@ export async function invalidateSession(userId: number, token: string): Promise<
   });
 }
 
-export async function invalidateAllSessions(userId: number): Promise<{ count: number }> {
+export async function invalidateAllUserSessions(userId: number): Promise<{ count: number }> {
   return prisma.session.deleteMany({
-    where: { userId }
+    where: {
+      userId
+    }
+  });
+}
+
+export async function getUserSessions(userId: number): Promise<Session[]> {
+  return prisma.session.findMany({
+    where: {
+      userId,
+      expiresAt: {
+        gt: new Date()
+      }
+    },
+    orderBy: {
+      lastAccessedAt: 'desc'
+    }
   });
 }
 
@@ -106,4 +119,37 @@ export async function cleanupExpiredSessions(): Promise<{ count: number }> {
       }
     }
   });
+}
+
+// Neue Funktion: Session-Validierung mit erweiterten Checks
+export async function validateSession(
+  userId: number, 
+  refreshToken: string, 
+  ip?: string, 
+  fingerprint?: string
+): Promise<{ valid: boolean; session?: Session; reason?: string }> {
+  const session = await getValidSession(userId, refreshToken, fingerprint);
+  
+  if (!session) {
+    return { valid: false, reason: 'Session nicht gefunden oder abgelaufen' };
+  }
+
+  // IP-Check (optional, da IP sich ändern kann)
+  if (ip && session.ipHash) {
+    const currentIpHash = hashIp(ip);
+    if (session.ipHash !== currentIpHash) {
+      console.warn(`IP-Mismatch für Session ${session.id}: expected ${session.ipHash}, got ${currentIpHash}`);
+      // Nicht sofort invalidieren, nur loggen
+    }
+  }
+
+  // Device-Fingerprint-Check (optional)
+  if (fingerprint && session.deviceFingerprint && fingerprint !== 'unknown') {
+    if (session.deviceFingerprint !== fingerprint) {
+      console.warn(`Device-Fingerprint-Mismatch für Session ${session.id}`);
+      // Nicht sofort invalidieren, nur loggen
+    }
+  }
+
+  return { valid: true, session };
 }

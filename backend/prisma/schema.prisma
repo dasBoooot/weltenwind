@@ -126,6 +126,7 @@ model Invite {
   invitedBy   User?     @relation(fields: [invitedById], references: [id])
   world       World     @relation(fields: [worldId], references: [id])
 
+  @@unique([worldId, email])
   @@map("invites")
 }
 

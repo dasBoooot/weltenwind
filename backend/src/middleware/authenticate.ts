@@ -1,25 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import prisma from '../libs/prisma';
-import { getValidSession, refreshSession } from '../services/session.service';
 
 // Typisierung für JWT Payload
 interface JwtPayloadExtended extends jwt.JwtPayload {
   userId: number;
   username: string;
+  type: string;
+  timezone?: string;
 }
 
-
-
 // Konfiguration für Token-Management
-const TOKEN_LIFETIME_SECONDS = parseInt(process.env.JWT_EXPIRES_IN_SECONDS || '900'); // 15 Minuten
+const ACCESS_TOKEN_LIFETIME_SECONDS = 15 * 60; // 15 Minuten
 const REFRESH_THRESHOLD_SECONDS = 60; // 1 Minute vor Ablauf erneuern
-const INACTIVITY_LIMIT_SECONDS = 60 * 60; // 1 Stunde max Inaktivität
 
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: number;
     username: string;
+    timezone?: string;
   };
 }
 
@@ -59,54 +58,31 @@ export async function authenticate(req: AuthenticatedRequest, res: Response, nex
   try {
     const decoded = verifyJWT(token);
 
-    const fingerprint = extractDeviceFingerprint(req);
-    const session = await getValidSession(decoded.userId, token, fingerprint);
-
-    if (!session) {
-      return res.status(440).json({ error: 'Session abgelaufen oder ungültig' });
+    // Prüfen ob es ein Access-Token ist
+    if (decoded.type !== 'access') {
+      return res.status(401).json({ error: 'Ungültiger Token-Typ. Access-Token erforderlich.' });
     }
 
     const now = Math.floor(Date.now() / 1000);
     const exp = decoded.exp as number;
     const remaining = exp - now;
 
-    // Session-Inaktivitäts-Check
-    const lastAccess = new Date(session.lastAccessedAt).getTime();
-    if (Date.now() - lastAccess > INACTIVITY_LIMIT_SECONDS * 1000) {
-      return res.status(440).json({ error: 'Session Timeout (>1h)' });
+    // Token ist abgelaufen
+    if (remaining <= 0) {
+      return res.status(401).json({ error: 'Access-Token abgelaufen. Bitte mit Refresh-Token erneuern.' });
     }
 
     // Token erneuern, wenn <60s rest
     if (remaining < REFRESH_THRESHOLD_SECONDS) {
-      await refreshSession(decoded.userId, token); // verlängert DB-Session & lastAccess
-
-      const newToken = jwt.sign(
-        {
-          userId: decoded.userId,
-          username: decoded.username,
-          iat: now
-        },
-        process.env.JWT_SECRET || 'dev-secret',
-        {
-          expiresIn: `${TOKEN_LIFETIME_SECONDS}s`,
-          issuer: 'weltenwind-api',
-          audience: 'weltenwind-client'
-        }
-      );
-
-      res.setHeader('X-New-Token', newToken);
-      res.setHeader('X-Token-Refreshed', 'true');
-    } else {
-      // Nur lastAccessedAt aktualisieren
-      await prisma.session.updateMany({
-        where: { userId: decoded.userId, token },
-        data: { lastAccessedAt: new Date() }
-      });
+      // Header setzen, damit Client weiß, dass Token erneuert werden muss
+      res.setHeader('X-Token-Expires-Soon', 'true');
+      res.setHeader('X-Token-Expires-In', remaining.toString());
     }
 
     req.user = {
       id: decoded.userId,
-      username: decoded.username
+      username: decoded.username,
+      timezone: decoded.timezone
     };
 
     next();

@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { createSession, invalidateSession, refreshSession } from '../services/session.service';
+import { createSession, invalidateSession, refreshSession, getValidSession } from '../services/session.service';
 import { authenticate, AuthenticatedRequest } from '../middleware/authenticate';
 import { hasPermission } from '../services/access-control.service';
 import crypto from 'crypto';
@@ -9,9 +9,47 @@ import prisma from '../libs/prisma';
 
 const router = express.Router();
 
+// Konfiguration für Token-Lebensdauer
+const ACCESS_TOKEN_EXPIRES_IN = 15 * 60; // 15 Minuten
+const REFRESH_TOKEN_EXPIRES_IN = 7 * 24 * 60 * 60; // 7 Tage
+
 // Hilfsfunktion: Sichere Token-Generierung
 function generateSecureToken(): string {
   return crypto.randomBytes(32).toString('hex'); // 256 Bit Entropie
+}
+
+// Hilfsfunktion: Access-Token generieren
+function generateAccessToken(userId: number, username: string, timezone: string): string {
+  return jwt.sign(
+    {
+      userId,
+      username,
+      type: 'access',
+      timezone
+    },
+    process.env.JWT_SECRET || 'dev-secret',
+    { 
+      expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+      issuer: 'weltenwind-api',
+      audience: 'weltenwind-client'
+    }
+  );
+}
+
+// Hilfsfunktion: Refresh-Token generieren
+function generateRefreshToken(userId: number): string {
+  return jwt.sign(
+    {
+      userId,
+      type: 'refresh'
+    },
+    process.env.JWT_SECRET || 'dev-secret',
+    { 
+      expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+      issuer: 'weltenwind-api',
+      audience: 'weltenwind-client'
+    }
+  );
 }
 
 // Hilfsfunktion: IP & Fingerprint extrahieren
@@ -66,37 +104,23 @@ router.post('/login', async (req: express.Request<{}, {}, { username: string; pa
   const { ip, fingerprint } = extractClientInfo(req);
   const { timezone, clientTime } = extractClientTimezone(req);
 
-  // JWT erzeugen mit Client-Zeitzonen-Berücksichtigung
-  const serverNow = Math.floor(Date.now() / 1000);
-  // Verwende Server-Zeit für JWT, aber speichere Client-Zeitzone
-  const jwtNow = Math.floor(Date.now() / 1000); // Server-Zeit in Sekunden
-  const expiresIn = parseInt(process.env.JWT_EXPIRES_IN_SECONDS || '900'); // 15 Minuten
-  
-  const token = jwt.sign(
-    {
-      userId: user.id,
-      username: user.username,
-      iat: jwtNow,
-      exp: jwtNow + expiresIn,
-      timezone: timezone
-    },
-    process.env.JWT_SECRET || 'dev-secret',
-    { 
-      issuer: 'weltenwind-api',
-      audience: 'weltenwind-client'
-    }
-  );
+  // Zwei-Token-System: Access-Token + Refresh-Token
+  const accessToken = generateAccessToken(user.id, user.username, timezone);
+  const refreshToken = generateRefreshToken(user.id);
 
-  // Session erzeugen mit Client-Zeitzonen-Informationen
+  // Session mit Refresh-Token speichern
   try {
-    await createSession(user.id, token, ip, fingerprint, timezone, clientTime || undefined);
+    await createSession(user.id, refreshToken, ip, fingerprint, timezone, clientTime || undefined);
   } catch (error) {
-    // Bei Session-Erstellungsfehler trotzdem Token zurückgeben
     console.error('Session-Erstellung fehlgeschlagen:', error);
+    return res.status(500).json({ error: 'Session-Erstellung fehlgeschlagen' });
   }
 
   return res.status(200).json({
-    token,
+    accessToken,
+    refreshToken,
+    expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+    refreshExpiresIn: REFRESH_TOKEN_EXPIRES_IN,
     user: {
       id: user.id,
       username: user.username,
@@ -115,11 +139,13 @@ router.post('/logout', async (req, res) => {
   const token = authHeader.split(' ')[1];
 
   try {
+    // Token verifizieren (kann Access- oder Refresh-Token sein)
     const payload = jwt.verify(
       token,
       process.env.JWT_SECRET || 'dev-secret'
-    ) as { userId: number };
+    ) as { userId: number; type?: string };
 
+    // Session invalidieren (Refresh-Token löschen)
     const result = await invalidateSession(payload.userId, token);
 
     return res.status(200).json({ success: true, deleted: result.count });
@@ -230,52 +256,46 @@ router.post('/refresh', async (req, res) => {
   const { fingerprint } = extractClientInfo(req);
 
   try {
-    // Token verifizieren (mit Toleranz für abgelaufene Tokens)
+    // Refresh-Token verifizieren
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || 'dev-secret'
-    ) as { userId: number; exp: number };
+    ) as { userId: number; type: string; exp: number };
 
-    // Prüfen ob Token noch nicht zu alt ist (max 1 Stunde Toleranz)
-    const now = Math.floor(Date.now() / 1000);
-    if (decoded.exp < now - 3600) { // 1 Stunde Toleranz
-      return res.status(401).json({ error: 'Token zu alt für Refresh' });
+    // Prüfen ob es ein Refresh-Token ist
+    if (decoded.type !== 'refresh') {
+      return res.status(401).json({ error: 'Ungültiger Token-Typ für Refresh' });
     }
 
-    // Session aktualisieren
-    const result = await refreshSession(decoded.userId, token);
-    
-    if (result.count === 0) {
+    // Session in Datenbank prüfen
+    const session = await getValidSession(decoded.userId, token, fingerprint);
+    if (!session) {
       return res.status(401).json({ error: 'Session nicht gefunden oder abgelaufen' });
     }
 
-    // Neuen Token generieren (konsistent mit authenticate-Middleware)
-    const newToken = jwt.sign(
-      {
-        userId: decoded.userId,
-        username: (decoded as any).username || 'user',
-        iat: now
-      },
-      process.env.JWT_SECRET || 'dev-secret',
-      {
-        expiresIn: '900s', // 15 Minuten
-        issuer: 'weltenwind-api',
-        audience: 'weltenwind-client'
-      }
-    );
+    // User-Daten laden
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { username: true }
+    });
 
-    // Response-Headers setzen (konsistent mit authenticate-Middleware)
-    res.setHeader('X-New-Token', newToken);
-    res.setHeader('X-Token-Refreshed', 'true');
+    if (!user) {
+      return res.status(401).json({ error: 'Benutzer nicht gefunden' });
+    }
+
+    // Neuen Access-Token generieren
+    const newAccessToken = generateAccessToken(decoded.userId, user.username, session.timezone || 'UTC');
+
+    // Session aktualisieren (lastAccessedAt)
+    await refreshSession(decoded.userId, token);
 
     return res.status(200).json({ 
       success: true, 
-      message: 'Session verlängert',
-      expiresIn: 15 * 60, // 15 Minuten in Sekunden
-      token: newToken // Token auch im Body für direkten Zugriff
+      accessToken: newAccessToken,
+      expiresIn: ACCESS_TOKEN_EXPIRES_IN
     });
   } catch (error) {
-    return res.status(401).json({ error: 'Ungültiges Token oder Session-Refresh fehlgeschlagen' });
+    return res.status(401).json({ error: 'Ungültiges Refresh-Token' });
   }
 });
 
