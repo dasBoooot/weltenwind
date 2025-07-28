@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../features/auth/login_page.dart';
 import '../features/auth/register_page.dart';
+import '../features/auth/forgot_password_page.dart';
+import '../features/auth/reset_password_page.dart';
 import '../features/world/world_list_page.dart';
 import '../features/world/world_join_page.dart';
 import '../features/dashboard/dashboard_page.dart';
@@ -16,6 +18,8 @@ class AppRouter {
   static const String landingRoute = 'landing';
   static const String loginRoute = 'login';
   static const String registerRoute = 'register';
+  static const String forgotPasswordRoute = 'forgot-password';
+  static const String resetPasswordRoute = 'reset-password';
   static const String worldListRoute = 'world-list';
   static const String worldDashboardRoute = 'world-dashboard';
   static const String worldJoinRoute = 'world-join';
@@ -112,6 +116,36 @@ class AppRouter {
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
             FadeTransition(opacity: animation, child: child),
         ),
+      ),
+      GoRoute(
+        path: '/go/auth/forgot-password',
+        name: forgotPasswordRoute,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const ForgotPasswordPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+            FadeTransition(opacity: animation, child: child),
+        ),
+      ),
+      GoRoute(
+        path: '/go/auth/reset-password',
+        name: resetPasswordRoute,
+        pageBuilder: (context, state) {
+          // Token aus Query-Parametern holen
+          final token = state.uri.queryParameters['token'];
+          if (token == null || token.isEmpty) {
+            // Ohne Token zur Passwort-vergessen Seite weiterleiten
+            return CustomTransitionPage(
+              child: const ForgotPasswordPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+                FadeTransition(opacity: animation, child: child),
+            );
+          }
+          return CustomTransitionPage(
+            child: ResetPasswordPage(token: token),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
+          );
+        },
       ),
 
       // World routes

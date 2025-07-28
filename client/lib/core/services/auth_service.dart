@@ -193,9 +193,27 @@ class AuthService {
     }
   }
 
-  // Erweitertes Logout mit vollständigem Cleanup
+  // Erweitertes Logout mit Server-Call und vollständigem Cleanup
   Future<void> logout() async {
     try {
+      // Versuche Server-seitiges Logout
+      final accessToken = await TokenStorage.getAccessToken();
+      if (accessToken != null) {
+        _apiService.setToken(accessToken);
+        try {
+          await _apiService.post('/auth/logout', {});
+          if (kDebugMode) {
+            print('[AuthService] Server-side logout successful');
+          }
+        } catch (e) {
+          // Server-Logout fehlgeschlagen, trotzdem lokal ausloggen
+          if (kDebugMode) {
+            print('[AuthService] Server logout failed: $e');
+          }
+        }
+      }
+      
+      // Lokales Cleanup
       await TokenStorage.clearTokens();
       _currentUser = null;
       _apiService.clearToken();
@@ -302,6 +320,55 @@ class AuthService {
 
   Future<String?> getCurrentAccessToken() async {
     return await TokenStorage.getAccessToken();
+  }
+
+  // Passwort-Reset anfordern
+  Future<bool> requestPasswordReset(String email) async {
+    try {
+      final response = await _apiService.post('/auth/request-reset', {
+        'email': email,
+      });
+
+      if (response.statusCode == 200) {
+        if (kDebugMode) {
+          print('[AuthService] Password reset requested successfully');
+        }
+        return true;
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Passwort-Reset Anfrage fehlgeschlagen');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('[AuthService] Request password reset failed: $e');
+      }
+      rethrow;
+    }
+  }
+
+  // Passwort zurücksetzen mit Token
+  Future<bool> resetPassword(String token, String newPassword) async {
+    try {
+      final response = await _apiService.post('/auth/reset-password', {
+        'token': token,
+        'newPassword': newPassword,
+      });
+
+      if (response.statusCode == 200) {
+        if (kDebugMode) {
+          print('[AuthService] Password reset successfully');
+        }
+        return true;
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Passwort-Zurücksetzung fehlgeschlagen');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('[AuthService] Reset password failed: $e');
+      }
+      rethrow;
+    }
   }
 
   // Token-Status überprüfen (für Debugging und Monitoring)
