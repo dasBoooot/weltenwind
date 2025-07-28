@@ -32,74 +32,82 @@ export async function authenticateOptional(req: any, res: Response, next: NextFu
 
 const router = express.Router();
 
-/**
- * GET /api/worlds
- * Abrufen aller nicht archivierten Welten
- * Permission: world.view (global scope)
- */
-router.get('/', authenticate, async (req: AuthenticatedRequest, res) => {
-  requireUser(req);
-  
-  const allowed = await hasPermission(req.user.id, 'world.view', {
-    type: 'global',
-    objectId: 'global'
-  });
-
-  if (!allowed) {
-    return res.status(403).json({ error: 'Keine Berechtigung zum Weltzugriff' });
-  }
-
-  const worlds = await prisma.world.findMany({
-    where: { status: { not: 'archived' } },
-    orderBy: { startsAt: 'asc' }
-  });
-
-  res.json(worlds);
-});
+// 🟢 Pfadspezifische Routen (korrekt zuerst)
 
 /**
- * POST /api/worlds/:id/edit
- * Status einer Welt ändern (z. B. "active", "upcoming", "archived")
- * Permission: world.edit (world scope)
+ * GET /api/worlds/:id/players/me
+ * Eigenen Spielstatus in einer Welt abrufen
+ * Permission: player.view_own (world scope)
  */
-router.post('/:id/edit', authenticate, async (req: AuthenticatedRequest, res) => {
+router.get('/:id/players/me', authenticate, async (req: AuthenticatedRequest, res) => {
   const worldId = parseInt(req.params.id);
-  const { status } = req.body;
-
   if (isNaN(worldId)) {
     return res.status(400).json({ error: 'Ungültige Welt-ID' });
   }
 
-  if (!status || typeof status !== 'string') {
-    return res.status(400).json({ error: 'Neuer Status erforderlich' });
-  }
-  if (!Object.values(WorldStatus).includes(status as WorldStatus)) {
-    return res.status(400).json({ error: 'Ungültiger Status-Wert' });
-  }
-
-  const world = await prisma.world.findUnique({ where: { id: worldId } });
-
-  if (!world) {
-    return res.status(404).json({ error: 'Welt nicht gefunden' });
-  }
-
   requireUser(req);
   
-  const allowed = await hasPermission(req.user.id, 'world.edit', {
+  // Permission prüfen: player.view_own
+  const allowed = await hasPermission(req.user.id, 'player.view_own', {
     type: 'world',
     objectId: worldId.toString()
   });
 
   if (!allowed) {
-    return res.status(403).json({ error: 'Keine Bearbeitungsberechtigung für diese Welt' });
+    return res.status(403).json({ error: 'Keine Berechtigung zum Anzeigen des eigenen Spielstatus' });
   }
 
-  const updated = await prisma.world.update({
-    where: { id: worldId },
-    data: { status: status as WorldStatus }
+  const player = await prisma.player.findUnique({
+    where: {
+      userId_worldId: {
+        userId: req.user.id,
+        worldId: worldId
+      }
+    }
+  });
+  if (!player) {
+    return res.status(404).json({ error: 'Kein Spielstatus für diese Welt gefunden' });
+  }
+  res.json(player);
+});
+
+/**
+ * GET /api/worlds/:id/players
+ * Alle Spieler einer Welt anzeigen
+ * Permission: player.view_all (world scope)
+ */
+router.get('/:id/players', authenticate, async (req: AuthenticatedRequest, res) => {
+  const worldId = parseInt(req.params.id);
+  if (isNaN(worldId)) {
+    return res.status(400).json({ error: 'Ungültige Welt-ID' });
+  }
+
+  requireUser(req);
+  
+  // Permission prüfen: player.view_all
+  const allowed = await hasPermission(req.user.id, 'player.view_all', {
+    type: 'world',
+    objectId: worldId.toString()
   });
 
-  res.json({ success: true, world: updated });
+  if (!allowed) {
+    return res.status(403).json({ error: 'Keine Berechtigung zum Anzeigen aller Spieler' });
+  }
+
+  // Alle Spieler der Welt abrufen
+  const players = await prisma.player.findMany({
+    where: { worldId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          email: true
+        }
+      }
+    }
+  });
+  res.json(players.map(p => p.user));
 });
 
 /**
@@ -173,43 +181,6 @@ router.post('/:id/join', authenticate, async (req: AuthenticatedRequest, res) =>
 });
 
 /**
- * GET /api/worlds/:id/players/me
- * Eigenen Spielstatus in einer Welt abrufen
- * Permission: player.view_own (world scope)
- */
-router.get('/:id/players/me', authenticate, async (req: AuthenticatedRequest, res) => {
-  const worldId = parseInt(req.params.id);
-  if (isNaN(worldId)) {
-    return res.status(400).json({ error: 'Ungültige Welt-ID' });
-  }
-
-  requireUser(req);
-  
-  // Permission prüfen: player.view_own
-  const allowed = await hasPermission(req.user.id, 'player.view_own', {
-    type: 'world',
-    objectId: worldId.toString()
-  });
-
-  if (!allowed) {
-    return res.status(403).json({ error: 'Keine Berechtigung zum Anzeigen des eigenen Spielstatus' });
-  }
-
-  const player = await prisma.player.findUnique({
-    where: {
-      userId_worldId: {
-        userId: req.user.id,
-        worldId: worldId
-      }
-    }
-  });
-  if (!player) {
-    return res.status(404).json({ error: 'Kein Spielstatus für diese Welt gefunden' });
-  }
-  res.json(player);
-});
-
-/**
  * DELETE /api/worlds/:id/players/me
  * Welt verlassen
  * Permission: player.leave (world scope)
@@ -252,59 +223,48 @@ router.delete('/:id/players/me', authenticate, async (req: AuthenticatedRequest,
 });
 
 /**
- * GET /api/worlds/:id/players
- * Alle Spieler einer Welt anzeigen
- * Permission: player.view_all (world scope)
+ * POST /api/worlds/:id/edit
+ * Status einer Welt ändern (z. B. "active", "upcoming", "archived")
+ * Permission: world.edit (world scope)
  */
-router.get('/:id/players', authenticate, async (req: AuthenticatedRequest, res) => {
+router.post('/:id/edit', authenticate, async (req: AuthenticatedRequest, res) => {
   const worldId = parseInt(req.params.id);
+  const { status } = req.body;
+
   if (isNaN(worldId)) {
     return res.status(400).json({ error: 'Ungültige Welt-ID' });
   }
 
+  if (!status || typeof status !== 'string') {
+    return res.status(400).json({ error: 'Neuer Status erforderlich' });
+  }
+  if (!Object.values(WorldStatus).includes(status as WorldStatus)) {
+    return res.status(400).json({ error: 'Ungültiger Status-Wert' });
+  }
+
+  const world = await prisma.world.findUnique({ where: { id: worldId } });
+
+  if (!world) {
+    return res.status(404).json({ error: 'Welt nicht gefunden' });
+  }
+
   requireUser(req);
   
-  // Permission prüfen: player.view_all
-  const allowed = await hasPermission(req.user.id, 'player.view_all', {
+  const allowed = await hasPermission(req.user.id, 'world.edit', {
     type: 'world',
     objectId: worldId.toString()
   });
 
   if (!allowed) {
-    return res.status(403).json({ error: 'Keine Berechtigung zum Anzeigen aller Spieler' });
+    return res.status(403).json({ error: 'Keine Bearbeitungsberechtigung für diese Welt' });
   }
 
-  // Alle Spieler der Welt abrufen
-  const players = await prisma.player.findMany({
-    where: { worldId },
-    include: {
-      user: {
-        select: {
-          id: true,
-          username: true,
-          email: true
-        }
-      }
-    }
+  const updated = await prisma.world.update({
+    where: { id: worldId },
+    data: { status: status as WorldStatus }
   });
-  res.json(players.map(p => p.user));
-});
 
-/**
- * GET /api/worlds/:id/state
- * Welt-Status öffentlich abrufen (keine Authentifizierung erforderlich)
- */
-router.get('/:id/state', async (req, res) => {
-  const worldId = parseInt(req.params.id);
-  if (isNaN(worldId)) {
-    return res.status(400).json({ error: 'Ungültige Welt-ID' });
-  }
-  const world = await prisma.world.findUnique({ where: { id: worldId } });
-  if (!world) {
-    return res.status(404).json({ error: 'Welt nicht gefunden' });
-  }
-  const playerCount = await prisma.player.count({ where: { worldId } });
-  res.json({ state: world.status, playerCount });
+  res.json({ success: true, world: updated });
 });
 
 /**
@@ -346,6 +306,19 @@ router.post('/:id/invites', authenticate, async (req: AuthenticatedRequest, res)
 
   const invites = [];
   for (const mail of emailSet) {
+    // Prüfe ob bereits eine Einladung für diese E-Mail existiert
+    const existingInvite = await prisma.invite.findFirst({
+      where: {
+        worldId,
+        email: mail.toLowerCase().trim()
+      }
+    });
+
+    if (existingInvite) {
+      // Überspringe bereits existierende Einladungen
+      continue;
+    }
+
     const token = require('crypto').randomBytes(32).toString('hex');
     const invite = await prisma.invite.create({
       data: {
@@ -360,6 +333,11 @@ router.post('/:id/invites', authenticate, async (req: AuthenticatedRequest, res)
     // await inviteService.sendInviteEmail({ email: mail, token, worldId });
     invites.push(invite);
   }
+  
+  if (invites.length === 0) {
+    return res.status(400).json({ error: 'Alle E-Mail-Adressen haben bereits eine Einladung erhalten' });
+  }
+  
   res.status(200).json({
     success: true,
     code: 'success',
@@ -596,6 +574,58 @@ router.post('/:id/pre-register', async (req, res) => {
 });
 
 /**
+ * GET /api/worlds/:id/pre-register/me
+ * Eigenen Pre-Register-Status in einer Welt abrufen
+ * Permission: player.view_own (world scope)
+ */
+router.get('/:id/pre-register/me', authenticate, async (req: AuthenticatedRequest, res) => {
+  const worldId = parseInt(req.params.id);
+  if (isNaN(worldId)) {
+    return res.status(400).json({ error: 'Ungültige Welt-ID' });
+  }
+
+  requireUser(req);
+  
+  // Permission prüfen: player.view_own
+  const allowed = await hasPermission(req.user.id, 'player.view_own', {
+    type: 'world',
+    objectId: worldId.toString()
+  });
+
+  if (!allowed) {
+    return res.status(403).json({ error: 'Keine Berechtigung zum Anzeigen des eigenen Pre-Register-Status' });
+  }
+
+  // User mit E-Mail abrufen
+  const user = await prisma.user.findUnique({
+    where: { id: req.user.id },
+    select: { email: true }
+  });
+
+  if (!user) {
+    return res.status(404).json({ error: 'Benutzer nicht gefunden' });
+  }
+
+  const preRegistration = await prisma.preRegistration.findFirst({
+    where: {
+      worldId: worldId,
+      email: user.email
+    }
+  });
+
+  res.json({
+    success: true,
+    isPreRegistered: !!preRegistration,
+    data: preRegistration ? {
+      id: preRegistration.id,
+      email: preRegistration.email,
+      createdAt: preRegistration.createdAt,
+      config: preRegistration.config
+    } : null
+  });
+});
+
+/**
  * DELETE /api/worlds/:id/pre-register
  * Vorregistrierung zurückziehen (öffentlich, keine Authentifizierung erforderlich)
  */
@@ -625,6 +655,85 @@ router.delete('/:id/pre-register', async (req, res) => {
     code: 'success',
     message: 'Pre-Registration zurückgezogen'
   });
+});
+
+// 🟡 Allgemeinere Routen (gehören ans Ende)
+
+/**
+ * GET /api/worlds/:id/state
+ * Welt-Status öffentlich abrufen (keine Authentifizierung erforderlich)
+ */
+router.get('/:id/state', async (req, res) => {
+  const worldId = parseInt(req.params.id);
+  if (isNaN(worldId)) {
+    return res.status(400).json({ error: 'Ungültige Welt-ID' });
+  }
+  const world = await prisma.world.findUnique({ where: { id: worldId } });
+  if (!world) {
+    return res.status(404).json({ error: 'Welt nicht gefunden' });
+  }
+  const playerCount = await prisma.player.count({ where: { worldId } });
+  res.json({ state: world.status, playerCount });
+});
+
+/**
+ * GET /api/worlds
+ * Abrufen aller nicht archivierten Welten
+ * Permission: world.view (global scope)
+ */
+router.get('/', authenticate, async (req: AuthenticatedRequest, res) => {
+  requireUser(req);
+  
+  const allowed = await hasPermission(req.user.id, 'world.view', {
+    type: 'global',
+    objectId: 'global'
+  });
+
+  if (!allowed) {
+    return res.status(403).json({ error: 'Keine Berechtigung zum Weltzugriff' });
+  }
+
+  const worlds = await prisma.world.findMany({
+    where: { status: { not: 'archived' } },
+    orderBy: { startsAt: 'asc' }
+  });
+
+  res.json(worlds);
+});
+
+/**
+ * GET /api/worlds/:id
+ * Abrufen einer einzelnen Welt
+ * Permission: world.view (global scope)
+ */
+router.get('/:id', authenticate, async (req: AuthenticatedRequest, res) => {
+  console.log('✅ /:id Route aktiviert mit', req.params.id);
+  const worldId = parseInt(req.params.id);
+  
+  if (isNaN(worldId)) {
+    return res.status(400).json({ error: 'Ungültige Welt-ID' });
+  }
+
+  requireUser(req);
+  
+  const allowed = await hasPermission(req.user.id, 'world.view', {
+    type: 'global',
+    objectId: 'global'
+  });
+
+  if (!allowed) {
+    return res.status(403).json({ error: 'Keine Berechtigung zum Weltzugriff' });
+  }
+
+  const world = await prisma.world.findUnique({
+    where: { id: worldId }
+  });
+
+  if (!world) {
+    return res.status(404).json({ error: 'Welt nicht gefunden' });
+  }
+
+  res.json(world);
 });
 
 export default router;
