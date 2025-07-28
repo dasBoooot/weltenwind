@@ -197,29 +197,52 @@ router.post('/register', async (req: express.Request<{}, {}, { username: string;
       });
 
       if (!userRole) {
-        throw new Error('Standard-User-Rolle nicht gefunden');
+        console.error('FEHLER: Standard-User-Rolle "user" nicht gefunden!');
+        console.error('Bitte führe "npm run seed" im backend-Ordner aus, um die Rollen zu erstellen.');
+        throw new Error('Standard-User-Rolle nicht gefunden. Bitte Seeds ausführen: npm run seed');
       }
 
+      console.log(`Found user role with id ${userRole.id}`);
+
       // Beide Rollen-Einträge erstellen (global und world)
-      await tx.userRole.createMany({
-        data: [
-          {
-            userId: user.id,
-            roleId: userRole.id,
-            scopeType: 'global',
-            scopeObjectId: 'global'
-          },
-          {
-            userId: user.id,
-            roleId: userRole.id,
-            scopeType: 'world',
-            scopeObjectId: '*'  // Wildcard für alle Welten
-          }
-        ]
+      // Erstelle global role
+      const globalRole = await tx.userRole.create({
+        data: {
+          userId: user.id,
+          roleId: userRole.id,
+          scopeType: 'global',
+          scopeObjectId: 'global'
+        }
       });
+
+      // Erstelle world role
+      const worldRole = await tx.userRole.create({
+        data: {
+          userId: user.id,
+          roleId: userRole.id,
+          scopeType: 'world',
+          scopeObjectId: '*'  // Wildcard für alle Welten
+        }
+      });
+
+      console.log(`Created roles for user ${user.username}: global=${globalRole.id}, world=${worldRole.id}`);
 
       return user;
     });
+
+    // Verifiziere die Rollen-Zuweisung
+    const userWithRoles = await prisma.user.findUnique({
+      where: { id: result.id },
+      include: {
+        roles: {
+          include: {
+            role: true
+          }
+        }
+      }
+    });
+
+    console.log(`User ${result.username} created with ${userWithRoles?.roles.length || 0} roles`);
 
     return res.status(201).json({
       user: {
@@ -230,6 +253,7 @@ router.post('/register', async (req: express.Request<{}, {}, { username: string;
     });
   } catch (error) {
     console.error('Registration error:', error);
+    console.error('Error details:', error instanceof Error ? error.stack : 'Unknown error');
     return res.status(500).json({ error: 'Fehler bei der Registrierung' });
   }
 });
