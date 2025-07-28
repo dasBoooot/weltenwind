@@ -10,17 +10,10 @@ import '../../theme/background_widget.dart';
 import '../../routing/app_router.dart';
 // Unused import removed
 import '../../shared/widgets/invite_dialog.dart';
+import './widgets/world_card.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
-
-// Welt-Kategorien für bessere Organisation
-enum WorldCategory {
-  classic,
-  pvp,
-  event,
-  experimental,
-}
 
 class WorldListPage extends StatefulWidget {
   const WorldListPage({super.key});
@@ -264,39 +257,7 @@ class _WorldListPageState extends State<WorldListPage> {
     }
   }
 
-  double _getWorldProgress(World world) {
-    final endsAt = world.endsAt;
-    if (endsAt == null) return 0.0;
-    
-    final now = DateTime.now();
-    final totalDuration = endsAt.difference(world.startsAt).inDays;
-    final elapsed = now.difference(world.startsAt).inDays;
-    
-    if (totalDuration <= 0) return 0.0;
-    if (elapsed < 0) return 0.0;
-    if (elapsed >= totalDuration) return 1.0;
-    
-    return elapsed / totalDuration;
-  }
-
-  String _getProgressText(World world) {
-    final endsAt = world.endsAt;
-    if (endsAt == null) return '';
-    
-    final now = DateTime.now();
-    final totalDuration = endsAt.difference(world.startsAt).inDays;
-    final elapsed = now.difference(world.startsAt).inDays;
-    
-    if (elapsed < 0) {
-      final daysUntilStart = -elapsed;
-      return 'Startet in $daysUntilStart Tagen';
-    } else if (elapsed >= totalDuration) {
-      return 'Abgeschlossen';
-    } else {
-      final percentage = ((elapsed / totalDuration) * 100).round();
-      return 'Tag ${elapsed + 1} von $totalDuration • $percentage% abgeschlossen';
-    }
-  }
+// Progress methods removed - now handled in WorldCard widget
 
   Future<void> _checkPlayerStatuses() async {
     for (final world in _worlds) {
@@ -608,336 +569,7 @@ class _WorldListPageState extends State<WorldListPage> {
     );
   }
 
-  Widget _buildWorldCard(World world) {
-    final playerCount = _playerCounts[world.id] ?? 0;
-    final progress = _getWorldProgress(world);
-    final progressText = _getProgressText(world);
-    
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-      elevation: 8,
-      color: const Color(0xFF1A1A1A), // Dunkle Karte
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: AppTheme.primaryColor.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF1A1A1A),
-              const Color(0xFF2A2A2A),
-            ],
-          ),
-        ),
-        child: InkWell(
-          onTap: () => _navigateToWorldJoin(world), // Deep-Link
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header mit Name, Status und Spieleranzahl
-                Row(
-                  children: [
-                    // Welt-Icon
-                    CircleAvatar(
-                      backgroundColor: _getCategoryColor(_getWorldCategory(world)),
-                      child: Icon(
-                        world.isActive ? Icons.play_arrow : Icons.public,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    
-                    // Welt-Name und Status
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  world.name,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: _getCategoryColor(_getWorldCategory(world)).withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: _getCategoryColor(_getWorldCategory(world)).withOpacity(0.5)),
-                                ),
-                                child: Text(
-                                  world.statusText,
-                                  style: TextStyle(
-                                    color: _getCategoryColor(_getWorldCategory(world)),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          
-                          // Spieleranzahl
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.people,
-                                size: 16,
-                                color: Colors.grey[400],
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '$playerCount Spieler aktiv',
-                                style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 16),
-                
-                // Weltlaufzeit-Fortschrittsbalken
-                if (world.endsAt != null) ...[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Weltlaufzeit',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            progressText,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[400],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      LinearProgressIndicator(
-                        value: progress,
-                        backgroundColor: Colors.grey.withOpacity(0.3),
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          _getCategoryColor(_getWorldCategory(world)),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                
-                // Datum-Informationen
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_today,
-                                size: 16,
-                                color: Colors.grey[400],
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Start: ${world.startsAt.day}.${world.startsAt.month}.${world.startsAt.year}',
-                                style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (world.endsAt != null) ...[
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.event_busy,
-                                  size: 16,
-                                  color: Colors.grey[400],
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Ende: ${world.endsAt?.day ?? '?'}.${world.endsAt?.month ?? '?'}.${world.endsAt?.year ?? '?'}',
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    
-                    // Action Buttons
-                    _buildActionButtons(world),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButtons(World world) {
-    final buttons = <Widget>[];
-    final isJoined = _joinedWorlds[world.id] ?? false;
-    final isPreRegistered = _preRegisteredWorlds[world.id] ?? false;
-
-    // Join button for open/running worlds (if not already joined)
-    if (world.canJoin && !isJoined) {
-      buttons.add(
-        ElevatedButton(
-          onPressed: () => _joinWorld(world),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: const Text('Beitreten'),
-        ),
-      );
-    }
-
-    // Show "Spielen" if already joined
-    if (isJoined) {
-      buttons.add(
-        ElevatedButton(
-          onPressed: () => context.goNamed('world-dashboard', pathParameters: {'id': world.id.toString()}),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green[600],
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: const Text('Spielen'),
-        ),
-      );
-    }
-
-    // Pre-register button for upcoming worlds (only if can't join and not already pre-registered)
-    if (world.canPreRegister && !world.canJoin && !isPreRegistered) {
-      buttons.add(
-        ElevatedButton(
-          onPressed: () => _preRegisterWorld(world),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange[600],
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: const Text('Vorregistrieren'),
-        ),
-      );
-    }
-
-    // Show "Bereits registriert" if pre-registered
-    if (isPreRegistered) {
-      buttons.add(
-        ElevatedButton(
-          onPressed: null, // Disabled
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.grey[600],
-            foregroundColor: Colors.grey[300],
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: const Text('Bereits registriert'),
-        ),
-      );
-    }
-
-    // Invite button for open/upcoming/running worlds
-    if (world.canInvite) {
-      buttons.add(
-        ElevatedButton(
-          onPressed: () => _createInvite(world),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.purple[600],
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: const Icon(Icons.person_add, size: 16),
-        ),
-      );
-    }
-
-    // If no buttons, show status
-    if (buttons.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: const Color(0xFF2D2D2D),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey[600]!),
-        ),
-        child: Text(
-          world.statusText,
-          style: TextStyle(
-            color: Colors.grey[300],
-            fontSize: 12,
-          ),
-        ),
-      );
-    }
-
-    // Return buttons in a row for better layout
-    return Wrap(
-      spacing: 8, // Horizontal spacing between buttons
-      runSpacing: 4, // Vertical spacing if buttons wrap
-      children: buttons,
-    );
-  }
+// _buildWorldCard and _buildActionButtons methods removed - now using WorldCard widget
 
   @override
   Widget build(BuildContext context) {
@@ -1108,7 +740,23 @@ class _WorldListPageState extends State<WorldListPage> {
                                 )
                               else
                                 Column(
-                                  children: _filteredWorlds.map((world) => _buildWorldCard(world)).toList(),
+                                  children: _filteredWorlds.map((world) => WorldCard(
+                                    world: world,
+                                    playerCount: _playerCounts[world.id] ?? 0,
+                                    category: _getWorldCategory(world),
+                                    isPreRegistered: _preRegisteredWorlds[world.id] ?? false,
+                                    isJoined: _joinedWorlds[world.id] ?? false,
+                                    onJoin: world.canJoin && !(_joinedWorlds[world.id] ?? false) 
+                                      ? () => _joinWorld(world) 
+                                      : null,
+                                    onPreRegister: world.canPreRegister && !(_preRegisteredWorlds[world.id] ?? false)
+                                      ? () => _preRegisterWorld(world)
+                                      : null,
+                                    onInvite: world.canInvite
+                                      ? () => _createInvite(world)
+                                      : null,
+                                    onTap: () => _navigateToWorldJoin(world),
+                                  )).toList(),
                                 ),
                               
                               const SizedBox(height: 24),
