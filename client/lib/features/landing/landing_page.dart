@@ -629,7 +629,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                     color: const Color(0xFF0A0A0A),
                     border: Border(
                       top: BorderSide(
-                        color: Colors.grey[800]!,
+                        color: Colors.grey[800] ?? Colors.grey,
                         width: 1,
                       ),
                     ),

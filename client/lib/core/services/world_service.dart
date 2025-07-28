@@ -143,9 +143,9 @@ class WorldService {
       }
     } on FormatException catch (e) {
       throw Exception('Ungültige Server-Antwort: $e');
-    } on SocketException catch (e) {
+    } on SocketException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
     } catch (e) {
       if (e is Exception) {
@@ -167,9 +167,9 @@ class WorldService {
       }
     } on FormatException catch (e) {
       throw Exception('Ungültige Server-Antwort: $e');
-    } on SocketException catch (e) {
+    } on SocketException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
     } catch (e) {
       if (e is Exception) {
@@ -195,9 +195,9 @@ class WorldService {
       }
     } on FormatException catch (e) {
       throw Exception('Ungültige Server-Antwort: $e');
-    } on SocketException catch (e) {
+    } on SocketException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
     } catch (e) {
       if (e is Exception) {
@@ -230,9 +230,9 @@ class WorldService {
       }
     } on FormatException catch (e) {
       throw Exception('Ungültige Server-Antwort: $e');
-    } on SocketException catch (e) {
+    } on SocketException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
     } catch (e) {
       if (e is Exception) {
@@ -270,9 +270,9 @@ class WorldService {
       }
     } on FormatException catch (e) {
       throw Exception('Ungültige Server-Antwort: $e');
-    } on SocketException catch (e) {
+    } on SocketException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
     } catch (e) {
       if (e is Exception) {
@@ -289,9 +289,9 @@ class WorldService {
       return response.statusCode == 200;
     } on FormatException catch (e) {
       throw Exception('Ungültige Server-Antwort: $e');
-    } on SocketException catch (e) {
+    } on SocketException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
     } catch (e) {
       if (e is Exception) {
@@ -324,9 +324,9 @@ class WorldService {
       return response.statusCode == 200;
     } on FormatException catch (e) {
       throw Exception('Ungültige Server-Antwort: $e');
-    } on SocketException catch (e) {
+    } on SocketException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_getErrorMessage(WorldErrorCode.networkError, null));
     } catch (e) {
       if (e is Exception) {

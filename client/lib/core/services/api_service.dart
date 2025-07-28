@@ -214,10 +214,7 @@ class ApiService {
     return http.Response('Request retry failed', 500);
   }
 
-  // Request-Kontext bereinigen (optional für Memory-Management)
-  void _clearRequestContext(String endpoint) {
-    _requestBodies.remove(endpoint);
-  }
+
 
   Future<http.Response> get(String endpoint) async {
     await _ensureInitialized();

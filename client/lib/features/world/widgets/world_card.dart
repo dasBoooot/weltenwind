@@ -350,23 +350,32 @@ class WorldCard extends StatelessWidget {
           ],
         ),
         if (world.endsAt != null) ...[
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Icon(
-                Icons.event_busy,
-                size: 16,
-                color: Colors.grey[400],
-              ),
-              const SizedBox(width: 4),
-              Text(
-                'Ende: ${world.endsAt!.day}.${world.endsAt!.month}.${world.endsAt!.year}',
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 14,
-                ),
-              ),
-            ],
+          Builder(
+            builder: (context) {
+              final endDate = world.endsAt!;
+              return Column(
+                children: [
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.event_busy,
+                        size: 16,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Ende: ${endDate.day}.${endDate.month}.${endDate.year}',
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            }
           ),
         ],
       ],
@@ -492,7 +501,7 @@ class WorldCard extends StatelessWidget {
         : ElevatedButton.icon(
             onPressed: onPressed,
             icon: Icon(icon, size: 16),
-            label: Text(label!),
+            label: Text(label ?? ''),
             style: ElevatedButton.styleFrom(
               backgroundColor: color,
               foregroundColor: Colors.white,

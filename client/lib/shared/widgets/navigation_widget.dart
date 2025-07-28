@@ -97,31 +97,37 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
     // Welt-Details anzeigen (von Dashboard oder wenn auf Join-Page)
     if ((widget.currentRoute == 'world-dashboard' || widget.currentRoute == 'world-join') 
         && widget.routeParams?['id'] != null) {
-      items.add(NavigationItem(
-        icon: Icons.info_outline,
-        label: 'Welt-Details',
-        onTap: () => context.goNamed('world-join', 
-          pathParameters: {'id': widget.routeParams!['id'].toString()}
-        ),
-        isActive: widget.currentRoute == 'world-join',
-      ));
+      final worldIdParam = widget.routeParams?['id'];
+      if (worldIdParam != null) {
+        items.add(NavigationItem(
+          icon: Icons.info_outline,
+          label: 'Welt-Details',
+          onTap: () => context.goNamed('world-join', 
+            pathParameters: {'id': worldIdParam.toString()}
+          ),
+          isActive: widget.currentRoute == 'world-join',
+        ));
+      }
     }
     
     // Dashboard Link - nur aktiv wenn User in der Welt ist
     if ((widget.currentRoute == 'world-join' || widget.currentRoute == 'world-dashboard') 
         && widget.routeParams?['id'] != null) {
-      final worldId = widget.routeParams!['id'].toString();
-      final isJoined = widget.isJoinedWorld ?? false;
-      
-      items.add(NavigationItem(
-        icon: Icons.dashboard,
-        label: isJoined ? 'Zum Dashboard' : 'Dashboard (Beitreten erforderlich)',
-        onTap: isJoined 
-          ? () => context.goNamed('world-dashboard', pathParameters: {'id': worldId})
-          : () => _showJoinRequiredMessage(),
-        isActive: widget.currentRoute == 'world-dashboard',
-        isDisabled: !isJoined,
-      ));
+      final worldIdParam = widget.routeParams?['id'];
+      if (worldIdParam != null) {
+        final worldId = worldIdParam.toString();
+        final isJoined = widget.isJoinedWorld ?? false;
+        
+        items.add(NavigationItem(
+          icon: Icons.dashboard,
+          label: isJoined ? 'Zum Dashboard' : 'Dashboard (Beitreten erforderlich)',
+          onTap: isJoined 
+            ? () => context.goNamed('world-dashboard', pathParameters: {'id': worldId})
+            : () => _showJoinRequiredMessage(),
+          isActive: widget.currentRoute == 'world-dashboard',
+          isDisabled: !isJoined,
+        ));
+      }
     }
     
     // Weitere Navigation Items können hier hinzugefügt werden

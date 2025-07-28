@@ -243,24 +243,7 @@ class _WorldListPageState extends State<WorldListPage> {
     }
   }
 
-  // Unused method removed
-
-  Color _getCategoryColor(WorldCategory category) {
-    switch (category) {
-      case WorldCategory.classic:
-        return Colors.blue;
-      case WorldCategory.pvp:
-        return Colors.red;
-      case WorldCategory.event:
-        return Colors.purple;
-      case WorldCategory.experimental:
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
-
-// Progress methods removed - now handled in WorldCard widget
+  // Unused methods removed - now handled in WorldCard widget
 
   Future<void> _checkPlayerStatuses() async {
     for (final world in _worlds) {
@@ -691,10 +674,10 @@ class _WorldListPageState extends State<WorldListPage> {
                                 Container(
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                    color: Colors.red[900]!.withOpacity(0.3),
+                                    color: (Colors.red[900] ?? Colors.red).withOpacity(0.3),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: Colors.red[400]!.withOpacity(0.5),
+                                      color: (Colors.red[400] ?? Colors.red).withOpacity(0.5),
                                     ),
                                   ),
                                   child: Column(
@@ -716,7 +699,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       Text(
                                         _error ?? 'Unbekannter Fehler',
                                         style: TextStyle(
-                                          color: Colors.red[200]!.withOpacity(0.8),
+                                          color: (Colors.red[200] ?? Colors.red).withOpacity(0.8),
                                         ),
                                         textAlign: TextAlign.center,
                                       ),

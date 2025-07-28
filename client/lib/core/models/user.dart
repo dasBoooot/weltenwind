@@ -142,7 +142,7 @@ class User {
       } catch (e) {
         // Try different date formats
         try {
-          return DateTime.parse(dateValue + 'Z'); // Add Z if missing timezone
+          return DateTime.parse('${dateValue}Z'); // Add Z if missing timezone
         } catch (e2) {
           // If all parsing fails, return current time
           return DateTime.now();

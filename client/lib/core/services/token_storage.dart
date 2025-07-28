@@ -7,7 +7,7 @@ class TokenStorage {
   static const _refreshTokenKey = 'refresh_token';
   static const _userDataKey = 'user_data';
 
-  static final _secureStorage = const FlutterSecureStorage();
+  static const _secureStorage = FlutterSecureStorage();
 
   static Future<void> saveTokens(String accessToken, String refreshToken) async {
     if (kIsWeb) {

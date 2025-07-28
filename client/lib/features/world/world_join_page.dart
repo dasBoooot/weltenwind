@@ -204,7 +204,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   }
   
   Future<void> _preRegisterWorld() async {
-    if (_world == null) return;
+    final world = _world;
+    if (world == null) return;
 
     setState(() {
       _isPreRegistering = true;
@@ -212,7 +213,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     });
 
     try {
-      final success = await _worldService.preRegisterWorldAuthenticated(_world!.id);
+      final success = await _worldService.preRegisterWorldAuthenticated(world.id);
       
       if (success) {
         setState(() {
@@ -222,7 +223,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Erfolgreich für ${_world!.name} vorregistriert!'),
+              content: Text('Erfolgreich für ${world.name} vorregistriert!'),
               backgroundColor: Colors.green,
             ),
           );
@@ -246,7 +247,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   }
   
   Future<void> _cancelPreRegistration() async {
-    if (_world == null) return;
+    final world = _world;
+    if (world == null) return;
 
     setState(() {
       _isPreRegistering = true;
@@ -254,7 +256,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     });
 
     try {
-      final success = await _worldService.cancelPreRegistrationAuthenticated(_world!.id);
+      final success = await _worldService.cancelPreRegistrationAuthenticated(world.id);
       if (success) {
         setState(() {
           _isPreRegistered = false;
@@ -263,7 +265,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Vorregistrierung für ${_world!.name} zurückgezogen.'),
+              content: Text('Vorregistrierung für ${world.name} zurückgezogen.'),
               backgroundColor: Colors.orange,
             ),
           );
@@ -287,14 +289,15 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   }
   
   Future<void> _leaveWorld() async {
-    if (_world == null) return;
+    final world = _world;
+    if (world == null) return;
     
     // Bestätigungsdialog anzeigen
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Welt verlassen?'),
-        content: Text('Möchtest du die Welt "${_world!.name}" wirklich verlassen?'),
+        content: Text('Möchtest du die Welt "${world.name}" wirklich verlassen?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -319,7 +322,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     });
 
     try {
-      await _worldService.leaveWorld(_world!.id);
+      await _worldService.leaveWorld(world.id);
       setState(() {
         _isJoined = false;
       });
@@ -327,7 +330,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Du hast ${_world!.name} verlassen.'),
+            content: Text('Du hast ${world.name} verlassen.'),
             backgroundColor: Colors.orange,
           ),
         );
@@ -346,9 +349,10 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   }
   
   void _playWorld() {
-    if (_world == null) return;
+    final world = _world;
+    if (world == null) return;
     // Navigate directly to world dashboard for playing
-    context.goNamed('world-dashboard', pathParameters: {'id': _world!.id.toString()});
+    context.goNamed('world-dashboard', pathParameters: {'id': world.id.toString()});
   }
 
   // Welt-Status bestimmen
@@ -378,13 +382,6 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   }
 
   // Kann der Benutzer beitreten?
-  bool _canJoinWorld() {
-    final world = _world;
-    if (world == null || !_isAuthenticated) return false;
-    
-    return world.canJoin;
-  }
-
   // Retry-Funktion
   Future<void> _retry() async {
     await _loadWorldData();
@@ -789,7 +786,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                _joinError!,
+                                _joinError ?? 'Unbekannter Fehler',
                                 style: TextStyle(color: Colors.red[400], fontSize: 14),
                               ),
                             ),
@@ -921,7 +918,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       decoration: BoxDecoration(
         color: const Color(0xFF2A2A2A),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: Colors.grey[800] ?? Colors.grey),
       ),
       child: Row(
         children: [
@@ -955,7 +952,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       decoration: BoxDecoration(
         color: const Color(0xFF2A2A2A),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: Colors.grey[800] ?? Colors.grey),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1025,13 +1022,13 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   
   IconData _getWorldStatusIcon() {
     switch (_world?.status) {
-      case 'upcoming':
+      case WorldStatus.upcoming:
         return Icons.schedule;
-      case 'open':
+      case WorldStatus.open:
         return Icons.lock_open;
-      case 'running':
+      case WorldStatus.running:
         return Icons.play_circle_outline;
-      case 'closed':
+      case WorldStatus.closed:
         return Icons.lock;
       default:
         return Icons.help_outline;
@@ -1068,12 +1065,13 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   }
   
   Widget _buildActionButtons() {
-    if (_world == null) return const SizedBox.shrink();
+    final world = _world;
+    if (world == null) return const SizedBox.shrink();
     
     final List<Widget> buttons = [];
     
     // Status-basierte Button-Logik (wie in world_list_page)
-    switch (_world!.status) {
+    switch (world.status) {
       case WorldStatus.upcoming:
         // Vorregistrierung oder Zurückziehen
         if (_isPreRegistered) {
@@ -1205,7 +1203,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
               ),
               const SizedBox(height: 8),
               Text(
-                _world!.status == WorldStatus.closed
+                world.status == WorldStatus.closed
                     ? 'Diese Welt ist derzeit geschlossen'
                     : 'Diese Welt ist archiviert',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(

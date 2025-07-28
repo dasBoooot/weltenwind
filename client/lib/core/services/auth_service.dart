@@ -186,7 +186,7 @@ class AuthService {
         final userData = data['user'];
         
         // Debug-Logging für Rollenzuweisung
-        if (userData['_debug'] != null) {
+        if (kDebugMode && userData['_debug'] != null) {
           print('=== REGISTRIERUNG DEBUG INFO ===');
           print('User ID: ${userData['id']}');
           print('Username: ${userData['username']}');
@@ -206,10 +206,12 @@ class AuthService {
         throw Exception('Benutzername oder E-Mail bereits vorhanden');
       } else {
         final errorData = jsonDecode(response.body);
-        print('Registration error response: ${response.body}');
+        if (kDebugMode) {
+          print('Registration error response: ${response.body}');
+        }
         
         // Detailliertere Fehlerbehandlung
-        if (errorData['details'] != null) {
+        if (errorData['details'] != null && kDebugMode) {
           print('Error details: ${errorData['details']}');
           if (errorData['details']['hint'] != null) {
             throw Exception('${errorData['error']} - ${errorData['details']['hint']}');

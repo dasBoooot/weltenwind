@@ -140,9 +140,9 @@ class InviteService {
       }
     } on FormatException catch (e) {
       throw Exception('Ungültige Server-Antwort: $e');
-    } on SocketException catch (e) {
+    } on SocketException {
       throw Exception(_getErrorMessage(InviteErrorCode.networkError, null));
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_getErrorMessage(InviteErrorCode.networkError, null));
     } catch (e) {
       // Fallback für unbekannte Fehler
@@ -174,9 +174,9 @@ class InviteService {
       }
     } on FormatException catch (e) {
       throw Exception('Ungültige Server-Antwort: $e');
-    } on SocketException catch (e) {
+    } on SocketException {
       throw Exception(_getErrorMessage(InviteErrorCode.networkError, null));
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_getErrorMessage(InviteErrorCode.networkError, null));
     } catch (e) {
       if (e is Exception) {
@@ -198,9 +198,9 @@ class InviteService {
       }
     } on FormatException catch (e) {
       throw Exception('Ungültige Server-Antwort: $e');
-    } on SocketException catch (e) {
+    } on SocketException {
       throw Exception(_getErrorMessage(InviteErrorCode.networkError, null));
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_getErrorMessage(InviteErrorCode.networkError, null));
     } catch (e) {
       if (e is Exception) {
@@ -230,9 +230,9 @@ class InviteService {
       }
     } on FormatException catch (e) {
       throw Exception('Ungültige Server-Antwort: $e');
-    } on SocketException catch (e) {
+    } on SocketException {
       throw Exception(_getErrorMessage(InviteErrorCode.networkError, null));
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_getErrorMessage(InviteErrorCode.networkError, null));
     } catch (e) {
       if (e is Exception) {

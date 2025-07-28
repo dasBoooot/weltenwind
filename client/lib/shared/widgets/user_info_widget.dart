@@ -64,18 +64,18 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
   Color _getRoleColor(String roleName) {
     switch (roleName.toLowerCase()) {
       case 'admin':
-        return Colors.red[400]!;
+        return Colors.red[400] ?? Colors.red;
       case 'developer':
-        return Colors.purple[400]!;
+        return Colors.purple[400] ?? Colors.purple;
       case 'support':
-        return Colors.blue[400]!;
+        return Colors.blue[400] ?? Colors.blue;
       case 'mod':
-        return Colors.orange[400]!;
+        return Colors.orange[400] ?? Colors.orange;
       case 'world-admin':
-        return Colors.indigo[400]!;
+        return Colors.indigo[400] ?? Colors.indigo;
       case 'user':
       default:
-        return Colors.green[400]!;
+        return Colors.green[400] ?? Colors.green;
     }
   }
   
@@ -221,26 +221,26 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
                         
                         const SizedBox(height: 8),
                         
-                        // Rollen
-                        if (user.roles != null && user.roles!.isNotEmpty) ...[
-                          Row(
-                            children: [
-                              Icon(Icons.security, size: 16, color: Colors.grey[400]),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Rollen:',
-                                style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
+                                            // Rollen
+                    if (user.roles != null && user.roles!.isNotEmpty) ...[
+                      Row(
+                        children: [
+                          Icon(Icons.security, size: 16, color: Colors.grey[400]),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Rollen:',
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 14,
+                            ),
                           ),
-                          const SizedBox(height: 6),
-                          Wrap(
-                            spacing: 6,
-                            runSpacing: 6,
-                            children: user.roles!.map((userRole) {
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: (user.roles ?? []).map((userRole) {
                               final roleName = userRole.role.name;
                               final scopeInfo = userRole.scopeType == 'global' 
                                   ? '' 

@@ -47,14 +47,27 @@ class AppRouter {
   }
   
   static GoRouter get router {
+    if (kDebugMode) {
+      print('[Router] Getting router instance: $_routerInstance');
+    }
+    
+    if (_routerInstance != null) {
+      return _routerInstance!;
+    }
+    
+    // Router nur einmal initialisieren
     if (!_isInitialized) {
-      _routerInstance = GoRouter(
-      initialLocation: '/go',
-      navigatorKey: _rootNavigatorKey,
-      // refreshListenable temporär entfernt - wird später hinzugefügt
-      
-      // Redirect aktiviert - Services werden jetzt korrekt initialisiert
-      redirect: (context, state) async {
+      if (kDebugMode) {
+        print('[Router] Initializing router...');
+      }
+      try {
+        _routerInstance = GoRouter(
+          initialLocation: '/go',
+          navigatorKey: _rootNavigatorKey,
+          // refreshListenable temporär entfernt - wird später hinzugefügt
+          
+          // Redirect aktiviert - Services werden jetzt korrekt initialisiert
+          redirect: (context, state) async {
         try {
           final authService = _getAuthService();
           if (authService == null) {
@@ -257,7 +270,24 @@ class AppRouter {
       return const ErrorPage();
     },
   );
-      _isInitialized = true;
+        _isInitialized = true;
+      } catch (e) {
+        // Bei Fehler während der Initialisierung
+        if (kDebugMode) {
+          print('[Router] Initialization error: $e');
+        }
+        // Fallback: Minimaler Router nur mit Error Page
+        _routerInstance = GoRouter(
+          initialLocation: '/go',
+          routes: [
+            GoRoute(
+              path: '/go',
+              builder: (context, state) => const ErrorPage(),
+            ),
+          ],
+        );
+        _isInitialized = true;
+      }
     }
     return _routerInstance!;
   }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/world.dart';
-import '../../../theme/app_theme.dart';
 import './world_card.dart';
 
 class WorldFilters extends StatelessWidget {
@@ -242,36 +241,46 @@ class WorldFilters extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           if (statusFilter != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Chip(
-                label: Text(
-                  _getStatusLabel(statusFilter!),
-                  style: const TextStyle(fontSize: 12),
-                ),
-                backgroundColor: _getStatusColor(statusFilter!).withOpacity(0.2),
-                deleteIcon: const Icon(Icons.close, size: 16),
-                onDeleted: () => onStatusChanged(null),
-                side: BorderSide(
-                  color: _getStatusColor(statusFilter!).withOpacity(0.5),
-                ),
-              ),
+            Builder(
+              builder: (context) {
+                final filter = statusFilter!;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Chip(
+                    label: Text(
+                      _getStatusLabel(filter),
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    backgroundColor: _getStatusColor(filter).withOpacity(0.2),
+                    deleteIcon: const Icon(Icons.close, size: 16),
+                    onDeleted: () => onStatusChanged(null),
+                    side: BorderSide(
+                      color: _getStatusColor(filter).withOpacity(0.5),
+                    ),
+                  ),
+                );
+              }
             ),
           if (categoryFilter != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Chip(
-                label: Text(
-                  _getCategoryLabel(categoryFilter!),
-                  style: const TextStyle(fontSize: 12),
-                ),
-                backgroundColor: _getCategoryColor(categoryFilter!).withOpacity(0.2),
-                deleteIcon: const Icon(Icons.close, size: 16),
-                onDeleted: () => onCategoryChanged(null),
-                side: BorderSide(
-                  color: _getCategoryColor(categoryFilter!).withOpacity(0.5),
-                ),
-              ),
+            Builder(
+              builder: (context) {
+                final filter = categoryFilter!;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Chip(
+                    label: Text(
+                      _getCategoryLabel(filter),
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    backgroundColor: _getCategoryColor(filter).withOpacity(0.2),
+                    deleteIcon: const Icon(Icons.close, size: 16),
+                    onDeleted: () => onCategoryChanged(null),
+                    side: BorderSide(
+                      color: _getCategoryColor(filter).withOpacity(0.5),
+                    ),
+                  ),
+                );
+              }
             ),
           const Spacer(),
           TextButton.icon(
