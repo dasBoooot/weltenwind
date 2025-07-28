@@ -10,6 +10,8 @@ import '../../theme/background_widget.dart';
 import '../../routing/app_router.dart';
 // Unused import removed
 import '../../shared/widgets/invite_dialog.dart';
+import '../../shared/widgets/user_info_widget.dart';
+import '../../shared/widgets/navigation_widget.dart';
 import './widgets/world_card.dart';
 import './widgets/world_filters.dart';
 
@@ -314,15 +316,6 @@ class _WorldListPageState extends State<WorldListPage> {
           }
         }
       }
-    }
-  }
-
-  Future<void> _logout() async {
-    await _authService.logout();
-    // Cache invalidieren nach Logout
-    AppRouter.invalidateAuthCache();
-    if (mounted) {
-      context.goNamed('login');
     }
   }
 
@@ -834,27 +827,11 @@ class _WorldListPageState extends State<WorldListPage> {
               ),
             ),
             
-            // Logout button in top-right corner
-            Positioned(
-              top: 24,
-              right: 24,
-              child: ElevatedButton.icon(
-                onPressed: _logout,
-                icon: const Icon(Icons.logout),
-                label: const Text('Abmelden'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[600],
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
+            // User info widget in top-left corner
+            const UserInfoWidget(),
+            
+            // Navigation widget in top-right corner
+            const NavigationWidget(currentRoute: 'world-list'),
           ],
         ),
       ),

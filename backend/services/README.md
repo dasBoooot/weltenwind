@@ -36,4 +36,17 @@ sudo systemctl status weltenwind.target
 sudo journalctl -u weltenwind-backend -f
 ```
 
+## Port-Übersicht
+
+- Backend API: `http://192.168.2.168:3000`
+- Swagger Docs: `http://192.168.2.168:3001`  
+- Prisma Studio: `http://192.168.2.168:5555`
+
+## Firewall
+
+Falls Prisma Studio nicht erreichbar ist:
+```bash
+sudo ufw allow 5555
+```
+
 Für detaillierte Informationen siehe [SYSTEMD-SERVICE.md](./SYSTEMD-SERVICE.md) 

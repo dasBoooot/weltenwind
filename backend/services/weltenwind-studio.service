@@ -10,8 +10,12 @@ User=weltenwind
 Group=weltenwind
 WorkingDirectory=/srv/weltenwind/backend
 Environment="NODE_ENV=production"
+Environment="HOME=/var/lib/weltenwind"
 EnvironmentFile=/srv/weltenwind/backend/.env
-ExecStart=/usr/bin/npx prisma studio --hostname=0.0.0.0
+# Stelle sicher dass npm/node im PATH ist
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+ExecStartPre=/bin/bash -c 'cd /srv/weltenwind/backend && test -f node_modules/.bin/prisma || (echo "Prisma not installed!" && exit 1)'
+ExecStart=/bin/bash -c 'cd /srv/weltenwind/backend && /usr/bin/npx prisma studio --port 5555 --browser none --hostname 0.0.0.0'
 Restart=always
 RestartSec=10
 StandardOutput=append:/var/log/weltenwind/studio.log

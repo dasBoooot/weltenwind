@@ -3,7 +3,8 @@
 # Setup script für Weltenwind systemd Services
 # Dieses Script muss als root oder mit sudo ausgeführt werden
 
-set -e  # Exit on error
+# Nicht bei jedem Fehler abbrechen, damit das Script robuster ist
+set +e
 
 echo "=== Weltenwind Services Setup ==="
 echo
@@ -30,18 +31,29 @@ else
 fi
 
 echo
-echo "2. Erstelle Log-Verzeichnis..."
+echo "2. Erstelle Verzeichnisse..."
+# Log-Verzeichnis
 mkdir -p $LOG_DIR
 chown $SERVICE_USER:$SERVICE_GROUP $LOG_DIR
 chmod 755 $LOG_DIR
-echo "   $LOG_DIR erstellt"
+echo "   Log-Verzeichnis: $LOG_DIR erstellt"
+
+# Home-Verzeichnis für weltenwind User (für Prisma Studio)
+mkdir -p /var/lib/weltenwind
+chown $SERVICE_USER:$SERVICE_GROUP /var/lib/weltenwind
+chmod 755 /var/lib/weltenwind
+echo "   Home-Verzeichnis: /var/lib/weltenwind erstellt"
 
 echo
 echo "3. Setze Berechtigungen für Backend-Verzeichnis..."
 chown -R $SERVICE_USER:$SERVICE_GROUP $BACKEND_DIR
-# Wichtig: node_modules sollte auch dem Service-User gehören
-chown -R $SERVICE_USER:$SERVICE_GROUP /srv/weltenwind/node_modules
-echo "   Berechtigungen gesetzt"
+# Wichtig: node_modules sollte auch dem Service-User gehören (falls vorhanden)
+if [ -d "$BACKEND_DIR/node_modules" ]; then
+    chown -R $SERVICE_USER:$SERVICE_GROUP $BACKEND_DIR/node_modules
+    echo "   Backend und node_modules Berechtigungen gesetzt"
+else
+    echo "   Backend Berechtigungen gesetzt (node_modules nicht gefunden)"
+fi
 
 echo
 echo "4. Kopiere Service-Dateien..."

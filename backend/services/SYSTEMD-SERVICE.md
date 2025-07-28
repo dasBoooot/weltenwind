@@ -110,6 +110,20 @@ Nach dem Start sind die Services erreichbar unter:
 - Swagger Docs: http://192.168.2.168:3001
 - Prisma Studio: http://192.168.2.168:5555
 
+## Firewall-Konfiguration
+
+Falls die Services von außen erreichbar sein sollen:
+
+```bash
+# Prüfe Firewall-Status
+sudo ufw status
+
+# Öffne die benötigten Ports
+sudo ufw allow 3000  # Backend API
+sudo ufw allow 3001  # Swagger Docs
+sudo ufw allow 5555  # Prisma Studio
+```
+
 ## Troubleshooting
 
 ### Service startet nicht

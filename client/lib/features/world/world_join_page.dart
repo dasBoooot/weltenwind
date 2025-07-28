@@ -6,6 +6,8 @@ import '../../core/services/world_service.dart';
 import '../../core/services/auth_service.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
+import '../../shared/widgets/user_info_widget.dart';
+import '../../shared/widgets/navigation_widget.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -19,14 +21,20 @@ class WorldJoinPage extends StatefulWidget {
   State<WorldJoinPage> createState() => _WorldJoinPageState();
 }
 
-class _WorldJoinPageState extends State<WorldJoinPage> {
+class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProviderStateMixin {
   // DI-ready: ServiceLocator verwenden
   late final WorldService _worldService;
   late final AuthService _authService;
   
+  // Tab Controller
+  late TabController _tabController;
+  
   bool _isLoading = true;
   bool _isJoining = false;
+  bool _isPreRegistering = false;
   bool _isAuthenticated = false;
+  bool _isJoined = false;
+  bool _isPreRegistered = false;
   World? _world;
   String? _errorMessage;
   String? _joinError;
@@ -35,9 +43,18 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
   void initState() {
     super.initState();
     
+    // Tab Controller initialisieren
+    _tabController = TabController(length: 3, vsync: this);
+    
     // DI-ready: ServiceLocator verwenden mit robuster Fehlerbehandlung
     _initializeServices();
     _loadWorldData();
+  }
+  
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   void _initializeServices() {
@@ -94,8 +111,26 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
       }
 
       final world = await _worldService.getWorld(worldId);
+      
+      // Prüfe ob der User bereits beigetreten oder vorregistriert ist
+      bool isJoined = false;
+      bool isPreRegistered = false;
+      
+      if (_authService.currentUser != null) {
+        try {
+          isJoined = await _worldService.isPlayerInWorld(worldId);
+          isPreRegistered = await _worldService.isPreRegisteredForWorld(worldId);
+        } catch (e) {
+          if (kDebugMode) {
+            print('[WorldJoinPage] Status check error: $e');
+          }
+        }
+      }
+      
       setState(() {
         _world = world;
+        _isJoined = isJoined;
+        _isPreRegistered = isPreRegistered;
         _isLoading = false;
       });
 
@@ -124,6 +159,10 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
       final success = await _worldService.joinWorld(worldId);
       
       if (success) {
+        setState(() {
+          _isJoined = true;
+        });
+        
         if (mounted) {
           // Erfolgsmeldung anzeigen
           ScaffoldMessenger.of(context).showSnackBar(
@@ -133,14 +172,6 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
               duration: const Duration(seconds: 2),
             ),
           );
-          
-          // Kurze Verzögerung für bessere UX
-          await Future.delayed(const Duration(milliseconds: 500));
-          
-          if (mounted) {
-                      // Zur Welt-Dashboard weiterleiten
-          context.goNamed('world-dashboard', pathParameters: {'id': widget.worldId});
-          }
         }
       } else {
         setState(() {
@@ -170,6 +201,154 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
         });
       }
     }
+  }
+  
+  Future<void> _preRegisterWorld() async {
+    if (_world == null) return;
+
+    setState(() {
+      _isPreRegistering = true;
+      _joinError = null;
+    });
+
+    try {
+      final success = await _worldService.preRegisterWorldAuthenticated(_world!.id);
+      
+      if (success) {
+        setState(() {
+          _isPreRegistered = true;
+        });
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erfolgreich für ${_world!.name} vorregistriert!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        setState(() {
+          _joinError = 'Fehler bei der Vorregistrierung';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _joinError = e.toString().replaceAll('Exception: ', '');
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isPreRegistering = false;
+        });
+      }
+    }
+  }
+  
+  Future<void> _cancelPreRegistration() async {
+    if (_world == null) return;
+
+    setState(() {
+      _isPreRegistering = true;
+      _joinError = null;
+    });
+
+    try {
+      final success = await _worldService.cancelPreRegistrationAuthenticated(_world!.id);
+      if (success) {
+        setState(() {
+          _isPreRegistered = false;
+        });
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Vorregistrierung für ${_world!.name} zurückgezogen.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      } else {
+        setState(() {
+          _joinError = 'Fehler beim Zurückziehen der Vorregistrierung';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _joinError = e.toString().replaceAll('Exception: ', '');
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isPreRegistering = false;
+        });
+      }
+    }
+  }
+  
+  Future<void> _leaveWorld() async {
+    if (_world == null) return;
+    
+    // Bestätigungsdialog anzeigen
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Welt verlassen?'),
+        content: Text('Möchtest du die Welt "${_world!.name}" wirklich verlassen?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Abbrechen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('Verlassen'),
+          ),
+        ],
+      ),
+    );
+    
+    if (confirmed != true) return;
+
+    setState(() {
+      _isJoining = true;
+      _joinError = null;
+    });
+
+    try {
+      await _worldService.leaveWorld(_world!.id);
+      setState(() {
+        _isJoined = false;
+      });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Du hast ${_world!.name} verlassen.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _joinError = e.toString().replaceAll('Exception: ', '');
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isJoining = false;
+        });
+      }
+    }
+  }
+  
+  void _playWorld() {
+    if (_world == null) return;
+    // Navigate directly to world dashboard for playing
+    context.goNamed('world-dashboard', pathParameters: {'id': _world!.id.toString()});
   }
 
   // Welt-Status bestimmen
@@ -214,28 +393,37 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Welt beitreten'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.goNamed('world-list'),
-        ),
-      ),
       body: BackgroundWidget(
-        child: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-                ),
-              )
-            : _errorMessage != null
-                ? _buildErrorState()
-                : _world == null
-                    ? _buildNotFoundState()
-                    : _buildWorldContent(),
+        child: Stack(
+          children: [
+            // Main content
+            SafeArea(
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                      ),
+                    )
+                  : _errorMessage != null
+                      ? _buildErrorState()
+                      : _world == null
+                          ? _buildNotFoundState()
+                          : _buildWorldContent(),
+            ),
+            
+            // User info widget (only show when authenticated)
+            if (_isAuthenticated)
+              const UserInfoWidget(),
+            
+            // Navigation widget (only show when authenticated)
+            if (_isAuthenticated)
+              NavigationWidget(
+                currentRoute: 'world-join',
+                routeParams: {'id': widget.worldId},
+                isJoinedWorld: _isJoined,
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -417,238 +605,199 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
   }
 
   Widget _buildWorldContent() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 800),
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 900),
+        margin: const EdgeInsets.all(24),
+        child: Card(
+          elevation: 16,
+          color: const Color(0xFF1A1A1A),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: BorderSide(
+              color: AppTheme.primaryColor.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Welt-Header
-              Card(
-                elevation: 12,
-                color: const Color(0xFF1A1A1A), // Dunkle Karte
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  side: BorderSide(
-                    color: AppTheme.primaryColor.withOpacity(0.3),
-                    width: 1,
+              // Header mit Welt-Name und Status
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppTheme.primaryColor.withOpacity(0.1),
+                      AppTheme.primaryColor.withOpacity(0.05),
+                    ],
                   ),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        const Color(0xFF1A1A1A),
-                        const Color(0xFF2A2A2A),
-                      ],
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    // Welt-Name und Status
+                    Row(
                       children: [
-                        // Welt-Name und Status
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
                                 _world?.name ?? 'Unbekannte Welt',
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: _getWorldStatusColor().withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: _getWorldStatusColor().withOpacity(0.5)),
-                              ),
-                              child: Text(
-                                _getWorldStatusText(),
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: _getWorldStatusColor(),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        // Welt-Start- und Enddatum
-                        Text(
-                          'Start: ${_world?.startsAt.toString().split(' ')[0] ?? 'Unbekannt'}',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.grey[300],
-                          ),
-                        ),
-                        if (_world?.endsAt != null) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            'Ende: ${_world?.endsAt.toString().split(' ')[0] ?? 'Unbekannt'}',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Colors.grey[300],
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 16),
-                        
-                        // Welt-Info-Box
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2D2D2D),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                              const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  Icon(
-                                    Icons.info_outline,
-                                    color: AppTheme.primaryColor,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
+                                  Icon(Icons.calendar_today, size: 16, color: Colors.grey[400]),
+                                  const SizedBox(width: 4),
                                   Text(
-                                    'Welt-Informationen',
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                      color: AppTheme.primaryColor,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                    'Start: ${_world?.startsAt.toString().split(' ')[0] ?? 'Unbekannt'}',
+                                    style: TextStyle(color: Colors.grey[400], fontSize: 14),
                                   ),
+                                  if (_world?.endsAt != null) ...[
+                                    const SizedBox(width: 16),
+                                    Icon(Icons.event, size: 16, color: Colors.grey[400]),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Ende: ${_world?.endsAt.toString().split(' ')[0] ?? 'Unbekannt'}',
+                                      style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                                    ),
+                                  ],
                                 ],
                               ),
-                              const SizedBox(height: 12),
-                              _buildInfoRow('ID', _world?.id.toString() ?? 'Unbekannt'),
-                              _buildInfoRow('Erstellt', _world?.createdAt.toString().split(' ')[0] ?? 'Unbekannt'),
-                              _buildInfoRow('Start', _world?.startsAt.toString().split(' ')[0] ?? 'Unbekannt'),
-                              if (_world?.endsAt != null)
-                                _buildInfoRow('Ende', _world?.endsAt.toString().split(' ')[0] ?? 'Unbekannt'),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _getWorldStatusColor().withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: _getWorldStatusColor().withOpacity(0.5)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                _getWorldStatusIcon(),
+                                color: _getWorldStatusColor(),
+                                size: 16,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                _getWorldStatusText(),
+                                style: TextStyle(
+                                  color: _getWorldStatusColor(),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
               ),
               
-              const SizedBox(height: 24),
-              
-              // Join-Button oder Status-Meldung
-              if (_canJoinWorld()) ...[
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isJoining ? null : _joinWorld,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: AppTheme.primaryColor,
-                      foregroundColor: Colors.white,
+              // Tab Bar
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2A2A2A),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: AppTheme.primaryColor.withOpacity(0.3),
+                      width: 1,
                     ),
-                    child: _isJoining
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : const Text(
-                            'Jetzt beitreten',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
                   ),
                 ),
-              ] else ...[
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.withOpacity(0.3)),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.lock_outline,
-                        color: Colors.grey.shade600,
-                        size: 32,
-                      ),
-                      const SizedBox(height: 8),
-                                       Text(
-                        _world?.status == WorldStatus.closed
-                            ? 'Diese Welt ist derzeit geschlossen'
-                            : _world?.status == WorldStatus.archived
-                                ? 'Diese Welt ist archiviert'
-                                : 'Beitritt nicht möglich',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey.shade700,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+                child: TabBar(
+                  controller: _tabController,
+                  indicatorColor: AppTheme.primaryColor,
+                  indicatorWeight: 3,
+                  labelColor: AppTheme.primaryColor,
+                  unselectedLabelColor: Colors.grey[400],
+                  labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+                  tabs: const [
+                    Tab(
+                      icon: Icon(Icons.description_outlined),
+                      text: 'Beschreibung',
+                    ),
+                    Tab(
+                      icon: Icon(Icons.rule_outlined),
+                      text: 'Spielregeln',
+                    ),
+                    Tab(
+                      icon: Icon(Icons.analytics_outlined),
+                      text: 'Statistiken',
+                    ),
+                  ],
                 ),
-              ],
+              ),
               
-              // Join-Fehler anzeigen
-              if (_joinError != null) ...[
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.red.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        color: Colors.red.shade600,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          _joinError ?? 'Unbekannter Fehler',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.red.shade700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              
-              const SizedBox(height: 24),
-              
-              // Zurück-Button
+              // Tab Content
               SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: () => context.goNamed('world-list'),
-                  child: const Text('Zurück zu den Welten'),
+                height: 300, // Feste Höhe für Tab-Content
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildDescriptionTab(),
+                    _buildRulesTab(),
+                    _buildStatisticsTab(),
+                  ],
+                ),
+              ),
+              
+              // Action Buttons
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1A1A),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    _buildActionButtons(),
+                    
+                    // Join-Fehler anzeigen
+                    if (_joinError != null) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.red.withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.error_outline, color: Colors.red[400], size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _joinError!,
+                                style: TextStyle(color: Colors.red[400], fontSize: 14),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],
@@ -656,6 +805,237 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
         ),
       ),
     );
+  }
+  
+  Widget _buildDescriptionTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.info_outline, color: AppTheme.primaryColor, size: 24),
+              const SizedBox(width: 8),
+              Text(
+                'Über diese Welt',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Dies ist eine spannende Welt voller Abenteuer und Herausforderungen. '
+            'Erkunde unbekannte Gebiete, schließe Allianzen und werde zur Legende!',
+            style: TextStyle(color: Colors.grey[300], height: 1.5),
+          ),
+          const SizedBox(height: 24),
+          _buildInfoCard('Kategorie', 'Standard', Icons.category),
+          _buildInfoCard('Welt-ID', '#${_world?.id ?? 'N/A'}', Icons.tag),
+          _buildInfoCard('Erstellt', _world?.createdAt.toString().split(' ')[0] ?? 'Unbekannt', Icons.access_time),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildRulesTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.rule, color: AppTheme.primaryColor, size: 24),
+              const SizedBox(width: 8),
+              Text(
+                'Spielregeln',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildRuleItem('1.', 'Respektiere andere Spieler'),
+          _buildRuleItem('2.', 'Keine Cheats oder Exploits verwenden'),
+          _buildRuleItem('3.', 'Faire Spielweise ist Pflicht'),
+          _buildRuleItem('4.', 'Kommunikation nur im Spielchat'),
+          _buildRuleItem('5.', 'Entscheidungen der Spielleitung sind final'),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildStatisticsTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.bar_chart, color: AppTheme.primaryColor, size: 24),
+              const SizedBox(width: 8),
+              Text(
+                'Welt-Statistiken',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(child: _buildStatCard('Spieler', '0 / 50', Icons.people)),
+              const SizedBox(width: 16),
+              Expanded(child: _buildStatCard('Dauer', '30 Tage', Icons.timer)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: _buildStatCard('Status', _getWorldStatusText(), Icons.circle)),
+              const SizedBox(width: 16),
+              Expanded(child: _buildStatCard('Typ', 'Standard', Icons.public)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildInfoCard(String label, String value, IconData icon) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2A2A2A),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[800]!),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: AppTheme.primaryColor, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildRuleItem(String number, String rule) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2A2A2A),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey[800]!),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                number,
+                style: TextStyle(
+                  color: AppTheme.primaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              rule,
+              style: TextStyle(color: Colors.grey[300], height: 1.3),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildStatCard(String label, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2A2A2A),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: AppTheme.primaryColor, size: 32),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  IconData _getWorldStatusIcon() {
+    switch (_world?.status) {
+      case 'upcoming':
+        return Icons.schedule;
+      case 'open':
+        return Icons.lock_open;
+      case 'running':
+        return Icons.play_circle_outline;
+      case 'closed':
+        return Icons.lock;
+      default:
+        return Icons.help_outline;
+    }
   }
 
   Widget _buildInfoRow(String label, String value) {
@@ -684,6 +1064,163 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
           ),
         ],
       ),
+    );
+  }
+  
+  Widget _buildActionButtons() {
+    if (_world == null) return const SizedBox.shrink();
+    
+    final List<Widget> buttons = [];
+    
+    // Status-basierte Button-Logik (wie in world_list_page)
+    switch (_world!.status) {
+      case WorldStatus.upcoming:
+        // Vorregistrierung oder Zurückziehen
+        if (_isPreRegistered) {
+          buttons.add(
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: (_isPreRegistering || _isJoining) ? null : _cancelPreRegistration,
+                icon: const Icon(Icons.cancel),
+                label: Text(_isPreRegistering ? 'Wird zurückgezogen...' : 'Vorregistrierung zurückziehen'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.red[600],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          );
+        } else {
+          buttons.add(
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: (_isPreRegistering || _isJoining) ? null : _preRegisterWorld,
+                icon: const Icon(Icons.how_to_reg),
+                label: Text(_isPreRegistering ? 'Wird registriert...' : 'Vorregistrieren'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.orange[600],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+        break;
+        
+      case WorldStatus.open:
+      case WorldStatus.running:
+        // Beitreten, Spielen oder Verlassen
+        if (_isJoined) {
+          // Spielen Button
+          buttons.add(
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _playWorld,
+                icon: const Icon(Icons.play_circle_filled),
+                label: const Text('Spielen'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.green[600],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          );
+          
+          buttons.add(const SizedBox(height: 12));
+          
+          // Verlassen Button
+          buttons.add(
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isJoining ? null : _leaveWorld,
+                icon: const Icon(Icons.exit_to_app),
+                label: Text(_isJoining ? 'Wird verlassen...' : 'Welt verlassen'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.red[600],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          );
+        } else {
+          // Beitreten Button
+          buttons.add(
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isJoining ? null : _joinWorld,
+                icon: const Icon(Icons.play_arrow),
+                label: Text(_isJoining ? 'Wird beigetreten...' : 'Jetzt beitreten'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+        break;
+        
+      case WorldStatus.closed:
+      case WorldStatus.archived:
+        // Keine Aktionen möglich
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.withOpacity(0.3)),
+          ),
+          child: Column(
+            children: [
+              Icon(
+                Icons.lock_outline,
+                color: Colors.grey.shade600,
+                size: 32,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _world!.status == WorldStatus.closed
+                    ? 'Diese Welt ist derzeit geschlossen'
+                    : 'Diese Welt ist archiviert',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey.shade700,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        );
+    }
+    
+    return Column(
+      children: buttons,
     );
   }
 } 

@@ -157,6 +157,10 @@ class AuthService {
         // User-Objekt erstellen
         _currentUser = User.fromJson(userData);
         isAuthenticated.value = true; // Reaktiven Status setzen
+        
+        // Fetch complete user data with roles
+        await fetchCurrentUser();
+        
         return _currentUser;
       } else if (response.statusCode == 401) {
         throw Exception('Benutzername oder Passwort falsch');
@@ -316,6 +320,31 @@ class AuthService {
       await logout();
     }
     return tokenValid;
+  }
+
+  // Fetch current user data with roles from server
+  Future<User?> fetchCurrentUser() async {
+    try {
+      final response = await _apiService.get('/auth/me');
+      
+      if (response.statusCode == 200) {
+        final userData = jsonDecode(response.body);
+        _currentUser = User.fromJson(userData);
+        await TokenStorage.saveUserData(jsonEncode(userData));
+        return _currentUser;
+      } else if (response.statusCode == 401) {
+        // Token invalid, clear auth
+        await logout();
+        return null;
+      } else {
+        throw Exception('Failed to fetch user data');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('[AuthService] Error fetching current user: $e');
+      }
+      return null;
+    }
   }
 
   // Konsistente Token-Speicherung und API-Service-Update
