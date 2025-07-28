@@ -1,0 +1,7 @@
+[Unit]
+Description=Weltenwind Application Services
+Documentation=https://github.com/weltenwind/backend
+Wants=weltenwind-backend.service weltenwind-docs.service weltenwind-studio.service
+
+[Install]
+WantedBy=multi-user.target 

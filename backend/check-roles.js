@@ -1,13 +1,13 @@
 // Einfaches Script zum Prüfen der Rollen-Konfiguration
 // Falls node-fetch nicht installiert ist, nutze: npm install node-fetch@2
-// Oder öffne im Browser: http://localhost:4000/api/auth/roles-check
+// Oder öffne im Browser: http://192.168.2.168:3000/api/auth/roles-check
 
 let fetch;
 try {
   fetch = require('node-fetch');
 } catch (e) {
   console.error('node-fetch nicht installiert. Bitte ausführen: npm install node-fetch@2');
-  console.log('Oder öffne im Browser: http://localhost:4000/api/auth/roles-check');
+  console.log('Oder öffne im Browser: http://192.168.2.168:3000/api/auth/roles-check');
   process.exit(1);
 }
 
@@ -15,7 +15,7 @@ async function checkRoles() {
   try {
     console.log('Prüfe Rollen-Konfiguration...\n');
     
-    const response = await fetch('http://localhost:4000/api/auth/roles-check');
+    const response = await fetch('http://192.168.2.168:3000/api/auth/roles-check');
     const data = await response.json();
     
     console.log(`Status: ${data.status}`);
@@ -44,7 +44,8 @@ async function checkRoles() {
     
   } catch (error) {
     console.error('Fehler beim Prüfen:', error.message);
-    console.log('\nStelle sicher, dass der Backend-Server läuft (Port 4000)');
+    console.log('\nStelle sicher, dass der Backend-Server läuft (Port 3000)');
+    console.log('Und dass die Änderungen deployed wurden (Server neu gestartet)');
   }
 }
 

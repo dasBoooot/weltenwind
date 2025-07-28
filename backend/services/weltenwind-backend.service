@@ -1,0 +1,27 @@
+[Unit]
+Description=Weltenwind Backend API Service
+Documentation=https://github.com/weltenwind/backend
+After=network.target postgresql.service
+PartOf=weltenwind.target
+
+[Service]
+Type=simple
+User=weltenwind
+Group=weltenwind
+WorkingDirectory=/srv/weltenwind/backend
+Environment="NODE_ENV=production"
+Environment="PORT=3000"
+EnvironmentFile=/srv/weltenwind/backend/.env
+ExecStart=/usr/bin/npm run dev
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/weltenwind/backend.log
+StandardError=append:/var/log/weltenwind/backend.error.log
+
+# Security Settings
+NoNewPrivileges=true
+PrivateTmp=true
+ReadWritePaths=/var/log/weltenwind /srv/weltenwind/backend
+
+[Install]
+WantedBy=weltenwind.target multi-user.target 
