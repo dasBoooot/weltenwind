@@ -11,6 +11,7 @@ import '../../routing/app_router.dart';
 // Unused import removed
 import '../../shared/widgets/invite_dialog.dart';
 import './widgets/world_card.dart';
+import './widgets/world_filters.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -449,127 +450,7 @@ class _WorldListPageState extends State<WorldListPage> {
     context.goNamed('world-join', pathParameters: {'id': world.id.toString()});
   }
 
-  Widget _buildFilterChips() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: WorldCategory.values.map((category) {
-          final isSelected = _categoryFilter == category;
-          String label;
-          IconData icon;
-          
-          switch (category) {
-            case WorldCategory.classic:
-              label = 'Classic';
-              icon = Icons.list;
-              break;
-            case WorldCategory.pvp:
-              label = 'PvP';
-              icon = Icons.schedule;
-              break;
-            case WorldCategory.event:
-              label = 'Event';
-              icon = Icons.lock_open;
-              break;
-            case WorldCategory.experimental:
-              label = 'Experimental';
-              icon = Icons.play_arrow;
-              break;
-          }
-          
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Container(
-              height: 40, // Konsistente Höhe
-              child: FilterChip(
-                selected: isSelected,
-                label: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(icon, size: 16, color: isSelected ? Colors.white : Colors.grey[300]),
-                    const SizedBox(width: 4),
-                    Text(label, style: TextStyle(color: isSelected ? Colors.white : Colors.grey[300])),
-                  ],
-                ),
-                onSelected: (selected) {
-                  setState(() {
-                    _categoryFilter = category;
-                  });
-                  _applyFiltersAndSorting();
-                },
-                backgroundColor: const Color(0xFF2D2D2D),
-                selectedColor: AppTheme.primaryColor.withOpacity(0.3),
-                checkmarkColor: Colors.white,
-                side: BorderSide(color: isSelected ? AppTheme.primaryColor : Colors.grey[600]!),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildSortDropdown() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          Text('Sortieren nach: ', style: TextStyle(color: Colors.grey[300])),
-          const SizedBox(width: 8),
-          Container(
-            height: 40, // Konsistente Höhe
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2D2D2D),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[600]!),
-            ),
-            child: DropdownButton<String>(
-              value: _sortBy,
-              dropdownColor: const Color(0xFF2D2D2D),
-              style: TextStyle(color: Colors.white),
-              underline: Container(),
-              items: const [
-                DropdownMenuItem(value: 'startDate', child: Text('Startdatum')),
-                DropdownMenuItem(value: 'name', child: Text('Name')),
-                DropdownMenuItem(value: 'status', child: Text('Status')),
-                DropdownMenuItem(value: 'playerCount', child: Text('Spieleranzahl')),
-              ],
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() {
-                    _sortBy = value;
-                  });
-                  _applyFiltersAndSorting();
-                }
-              },
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            height: 40, // Konsistente Höhe
-            decoration: BoxDecoration(
-              color: const Color(0xFF2D2D2D),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[600]!),
-            ),
-            child: IconButton(
-              icon: Icon(_sortAscending ? Icons.arrow_upward : Icons.arrow_downward, color: Colors.grey[300]),
-              onPressed: () {
-                setState(() {
-                  _sortAscending = !_sortAscending;
-                });
-                _applyFiltersAndSorting();
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-// _buildWorldCard and _buildActionButtons methods removed - now using WorldCard widget
+// Filter and sort methods removed - now using WorldFilters widget
 
   @override
   Widget build(BuildContext context) {
@@ -653,9 +534,45 @@ class _WorldListPageState extends State<WorldListPage> {
                               
                               // Filter und Sortierung
                               if (!_isLoading && _worlds.isNotEmpty) ...[
-                                _buildFilterChips(),
-                                const SizedBox(height: 16),
-                                _buildSortDropdown(),
+                                WorldFilters(
+                                  statusFilter: _statusFilter,
+                                  categoryFilter: _categoryFilter,
+                                  sortBy: _sortBy,
+                                  sortAscending: _sortAscending,
+                                  onStatusChanged: (status) {
+                                    setState(() {
+                                      _statusFilter = status;
+                                    });
+                                    _applyFiltersAndSorting();
+                                  },
+                                  onCategoryChanged: (category) {
+                                    setState(() {
+                                      _categoryFilter = category;
+                                    });
+                                    _applyFiltersAndSorting();
+                                  },
+                                  onSortByChanged: (sortBy) {
+                                    setState(() {
+                                      _sortBy = sortBy;
+                                    });
+                                    _applyFiltersAndSorting();
+                                  },
+                                  onSortOrderChanged: () {
+                                    setState(() {
+                                      _sortAscending = !_sortAscending;
+                                    });
+                                    _applyFiltersAndSorting();
+                                  },
+                                  onResetFilters: () {
+                                    setState(() {
+                                      _statusFilter = null;
+                                      _categoryFilter = null;
+                                      _sortBy = 'startDate';
+                                      _sortAscending = true;
+                                    });
+                                    _applyFiltersAndSorting();
+                                  },
+                                ),
                                 const SizedBox(height: 16),
                               ],
                               
