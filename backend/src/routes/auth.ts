@@ -191,13 +191,28 @@ router.post('/register', async (req: express.Request<{}, {}, { username: string;
         }
       });
 
+      // Prüfe ob Rollen existieren
+      const roleCount = await tx.role.count();
+      console.log(`Anzahl Rollen in DB: ${roleCount}`);
+      
+      if (roleCount === 0) {
+        console.error('FEHLER: Keine Rollen in der Datenbank gefunden!');
+        console.error('Die Datenbank-Seeds wurden nicht ausgeführt.');
+        console.error('Führe folgende Befehle in der VM aus:');
+        console.error('  cd /pfad/zum/backend');
+        console.error('  npm run seed');
+        throw new Error('Keine Rollen in Datenbank. Seeds wurden nicht ausgeführt!');
+      }
+
       // Standard-User-Rolle finden
       const userRole = await tx.role.findUnique({
         where: { name: 'user' }
       });
 
       if (!userRole) {
+        const allRoles = await tx.role.findMany({ select: { name: true } });
         console.error('FEHLER: Standard-User-Rolle "user" nicht gefunden!');
+        console.error('Verfügbare Rollen:', allRoles.map(r => r.name).join(', '));
         console.error('Bitte führe "npm run seed" im backend-Ordner aus, um die Rollen zu erstellen.');
         throw new Error('Standard-User-Rolle nicht gefunden. Bitte Seeds ausführen: npm run seed');
       }
@@ -244,17 +259,49 @@ router.post('/register', async (req: express.Request<{}, {}, { username: string;
 
     console.log(`User ${result.username} created with ${userWithRoles?.roles.length || 0} roles`);
 
+    // Debug-Info für den Client
+    const debugInfo = {
+      rolesCount: userWithRoles?.roles.length || 0,
+      roleDetails: userWithRoles?.roles.map(r => ({
+        roleId: r.roleId,
+        roleName: r.role.name,
+        scopeType: r.scopeType,
+        scopeObjectId: r.scopeObjectId
+      }))
+    };
+
     return res.status(201).json({
       user: {
         id: result.id,
         username: result.username,
-        email: result.email
+        email: result.email,
+        // Temporär für Debugging
+        _debug: debugInfo
       }
     });
   } catch (error) {
     console.error('Registration error:', error);
     console.error('Error details:', error instanceof Error ? error.stack : 'Unknown error');
-    return res.status(500).json({ error: 'Fehler bei der Registrierung' });
+    
+    // Detailliertere Fehlermeldung für den Client
+    let errorMessage = 'Fehler bei der Registrierung';
+    let errorDetails = {};
+    
+    if (error instanceof Error) {
+      if (error.message.includes('Standard-User-Rolle nicht gefunden')) {
+        errorMessage = 'Datenbank nicht korrekt initialisiert. Bitte Administrator kontaktieren.';
+        errorDetails = {
+          hint: 'Seeds müssen ausgeführt werden: npm run seed',
+          missingRole: 'user'
+        };
+      }
+      errorDetails = { ...errorDetails, message: error.message };
+    }
+    
+    return res.status(500).json({ 
+      error: errorMessage,
+      details: errorDetails 
+    });
   }
 });
 
@@ -357,6 +404,43 @@ router.post('/refresh', async (req, res) => {
     });
   } catch (error) {
     return res.status(401).json({ error: 'Ungültiges Refresh-Token' });
+  }
+});
+
+// GET /api/auth/roles-check (Debug-Endpoint)
+router.get('/roles-check', async (req, res) => {
+  try {
+    const roles = await prisma.role.findMany({
+      include: {
+        permissions: {
+          include: {
+            permission: true
+          }
+        }
+      }
+    });
+    
+    const userCount = await prisma.user.count();
+    const userRoleCount = await prisma.userRole.count();
+    
+    res.json({
+      status: 'ok',
+      roleCount: roles.length,
+      roles: roles.map(r => ({
+        id: r.id,
+        name: r.name,
+        permissionCount: r.permissions.length
+      })),
+      userCount,
+      userRoleCount,
+      seedsExecuted: roles.length > 0
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Fehler beim Prüfen der Rollen',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 

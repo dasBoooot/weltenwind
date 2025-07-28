@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "sessions" ADD COLUMN     "last_accessed_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

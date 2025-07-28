@@ -180,13 +180,39 @@ class AuthService {
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
         final userData = data['user'];
+        
+        // Debug-Logging für Rollenzuweisung
+        if (userData['_debug'] != null) {
+          print('=== REGISTRIERUNG DEBUG INFO ===');
+          print('User ID: ${userData['id']}');
+          print('Username: ${userData['username']}');
+          print('Anzahl Rollen: ${userData['_debug']['rolesCount']}');
+          if (userData['_debug']['roleDetails'] != null) {
+            print('Rollen-Details:');
+            for (var role in userData['_debug']['roleDetails']) {
+              print('  - ${role['roleName']} (${role['scopeType']}:${role['scopeObjectId']})');
+            }
+          }
+          print('================================');
+        }
+        
         _currentUser = User.fromJson(userData);
         return _currentUser;
       } else if (response.statusCode == 409) {
         throw Exception('Benutzername oder E-Mail bereits vorhanden');
       } else {
         final errorData = jsonDecode(response.body);
-        throw Exception(errorData['message'] ?? 'Registrierung fehlgeschlagen');
+        print('Registration error response: ${response.body}');
+        
+        // Detailliertere Fehlerbehandlung
+        if (errorData['details'] != null) {
+          print('Error details: ${errorData['details']}');
+          if (errorData['details']['hint'] != null) {
+            throw Exception('${errorData['error']} - ${errorData['details']['hint']}');
+          }
+        }
+        
+        throw Exception(errorData['error'] ?? errorData['message'] ?? 'Registrierung fehlgeschlagen');
       }
     } catch (e) {
       rethrow;
