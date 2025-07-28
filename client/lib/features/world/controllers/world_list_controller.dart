@@ -207,6 +207,39 @@ class WorldListController extends ChangeNotifier {
       rethrow;
     }
   }
+  
+  Future<void> cancelPreRegistration(World world) async {
+    try {
+      // TODO: Implement cancel pre-registration API call
+      await Future.delayed(const Duration(milliseconds: 500)); // Simulated API call
+      
+      _preRegisteredWorlds[world.id] = false;
+      notifyListeners();
+    } catch (e) {
+      _error = 'Fehler beim Zurückziehen der Vorregistrierung: $e';
+      notifyListeners();
+      rethrow;
+    }
+  }
+  
+  Future<void> leaveWorld(World world) async {
+    try {
+      await _worldService.leaveWorld(world.id);
+      _joinedWorlds[world.id] = false;
+      
+      // Update player count
+      final currentCount = _playerCounts[world.id] ?? 0;
+      if (currentCount > 0) {
+        _playerCounts[world.id] = currentCount - 1;
+      }
+      
+      notifyListeners();
+    } catch (e) {
+      _error = 'Fehler beim Verlassen der Welt: $e';
+      notifyListeners();
+      rethrow;
+    }
+  }
 
   Future<bool> createInvite(World world, String email) async {
     try {

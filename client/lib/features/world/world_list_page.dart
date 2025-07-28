@@ -404,6 +404,104 @@ class _WorldListPageState extends State<WorldListPage> {
     }
   }
 
+  Future<void> _leaveWorld(World world) async {
+    // Zeige Bestätigungsdialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Welt verlassen?'),
+        content: Text('Möchtest du die Welt "${world.name}" wirklich verlassen?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Abbrechen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('Verlassen'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      final success = await _worldService.leaveWorld(world.id);
+      if (success && mounted) {
+        setState(() {
+          _joinedWorlds[world.id] = false;
+          // Update player count
+          final currentCount = _playerCounts[world.id] ?? 0;
+          if (currentCount > 0) {
+            _playerCounts[world.id] = currentCount - 1;
+          }
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Du hast ${world.name} verlassen.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        // Prüfe ob es ein Token-Problem ist
+        if (e.toString().contains('401') || e.toString().contains('Token fehlt')) {
+          await _authService.logout();
+          // Cache invalidieren nach Logout
+          AppRouter.invalidateAuthCache();
+          if (mounted) {
+            context.goNamed('login');
+          }
+        } else {
+          final errorMessage = e.toString().replaceAll('Exception: ', '');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: AppTheme.errorColor,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _cancelPreRegistration(World world) async {
+    try {
+      // TODO: Implement cancel pre-registration API call when available
+      // For now, we'll simulate it
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      if (mounted) {
+        setState(() {
+          _preRegisteredWorlds[world.id] = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Vorregistrierung für ${world.name} zurückgezogen.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        final errorMessage = e.toString().replaceAll('Exception: ', '');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _createInvite(World world) async {
     final result = await showDialog<String>(
       context: context,
@@ -666,8 +764,14 @@ class _WorldListPageState extends State<WorldListPage> {
                                     onJoin: world.canJoin && !(_joinedWorlds[world.id] ?? false) 
                                       ? () => _joinWorld(world) 
                                       : null,
+                                    onLeave: (_joinedWorlds[world.id] ?? false)
+                                      ? () => _leaveWorld(world)
+                                      : null,
                                     onPreRegister: world.canPreRegister && !(_preRegisteredWorlds[world.id] ?? false)
                                       ? () => _preRegisterWorld(world)
+                                      : null,
+                                    onCancelPreRegistration: (_preRegisteredWorlds[world.id] ?? false)
+                                      ? () => _cancelPreRegistration(world)
                                       : null,
                                     onInvite: world.canInvite
                                       ? () => _createInvite(world)

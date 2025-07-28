@@ -16,7 +16,9 @@ class WorldCard extends StatelessWidget {
   final bool isPreRegistered;
   final bool isJoined;
   final VoidCallback? onJoin;
+  final VoidCallback? onLeave;
   final VoidCallback? onPreRegister;
+  final VoidCallback? onCancelPreRegistration;
   final VoidCallback? onInvite;
   final VoidCallback? onTap;
 
@@ -28,7 +30,9 @@ class WorldCard extends StatelessWidget {
     this.isPreRegistered = false,
     this.isJoined = false,
     this.onJoin,
+    this.onLeave,
     this.onPreRegister,
+    this.onCancelPreRegistration,
     this.onInvite,
     this.onTap,
   });
@@ -370,86 +374,131 @@ class WorldCard extends StatelessWidget {
   Widget _buildActionButtons() {
     final List<Widget> buttons = [];
     
-    // Join button for open or running worlds
-    if (world.canJoin && !isJoined && onJoin != null) {
-      buttons.add(
-        ElevatedButton.icon(
-          onPressed: onJoin,
-          icon: const Icon(Icons.play_arrow, size: 16),
-          label: const Text('Beitreten'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ),
-      );
+    // Status-basierte Button-Logik
+    switch (world.status) {
+      case WorldStatus.upcoming:
+        // Vorregistrierung oder Zurückziehen
+        if (isPreRegistered) {
+          if (onCancelPreRegistration != null) {
+            buttons.add(_buildButton(
+              onPressed: onCancelPreRegistration,
+              icon: Icons.cancel,
+              label: 'Zurückziehen',
+              color: Colors.red[600],
+            ));
+          }
+        } else {
+          if (onPreRegister != null) {
+            buttons.add(_buildButton(
+              onPressed: onPreRegister,
+              icon: Icons.how_to_reg,
+              label: 'Vorregistrieren',
+              color: Colors.orange[600],
+            ));
+          }
+        }
+        break;
+        
+      case WorldStatus.open:
+      case WorldStatus.running:
+        // Beitreten oder Verlassen
+        if (isJoined) {
+          if (onLeave != null) {
+            buttons.add(_buildButton(
+              onPressed: onLeave,
+              icon: Icons.exit_to_app,
+              label: 'Verlassen',
+              color: Colors.red[600],
+            ));
+          }
+        } else {
+          if (onJoin != null) {
+            buttons.add(_buildButton(
+              onPressed: onJoin,
+              icon: Icons.play_arrow,
+              label: 'Beitreten',
+              color: AppTheme.primaryColor,
+            ));
+          }
+        }
+        break;
+        
+      case WorldStatus.closed:
+      case WorldStatus.archived:
+        // Keine Aktions-Buttons bei geschlossenen/archivierten Welten
+        return _buildStatusBadge();
     }
     
-    // Pre-register button for upcoming worlds
-    if (world.canPreRegister && !isPreRegistered && onPreRegister != null) {
-      buttons.add(
-        ElevatedButton.icon(
-          onPressed: onPreRegister,
-          icon: const Icon(Icons.how_to_reg, size: 16),
-          label: const Text('Vorregistrieren'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange[600],
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ),
-      );
+    // Invite Button für upcoming, open und running
+    if ([WorldStatus.upcoming, WorldStatus.open, WorldStatus.running].contains(world.status) && 
+        onInvite != null) {
+      buttons.add(_buildButton(
+        onPressed: onInvite,
+        icon: Icons.person_add,
+        label: null,
+        color: Colors.purple[600],
+        iconOnly: true,
+        tooltip: 'Spieler einladen',
+      ));
     }
     
-    // Invite button
-    if (world.canInvite && onInvite != null) {
-      buttons.add(
-        ElevatedButton(
-          onPressed: onInvite,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.purple[600],
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: const Icon(Icons.person_add, size: 16),
-        ),
-      );
-    }
-    
-    // If no buttons, show status
+    // Wenn keine Buttons verfügbar sind
     if (buttons.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: const Color(0xFF2D2D2D),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey[600]!),
-        ),
-        child: Text(
-          world.statusText,
-          style: TextStyle(
-            color: Colors.grey[300],
-            fontSize: 12,
-          ),
-        ),
-      );
+      return _buildStatusBadge();
     }
     
-    // Return buttons in a row
     return Wrap(
       spacing: 8,
       runSpacing: 4,
       children: buttons,
     );
+  }
+  
+  Widget _buildButton({
+    required VoidCallback? onPressed,
+    required IconData icon,
+    required String? label,
+    required Color? color,
+    bool iconOnly = false,
+    String? tooltip,
+  }) {
+    if (onPressed == null) return const SizedBox.shrink();
+    
+    final button = iconOnly
+        ? ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: color,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.all(8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Icon(icon, size: 16),
+          )
+        : ElevatedButton.icon(
+            onPressed: onPressed,
+            icon: Icon(icon, size: 16),
+            label: Text(label!),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: color,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          );
+    
+    // Wrap mit Tooltip wenn vorhanden
+    if (tooltip != null) {
+      return Tooltip(
+        message: tooltip,
+        child: button,
+      );
+    }
+    
+    return button;
   }
 } 
