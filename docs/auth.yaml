@@ -362,6 +362,54 @@ components:
         email:
           type: string
           example: user@example.com
+        roles:
+          type: array
+          description: Rollen des Benutzers mit Permissions
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              userId:
+                type: integer
+              roleId:
+                type: integer
+              scopeType:
+                type: string
+                example: global
+              scopeObjectId:
+                type: string
+                example: global
+              condition:
+                type: string
+                nullable: true
+              role:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                    example: user
+                  description:
+                    type: string
+                  permissions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        permission:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            name:
+                              type: string
+                              example: system.view_own
+                            description:
+                              type: string
     Error:
       type: object
       properties:

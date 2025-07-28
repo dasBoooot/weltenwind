@@ -179,7 +179,7 @@ router.post('/register', async (req: express.Request<{}, {}, { username: string;
   // Passwort hashen
   const passwordHash = await bcrypt.hash(password, 10);
 
-  // User anlegen
+  // User anlegen mit Standard-User-Rolle
   const user = await prisma.user.create({
     data: {
       username,
@@ -187,6 +187,22 @@ router.post('/register', async (req: express.Request<{}, {}, { username: string;
       passwordHash,
     }
   });
+
+  // Standard-User-Rolle zuweisen
+  const userRole = await prisma.role.findUnique({
+    where: { name: 'user' }
+  });
+
+  if (userRole) {
+    await prisma.userRole.create({
+      data: {
+        userId: user.id,
+        roleId: userRole.id,
+        scopeType: 'global',
+        scopeObjectId: 'global'
+      }
+    });
+  }
 
   return res.status(201).json({
     user: {
@@ -317,7 +333,20 @@ router.get('/me', authenticate, async (req: AuthenticatedRequest, res) => {
     select: {
       id: true,
       username: true,
-      email: true
+      email: true,
+      roles: {
+        include: {
+          role: {
+            include: {
+              permissions: {
+                include: {
+                  permission: true
+                }
+              }
+            }
+          }
+        }
+      }
     }
   });
   if (!user) {
