@@ -17,6 +17,7 @@ class WorldCard extends StatelessWidget {
   final bool isJoined;
   final VoidCallback? onJoin;
   final VoidCallback? onLeave;
+  final VoidCallback? onPlay;
   final VoidCallback? onPreRegister;
   final VoidCallback? onCancelPreRegistration;
   final VoidCallback? onInvite;
@@ -31,6 +32,7 @@ class WorldCard extends StatelessWidget {
     this.isJoined = false,
     this.onJoin,
     this.onLeave,
+    this.onPlay,
     this.onPreRegister,
     this.onCancelPreRegistration,
     this.onInvite,
@@ -403,6 +405,16 @@ class WorldCard extends StatelessWidget {
       case WorldStatus.running:
         // Beitreten oder Verlassen
         if (isJoined) {
+          // Spielen Button immer zuerst anzeigen wenn verfügbar
+          if (onPlay != null) {
+            buttons.add(_buildButton(
+              onPressed: onPlay,
+              icon: Icons.play_circle_filled,
+              label: 'Spielen',
+              color: Colors.green[600],
+            ));
+          }
+          // Verlassen Button als zweite Option
           if (onLeave != null) {
             buttons.add(_buildButton(
               onPressed: onLeave,

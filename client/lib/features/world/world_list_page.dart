@@ -473,11 +473,9 @@ class _WorldListPageState extends State<WorldListPage> {
 
   Future<void> _cancelPreRegistration(World world) async {
     try {
-      // TODO: Implement cancel pre-registration API call when available
-      // For now, we'll simulate it
-      await Future.delayed(const Duration(milliseconds: 500));
+      final success = await _worldService.cancelPreRegistrationAuthenticated(world.id);
       
-      if (mounted) {
+      if (success && mounted) {
         setState(() {
           _preRegisteredWorlds[world.id] = false;
         });
@@ -491,13 +489,23 @@ class _WorldListPageState extends State<WorldListPage> {
       }
     } catch (e) {
       if (mounted) {
-        final errorMessage = e.toString().replaceAll('Exception: ', '');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        // Prüfe ob es ein Token-Problem ist
+        if (e.toString().contains('401') || e.toString().contains('Token fehlt')) {
+          await _authService.logout();
+          // Cache invalidieren nach Logout
+          AppRouter.invalidateAuthCache();
+          if (mounted) {
+            context.goNamed('login');
+          }
+        } else {
+          final errorMessage = e.toString().replaceAll('Exception: ', '');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: AppTheme.errorColor,
+            ),
+          );
+        }
       }
     }
   }
@@ -546,6 +554,11 @@ class _WorldListPageState extends State<WorldListPage> {
   // Deep-Link zur World-Join-Page
   void _navigateToWorldJoin(World world) {
     context.goNamed('world-join', pathParameters: {'id': world.id.toString()});
+  }
+
+  void _playWorld(World world) {
+    // Navigate directly to world dashboard for playing
+    context.goNamed('world-dashboard', pathParameters: {'id': world.id.toString()});
   }
 
 // Filter and sort methods removed - now using WorldFilters widget
@@ -766,6 +779,10 @@ class _WorldListPageState extends State<WorldListPage> {
                                       : null,
                                     onLeave: (_joinedWorlds[world.id] ?? false)
                                       ? () => _leaveWorld(world)
+                                      : null,
+                                    onPlay: (_joinedWorlds[world.id] ?? false) && 
+                                            (world.status == WorldStatus.open || world.status == WorldStatus.running)
+                                      ? () => _playWorld(world)
                                       : null,
                                     onPreRegister: world.canPreRegister && !(_preRegisteredWorlds[world.id] ?? false)
                                       ? () => _preRegisterWorld(world)

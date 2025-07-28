@@ -210,11 +210,13 @@ class WorldListController extends ChangeNotifier {
   
   Future<void> cancelPreRegistration(World world) async {
     try {
-      // TODO: Implement cancel pre-registration API call
-      await Future.delayed(const Duration(milliseconds: 500)); // Simulated API call
-      
-      _preRegisteredWorlds[world.id] = false;
-      notifyListeners();
+      final success = await _worldService.cancelPreRegistrationAuthenticated(world.id);
+      if (success) {
+        _preRegisteredWorlds[world.id] = false;
+        notifyListeners();
+      } else {
+        throw Exception('Vorregistrierung konnte nicht zurückgezogen werden');
+      }
     } catch (e) {
       _error = 'Fehler beim Zurückziehen der Vorregistrierung: $e';
       notifyListeners();

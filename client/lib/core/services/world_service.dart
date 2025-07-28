@@ -301,6 +301,22 @@ class WorldService {
     }
   }
 
+  Future<bool> cancelPreRegistrationAuthenticated(int worldId) async {
+    try {
+      final currentUser = _authService.currentUser;
+      if (currentUser == null) {
+        throw Exception(_getErrorMessage(WorldErrorCode.notAuthenticated, null));
+      }
+
+      return await cancelPreRegistration(worldId, currentUser.email);
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Vorregistrierung konnte nicht storniert werden: $e');
+    }
+  }
+
   Future<bool> leaveWorld(int worldId) async {
     try {
       final response = await _apiService.delete('/worlds/$worldId/players/me');
