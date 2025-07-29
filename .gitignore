@@ -10,3 +10,5 @@ nohup.out
 /client/build/
 /client/.flutter-plugins
 /client/pubspec.lock
+
+/logs/

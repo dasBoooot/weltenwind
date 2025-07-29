@@ -11,8 +11,13 @@ dotenv.config();
 // JWT-Konfiguration initialisieren (prüft JWT_SECRET)
 import { jwtConfig } from './config/jwt.config';
 
+// Logging-Konfiguration
+import { loggers } from './config/logger.config';
+import { requestLoggingMiddleware, errorLoggingMiddleware } from './middleware/logging.middleware';
+
 import authRoutes from './routes/auth';
 import worldRoutes from './routes/worlds';
+import logRoutes from './routes/logs';
 import { cleanupExpiredSessions } from './services/session.service';
 import { cleanupExpiredLockouts } from './services/brute-force-protection.service';
 import prisma from './libs/prisma';
@@ -91,9 +96,13 @@ app.use(cors(corsOptions));
 // Middleware
 app.use(express.json());
 
+// Request-Logging Middleware (nach JSON-Parsing)
+app.use(requestLoggingMiddleware);
+
 // === API-Routen ===
 app.use('/api/auth', authRoutes);
 app.use('/api/worlds', worldRoutes);
+app.use('/api/logs', logRoutes);
 
 // === API-Doku (OpenAPI) ===
 // === API-combined.yaml direkt bereitstellen ===
@@ -159,31 +168,42 @@ setInterval(async () => {
     const result = await cleanupExpiredSessions();
     if (result.count > 0) {
       console.log(`[${new Date().toISOString()}] 🧹 Cleanup: ${result.count} abgelaufene Sessions gelöscht`);
+      loggers.system.info('Session cleanup completed', { deletedSessions: result.count });
     }
   } catch (error) {
     console.error(`[${new Date().toISOString()}] ❌ Session-Cleanup fehlgeschlagen:`, error);
+    loggers.system.error('Session cleanup failed', error);
   }
 }, 5 * 60 * 1000); // 5 Minuten
+
+// Error-Logging Middleware (am Ende, vor Server-Start)
+app.use(errorLoggingMiddleware);
 
 // === Graceful Shutdown ===
 process.on('SIGINT', async () => {
   console.log('⏹ Server wird heruntergefahren...');
+  loggers.system.info('Server shutdown initiated (SIGINT)');
   try {
     await prisma.$disconnect();
     console.log('✅ Prisma-Verbindung geschlossen');
+    loggers.system.info('Prisma connection closed successfully');
   } catch (error) {
     console.error('❌ Fehler beim Schließen der Prisma-Verbindung:', error);
+    loggers.system.error('Failed to close Prisma connection', error);
   }
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
   console.log('⏹ Server wird heruntergefahren (SIGTERM)...');
+  loggers.system.info('Server shutdown initiated (SIGTERM)');
   try {
     await prisma.$disconnect();
     console.log('✅ Prisma-Verbindung geschlossen');
+    loggers.system.info('Prisma connection closed successfully');
   } catch (error) {
     console.error('❌ Fehler beim Schließen der Prisma-Verbindung:', error);
+    loggers.system.error('Failed to close Prisma connection', error);
   }
   process.exit(0);
 });
@@ -194,8 +214,22 @@ app.listen(PORT, () => {
   console.log(`🎮 Flutter-Game verfügbar unter: http://localhost:${PORT}/game`);
   console.log(`📘 Swagger Editor verfügbar unter: http://localhost:${PORT}/docs`);
   console.log(`📄 API-Doku YAML erreichbar unter: http://localhost:${PORT}/api-combined.yaml`);
+  console.log(`🔍 Log-Viewer verfügbar unter: http://localhost:${PORT}/api/logs/viewer`);
   console.log(`🧹 Session-Cleanup alle 5 Minuten aktiv`);
   
+  // Startup-Log
+  loggers.system.info('Weltenwind Backend started successfully', {
+    port: PORT,
+    nodeEnv: process.env.NODE_ENV || 'development',
+    version: require('../package.json').version,
+    endpoints: {
+      api: `http://localhost:${PORT}/api`,
+      game: `http://localhost:${PORT}/game`,
+      docs: `http://localhost:${PORT}/docs`,
+      logs: `http://localhost:${PORT}/api/logs/viewer`
+    }
+  });
+
   // Session-Cleanup alle 6 Stunden
   setInterval(async () => {
     try {

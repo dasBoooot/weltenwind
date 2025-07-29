@@ -9,16 +9,52 @@ Dieser Ordner enthält alle systemd Service-Definitionen für das Weltenwind-Pro
 - `weltenwind-studio.service` - Prisma Studio Service
 - `weltenwind.target` - Gruppiert alle Services
 - `setup-systemd-service.sh` - Installations-Script
+- `setup-logging.sh` - Logging-Setup Script
+- `weltenwind-logrotate.conf` - Log-Rotation Konfiguration
 - `SYSTEMD-SERVICE.md` - Ausführliche Dokumentation
 
 ## Quick Start
 
 ```bash
 cd /srv/weltenwind/backend/services
+
+# 1. Basis-Services installieren
 chmod +x setup-systemd-service.sh
 sudo ./setup-systemd-service.sh
+
+# 2. Logging konfigurieren
+chmod +x setup-logging.sh
+sudo ./setup-logging.sh
+
+# 3. Services starten
 sudo systemctl start weltenwind.target
 ```
+
+## Logging-System
+
+Das Weltenwind-Backend verwendet **duales Logging**:
+
+### systemd Standard-Logs (stdout/stderr):
+- `/var/log/weltenwind/backend.log` - Standard-Output
+- `/var/log/weltenwind/backend.error.log` - Error-Output
+
+### Winston Structured Logs (JSON):
+- `/var/log/weltenwind/app.log` - Alle strukturierten Logs
+- `/var/log/weltenwind/auth.log` - Authentifizierung & Authorization
+- `/var/log/weltenwind/security.log` - Sicherheitsereignisse
+- `/var/log/weltenwind/api.log` - API-Requests & Performance
+- `/var/log/weltenwind/error.log` - Nur Fehler
+
+### Log-Rotation:
+- **Automatisch täglich** via `logrotate`
+- **30 Tage Aufbewahrung**
+- **Komprimierung** nach Rotation
+- **Konfiguration:** `/etc/logrotate.d/weltenwind`
+
+### Log-Viewer Web-UI:
+- **URL:** `http://your-server:3000/api/logs/viewer`
+- **Berechtigung:** Nur Admins (`system.logs` Permission)
+- **Features:** Real-time, Filterung, Auto-Refresh
 
 ## Wichtige Befehle
 
@@ -29,24 +65,52 @@ sudo systemctl restart weltenwind.target
 # Nur Backend neu starten  
 sudo systemctl restart weltenwind-backend
 
-# Status prüfen
+# Live-Logs verfolgen
+sudo tail -f /var/log/weltenwind/app.log
+sudo tail -f /var/log/weltenwind/security.log
+
+# Log-Größen prüfen
+sudo du -sh /var/log/weltenwind/*
+
+# Service-Status prüfen
 sudo systemctl status weltenwind.target
+sudo systemctl status weltenwind-backend
 
-# Logs anzeigen
-sudo journalctl -u weltenwind-backend -f
+# Logs der letzten Stunde anzeigen
+sudo journalctl -u weltenwind-backend --since "1 hour ago"
+
+# Log-Rotation manuell testen
+sudo logrotate -f /etc/logrotate.d/weltenwind
 ```
 
-## Port-Übersicht
+## Environment-spezifisches Verhalten
 
-- Backend API: `http://192.168.2.168:3000`
-- Swagger Docs: `http://192.168.2.168:3001`  
-- Prisma Studio: `http://192.168.2.168:5555`
+### Development (`NODE_ENV=development`):
+- ✅ Console-Ausgabe aktiviert
+- ✅ Logs nach `./logs/` (lokales Verzeichnis)
+- ✅ Debug-Level aktiviert
+- ✅ Kleinere Log-Dateien (50MB)
 
-## Firewall
+### Production (`NODE_ENV=production`):
+- ✅ Keine Console-Ausgabe  
+- ✅ Logs nach `/var/log/weltenwind/`
+- ✅ Info-Level (konfigurierbar)
+- ✅ Größere Log-Dateien (100MB)
+- ✅ Automatische Log-Rotation
 
-Falls Prisma Studio nicht erreichbar ist:
+## Troubleshooting
+
 ```bash
-sudo ufw allow 5555
-```
+# Service funktioniert nicht?
+sudo systemctl status weltenwind-backend -l
 
-Für detaillierte Informationen siehe [SYSTEMD-SERVICE.md](./SYSTEMD-SERVICE.md) 
+# Logs nicht sichtbar?
+ls -la /var/log/weltenwind/
+sudo chown weltenwind:weltenwind /var/log/weltenwind/*.log
+
+# Winston-Fehler?
+grep -i winston /var/log/weltenwind/backend.error.log
+
+# Web-UI nicht erreichbar?
+curl http://localhost:3000/api/logs/stats
+``` 
