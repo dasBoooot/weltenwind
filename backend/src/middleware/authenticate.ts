@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import prisma from '../libs/prisma';
+import { jwtConfig } from '../config/jwt.config';
 
 // Typisierung für JWT Payload
 interface JwtPayloadExtended extends jwt.JwtPayload {
@@ -27,8 +27,13 @@ function extractDeviceFingerprint(req: Request): string {
   return req.headers['x-device-fingerprint'] as string || req.headers['user-agent'] || 'unknown';
 }
 
-function verifyJWT(token: string): JwtPayloadExtended {
-  return jwt.verify(token, process.env.JWT_SECRET || 'dev-secret') as JwtPayloadExtended;
+// Token verifizieren
+export function verifyToken(token: string): JwtPayloadExtended | null {
+  try {
+    return jwt.verify(token, jwtConfig.getSecret()) as JwtPayloadExtended;
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction) {
@@ -56,7 +61,11 @@ export async function authenticate(req: AuthenticatedRequest, res: Response, nex
   }
 
   try {
-    const decoded = verifyJWT(token);
+    const decoded = verifyToken(token);
+
+    if (!decoded) {
+      return res.status(401).json({ error: 'Token ungültig oder Fehler bei der Verarbeitung' });
+    }
 
     // Prüfen ob es ein Access-Token ist
     if (decoded.type !== 'access') {

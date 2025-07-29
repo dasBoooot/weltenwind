@@ -8,17 +8,20 @@ datasource db {
 }
 
 model User {
-  id               Int               @id @default(autoincrement())
-  username         String            @unique
-  email            String            @unique
-  passwordHash     String            @map("password_hash")
-  isLocked         Boolean           @default(false) @map("is_locked")
-  invites          Invite[]
-  passwordResets   PasswordReset[]
-  players          Player[]
-  preRegistrations PreRegistration[]
-  sessions         Session[]
-  roles            UserRole[]
+  id                  Int               @id @default(autoincrement())
+  username            String            @unique
+  email               String            @unique
+  passwordHash        String            @map("password_hash")
+  isLocked            Boolean           @default(false) @map("is_locked")
+  failedLoginAttempts Int               @default(0) @map("failed_login_attempts")
+  lastFailedLoginAt   DateTime?         @map("last_failed_login_at")
+  lockedUntil         DateTime?         @map("locked_until")
+  invites             Invite[]
+  passwordResets      PasswordReset[]
+  players             Player[]
+  preRegistrations    PreRegistration[]
+  sessions            Session[]
+  roles               UserRole[]
 
   @@map("users")
 }

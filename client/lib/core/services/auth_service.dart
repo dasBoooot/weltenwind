@@ -183,6 +183,16 @@ class AuthService {
 
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
+        
+        // Token aus der Response extrahieren
+        final accessToken = data['accessToken'];
+        final refreshToken = data['refreshToken'];
+        
+        if (accessToken != null && refreshToken != null) {
+          // Tokens speichern und API-Service aktualisieren
+          await _saveTokensAndUpdateService(accessToken, refreshToken);
+        }
+        
         final userData = data['user'];
         
         // Debug-Logging für Rollenzuweisung
@@ -200,7 +210,15 @@ class AuthService {
           print('================================');
         }
         
+        // User-Daten speichern
+        await TokenStorage.saveUserData(jsonEncode(userData));
+        
         _currentUser = User.fromJson(userData);
+        isAuthenticated.value = true; // Reaktiven Status setzen
+        
+        // Fetch complete user data with roles
+        await fetchCurrentUser();
+        
         return _currentUser;
       } else if (response.statusCode == 409) {
         throw Exception('Benutzername oder E-Mail bereits vorhanden');

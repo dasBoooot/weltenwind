@@ -95,6 +95,41 @@ export async function invalidateAllUserSessions(userId: number): Promise<{ count
   });
 }
 
+// Neue Funktion: Bereinigt alte Sessions vor dem Erstellen einer neuen
+export async function createSessionWithCleanup(
+  userId: number, 
+  refreshToken: string, 
+  ip: string, 
+  fingerprint: string,
+  timezone?: string,
+  clientTime?: number,
+  options?: {
+    keepExistingSessions?: boolean;  // Multi-Device-Login erlauben
+    maxSessionsPerUser?: number;      // Max. Anzahl Sessions pro User
+  }
+): Promise<Session> {
+  // Standard: Alle alten Sessions löschen (Single-Device-Login)
+  if (!options?.keepExistingSessions) {
+    await invalidateAllUserSessions(userId);
+  } else if (options.maxSessionsPerUser) {
+    // Optional: Nur älteste Sessions löschen wenn Limit überschritten
+    const existingSessions = await getUserSessions(userId);
+    if (existingSessions.length >= options.maxSessionsPerUser) {
+      // Sortiere nach lastAccessedAt und lösche die ältesten
+      const sessionsToDelete = existingSessions
+        .sort((a, b) => (a.lastAccessedAt || a.createdAt).getTime() - (b.lastAccessedAt || b.createdAt).getTime())
+        .slice(0, existingSessions.length - options.maxSessionsPerUser + 1);
+      
+      for (const session of sessionsToDelete) {
+        await prisma.session.delete({ where: { id: session.id } });
+      }
+    }
+  }
+  
+  // Neue Session erstellen
+  return createSession(userId, refreshToken, ip, fingerprint, timezone, clientTime);
+}
+
 export async function getUserSessions(userId: number): Promise<Session[]> {
   return prisma.session.findMany({
     where: {

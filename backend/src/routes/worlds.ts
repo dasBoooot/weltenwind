@@ -1,8 +1,9 @@
 import express from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { PrismaClient, WorldStatus } from '@prisma/client';
 import { authenticate, AuthenticatedRequest } from '../middleware/authenticate';
 import { hasPermission } from '../services/access-control.service';
-import { Request, Response, NextFunction } from 'express';
+import { jwtConfig } from '../config/jwt.config';
 import jwt from 'jsonwebtoken';
 import prisma from '../libs/prisma';
 
@@ -18,7 +19,7 @@ export async function authenticateOptional(req: any, res: Response, next: NextFu
   if (authHeader?.startsWith('Bearer ')) {
     const token = authHeader.split(' ')[1];
     try {
-      const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret') as { userId: number; username: string };
+      const payload = jwt.verify(token, jwtConfig.getSecret()) as { userId: number; username: string };
       const user = await prisma.user.findUnique({ where: { id: payload.userId } });
       if (user && !user.isLocked) {
         req.user = { id: user.id, username: user.username };
@@ -482,7 +483,7 @@ router.delete('/:id/invites/:inviteId', async (req, res) => {
         return res.status(401).json({ error: 'Token fehlt im Authorization Header' });
       }
       
-      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+      const decoded = jwt.verify(token, jwtConfig.getSecret()) as any;
       // JWT.verify prüft automatisch die Ablaufzeit gegen Server-Zeit
       
       // Permission prüfen: invite.delete

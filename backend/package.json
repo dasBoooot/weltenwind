@@ -14,6 +14,7 @@
     "prisma:generate": "npx prisma generate",
     "prisma:studio": "npx prisma studio",
     "prisma:push": "npx prisma db push",
+    "generate-jwt-secret": "node generate-jwt-secret.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "prisma": {
@@ -24,12 +25,20 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.12.0",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/zxcvbn": "^4.4.5",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "express-slow-down": "^2.1.0",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "swagger-editor-dist": "^4.14.6"
+    "node-fetch": "^2.7.0",
+    "swagger-editor-dist": "^4.14.6",
+    "swagger-ui-express": "^5.0.1",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

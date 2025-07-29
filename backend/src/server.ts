@@ -1,35 +1,95 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import * as dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 
+// Lade Environment-Variablen VOR allen anderen Imports
+dotenv.config();
+
+// JWT-Konfiguration initialisieren (prüft JWT_SECRET)
+import { jwtConfig } from './config/jwt.config';
+
 import authRoutes from './routes/auth';
 import worldRoutes from './routes/worlds';
 import { cleanupExpiredSessions } from './services/session.service';
+import { cleanupExpiredLockouts } from './services/brute-force-protection.service';
 import prisma from './libs/prisma';
-
-dotenv.config();
+import swaggerUi from 'swagger-ui-express';
+import { configureTrustProxy } from './middleware/rateLimiter';
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// === Middleware ===
-app.use(cors());
+// JWT-Konfiguration validieren
+console.log('🔐 JWT-Konfiguration geladen und validiert');
+
+// Trust Proxy für korrekte IP-Erkennung
+configureTrustProxy(app);
+
+// Security Headers mit Helmet
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+app.use(helmet({
+  contentSecurityPolicy: isDevelopment ? false : {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-eval für Swagger UI
+      connectSrc: ["'self'"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    }
+  },
+  hsts: isDevelopment ? false : {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  crossOriginOpenerPolicy: isDevelopment ? false : undefined,
+  originAgentCluster: isDevelopment ? false : true,
+  noSniff: true,
+  dnsPrefetchControl: { allow: false },
+  frameguard: { action: 'deny' },
+  permittedCrossDomainPolicies: false,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  xssFilter: true
+}));
+
+// CORS konfiguration - erweitert für Development
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean | string | string[]) => void) => {
+    // In Development alle lokalen Origins erlauben
+    if (isDevelopment) {
+      const allowedPatterns = [
+        /^http:\/\/localhost(:\d+)?$/,
+        /^http:\/\/127\.0\.0\.1(:\d+)?$/,
+        /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/,
+        /^http:\/\/\[::1\](:\d+)?$/ // IPv6 localhost
+      ];
+      
+      if (!origin || allowedPatterns.some(pattern => pattern.test(origin))) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    } else {
+      // Production: Nutze Environment Variable
+      const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:8080'];
+      callback(null, allowedOrigins);
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+
+// Middleware
 app.use(express.json());
-
-// TODO: Security-Middleware für Produktion
-// import helmet from 'helmet';
-// app.use(helmet());
-
-// TODO: Rate-Limiting für öffentliche Endpunkte
-// import rateLimit from 'express-rate-limit';
-// const publicLimiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 Minuten
-//   max: 100, // max 100 requests per windowMs
-//   message: 'Zu viele Anfragen von dieser IP'
-// });
-// app.use('/api/worlds/*/invites/public', publicLimiter);
-// app.use('/api/worlds/*/pre-register', publicLimiter);
 
 // === API-Routen ===
 app.use('/api/auth', authRoutes);
@@ -129,11 +189,32 @@ process.on('SIGTERM', async () => {
 });
 
 // === Server starten ===
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Weltenwind-API läuft auf Port ${PORT}`);
   console.log(`🎮 Flutter-Game verfügbar unter: http://localhost:${PORT}/game`);
   console.log(`📘 Swagger Editor verfügbar unter: http://localhost:${PORT}/docs`);
   console.log(`📄 API-Doku YAML erreichbar unter: http://localhost:${PORT}/api-combined.yaml`);
   console.log(`🧹 Session-Cleanup alle 5 Minuten aktiv`);
+  
+  // Session-Cleanup alle 6 Stunden
+  setInterval(async () => {
+    try {
+      const result = await cleanupExpiredSessions();
+      console.log(`[Session-Cleanup] ${result.count} abgelaufene Sessions entfernt`);
+    } catch (error) {
+      console.error('[Session-Cleanup] Fehler:', error);
+    }
+  }, 6 * 60 * 60 * 1000); // 6 Stunden
+
+  // Account-Lockout-Cleanup alle 30 Minuten
+  setInterval(async () => {
+    try {
+      const count = await cleanupExpiredLockouts();
+      if (count > 0) {
+        console.log(`[Lockout-Cleanup] ${count} abgelaufene Account-Sperren aufgehoben`);
+      }
+    } catch (error) {
+      console.error('[Lockout-Cleanup] Fehler:', error);
+    }
+  }, 30 * 60 * 1000); // 30 Minuten
 });

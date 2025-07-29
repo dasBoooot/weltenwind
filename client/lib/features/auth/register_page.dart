@@ -79,12 +79,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (user != null) {
         if (mounted) {
-          // Registrierung validieren vor Navigation
+          // Erfolgreiche Registrierung - der AuthService hat bereits die Tokens gespeichert
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Registrierung erfolgreich! Bitte melde dich an.'),
+              content: Text('Registrierung erfolgreich! Willkommen bei Weltenwind!'),
               backgroundColor: Colors.green,
-              duration: Duration(seconds: 3),
+              duration: Duration(seconds: 2),
             ),
           );
           
@@ -92,8 +92,8 @@ class _RegisterPageState extends State<RegisterPage> {
           await Future.delayed(const Duration(milliseconds: 500));
           
           if (mounted) {
-            // Navigate to login page
-            context.goNamed('login');
+            // Direkt zum Dashboard navigieren
+            context.goNamed('world-list');
           }
         }
       }
