@@ -708,8 +708,8 @@ router.get('/', authenticate, async (req: AuthenticatedRequest, res) => {
  * Permission: world.view (global scope)
  */
 router.get('/:id', authenticate, async (req: AuthenticatedRequest, res) => {
-  console.log('✅ /:id Route aktiviert mit', req.params.id);
-  const worldId = parseInt(req.params.id);
+  // Debug-Info entfernt - bereits in API-Logging erfasst
+  const worldId = parseInt(req.params.id, 10);
   
   if (isNaN(worldId)) {
     return res.status(400).json({ error: 'Ungültige Welt-ID' });

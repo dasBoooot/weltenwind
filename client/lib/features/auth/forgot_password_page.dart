@@ -95,12 +95,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFF1A1A1A),
-                          const Color(0xFF2A2A2A),
+                          Color(0xFF1A1A1A),
+                          Color(0xFF2A2A2A),
                         ],
                       ),
                     ),
@@ -133,7 +133,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                   width: 2,
                                 ),
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.lock_reset,
                                 size: 40,
                                 color: AppTheme.primaryColor,
@@ -198,7 +198,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 decoration: InputDecoration(
                                   labelText: 'E-Mail-Adresse',
                                   labelStyle: TextStyle(color: Colors.grey[400]),
-                                  prefixIcon: Icon(Icons.email, color: AppTheme.primaryColor),
+                                  prefixIcon: const Icon(Icons.email, color: AppTheme.primaryColor),
                                   filled: true,
                                   fillColor: const Color(0xFF2D2D2D),
                                   border: OutlineInputBorder(
@@ -211,7 +211,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                                    borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
                                   ),
                                   errorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -302,7 +302,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               onPressed: () => context.goNamed('login'),
                               child: Text(
                                 _isSuccess ? 'Zurück zum Login' : 'Abbrechen',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: AppTheme.primaryColor,
                                   fontSize: 16,
                                 ),

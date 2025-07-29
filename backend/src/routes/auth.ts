@@ -17,6 +17,7 @@ import crypto from 'crypto';
 import prisma from '../libs/prisma';
 import { csrfProtection, getCsrfToken } from '../middleware/csrf-protection';
 import { rotateSession, CriticalAction } from '../services/session-rotation.service';
+import { loggers } from '../config/logger.config';
 
 const router = express.Router();
 
@@ -98,8 +99,13 @@ router.post('/login',
   authSlowDown,     // Progressive slow-down
   async (req: express.Request<{}, {}, { username: string; password: string }>, res) => {
   const { username, password } = req.body;
+  const { ip, fingerprint } = extractClientInfo(req);
 
   if (!username || !password) {
+    loggers.auth.login(username || 'unknown', ip, false, { 
+      reason: 'missing_credentials',
+      userAgent: req.headers['user-agent']
+    });
     return res.status(400).json({ error: 'Benutzername und Passwort erforderlich' });
   }
 
@@ -109,16 +115,22 @@ router.post('/login',
   });
 
   if (!user) {
-    const clientIp = req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || 'unknown';
-    console.warn(`Login-Fail for ${username} (user not found) from ${clientIp}`);
+    loggers.auth.login(username, ip, false, { 
+      reason: 'user_not_found',
+      userAgent: req.headers['user-agent']
+    });
     return res.status(401).json({ error: 'Ungültige Zugangsdaten' });
   }
 
   // Prüfe ob Account gesperrt ist
   const lockStatus = await isAccountLocked(user.id);
   if (lockStatus.locked) {
-    const clientIp = req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || 'unknown';
-    console.warn(`Login-Fail for ${username} (account locked) from ${clientIp}`);
+    loggers.auth.login(username, ip, false, { 
+      reason: 'account_locked',
+      lockedUntil: lockStatus.until,
+      lockType: lockStatus.until ? 'temporary' : 'permanent',
+      userAgent: req.headers['user-agent']
+    });
     
     if (lockStatus.until) {
       return res.status(403).json({ 
@@ -136,11 +148,15 @@ router.post('/login',
 
   const pwValid = await bcrypt.compare(password, user.passwordHash);
   if (!pwValid) {
-    const clientIp = req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || 'unknown';
-    console.warn(`Login-Fail for ${username} (wrong password) from ${clientIp}`);
-    
     // Registriere fehlgeschlagenen Versuch
     const attemptResult = await recordFailedLogin(user.id);
+    
+    loggers.auth.login(username, ip, false, { 
+      reason: 'invalid_password',
+      remainingAttempts: attemptResult.remainingAttempts,
+      isLocked: attemptResult.isLocked,
+      userAgent: req.headers['user-agent']
+    });
     
     if (attemptResult.isLocked) {
       return res.status(403).json({ 
@@ -160,7 +176,6 @@ router.post('/login',
   // Erfolgreicher Login - Reset Fehlversuche
   await recordSuccessfulLogin(user.id);
 
-  const { ip, fingerprint } = extractClientInfo(req);
   const { timezone, clientTime } = extractClientTimezone(req);
 
   // Zwei-Token-System: Access-Token + Refresh-Token
@@ -182,9 +197,25 @@ router.post('/login',
       }
     );
   } catch (error) {
-    console.error('Session-Erstellung fehlgeschlagen:', error);
+    loggers.system.error('Session creation failed during login', error, {
+      userId: user.id,
+      username: user.username,
+      ip,
+      fingerprint
+    });
     return res.status(500).json({ error: 'Session-Erstellung fehlgeschlagen' });
   }
+
+  // Erfolgreicher Login loggen
+  loggers.auth.login(username, ip, true, {
+    userId: user.id,
+    email: user.email,
+    timezone,
+    fingerprint: fingerprint.substring(0, 50), // Kurze Version für Log
+    sessionType: 'access_refresh_tokens',
+    multiDevice: ALLOW_MULTI_DEVICE_LOGIN,
+    userAgent: req.headers['user-agent']
+  });
 
   return res.status(200).json({
     accessToken,
@@ -205,8 +236,15 @@ router.post('/logout', authenticate, csrfProtection, async (req: AuthenticatedRe
     return res.status(401).json({ error: 'Nicht authentifiziert' });
   }
 
+  const { ip } = extractClientInfo(req);
   const authHeader = req.headers.authorization;
+  
   if (!authHeader?.startsWith('Bearer ')) {
+    loggers.auth.logout(req.user.username, ip, { 
+      success: false,
+      reason: 'invalid_token_format',
+      userAgent: req.headers['user-agent']
+    });
     return res.status(401).json({ error: 'Kein gültiges Token übergeben' });
   }
 
@@ -216,9 +254,22 @@ router.post('/logout', authenticate, csrfProtection, async (req: AuthenticatedRe
     // Session invalidieren (Refresh-Token löschen)
     const result = await invalidateSession(req.user.id, token);
 
+    // Erfolgreicher Logout loggen
+    loggers.auth.logout(req.user.username, ip, {
+      success: true,
+      userId: req.user.id,
+      sessionsDeleted: result.count,
+      userAgent: req.headers['user-agent']
+    });
+
     return res.status(200).json({ success: true, deleted: result.count });
   } catch (err) {
-    console.error('Logout-Fehler:', err);
+    loggers.auth.logout(req.user!.username, ip, {
+      success: false,
+      reason: 'logout_error',
+      error: err instanceof Error ? err.message : 'Unknown error',
+      userAgent: req.headers['user-agent']
+    });
     return res.status(500).json({ error: 'Interner Serverfehler' });
   }
 });
@@ -229,12 +280,23 @@ router.post('/register',
   authLimiter,          // Generelles Auth-Limit
   async (req: express.Request<{}, {}, { username: string; email: string; password: string }>, res) => {
   const { username, email, password } = req.body;
+  const { ip, fingerprint } = extractClientInfo(req);
 
   const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
   if (!username || !email || !password) {
+    loggers.auth.register(username || 'unknown', email || 'unknown', ip, {
+      success: false,
+      reason: 'missing_fields',
+      userAgent: req.headers['user-agent']
+    });
     return res.status(400).json({ error: 'Alle Felder (username, email, password) sind erforderlich.' });
   }
   if (!emailRegex.test(email)) {
+    loggers.auth.register(username, email, ip, {
+      success: false,
+      reason: 'invalid_email_format',
+      userAgent: req.headers['user-agent']
+    });
     return res.status(400).json({ error: 'Ungültige E-Mail-Adresse.' });
   }
   
@@ -242,6 +304,12 @@ router.post('/register',
   const passwordValidation = validatePassword(password, [username, email]);
   
   if (!passwordValidation.valid) {
+    loggers.auth.register(username, email, ip, {
+      success: false,
+      reason: 'weak_password',
+      passwordScore: passwordValidation.score,
+      userAgent: req.headers['user-agent']
+    });
     return res.status(400).json({ 
       error: 'Passwort erfüllt nicht die Sicherheitsanforderungen',
       details: {
@@ -258,6 +326,12 @@ router.post('/register',
     const userByUsername = await prisma.user.findUnique({ where: { username } });
     const userByEmail = await prisma.user.findUnique({ where: { email } });
     if (userByUsername || userByEmail) {
+      loggers.auth.register(username, email, ip, {
+        success: false,
+        reason: 'user_already_exists',
+        conflictType: userByUsername ? 'username' : 'email',
+        userAgent: req.headers['user-agent']
+      });
       return res.status(409).json({ error: 'Benutzername oder E-Mail bereits vergeben.' });
     }
 
@@ -277,14 +351,12 @@ router.post('/register',
 
       // Prüfe ob Rollen existieren
       const roleCount = await tx.role.count();
-      console.log(`Anzahl Rollen in DB: ${roleCount}`);
       
       if (roleCount === 0) {
-        console.error('FEHLER: Keine Rollen in der Datenbank gefunden!');
-        console.error('Die Datenbank-Seeds wurden nicht ausgeführt.');
-        console.error('Führe folgende Befehle in der VM aus:');
-        console.error('  cd /pfad/zum/backend');
-        console.error('  npm run seed');
+        loggers.system.error('No roles found in database - seeds not executed', new Error('Database not seeded'), {
+          roleCount: 0,
+          expectedAction: 'npm run seed'
+        });
         throw new Error('Keine Rollen in Datenbank. Seeds wurden nicht ausgeführt!');
       }
 
@@ -295,13 +367,18 @@ router.post('/register',
 
       if (!userRole) {
         const allRoles = await tx.role.findMany({ select: { name: true } });
-        console.error('FEHLER: Standard-User-Rolle "user" nicht gefunden!');
-        console.error('Verfügbare Rollen:', allRoles.map(r => r.name).join(', '));
-        console.error('Bitte führe "npm run seed" im backend-Ordner aus, um die Rollen zu erstellen.');
+        loggers.system.error('Standard user role not found', new Error('User role missing'), {
+          availableRoles: allRoles.map(r => r.name),
+          expectedRole: 'user',
+          expectedAction: 'npm run seed'
+        });
         throw new Error('Standard-User-Rolle nicht gefunden. Bitte Seeds ausführen: npm run seed');
       }
 
-      console.log(`Found user role with id ${userRole.id}`);
+      loggers.system.info('User role found during registration', {
+        roleId: userRole.id,
+        roleName: userRole.name
+      });
 
       // Beide Rollen-Einträge erstellen (global und world)
       // Erstelle global role
@@ -324,7 +401,12 @@ router.post('/register',
         }
       });
 
-      console.log(`Created roles for user ${user.username}: global=${globalRole.id}, world=${worldRole.id}`);
+      loggers.system.info('Created roles for user', {
+        userId: user.id,
+        username: user.username,
+        globalRoleId: globalRole.id,
+        worldRoleId: worldRole.id
+      });
 
       return user;
     });
@@ -341,7 +423,12 @@ router.post('/register',
       }
     });
 
-    console.log(`User ${result.username} created with ${userWithRoles?.roles.length || 0} roles`);
+    loggers.system.info('User created', {
+      userId: result.id,
+      username: result.username,
+      email: result.email,
+      roleCount: userWithRoles?.roles.length || 0
+    });
 
     // Debug-Info für den Client
     const debugInfo = {
@@ -355,7 +442,6 @@ router.post('/register',
     };
 
     // Token generieren nach erfolgreicher Registrierung
-    const { ip, fingerprint } = extractClientInfo(req);
     const { timezone, clientTime } = extractClientTimezone(req);
     
     const accessToken = generateAccessToken(result.id, result.username, timezone);
@@ -376,9 +462,23 @@ router.post('/register',
         }
       );
     } catch (error) {
-      console.error('Session-Erstellung nach Registrierung fehlgeschlagen:', error);
+      loggers.system.error('Session creation failed after registration', error, {
+        userId: result.id,
+        username: result.username,
+        ip,
+        fingerprint
+      });
       // Registrierung war erfolgreich, also geben wir trotzdem die Tokens zurück
     }
+
+    // Erfolgreiche Registrierung loggen
+    loggers.auth.register(username, email, ip, {
+      success: true,
+      userId: result.id,
+      rolesAssigned: userWithRoles?.roles.length || 0,
+      timezone,
+      userAgent: req.headers['user-agent']
+    });
 
     return res.status(201).json({
       accessToken,
@@ -394,8 +494,21 @@ router.post('/register',
       }
     });
   } catch (error) {
-    console.error('Registration error:', error);
-    console.error('Error details:', error instanceof Error ? error.stack : 'Unknown error');
+    loggers.system.error('Registration failed', error, {
+      username,
+      email,
+      ip,
+      userAgent: req.headers['user-agent'],
+      errorDetails: error instanceof Error ? error.message : 'Unknown error'
+    });
+    
+    // Fehler loggen
+    loggers.auth.register(username, email, ip, {
+      success: false,
+      reason: 'database_error',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      userAgent: req.headers['user-agent']
+    });
     
     // Detailliertere Fehlermeldung für den Client
     let errorMessage = 'Fehler bei der Registrierung';
@@ -645,9 +758,15 @@ router.post('/change-password',
     }
 
     const { currentPassword, newPassword } = req.body;
+    const { ip, fingerprint } = extractClientInfo(req);
 
     // Validierung
     if (!currentPassword || !newPassword) {
+      loggers.auth.passwordChange(req.user.username, ip, {
+        success: false,
+        reason: 'missing_passwords',
+        userAgent: req.headers['user-agent']
+      });
       return res.status(400).json({ 
         error: 'Aktuelles und neues Passwort erforderlich' 
       });
@@ -660,6 +779,11 @@ router.post('/change-password',
       });
 
       if (!user) {
+        loggers.auth.passwordChange(req.user.username, ip, {
+          success: false,
+          reason: 'user_not_found',
+          userAgent: req.headers['user-agent']
+        });
         return res.status(404).json({ error: 'Benutzer nicht gefunden' });
       }
 
@@ -668,6 +792,11 @@ router.post('/change-password',
       if (!isValidPassword) {
         // Rate Limiting für fehlgeschlagene Versuche
         await recordFailedLogin(user.id);
+        loggers.auth.passwordChange(req.user.username, ip, {
+          success: false,
+          reason: 'invalid_current_password',
+          userAgent: req.headers['user-agent']
+        });
         return res.status(401).json({ 
           error: 'Aktuelles Passwort ist falsch' 
         });
@@ -676,6 +805,12 @@ router.post('/change-password',
       // 3. Neues Passwort validieren
       const passwordValidation = validatePassword(newPassword, [user.username, user.email]);
       if (!passwordValidation.valid) {
+        loggers.auth.passwordChange(req.user.username, ip, {
+          success: false,
+          reason: 'weak_new_password',
+          passwordScore: passwordValidation.score,
+          userAgent: req.headers['user-agent']
+        });
         return res.status(400).json({
           error: 'Neues Passwort erfüllt nicht die Sicherheitsanforderungen',
           details: {
@@ -690,6 +825,11 @@ router.post('/change-password',
       // 4. Prüfen ob neues Passwort != altes Passwort
       const isSamePassword = await bcrypt.compare(newPassword, user.passwordHash);
       if (isSamePassword) {
+        loggers.auth.passwordChange(req.user.username, ip, {
+          success: false,
+          reason: 'same_password',
+          userAgent: req.headers['user-agent']
+        });
         return res.status(400).json({ 
           error: 'Neues Passwort darf nicht mit dem aktuellen übereinstimmen' 
         });
@@ -705,10 +845,6 @@ router.post('/change-password',
       });
 
       // 6. Session Rotation durchführen
-      const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || 
-                  req.socket.remoteAddress || 'unknown';
-      const fingerprint = req.headers['x-device-fingerprint'] as string || 
-                         req.headers['user-agent'] || 'unknown';
       const timezone = req.headers['x-timezone'] as string;
       
       const newTokens = await rotateSession(
@@ -719,6 +855,15 @@ router.post('/change-password',
         timezone
       );
 
+      // Erfolgreiche Passwort-Änderung loggen
+      loggers.auth.passwordChange(req.user.username, ip, {
+        success: true,
+        userId: user.id,
+        sessionRotated: true,
+        timezone,
+        userAgent: req.headers['user-agent']
+      });
+
       // 7. Erfolg mit neuen Tokens
       return res.status(200).json({
         message: 'Passwort erfolgreich geändert',
@@ -727,7 +872,12 @@ router.post('/change-password',
       });
 
     } catch (error) {
-      console.error('Fehler beim Passwort ändern:', error);
+      loggers.auth.passwordChange(req.user.username, ip, {
+        success: false,
+        reason: 'system_error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        userAgent: req.headers['user-agent']
+      });
       return res.status(500).json({ 
         error: 'Interner Serverfehler' 
       });

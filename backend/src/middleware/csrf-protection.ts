@@ -1,9 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
 import { AuthenticatedRequest } from './authenticate';
+import { loggers } from '../config/logger.config';
 
 interface CsrfRequest extends AuthenticatedRequest {
   csrfToken?: string;
+}
+
+// Helper function to extract IP
+function extractClientIp(req: Request): string {
+  return (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || 
+         req.socket.remoteAddress || 'unknown';
 }
 
 // In-Memory Token Storage (in Production sollte Redis verwendet werden)
@@ -63,10 +70,24 @@ export function csrfProtection(req: CsrfRequest, res: Response, next: NextFuncti
     return next();
   }
   
+  const ip = extractClientIp(req);
+  
   // CSRF-Token aus Header oder Body lesen
   const token = req.headers['x-csrf-token'] as string || req.body?._csrf;
   
   if (!token) {
+    loggers.security.csrfTokenInvalid(
+      req.user.username || 'unknown',
+      ip,
+      req.originalUrl,
+      {
+        reason: 'token_missing',
+        method: req.method,
+        userAgent: req.headers['user-agent'],
+        userId: req.user.id
+      }
+    );
+    
     return res.status(403).json({
       error: 'CSRF-Token fehlt',
       message: 'Diese Aktion erfordert einen gültigen CSRF-Token'
@@ -74,6 +95,19 @@ export function csrfProtection(req: CsrfRequest, res: Response, next: NextFuncti
   }
   
   if (!validateCsrfToken(req.user.id.toString(), token)) {
+    loggers.security.csrfTokenInvalid(
+      req.user.username || 'unknown',
+      ip,
+      req.originalUrl,
+      {
+        reason: 'token_invalid_or_expired',
+        method: req.method,
+        userAgent: req.headers['user-agent'],
+        userId: req.user.id,
+        tokenPresent: true
+      }
+    );
+    
     return res.status(403).json({
       error: 'Ungültiger CSRF-Token',
       message: 'Der CSRF-Token ist ungültig oder abgelaufen'
@@ -83,6 +117,22 @@ export function csrfProtection(req: CsrfRequest, res: Response, next: NextFuncti
   // Bei erfolgreicher Validierung neuen Token generieren (Token Rotation)
   const newToken = generateCsrfToken(req.user.id.toString());
   res.setHeader('X-CSRF-Token', newToken);
+  
+  // Erfolgreiche CSRF-Validierung loggen (nur bei wichtigen Endpoints)
+  if (req.originalUrl.includes('/change-password') || req.originalUrl.includes('/logout')) {
+    loggers.security.csrfTokenInvalid(
+      req.user.username || 'unknown',
+      ip,
+      req.originalUrl,
+      {
+        reason: 'token_valid',
+        method: req.method,
+        userAgent: req.headers['user-agent'],
+        userId: req.user.id,
+        tokenRotated: true
+      }
+    );
+  }
   
   next();
 }

@@ -1,4 +1,5 @@
 import prisma from '../libs/prisma';
+import { loggers } from '../config/logger.config';
 
 // Konfiguration
 const MAX_FAILED_ATTEMPTS = 5;           // Nach 5 fehlgeschlagenen Versuchen
@@ -118,8 +119,8 @@ export async function recordFailedLogin(userId: number): Promise<LoginAttemptRes
       }
     });
 
-    console.warn(`Account locked for user ${userId} until ${lockoutUntil}`);
-
+    // Account-Lockout ist bereits im strukturierten Log erfasst
+    
     return {
       success: false,
       isLocked: true,

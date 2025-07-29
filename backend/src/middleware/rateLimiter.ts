@@ -1,6 +1,7 @@
 import rateLimit from 'express-rate-limit';
 import slowDown from 'express-slow-down';
 import { Request, Response } from 'express';
+import { loggers } from '../config/logger.config';
 
 // Erweitere Request-Type für rate-limit
 declare module 'express' {
@@ -28,7 +29,17 @@ export const authLimiter = rateLimit({
   skipSuccessfulRequests: false, // Auch erfolgreiche Requests zählen
   handler: (req: Request, res: Response) => {
     const identifier = req.ip || 'unknown';
-    console.warn(`Rate limit exceeded for ${identifier} on ${req.path}`);
+    
+    // Strukturiertes Logging
+    loggers.security.rateLimitHit(identifier, req.originalUrl, {
+      limitType: 'auth',
+      maxRequests: 5,
+      windowMs: '15min',
+      currentRequests: (req as any).rateLimit?.current,
+      userAgent: req.headers['user-agent'],
+      method: req.method
+    });
+    
     res.status(429).json({
       error: 'Zu viele Anfragen',
       message: 'Bitte versuche es in 15 Minuten erneut.',
@@ -64,7 +75,18 @@ export const passwordResetLimiter = rateLimit({
   skipSuccessfulRequests: false,
   handler: (req: Request, res: Response) => {
     const identifier = req.ip || 'unknown';
-    console.warn(`Password reset rate limit exceeded for ${identifier}`);
+    
+    // Strukturiertes Logging
+    loggers.security.rateLimitHit(identifier, req.originalUrl, {
+      limitType: 'password_reset',
+      maxRequests: 3,
+      windowMs: '1hour',
+      currentRequests: (req as any).rateLimit?.current,
+      userAgent: req.headers['user-agent'],
+      method: req.method,
+      email: req.body?.email ? 'provided' : 'not_provided'
+    });
+    
     res.status(429).json({
       error: 'Zu viele Anfragen',
       message: 'Du kannst maximal 3 Passwort-Reset-Anfragen pro Stunde stellen.',

@@ -152,12 +152,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            gradient: LinearGradient(
+                            gradient: const LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                const Color(0xFF1A1A1A),
-                                const Color(0xFF2A2A2A),
+                                Color(0xFF1A1A1A),
+                                Color(0xFF2A2A2A),
                               ],
                             ),
                           ),
@@ -190,7 +190,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                           width: 2,
                                         ),
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.public,
                                         size: 40,
                                         color: AppTheme.primaryColor,
@@ -233,7 +233,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     decoration: InputDecoration(
                                       labelText: 'Benutzername',
                                       labelStyle: TextStyle(color: Colors.grey[400]),
-                                      prefixIcon: Icon(Icons.person, color: AppTheme.primaryColor),
+                                      prefixIcon: const Icon(Icons.person, color: AppTheme.primaryColor),
                                       filled: true,
                                       fillColor: const Color(0xFF2D2D2D),
                                       border: OutlineInputBorder(
@@ -246,7 +246,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                                        borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
                                       ),
                                       errorBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
@@ -287,7 +287,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     decoration: InputDecoration(
                                       labelText: 'Passwort',
                                       labelStyle: TextStyle(color: Colors.grey[400]),
-                                      prefixIcon: Icon(Icons.lock, color: AppTheme.primaryColor),
+                                      prefixIcon: const Icon(Icons.lock, color: AppTheme.primaryColor),
                                       suffixIcon: IconButton(
                                         icon: Icon(
                                           _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -311,7 +311,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                                        borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
                                       ),
                                       errorBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
@@ -350,8 +350,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                                   _rememberMe = value ?? false;
                                                 });
                                               },
-                                              fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-                                                if (states.contains(MaterialState.selected)) {
+                                              fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+                                                if (states.contains(WidgetState.selected)) {
                                                   return AppTheme.primaryColor;
                                                 }
                                                 return Colors.grey[600]!;
@@ -379,7 +379,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       // Forgot Password Link
                                       TextButton(
                                         onPressed: () => context.goNamed('forgot-password'),
-                                        child: Text(
+                                        child: const Text(
                                           'Passwort vergessen?',
                                           style: TextStyle(
                                             color: AppTheme.primaryColor,
@@ -531,7 +531,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       ),
                                       TextButton(
                                         onPressed: () => context.goNamed('register'),
-                                        child: Text(
+                                        child: const Text(
                                           'Registrieren',
                                           style: TextStyle(
                                             color: AppTheme.primaryColor,

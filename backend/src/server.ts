@@ -27,8 +27,13 @@ import { configureTrustProxy } from './middleware/rateLimiter';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// JWT-Konfiguration validieren
+// JWT-Konfiguration laden und validieren
 console.log('🔐 JWT-Konfiguration geladen und validiert');
+loggers.system.info('JWT configuration loaded and validated', {
+  issuer: jwtConfig.getTokenConfig().issuer,
+  audience: jwtConfig.getTokenConfig().audience,
+  environment: process.env.NODE_ENV
+});
 
 // Trust Proxy für korrekte IP-Erkennung
 configureTrustProxy(app);
@@ -168,11 +173,16 @@ setInterval(async () => {
     const result = await cleanupExpiredSessions();
     if (result.count > 0) {
       console.log(`[${new Date().toISOString()}] 🧹 Cleanup: ${result.count} abgelaufene Sessions gelöscht`);
-      loggers.system.info('Session cleanup completed', { deletedSessions: result.count });
+      loggers.system.info('Session cleanup completed', { 
+        deletedSessions: result.count,
+        cleanupType: 'expired_sessions'
+      });
     }
   } catch (error) {
     console.error(`[${new Date().toISOString()}] ❌ Session-Cleanup fehlgeschlagen:`, error);
-    loggers.system.error('Session cleanup failed', error);
+    loggers.system.error('Session cleanup failed', error, {
+      cleanupType: 'expired_sessions'
+    });
   }
 }, 5 * 60 * 1000); // 5 Minuten
 
@@ -182,28 +192,42 @@ app.use(errorLoggingMiddleware);
 // === Graceful Shutdown ===
 process.on('SIGINT', async () => {
   console.log('⏹ Server wird heruntergefahren...');
-  loggers.system.info('Server shutdown initiated (SIGINT)');
+  loggers.system.info('Server shutdown initiated (SIGINT)', {
+    signal: 'SIGINT',
+    reason: 'user_interrupt'
+  });
   try {
     await prisma.$disconnect();
     console.log('✅ Prisma-Verbindung geschlossen');
-    loggers.system.info('Prisma connection closed successfully');
+    loggers.system.info('Prisma connection closed successfully', {
+      shutdownStep: 'database_disconnect'
+    });
   } catch (error) {
     console.error('❌ Fehler beim Schließen der Prisma-Verbindung:', error);
-    loggers.system.error('Failed to close Prisma connection', error);
+    loggers.system.error('Failed to close Prisma connection', error, {
+      shutdownStep: 'database_disconnect'
+    });
   }
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
   console.log('⏹ Server wird heruntergefahren (SIGTERM)...');
-  loggers.system.info('Server shutdown initiated (SIGTERM)');
+  loggers.system.info('Server shutdown initiated (SIGTERM)', {
+    signal: 'SIGTERM',
+    reason: 'system_termination'
+  });
   try {
     await prisma.$disconnect();
     console.log('✅ Prisma-Verbindung geschlossen');
-    loggers.system.info('Prisma connection closed successfully');
+    loggers.system.info('Prisma connection closed successfully', {
+      shutdownStep: 'database_disconnect'
+    });
   } catch (error) {
     console.error('❌ Fehler beim Schließen der Prisma-Verbindung:', error);
-    loggers.system.error('Failed to close Prisma connection', error);
+    loggers.system.error('Failed to close Prisma connection', error, {
+      shutdownStep: 'database_disconnect'
+    });
   }
   process.exit(0);
 });
@@ -216,39 +240,59 @@ app.listen(PORT, () => {
   console.log(`📄 API-Doku YAML erreichbar unter: http://localhost:${PORT}/api-combined.yaml`);
   console.log(`🔍 Log-Viewer verfügbar unter: http://localhost:${PORT}/api/logs/viewer`);
   console.log(`🧹 Session-Cleanup alle 5 Minuten aktiv`);
-  
+
   // Startup-Log
   loggers.system.info('Weltenwind Backend started successfully', {
     port: PORT,
     nodeEnv: process.env.NODE_ENV || 'development',
     version: require('../package.json').version,
+    features: {
+      sessionCleanup: '5min',
+      multiDeviceLogin: process.env.ALLOW_MULTI_DEVICE_LOGIN === 'true',
+      maxSessionsPerUser: parseInt(process.env.MAX_SESSIONS_PER_USER || '1', 10)
+    },
     endpoints: {
       api: `http://localhost:${PORT}/api`,
       game: `http://localhost:${PORT}/game`,
       docs: `http://localhost:${PORT}/docs`,
-      logs: `http://localhost:${PORT}/api/logs/viewer`
+      logs: `http://localhost:${PORT}/api/logs/viewer`,
+      openapi: `http://localhost:${PORT}/api-combined.yaml`
     }
   });
 
-  // Session-Cleanup alle 6 Stunden
+  // Session-Cleanup (detailliertere Intervals)
   setInterval(async () => {
     try {
       const result = await cleanupExpiredSessions();
       console.log(`[Session-Cleanup] ${result.count} abgelaufene Sessions entfernt`);
+      loggers.system.info('Detailed session cleanup completed', {
+        deletedSessions: result.count,
+        cleanupType: 'expired_sessions_detailed',
+        interval: '10min'
+      });
     } catch (error) {
       console.error('[Session-Cleanup] Fehler:', error);
+      loggers.system.error('Detailed session cleanup failed', error, {
+        cleanupType: 'expired_sessions_detailed'
+      });
     }
-  }, 6 * 60 * 60 * 1000); // 6 Stunden
+  }, 10 * 60 * 1000); // 10 Minuten
 
-  // Account-Lockout-Cleanup alle 30 Minuten
+  // Cleanup für abgelaufene Account-Lockouts
   setInterval(async () => {
     try {
       const count = await cleanupExpiredLockouts();
-      if (count > 0) {
-        console.log(`[Lockout-Cleanup] ${count} abgelaufene Account-Sperren aufgehoben`);
-      }
+      console.log(`[Lockout-Cleanup] ${count} abgelaufene Account-Sperren aufgehoben`);
+      loggers.system.info('Account lockout cleanup completed', {
+        unlockedAccounts: count,
+        cleanupType: 'expired_lockouts',
+        interval: '15min'
+      });
     } catch (error) {
       console.error('[Lockout-Cleanup] Fehler:', error);
+      loggers.system.error('Account lockout cleanup failed', error, {
+        cleanupType: 'expired_lockouts'
+      });
     }
-  }, 30 * 60 * 1000); // 30 Minuten
+  }, 15 * 60 * 1000); // 15 Minuten
 });

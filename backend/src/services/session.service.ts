@@ -1,6 +1,7 @@
 import { Session } from '@prisma/client';
 import { createHash } from 'crypto';
 import prisma from '../libs/prisma';
+import { loggers } from '../config/logger.config';
 
 function hashIp(ip: string) {
   return createHash('sha256').update(ip).digest('hex');
