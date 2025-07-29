@@ -585,24 +585,84 @@ router.post('/request-reset',
 // POST /api/auth/reset-password
 router.post('/reset-password', async (req, res) => {
   const { token, password } = req.body;
+  
+  loggers.system.info('🔄 Password-Reset Versuch', {
+    tokenPreview: token ? token.substring(0, 8) + '...' : 'missing',
+    hasPassword: !!password,
+    passwordLength: password ? password.length : 0,
+    endpoint: '/auth/reset-password'
+  });
+
   if (!token || !password) {
+    loggers.system.warn('❌ Password-Reset: Fehlende Parameter', {
+      hasToken: !!token,
+      hasPassword: !!password
+    });
     return res.status(400).json({ error: 'Token und neues Passwort erforderlich' });
   }
-  const reset = await prisma.passwordReset.findUnique({ where: { token } });
-  if (!reset || reset.usedAt || reset.expiresAt < new Date()) {
-    return res.status(400).json({ error: 'Ungültiger oder abgelaufener Token' });
+
+  try {
+    const reset = await prisma.passwordReset.findUnique({ where: { token } });
+    
+    if (!reset) {
+      loggers.system.warn('❌ Password-Reset: Token nicht gefunden', {
+        tokenPreview: token.substring(0, 8) + '...'
+      });
+      return res.status(400).json({ error: 'Ungültiger oder abgelaufener Token' });
+    }
+
+    if (reset.usedAt) {
+      loggers.system.warn('❌ Password-Reset: Token bereits verwendet', {
+        tokenPreview: token.substring(0, 8) + '...',
+        usedAt: reset.usedAt,
+        userId: reset.userId
+      });
+      return res.status(400).json({ error: 'Ungültiger oder abgelaufener Token' });
+    }
+
+    if (reset.expiresAt < new Date()) {
+      loggers.system.warn('❌ Password-Reset: Token abgelaufen', {
+        tokenPreview: token.substring(0, 8) + '...',
+        expiresAt: reset.expiresAt,
+        userId: reset.userId
+      });
+      return res.status(400).json({ error: 'Ungültiger oder abgelaufener Token' });
+    }
+
+    // Passwort-Validierung (mindestens 6 Zeichen)
+    if (password.length < 6) {
+      loggers.system.warn('❌ Password-Reset: Passwort zu kurz', {
+        passwordLength: password.length,
+        userId: reset.userId
+      });
+      return res.status(400).json({ error: 'Passwort muss mindestens 6 Zeichen lang sein' });
+    }
+
+    // Passwort setzen
+    const passwordHash = await bcrypt.hash(password, 10);
+    await prisma.user.update({
+      where: { id: reset.userId },
+      data: { passwordHash }
+    });
+    
+    await prisma.passwordReset.update({
+      where: { id: reset.id },
+      data: { usedAt: new Date() }
+    });
+
+    loggers.system.info('✅ Password erfolgreich zurückgesetzt', {
+      userId: reset.userId,
+      tokenPreview: token.substring(0, 8) + '...'
+    });
+
+    return res.status(200).json({ message: 'Passwort erfolgreich geändert' });
+  } catch (error) {
+    loggers.system.error('❌ Password-Reset Fehler', error, {
+      tokenPreview: token ? token.substring(0, 8) + '...' : 'missing'
+    });
+    
+    return res.status(500).json({ error: 'Interner Serverfehler' });
   }
-  // Passwort setzen
-  const passwordHash = await bcrypt.hash(password, 10);
-  await prisma.user.update({
-    where: { id: reset.userId },
-    data: { passwordHash }
-  });
-  await prisma.passwordReset.update({
-    where: { id: reset.id },
-    data: { usedAt: new Date() }
-  });
-  return res.status(200).json({ message: 'Passwort erfolgreich geändert' });
 });
 
 // POST /api/auth/refresh
