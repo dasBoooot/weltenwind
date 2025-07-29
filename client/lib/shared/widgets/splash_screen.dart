@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import '../../config/logger.dart';
+import '../../theme/background_widget.dart';
 
 class SplashScreen extends StatefulWidget {
   final Future<void> Function() initializationFunction;
@@ -57,9 +59,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         final result = await Future.any([
           _runInitializationWithSteps().then((_) => 'success'),
           Future.delayed(timeout).then((_) {
-            if (kDebugMode) {
-              print('[SplashScreen] Initialization timeout');
-            }
+            AppLogger.app.w('⏰ SplashScreen Initialisierung timeout');
             return 'timeout';
           }),
         ]);
@@ -87,9 +87,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         // _animationController.reverse(); // ENTFERNT
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('[SplashScreen] Initialization error: $e');
-      }
+      AppLogger.logError('SplashScreen Initialisierung fehlgeschlagen', e);
       
       if (mounted) {
         setState(() {

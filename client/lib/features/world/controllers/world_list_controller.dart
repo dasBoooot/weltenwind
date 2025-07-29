@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import '../../../config/logger.dart';
 import '../../../core/models/world.dart';
 import '../../../core/services/world_service.dart';
+import '../../../core/services/auth_service.dart';
 import '../../../core/services/invite_service.dart';
 import '../widgets/world_card.dart';
 
@@ -53,9 +56,7 @@ class WorldListController extends ChangeNotifier {
       _applyFiltersAndSorting();
     } catch (e) {
       _error = 'Fehler beim Laden der Welten: $e';
-      if (kDebugMode) {
-        print('[WorldListController] Error loading worlds: $e');
-      }
+      AppLogger.logError('World-Liste laden fehlgeschlagen', e);
     } finally {
       _setLoading(false);
     }
@@ -83,9 +84,7 @@ class WorldListController extends ChangeNotifier {
         _preRegisteredWorlds[world.id] = isPreRegistered;
         notifyListeners();
       } catch (e) {
-        if (kDebugMode) {
-          print('[WorldListController] Error checking player status for world ${world.id}: $e');
-        }
+        AppLogger.logError('Player-Status Check fehlgeschlagen', e, context: {'worldId': world.id});
         _joinedWorlds[world.id] = false;
         _preRegisteredWorlds[world.id] = false;
       }

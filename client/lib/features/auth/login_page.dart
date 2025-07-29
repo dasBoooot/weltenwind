@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
+import '../../shared/widgets/user_info_widget.dart';
+import '../../shared/widgets/navigation_widget.dart';
+import '../../main.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -83,9 +87,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           // Handle Remember Me
           if (_rememberMe) {
             // TODO: Save credentials securely
-            if (kDebugMode) {
-              print('[LoginPage] Remember Me is checked - implement secure storage');
-            }
+            AppLogger.logUserAction('remember_me_checked');
           }
           
           context.goNamed('world-list');
@@ -98,9 +100,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         }
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('[LoginPage] Login error: $e');
-      }
+      AppLogger.logError('Login-Fehler auf LoginPage', e);
       
       if (mounted) {
         setState(() {

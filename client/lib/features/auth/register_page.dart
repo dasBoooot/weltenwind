@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
+import '../../shared/widgets/user_info_widget.dart';
+import '../../shared/widgets/navigation_widget.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -46,9 +49,7 @@ class _RegisterPageState extends State<RegisterPage> {
         _authService = AuthService();
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('[RegisterPage] ServiceLocator error: $e, using direct instantiation');
-      }
+      AppLogger.app.w('⚠️ ServiceLocator Fehler - nutze direkte Instanziierung', error: e);
       _authService = AuthService();
     }
   }

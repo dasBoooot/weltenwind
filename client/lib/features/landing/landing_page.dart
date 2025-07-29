@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/logger.dart';
+import '../../core/services/auth_service.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
+import '../../shared/widgets/navigation_widget.dart';
+import '../../main.dart';
 import 'dart:math' as math;
 
 class LandingPage extends StatefulWidget {
@@ -28,9 +32,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    if (kDebugMode) {
-      print('[LandingPage] Initialized');
-    }
+    AppLogger.app.d('📱 LandingPage initialisiert');
     
     // Main animations
     _fadeController = AnimationController(
@@ -116,9 +118,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) {
-      print('[LandingPage] Building...');
-    }
+    AppLogger.app.d('🏗️ LandingPage wird gebaut...');
     
     return Scaffold(
       body: BackgroundWidget(

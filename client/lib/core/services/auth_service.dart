@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../models/user.dart';
+import '../../config/logger.dart';
 import 'api_service.dart';
 import 'token_storage.dart';
 
@@ -21,14 +22,12 @@ class AuthService {
   Future<bool> isLoggedIn() async {
     try {
       final accessToken = await TokenStorage.getAccessToken();
-      if (kDebugMode) {
-        print('[AuthService] Checking token: ${accessToken != null ? 'present' : 'null'}');
-      }
+      AppLogger.auth.d('🔍 Prüfe Authentication Status', error: {
+        'hasToken': accessToken != null,
+      });
       
       if (accessToken == null || accessToken.isEmpty) {
-        if (kDebugMode) {
-          print('[AuthService] No access token found');
-        }
+        AppLogger.auth.i('❌ Kein Access-Token gefunden');
         isAuthenticated.value = false;
         return false;
       }
@@ -40,29 +39,21 @@ class AuthService {
         final userData = jsonDecode(response.body);
         _currentUser = User.fromJson(userData);
         isAuthenticated.value = true;
-        if (kDebugMode) {
-          print('[AuthService] User authenticated successfully');
-        }
+        AppLogger.logAuthEvent('user_authenticated', username: _currentUser?.username);
         return true;
       } else if (response.statusCode == 401) {
-        if (kDebugMode) {
-          print('[AuthService] Token expired, attempting refresh');
-        }
+        AppLogger.auth.w('⚠️ Token abgelaufen - versuche Refresh');
         // Token abgelaufen, versuche Refresh
         final refreshed = await refreshTokenIfNeeded();
         isAuthenticated.value = refreshed;
         return refreshed;
       }
       
-      if (kDebugMode) {
-        print('[AuthService] Authentication failed with status: ${response.statusCode}');
-      }
+      AppLogger.auth.w('❌ Auth fehlgeschlagen (${response.statusCode})');
       isAuthenticated.value = false;
       return false;
     } catch (e) {
-      if (kDebugMode) {
-        print('[AuthService] isLoggedIn() failed: $e');
-      }
+      AppLogger.auth.e('❌ isLoggedIn() fehlgeschlagen', error: e);
       await logout();
       return false;
     }
@@ -138,6 +129,8 @@ class AuthService {
   }
 
   Future<User?> login(String username, String password) async {
+    AppLogger.logAuthEvent('login_attempt', username: username);
+    
     try {
       final response = await _apiService.post('/auth/login', {
         'username': username,
@@ -161,19 +154,40 @@ class AuthService {
         // Fetch complete user data with roles
         await fetchCurrentUser();
         
+        AppLogger.logAuthEvent('login_success', username: username, metadata: {
+          'userId': _currentUser?.id,
+          'roles': _currentUser?.roles?.map((r) => r.role.name).toList(),
+        });
+        
         return _currentUser;
       } else if (response.statusCode == 401) {
+        AppLogger.logAuthEvent('login_failed', username: username, metadata: {
+          'reason': 'invalid_credentials',
+          'statusCode': response.statusCode,
+        });
         throw Exception('Benutzername oder Passwort falsch');
       } else {
         final errorData = jsonDecode(response.body);
+        AppLogger.logAuthEvent('login_failed', username: username, metadata: {
+          'reason': 'server_error',
+          'statusCode': response.statusCode,
+          'error': errorData['message'],
+        });
         throw Exception(errorData['message'] ?? 'Login fehlgeschlagen');
       }
     } catch (e) {
+      AppLogger.logAuthEvent('login_error', username: username, metadata: {
+        'error': e.toString(),
+      });
       rethrow;
     }
   }
 
   Future<User?> register(String username, String email, String password) async {
+    AppLogger.logAuthEvent('register_attempt', username: username, metadata: {
+      'email': email,
+    });
+    
     try {
       final response = await _apiService.post('/auth/register', {
         'username': username,
@@ -195,19 +209,14 @@ class AuthService {
         
         final userData = data['user'];
         
-        // Debug-Logging für Rollenzuweisung
-        if (kDebugMode && userData['_debug'] != null) {
-          print('=== REGISTRIERUNG DEBUG INFO ===');
-          print('User ID: ${userData['id']}');
-          print('Username: ${userData['username']}');
-          print('Anzahl Rollen: ${userData['_debug']['rolesCount']}');
-          if (userData['_debug']['roleDetails'] != null) {
-            print('Rollen-Details:');
-            for (var role in userData['_debug']['roleDetails']) {
-              print('  - ${role['roleName']} (${role['scopeType']}:${role['scopeObjectId']})');
-            }
-          }
-          print('================================');
+        // Log Registration Debug Info
+        if (userData['_debug'] != null) {
+          AppLogger.auth.d('📝 Registrierung Debug Info', error: {
+            'userId': userData['id'],
+            'username': userData['username'],
+            'rolesCount': userData['_debug']['rolesCount'],
+            'roleDetails': userData['_debug']['roleDetails'],
+          });
         }
         
         // User-Daten speichern
@@ -219,18 +228,32 @@ class AuthService {
         // Fetch complete user data with roles
         await fetchCurrentUser();
         
+        AppLogger.logAuthEvent('register_success', username: username, metadata: {
+          'userId': _currentUser?.id,
+          'email': email,
+          'roles': _currentUser?.roles?.map((r) => r.role.name).toList(),
+        });
+        
         return _currentUser;
       } else if (response.statusCode == 409) {
+        AppLogger.logAuthEvent('register_failed', username: username, metadata: {
+          'reason': 'conflict',
+          'statusCode': response.statusCode,
+          'email': email,
+        });
         throw Exception('Benutzername oder E-Mail bereits vorhanden');
       } else {
         final errorData = jsonDecode(response.body);
-        if (kDebugMode) {
-          print('Registration error response: ${response.body}');
-        }
+        AppLogger.logAuthEvent('register_failed', username: username, metadata: {
+          'reason': 'server_error',
+          'statusCode': response.statusCode,
+          'error': errorData['error'] ?? errorData['message'],
+          'details': errorData['details'],
+          'email': email,
+        });
         
         // Detailliertere Fehlerbehandlung
-        if (errorData['details'] != null && kDebugMode) {
-          print('Error details: ${errorData['details']}');
+        if (errorData['details'] != null) {
           if (errorData['details']['hint'] != null) {
             throw Exception('${errorData['error']} - ${errorData['details']['hint']}');
           }
@@ -239,12 +262,19 @@ class AuthService {
         throw Exception(errorData['error'] ?? errorData['message'] ?? 'Registrierung fehlgeschlagen');
       }
     } catch (e) {
+      AppLogger.logAuthEvent('register_error', username: username, metadata: {
+        'error': e.toString(),
+        'email': email,
+      });
       rethrow;
     }
   }
 
   // Erweitertes Logout mit Server-Call und vollständigem Cleanup
   Future<void> logout() async {
+    final username = _currentUser?.username ?? 'unknown';
+    AppLogger.logAuthEvent('logout_attempt', username: username);
+    
     try {
       // Versuche Server-seitiges Logout
       final accessToken = await TokenStorage.getAccessToken();
@@ -252,14 +282,12 @@ class AuthService {
         _apiService.setToken(accessToken);
         try {
           await _apiService.post('/auth/logout', {});
-          if (kDebugMode) {
-            print('[AuthService] Server-side logout successful');
-          }
+          AppLogger.logAuthEvent('server_logout_success', username: username);
         } catch (e) {
           // Server-Logout fehlgeschlagen, trotzdem lokal ausloggen
-          if (kDebugMode) {
-            print('[AuthService] Server logout failed: $e');
-          }
+          AppLogger.logAuthEvent('server_logout_failed', username: username, metadata: {
+            'error': e.toString(),
+          });
         }
       }
       
@@ -268,10 +296,10 @@ class AuthService {
       _currentUser = null;
       _apiService.clearToken();
       isAuthenticated.value = false; // Reaktiven Status setzen
+      
+      AppLogger.logAuthEvent('logout_success', username: username);
     } catch (e) {
-      if (kDebugMode) {
-        print('[AuthService] Error during logout: $e');
-      }
+      AppLogger.auth.e('❌ Logout-Fehler', error: e);
     }
   }
 
@@ -360,9 +388,7 @@ class AuthService {
         throw Exception('Failed to fetch user data');
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('[AuthService] Error fetching current user: $e');
-      }
+      AppLogger.auth.e('❌ Fehler beim Laden des aktuellen Users', error: e);
       return null;
     }
   }
@@ -386,9 +412,7 @@ class AuthService {
         return _currentUser;
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('[AuthService] Error loading stored user: $e');
-      }
+      AppLogger.auth.e('❌ Fehler beim Laden des gespeicherten Users', error: e);
     }
     return null;
   }
@@ -405,18 +429,14 @@ class AuthService {
       });
 
       if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print('[AuthService] Password reset requested successfully');
-        }
+        AppLogger.auth.i('✅ Password-Reset angefordert');
         return true;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Passwort-Reset Anfrage fehlgeschlagen');
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('[AuthService] Request password reset failed: $e');
-      }
+      AppLogger.auth.e('❌ Password-Reset Anfrage fehlgeschlagen', error: e);
       rethrow;
     }
   }
@@ -430,18 +450,14 @@ class AuthService {
       });
 
       if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print('[AuthService] Password reset successfully');
-        }
+        AppLogger.auth.i('✅ Password erfolgreich zurückgesetzt');
         return true;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Passwort-Zurücksetzung fehlgeschlagen');
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('[AuthService] Reset password failed: $e');
-      }
+      AppLogger.auth.e('❌ Password-Reset fehlgeschlagen', error: e);
       rethrow;
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/logger.dart';
 import '../../core/models/world.dart';
 import '../../core/services/world_service.dart';
 import '../../core/services/auth_service.dart';
@@ -71,9 +72,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         _authService = AuthService();
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('[WorldJoinPage] ServiceLocator error: $e, using direct instantiation');
-      }
+      AppLogger.app.w('⚠️ ServiceLocator Fehler - nutze direkte Instanziierung', error: e);
       _worldService = WorldService();
       _authService = AuthService();
     }
@@ -121,9 +120,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
           isJoined = await _worldService.isPlayerInWorld(worldId);
           isPreRegistered = await _worldService.isPreRegisteredForWorld(worldId);
         } catch (e) {
-          if (kDebugMode) {
-            print('[WorldJoinPage] Status check error: $e');
-          }
+          AppLogger.logError('World Status Check fehlgeschlagen', e);
         }
       }
       
@@ -135,9 +132,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       });
 
     } catch (e) {
-      if (kDebugMode) {
-        print('[WorldJoinPage] Error loading world data: $e');
-      }
+      AppLogger.logError('World-Daten laden fehlgeschlagen', e, context: {'worldId': widget.worldId});
       
       setState(() {
         _errorMessage = 'Fehler beim Laden der Welt-Daten';
@@ -179,9 +174,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         });
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('[WorldJoinPage] Error joining world: $e');
-      }
+      AppLogger.logError('World beitreten fehlgeschlagen', e, context: {'worldId': widget.worldId});
       
       setState(() {
         if (e.toString().contains('already joined')) {

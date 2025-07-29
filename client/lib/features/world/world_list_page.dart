@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/world_service.dart';
 import '../../core/services/invite_service.dart';
@@ -78,9 +79,7 @@ class _WorldListPageState extends State<WorldListPage> {
         _inviteService = InviteService();
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('[WorldListPage] ServiceLocator error: $e, using direct instantiation');
-      }
+      AppLogger.app.w('⚠️ ServiceLocator Fehler - nutze direkte Instanziierung', error: e);
       _authService = AuthService();
       _worldService = WorldService();
       _inviteService = InviteService();
@@ -264,9 +263,7 @@ class _WorldListPageState extends State<WorldListPage> {
           }
         } else {
           // Only log other errors
-          if (kDebugMode) {
-            print('Error checking player status for world ${world.id}: $e');
-          }
+          AppLogger.logError('Player-Status Check fehlgeschlagen', e, context: {'worldId': world.id});
         }
       }
     }
@@ -293,9 +290,7 @@ class _WorldListPageState extends State<WorldListPage> {
             }
           } else {
             // Only log other errors
-            if (kDebugMode) {
-              print('Error checking pre-registration status for world ${world.id}: $e');
-            }
+            AppLogger.logError('Pre-Registration Status Check fehlgeschlagen', e, context: {'worldId': world.id});
           }
         }
       }

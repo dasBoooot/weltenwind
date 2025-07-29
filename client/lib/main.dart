@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'app.dart';
+import 'config/logger.dart';
 
 // Service-Container für Dependency Injection
 class ServiceLocator {
@@ -31,9 +32,42 @@ class ServiceLocator {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (kDebugMode) {
-    print('[main] Starting WeltenwindApp...');
-  }
+  // Initialisiere das Logging-System
+  AppLogger.initialize();
+  AppLogger.app.i('🚀 WeltenwindApp wird gestartet...');
+
+  // Flutter Error Handling
+  FlutterError.onError = (FlutterErrorDetails details) {
+    AppLogger.logError(
+      'Flutter Framework Error',
+      details.exception,
+      stackTrace: details.stack,
+      context: {
+        'library': details.library,
+        'context': details.context?.toString(),
+        'informationCollector': details.informationCollector?.toString(),
+      },
+    );
+    
+    // In Debug Mode auch zur Console
+    if (kDebugMode) {
+      FlutterError.presentError(details);
+    }
+  };
+
+  // Dart Error Handling (für unhandled exceptions)
+  WidgetsBinding.instance.platformDispatcher.onError = (error, stack) {
+    AppLogger.logError(
+      'Unhandled Dart Error',
+      error,
+      stackTrace: stack,
+      context: {
+        'type': 'dart_unhandled',
+        'isolate': 'main',
+      },
+    );
+    return true; // Handled
+  };
 
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
@@ -41,9 +75,7 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  if (kDebugMode) {
-    print('[main] Orientations set');
-  }
+  AppLogger.app.i('📱 Orientations gesetzt');
 
   // WeltenwindApp starten - Initialisierung erfolgt im SplashScreen
   runApp(const WeltenwindApp());

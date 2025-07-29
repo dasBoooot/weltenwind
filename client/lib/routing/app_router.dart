@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../config/logger.dart';
 import '../features/auth/login_page.dart';
 import '../features/auth/register_page.dart';
 import '../features/auth/forgot_password_page.dart';
@@ -10,8 +11,36 @@ import '../features/dashboard/dashboard_page.dart';
 import '../features/landing/landing_page.dart';
 import '../core/services/auth_service.dart';
 import '../theme/app_theme.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
 import '../main.dart';
+
+// Custom Navigation Observer für Logging
+class AppNavigationObserver extends NavigatorObserver {
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+    _logNavigation(oldRoute?.settings.name, newRoute?.settings.name, 'replace');
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPop(route, previousRoute);
+    _logNavigation(route.settings.name, previousRoute?.settings.name, 'pop');
+  }
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPush(route, previousRoute);
+    _logNavigation(previousRoute?.settings.name, route.settings.name, 'push');
+  }
+
+  void _logNavigation(String? from, String? to, String action) {
+    if (from != null && to != null) {
+      AppLogger.logNavigation(from, to, params: {'action': action});
+    } else if (to != null) {
+      AppLogger.navigation.i('🧭 Navigation: → $to ($action)');
+    }
+  }
+}
 
 class AppRouter {
   // Named Routes für bessere Navigation
@@ -38,18 +67,14 @@ class AppRouter {
         return ServiceLocator.get<AuthService>();
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('[AppRouter] ServiceLocator error: $e');
-      }
+      AppLogger.navigation.w('⚠️ ServiceLocator Fehler', error: e);
     }
     // Kein Fallback - Services sind nicht verfügbar
     return null;
   }
   
   static GoRouter get router {
-    if (kDebugMode) {
-      print('[Router] Getting router instance: $_routerInstance');
-    }
+    AppLogger.navigation.d('🔍 Router-Instanz angefragt', error: {'initialized': _routerInstance != null});
     
     if (_routerInstance != null) {
       return _routerInstance!;
@@ -57,14 +82,16 @@ class AppRouter {
     
     // Router nur einmal initialisieren
     if (!_isInitialized) {
-      if (kDebugMode) {
-        print('[Router] Initializing router...');
-      }
+      AppLogger.navigation.i('🚀 Router wird initialisiert...');
       try {
         _routerInstance = GoRouter(
           initialLocation: '/go',
           navigatorKey: _rootNavigatorKey,
-          // refreshListenable temporär entfernt - wird später hinzugefügt
+          
+          // Navigation Observer für User Journey Tracking
+          observers: [
+            AppNavigationObserver(),
+          ],
           
           // Redirect aktiviert - Services werden jetzt korrekt initialisiert
           redirect: (context, state) async {
@@ -91,9 +118,7 @@ class AppRouter {
 
           return null;
         } catch (e) {
-          if (kDebugMode) {
-            print('[Router] Redirect error: $e');
-          }
+          AppLogger.navigation.e('❌ Router Redirect Fehler', error: e, stackTrace: StackTrace.current);
           // Bei Fehlern zur Login-Seite weiterleiten
           return '/go/auth/login';
         }
@@ -273,9 +298,7 @@ class AppRouter {
         _isInitialized = true;
       } catch (e) {
         // Bei Fehler während der Initialisierung
-        if (kDebugMode) {
-          print('[Router] Initialization error: $e');
-        }
+        AppLogger.navigation.e('❌ Router Initialisierungs-Fehler', error: e);
         // Fallback: Minimaler Router nur mit Error Page
         _routerInstance = GoRouter(
           initialLocation: '/go',
@@ -304,9 +327,7 @@ class AppRouter {
   // Cache beim App-Start invalidieren
   static void invalidateCacheOnStart() {
     // Caching entfernt, daher keine Cache-Invalidierung mehr nötig
-    if (kDebugMode) {
-      print('[AppRouter] Auth cache invalidated on app start');
-    }
+    AppLogger.navigation.i('🔄 Auth-Cache beim App-Start invalidiert');
   }
 }
 

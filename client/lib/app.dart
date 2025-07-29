@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'config/env.dart';
+import 'config/logger.dart';
 import 'routing/app_router.dart';
 import 'shared/widgets/splash_screen.dart';
 import 'main.dart';
@@ -14,9 +15,7 @@ class WeltenwindApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) {
-      print('[WeltenwindApp] Building app...');
-    }
+    AppLogger.app.d('🏗️ WeltenwindApp wird gebaut...');
     
     return SplashScreen(
       initializationFunction: _initializeApp,
@@ -44,94 +43,73 @@ class WeltenwindApp extends StatelessWidget {
 
   // Korrekte Initialisierungsfunktion NACH App-Start
   Future<void> _initializeApp() async {
-    if (kDebugMode) {
-      print('[WeltenwindApp] App starting...');
-    }
+    AppLogger.app.i('🚀 App startet...');
     
     // 1. Environment initialisieren
     await Env.initialize();
     
-    if (kDebugMode) {
-      print('[WeltenwindApp] Environment initialized');
-    }
+    AppLogger.app.i('🌍 Environment initialisiert');
     
     // 2. Services initialisieren (jetzt sicher, da App bereits läuft)
     try {
       final authService = AuthService();
-      final apiService = ApiService();
+      final apiService = ApiService.withAuth(authService);
       final worldService = WorldService();
       final inviteService = InviteService();
-      
-      // Register services for dependency injection
+
       ServiceLocator.register<AuthService>(authService);
       ServiceLocator.register<ApiService>(apiService);
       ServiceLocator.register<WorldService>(worldService);
       ServiceLocator.register<InviteService>(inviteService);
       
-      if (kDebugMode) {
-        print('[WeltenwindApp] Services registered');
-      }
+      AppLogger.app.i('⚙️ Services registriert');
       
       // 3. Token-Validierung beim App-Start (VOR loadStoredUser)
       bool isValid = false;
       try {
         isValid = await authService.validateTokensOnStart();
-        if (kDebugMode) {
-          print('[WeltenwindApp] Tokens valid: $isValid');
-        }
+        AppLogger.app.i('🔑 Tokens valid: $isValid');
         
         if (!isValid) {
-          if (kDebugMode) {
-            print('[WeltenwindApp] Tokens invalid, logging out');
-          }
+          AppLogger.app.w('⚠️ Tokens ungültig - logout');
           await authService.logout();
         }
       } catch (e) {
-        if (kDebugMode) {
-          print('[WeltenwindApp] Token validation error: $e');
-        }
+        AppLogger.app.e('❌ Token-Validierung fehlgeschlagen', error: e);
         // Bei Token-Validierungsfehlern einfach ausloggen
         await authService.logout();
       }
       
-      // 4. Load stored user only if tokens are valid
+      // 4. Gespeicherte User-Daten laden (nur wenn Tokens gültig)
       if (isValid) {
-        final user = await authService.loadStoredUser();
-        if (user != null) {
-          authService.isAuthenticated.value = true;
-          if (kDebugMode) {
-            print('[WeltenwindApp] Stored user loaded and authenticated');
+        try {
+          final user = await authService.loadStoredUser();
+          if (user != null) {
+            authService.isAuthenticated.value = true;
+            AppLogger.app.i('👤 User geladen und authentifiziert');
+          } else {
+            AppLogger.app.i('👤 Kein gespeicherter User gefunden');
           }
-        } else {
-          if (kDebugMode) {
-            print('[WeltenwindApp] No stored user found');
-          }
+        } catch (e) {
+          AppLogger.app.e('❌ User-Load fehlgeschlagen', error: e);
         }
       } else {
-        if (kDebugMode) {
-          print('[WeltenwindApp] No valid tokens, skipping user load');
-        }
+        AppLogger.app.i('👤 Keine gültigen Tokens - User-Load übersprungen');
       }
+      
+      // Auth-Cache beim App-Start invalidieren
+      AppRouter.invalidateCacheOnStart();
+      
+      AppLogger.app.i('✅ Initialisierung abgeschlossen');
     } catch (e) {
-      if (kDebugMode) {
-        print('[WeltenwindApp] Service initialization error: $e');
-      }
+      AppLogger.app.e('❌ Service-Initialisierung fehlgeschlagen', error: e);
       // Bei Auth-Service-Fehlern einfach weitermachen
       // Die App kann auch ohne gültige Tokens funktionieren
     }
-    
-    // 5. Auth-Cache invalidieren beim App-Start
-    AppRouter.invalidateCacheOnStart();
-    
-    if (kDebugMode) {
-      print('[WeltenwindApp] Initialization complete');
-    }
   }
-
+  
   // Timeout-Callback für SplashScreen
   void _onTimeout() {
-    if (kDebugMode) {
-      print('[WeltenwindApp] Initialization timeout reached - continuing anyway');
-    }
+    AppLogger.app.w('⏰ Initialisierung timeout - fortfahren');
   }
 } 
