@@ -6,6 +6,8 @@ import { hasPermission } from '../services/access-control.service';
 import { jwtConfig } from '../config/jwt.config';
 import jwt from 'jsonwebtoken';
 import prisma from '../libs/prisma';
+import { mailService } from '../services/mail.service';
+import { loggers } from '../config/logger.config';
 
 // Sichere User-Guard Funktion
 function requireUser(req: AuthenticatedRequest): asserts req is Required<AuthenticatedRequest> {
@@ -330,8 +332,38 @@ router.post('/:id/invites', authenticate, async (req: AuthenticatedRequest, res)
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 Tage gültig
       }
     });
-    // TODO: Mailversand mit Token
-    // await inviteService.sendInviteEmail({ email: mail, token, worldId });
+    
+    // Mail-Versand mit Token (wenn konfiguriert)
+    if (mailService.isEnabled()) {
+      try {
+        const world = await prisma.world.findUnique({ where: { id: worldId } });
+        const inviterUser = await prisma.user.findUnique({ where: { id: req.user.id } });
+        
+        if (world) {
+          await mailService.sendInviteMail({
+            email: mail,
+            worldName: world.name,
+            inviteToken: token,
+            inviterName: inviterUser?.username
+          }, process.env.BASE_URL || 'http://localhost:3000');
+          
+          loggers.system.info('📧 Invite-Mail versendet', {
+            to: mail,
+            worldId,
+            worldName: world.name,
+            inviterName: inviterUser?.username
+          });
+        }
+      } catch (error) {
+        loggers.system.error('❌ Invite-Mail Versand fehlgeschlagen', {
+          to: mail,
+          worldId,
+          error
+        });
+        // Fehler beim Mail-Versand soll den Invite-Prozess nicht stoppen
+      }
+    }
+    
     invites.push(invite);
   }
   
@@ -657,6 +689,7 @@ router.delete('/:id/pre-register', async (req, res) => {
     message: 'Pre-Registration zurückgezogen'
   });
 });
+
 
 // 🟡 Allgemeinere Routen (gehören ans Ende)
 

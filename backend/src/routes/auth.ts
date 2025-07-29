@@ -18,6 +18,7 @@ import prisma from '../libs/prisma';
 import { csrfProtection, getCsrfToken } from '../middleware/csrf-protection';
 import { rotateSession, CriticalAction } from '../services/session-rotation.service';
 import { loggers } from '../config/logger.config';
+import { mailService } from '../services/mail.service';
 
 const router = express.Router();
 
@@ -555,7 +556,29 @@ router.post('/request-reset',
       expiresAt
     }
   });
-  // TODO: Mail-Versand mit Token
+  // Mail-Versand mit Token (wenn konfiguriert)
+  if (mailService.isEnabled()) {
+    try {
+      await mailService.sendPasswordResetMail({
+        email: user.email,
+        username: user.username,
+        resetToken: token
+      }, process.env.BASE_URL || 'http://localhost:3000');
+      
+      loggers.system.info('📧 Password-Reset-Mail versendet', {
+        to: user.email,
+        username: user.username
+      });
+    } catch (error) {
+      loggers.system.error('❌ Password-Reset-Mail Versand fehlgeschlagen', {
+        to: user.email,
+        username: user.username,
+        error
+      });
+      // Fehler beim Mail-Versand soll den Reset-Prozess nicht stoppen
+    }
+  }
+  
   return res.status(200).json({ message: 'Reset-Mail verschickt (falls E-Mail existiert)' });
 });
 

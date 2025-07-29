@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import '../../config/logger.dart';
-import '../../theme/background_widget.dart';
 
 class SplashScreen extends StatefulWidget {
   final Future<void> Function() initializationFunction;

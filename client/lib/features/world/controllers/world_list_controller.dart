@@ -14,9 +14,9 @@ class WorldListController extends ChangeNotifier {
   // State
   List<World> _worlds = [];
   List<World> _filteredWorlds = [];
-  Map<int, int> _playerCounts = {};
-  Map<int, bool> _preRegisteredWorlds = {};
-  Map<int, bool> _joinedWorlds = {};
+  final Map<int, int> _playerCounts = {};
+  final Map<int, bool> _preRegisteredWorlds = {};
+  final Map<int, bool> _joinedWorlds = {};
   bool _isLoading = false;
   String? _error;
 

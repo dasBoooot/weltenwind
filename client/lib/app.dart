@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'config/env.dart';
 import 'config/logger.dart';
 import 'routing/app_router.dart';

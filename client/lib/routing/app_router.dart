@@ -270,6 +270,46 @@ class AppRouter {
           );
         },
       ),
+      // Neue Route für Invite-Tokens (Direct Link)
+      GoRoute(
+        path: '/go/world-join/:token',
+        name: 'world-join-by-token',
+        pageBuilder: (context, state) {
+          final token = state.pathParameters['token'];
+          if (token == null || token.isEmpty) {
+            AppLogger.navigation.w('⚠️ Invite-Token fehlt', error: {'path': state.matchedLocation});
+            return CustomTransitionPage(
+              child: const ErrorPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+                SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.0, 1.0),
+                    end: Offset.zero,
+                  ).animate(CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeInOut,
+                  )),
+                  child: child,
+                ),
+            );
+          }
+          AppLogger.navigation.i('🎫 Invite-Token erkannt', error: {'token': token.substring(0, 8) + '...'});
+          return CustomTransitionPage(
+            child: WorldJoinPage(inviteToken: token),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0.0, 1.0),
+                  end: Offset.zero,
+                ).animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeInOut,
+                )),
+                child: child,
+              ),
+          );
+        },
+      ),
     ],
     
     // Verbesserte Fehlerbehandlung mit robuster 404-Erkennung
@@ -360,7 +400,7 @@ class ErrorPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.error_outline,
                     size: 64,
                     color: AppTheme.errorColor,
@@ -443,7 +483,7 @@ class AuthErrorPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.lock_outline,
                     size: 64,
                     color: AppTheme.errorColor,

@@ -187,7 +187,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
                 color: AppTheme.primaryColor.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.explore,
                 color: AppTheme.primaryColor,
                 size: 20,
@@ -198,7 +198,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                const Text(
                   'Navigation',
                   style: TextStyle(
                     color: Colors.white,
@@ -251,14 +251,14 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
                     color: AppTheme.primaryColor.withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.explore,
                     color: AppTheme.primaryColor,
                     size: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
+                const Text(
                   'Navigation',
                   style: TextStyle(
                     color: Colors.white,
@@ -337,7 +337,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
               ),
             ),
             if (isActive && !isDisabled)
-              Icon(
+              const Icon(
                 Icons.check_circle,
                 color: AppTheme.primaryColor,
                 size: 16,

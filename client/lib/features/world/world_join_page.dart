@@ -14,9 +14,10 @@ import '../../shared/widgets/navigation_widget.dart';
 import '../../main.dart';
 
 class WorldJoinPage extends StatefulWidget {
-  final String worldId;
+  final String? worldId;
+  final String? inviteToken;
   
-  const WorldJoinPage({super.key, required this.worldId});
+  const WorldJoinPage({super.key, this.worldId, this.inviteToken});
 
   @override
   State<WorldJoinPage> createState() => _WorldJoinPageState();
@@ -80,42 +81,84 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
 
   Future<void> _loadWorldData() async {
     try {
+      // Prüfe Authentifizierung
+      final user = _authService.currentUser;
+      
       setState(() {
-        _isLoading = true;
-        _errorMessage = null;
+        _isAuthenticated = user != null;
       });
 
-      // Auth-Status prüfen
-      final isLoggedIn = await _authService.isLoggedIn();
-      setState(() {
-        _isAuthenticated = isLoggedIn;
-      });
-
-      if (!isLoggedIn) {
+      if (user == null) {
+        // Ohne Login sind nur Basis-Infos verfügbar
         setState(() {
-          _errorMessage = 'Du musst angemeldet sein, um einer Welt beizutreten';
           _isLoading = false;
         });
         return;
       }
 
-      // Welt-Daten laden
-      final worldId = int.tryParse(widget.worldId);
-      if (worldId == null) {
+      // Welt-Daten laden - entweder über worldId oder inviteToken
+      World? world;
+      int? worldId;
+      
+      if (widget.worldId != null) {
+        // Standard-Fall: worldId ist gegeben
+        worldId = int.tryParse(widget.worldId!);
+        if (worldId == null) {
+          setState(() {
+            _errorMessage = 'Ungültige Welt-ID';
+            _isLoading = false;
+          });
+          return;
+        }
+        world = await _worldService.getWorld(worldId);
+      } else if (widget.inviteToken != null) {
+        // Invite-Token Fall: erst Token validieren und World-Info laden
+        try {
+          AppLogger.app.i('🎫 Invite-Token wird verarbeitet', error: {'token': widget.inviteToken!.substring(0, 8) + '...'});
+          
+          // API-Call um Welt-Info über Invite-Token zu bekommen
+          final tokenData = await _worldService.validateInviteToken(widget.inviteToken!);
+          
+          if (tokenData != null && tokenData['world'] != null) {
+            // Token ist gültig - erstelle World-Objekt aus den Daten
+            final worldData = tokenData['world'];
+            world = World.fromJson(worldData);
+            worldId = world.id;
+            
+            AppLogger.app.i('✅ Invite-Token erfolgreich validiert', error: {
+              'worldId': worldId,
+              'worldName': world.name,
+              'inviter': tokenData['invite']?['inviterName']
+            });
+          } else {
+            setState(() {
+              _errorMessage = 'Ungültiger oder abgelaufener Invite-Token';
+              _isLoading = false;
+            });
+            return;
+          }
+        } catch (e) {
+          AppLogger.logError('Invite-Token Verarbeitung fehlgeschlagen', e, context: {'token': widget.inviteToken});
+          setState(() {
+            _errorMessage = 'Fehler beim Validieren des Invite-Tokens';
+            _isLoading = false;
+          });
+          return;
+        }
+      } else {
+        // Weder worldId noch inviteToken - das sollte nicht passieren
         setState(() {
-          _errorMessage = 'Ungültige Welt-ID';
+          _errorMessage = 'Keine Welt-Information verfügbar';
           _isLoading = false;
         });
         return;
       }
-
-      final world = await _worldService.getWorld(worldId);
       
       // Prüfe ob der User bereits beigetreten oder vorregistriert ist
       bool isJoined = false;
       bool isPreRegistered = false;
       
-      if (_authService.currentUser != null) {
+      if (worldId != null && _authService.currentUser != null) {
         try {
           isJoined = await _worldService.isPlayerInWorld(worldId);
           isPreRegistered = await _worldService.isPreRegisteredForWorld(worldId);
@@ -132,7 +175,10 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       });
 
     } catch (e) {
-      AppLogger.logError('World-Daten laden fehlgeschlagen', e, context: {'worldId': widget.worldId});
+      AppLogger.logError('World-Daten laden fehlgeschlagen', e, context: {
+        'worldId': widget.worldId,
+        'inviteToken': widget.inviteToken != null ? widget.inviteToken!.substring(0, 8) + '...' : null
+      });
       
       setState(() {
         _errorMessage = 'Fehler beim Laden der Welt-Daten';
@@ -150,7 +196,23 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     });
 
     try {
-      final worldId = int.parse(widget.worldId);
+      // WorldId extrahieren - entweder direkt oder über die geladene Welt
+      int? worldId;
+      
+      if (widget.worldId != null) {
+        worldId = int.tryParse(widget.worldId!);
+      } else if (_world != null) {
+        worldId = _world!.id;
+      }
+      
+      if (worldId == null) {
+        setState(() {
+          _joinError = 'Welt-ID konnte nicht ermittelt werden';
+          _isJoining = false;
+        });
+        return;
+      }
+      
       final success = await _worldService.joinWorld(worldId);
       
       if (success) {
@@ -159,40 +221,34 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         });
         
         if (mounted) {
-          // Erfolgsmeldung anzeigen
+          // Erfolgreich beigetreten - zeige Erfolgsmeldung
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Erfolgreich ${_world?.name ?? 'Welt'} beigetreten!'),
+              content: Text('Erfolgreich der Welt "${_world!.name}" beigetreten!'),
               backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
+              duration: const Duration(seconds: 3),
             ),
           );
         }
       } else {
         setState(() {
-          _joinError = 'Beitritt zur Welt fehlgeschlagen';
+          _joinError = 'Beitritt fehlgeschlagen. Versuche es erneut.';
         });
       }
     } catch (e) {
-      AppLogger.logError('World beitreten fehlgeschlagen', e, context: {'worldId': widget.worldId});
+      AppLogger.logError('World Join fehlgeschlagen', e, context: {
+        'worldId': widget.worldId,
+        'inviteToken': widget.inviteToken != null ? widget.inviteToken!.substring(0, 8) + '...' : null,
+        'worldName': _world?.name
+      });
       
       setState(() {
-        if (e.toString().contains('already joined')) {
-          _joinError = 'Du bist bereits dieser Welt beigetreten';
-        } else if (e.toString().contains('world not found')) {
-          _joinError = 'Welt nicht gefunden';
-        } else if (e.toString().contains('permission denied')) {
-          _joinError = 'Keine Berechtigung zum Beitritt';
-        } else {
-          _joinError = 'Fehler beim Beitritt zur Welt';
-        }
+        _joinError = 'Ein Fehler ist aufgetreten: ${e.toString()}';
       });
     } finally {
-      if (mounted) {
-        setState(() {
-          _isJoining = false;
-        });
-      }
+      setState(() {
+        _isJoining = false;
+      });
     }
   }
   
@@ -438,12 +494,12 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      const Color(0xFF1A1A1A),
-                      const Color(0xFF2A2A2A),
+                      Color(0xFF1A1A1A),
+                      Color(0xFF2A2A2A),
                     ],
                   ),
                 ),
@@ -493,7 +549,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                       const SizedBox(height: 16),
                       TextButton(
                         onPressed: () => context.goNamed('world-list'),
-                        child: Text(
+                        child: const Text(
                           'Zurück zu den Welten',
                           style: TextStyle(
                             color: AppTheme.primaryColor,
@@ -532,12 +588,12 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      const Color(0xFF1A1A1A),
-                      const Color(0xFF2A2A2A),
+                      Color(0xFF1A1A1A),
+                      Color(0xFF2A2A2A),
                     ],
                   ),
                 ),
@@ -752,9 +808,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
               // Action Buttons
               Container(
                 padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1A1A1A),
-                  borderRadius: const BorderRadius.only(
+                decoration: const BoxDecoration(
+                  color: Color(0xFF1A1A1A),
+                  borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(24),
                     bottomRight: Radius.circular(24),
                   ),
@@ -803,10 +859,10 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.info_outline, color: AppTheme.primaryColor, size: 24),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Über diese Welt',
                 style: TextStyle(
@@ -838,10 +894,10 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.rule, color: AppTheme.primaryColor, size: 24),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Spielregeln',
                 style: TextStyle(
@@ -869,10 +925,10 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.bar_chart, color: AppTheme.primaryColor, size: 24),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Welt-Statistiken',
                 style: TextStyle(
@@ -960,7 +1016,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
             child: Center(
               child: Text(
                 number,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppTheme.primaryColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,

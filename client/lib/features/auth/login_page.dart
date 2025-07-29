@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
-import '../../shared/widgets/user_info_widget.dart';
-import '../../shared/widgets/navigation_widget.dart';
-import '../../main.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

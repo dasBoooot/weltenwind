@@ -370,4 +370,24 @@ class WorldService {
     final status = await getPreRegistrationStatus(worldId);
     return status.isPreRegistered;
   }
+
+  // Invite-Token Validierung
+  Future<Map<String, dynamic>?> validateInviteToken(String token) async {
+    try {
+      // API-Call ohne Authentifizierung (öffentlicher Endpoint)
+      final response = await _apiService.get('/invites/validate/$token');
+      
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['success'] == true && responseData['data'] != null) {
+          return responseData['data'];
+        }
+      }
+      
+      return null;
+    } catch (e) {
+      print('Fehler bei Token-Validierung: $e');
+      return null;
+    }
+  }
 } 

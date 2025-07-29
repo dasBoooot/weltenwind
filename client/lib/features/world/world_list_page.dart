@@ -38,8 +38,8 @@ class _WorldListPageState extends State<WorldListPage> {
   String? _error;
   
   // Track button states for each world
-  Map<int, bool> _preRegisteredWorlds = {};
-  Map<int, bool> _joinedWorlds = {};
+  final Map<int, bool> _preRegisteredWorlds = {};
+  final Map<int, bool> _joinedWorlds = {};
   
   // Filter und Sortierung
   WorldStatus? _statusFilter;
@@ -48,7 +48,7 @@ class _WorldListPageState extends State<WorldListPage> {
   bool _sortAscending = true;
   
   // Spieleranzahl (Simulation - später vom Backend)
-  Map<int, int> _playerCounts = {};
+  final Map<int, int> _playerCounts = {};
 
   @override
   void initState() {
@@ -492,7 +492,7 @@ class _WorldListPageState extends State<WorldListPage> {
         final success = await _inviteService.createInvite(world.id, result);
         if (success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('Einladung erfolgreich versendet!'),
               backgroundColor: Colors.green,
             ),
@@ -560,12 +560,12 @@ class _WorldListPageState extends State<WorldListPage> {
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          gradient: LinearGradient(
+                          gradient: const LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              const Color(0xFF1A1A1A),
-                              const Color(0xFF2A2A2A),
+                              Color(0xFF1A1A1A),
+                              Color(0xFF2A2A2A),
                             ],
                           ),
                         ),
@@ -586,7 +586,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                     width: 2,
                                   ),
                                 ),
-                                child: Icon(
+                                child: const Icon(
                                   Icons.public,
                                   size: 40,
                                   color: AppTheme.primaryColor,

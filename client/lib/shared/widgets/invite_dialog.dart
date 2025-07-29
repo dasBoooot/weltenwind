@@ -81,7 +81,7 @@ class _InviteDialogState extends State<InviteDialog> {
               decoration: InputDecoration(
                 labelText: 'E-Mail-Adresse',
                 labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: Icon(Icons.email, color: AppTheme.primaryColor),
+                prefixIcon: const Icon(Icons.email, color: AppTheme.primaryColor),
                 filled: true,
                 fillColor: const Color(0xFF2D2D2D),
                 border: OutlineInputBorder(
@@ -94,7 +94,7 @@ class _InviteDialogState extends State<InviteDialog> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppTheme.primaryColor),
+                  borderSide: const BorderSide(color: AppTheme.primaryColor),
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),

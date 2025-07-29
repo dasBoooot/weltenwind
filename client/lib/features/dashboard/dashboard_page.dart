@@ -34,12 +34,12 @@ class DashboardPage extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        gradient: LinearGradient(
+                        gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            const Color(0xFF1A1A1A),
-                            const Color(0xFF2A2A2A),
+                            Color(0xFF1A1A1A),
+                            Color(0xFF2A2A2A),
                           ],
                         ),
                       ),
@@ -60,7 +60,7 @@ class DashboardPage extends StatelessWidget {
                                   width: 2,
                                 ),
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.rocket_launch,
                                 size: 40,
                                 color: AppTheme.primaryColor,
@@ -99,7 +99,7 @@ class DashboardPage extends StatelessWidget {
                               ),
                               child: Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.construction,
                                     color: AppTheme.primaryColor,
                                     size: 24,

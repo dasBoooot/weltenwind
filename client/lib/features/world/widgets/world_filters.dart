@@ -92,7 +92,7 @@ class WorldFilters extends StatelessWidget {
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -146,7 +146,7 @@ class WorldFilters extends StatelessWidget {
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

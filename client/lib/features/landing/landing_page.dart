@@ -156,12 +156,12 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                 child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(24),
-                                    gradient: LinearGradient(
+                                    gradient: const LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                       colors: [
-                                        const Color(0xFF1A1A1A),
-                                        const Color(0xFF2A2A2A),
+                                        Color(0xFF1A1A1A),
+                                        Color(0xFF2A2A2A),
                                       ],
                                     ),
                                   ),
@@ -197,7 +197,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                 child: Stack(
                                                   alignment: Alignment.center,
                                                   children: [
-                                                    Icon(
+                                                    const Icon(
                                                       Icons.public,
                                                       size: 70,
                                                       color: AppTheme.primaryColor,
@@ -219,7 +219,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                               decoration: BoxDecoration(
                                                                 color: AppTheme.primaryColor.withOpacity(0.8),
                                                                 shape: BoxShape.circle,
-                                                                boxShadow: [
+                                                                boxShadow: const [
                                                                   BoxShadow(
                                                                     color: AppTheme.primaryColor,
                                                                     blurRadius: 4,
@@ -390,11 +390,11 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                               ),
                                               child: ElevatedButton.icon(
                                                 onPressed: () => context.goNamed('login'),
-                                                icon: Icon(
+                                                icon: const Icon(
                                                   Icons.login,
                                                   color: AppTheme.primaryColor,
                                                 ),
-                                                label: Text(
+                                                label: const Text(
                                                   'Bereits Mitglied? Anmelden',
                                                   style: TextStyle(
                                                     color: AppTheme.primaryColor,
@@ -464,7 +464,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Icon(
+                          const Icon(
                             Icons.expand_more,
                             color: AppTheme.primaryColor,
                             size: 30,
@@ -482,7 +482,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
                       child: Column(
                         children: [
-                          Text(
+                          const Text(
                             'Was macht Weltenwind besonders?',
                             style: TextStyle(
                               fontSize: 32,
@@ -575,7 +575,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                             ),
                             child: Column(
                               children: [
-                                Text(
+                                const Text(
                                   'Bereit für dein Abenteuer?',
                                   style: TextStyle(
                                     fontSize: 28,
@@ -697,7 +697,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
       children: [
         Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: AppTheme.primaryColor,

@@ -85,12 +85,12 @@ class WorldCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFF1E1E1E),
-              const Color(0xFF2A2A2A),
+              Color(0xFF1E1E1E),
+              Color(0xFF2A2A2A),
             ],
           ),
           borderRadius: BorderRadius.circular(16),

@@ -29,7 +29,7 @@ class WorldListHeader extends StatelessWidget {
               width: 2,
             ),
           ),
-          child: Icon(
+          child: const Icon(
             Icons.public,
             size: 40,
             color: AppTheme.primaryColor,

@@ -17,6 +17,7 @@ import { requestLoggingMiddleware, errorLoggingMiddleware } from './middleware/l
 
 import authRoutes from './routes/auth';
 import worldRoutes from './routes/worlds';
+import inviteRoutes from './routes/invites';
 import logRoutes from './routes/logs';
 import { cleanupExpiredSessions } from './services/session.service';
 import { cleanupExpiredLockouts } from './services/brute-force-protection.service';
@@ -107,6 +108,7 @@ app.use(requestLoggingMiddleware);
 // === API-Routen ===
 app.use('/api/auth', authRoutes);
 app.use('/api/worlds', worldRoutes);
+app.use('/api/invites', inviteRoutes);
 app.use('/api/logs', logRoutes);
 
 // === API-Doku (OpenAPI) ===

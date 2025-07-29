@@ -150,12 +150,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFF1A1A1A),
-                          const Color(0xFF2A2A2A),
+                          Color(0xFF1A1A1A),
+                          Color(0xFF2A2A2A),
                         ],
                       ),
                     ),
@@ -178,7 +178,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   width: 2,
                                 ),
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.person_add,
                                 size: 40,
                                 color: AppTheme.primaryColor,
@@ -211,7 +211,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               decoration: InputDecoration(
                                 labelText: 'Benutzername',
                                 labelStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.person, color: AppTheme.primaryColor),
+                                prefixIcon: const Icon(Icons.person, color: AppTheme.primaryColor),
                                 filled: true,
                                 fillColor: const Color(0xFF2D2D2D),
                                 border: OutlineInputBorder(
@@ -224,7 +224,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                                  borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -258,7 +258,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               decoration: InputDecoration(
                                 labelText: 'E-Mail',
                                 labelStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.email, color: AppTheme.primaryColor),
+                                prefixIcon: const Icon(Icons.email, color: AppTheme.primaryColor),
                                 filled: true,
                                 fillColor: const Color(0xFF2D2D2D),
                                 border: OutlineInputBorder(
@@ -271,7 +271,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                                  borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -304,7 +304,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               decoration: InputDecoration(
                                 labelText: 'Passwort',
                                 labelStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.lock, color: AppTheme.primaryColor),
+                                prefixIcon: const Icon(Icons.lock, color: AppTheme.primaryColor),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -328,7 +328,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                                  borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -415,7 +415,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                                 TextButton(
                                   onPressed: () => context.goNamed('login'),
-                                  child: Text(
+                                  child: const Text(
                                     'Anmelden',
                                     style: TextStyle(
                                       color: AppTheme.primaryColor,

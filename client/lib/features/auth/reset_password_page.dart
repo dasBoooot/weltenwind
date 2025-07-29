@@ -136,12 +136,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        gradient: LinearGradient(
+                        gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            const Color(0xFF1A1A1A),
-                            const Color(0xFF2A2A2A),
+                            Color(0xFF1A1A1A),
+                            Color(0xFF2A2A2A),
                           ],
                         ),
                       ),
@@ -220,7 +220,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                                       child: child,
                                     );
                                   },
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.check_circle,
                                     size: 64,
                                     color: Colors.green,
@@ -246,7 +246,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                                   decoration: InputDecoration(
                                     labelText: 'Neues Passwort',
                                     labelStyle: TextStyle(color: Colors.grey[400]),
-                                    prefixIcon: Icon(Icons.lock, color: AppTheme.primaryColor),
+                                    prefixIcon: const Icon(Icons.lock, color: AppTheme.primaryColor),
                                     suffixIcon: IconButton(
                                       icon: Icon(
                                         _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -270,7 +270,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                                      borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
                                     ),
                                     errorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
@@ -315,7 +315,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                                   decoration: InputDecoration(
                                     labelText: 'Passwort bestätigen',
                                     labelStyle: TextStyle(color: Colors.grey[400]),
-                                    prefixIcon: Icon(Icons.lock_outline, color: AppTheme.primaryColor),
+                                    prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.primaryColor),
                                     suffixIcon: IconButton(
                                       icon: Icon(
                                         _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
@@ -339,7 +339,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                                      borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
                                     ),
                                     errorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
@@ -374,7 +374,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      const Text(
                                         'Passwort-Anforderungen:',
                                         style: TextStyle(
                                           color: Colors.white,
@@ -462,7 +462,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                               if (!_isSuccess)
                                 TextButton(
                                   onPressed: () => context.goNamed('login'),
-                                  child: Text(
+                                  child: const Text(
                                     'Zurück zur Anmeldung',
                                     style: TextStyle(
                                       color: AppTheme.primaryColor,
