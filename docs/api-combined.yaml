@@ -8,6 +8,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: JWT Token für authentifizierte Anfragen
   schemas:
     User:
       type: object
@@ -121,6 +122,27 @@ components:
         state:
           type: string
           nullable: true
+  responses:
+    Unauthorized:
+      description: Nicht authentifiziert
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Unauthorized
+    InternalError:
+      description: Interner Serverfehler
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Internal server error
 paths:
   /api/auth/login:
     post:
