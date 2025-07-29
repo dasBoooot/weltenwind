@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../models/world.dart';
 import 'api_service.dart';
 import 'auth_service.dart';
+import '../../config/logger.dart';
 
 // PreRegistrationStatus-Model für bessere Typisierung
 class PreRegistrationStatus {
@@ -388,6 +389,44 @@ class WorldService {
     } catch (e) {
       print('Fehler bei Token-Validierung: $e');
       return null;
+    }
+  }
+
+  // Invite akzeptieren und User der Welt hinzufügen
+  Future<Map<String, dynamic>?> acceptInvite(String token) async {
+    try {
+      AppLogger.app.i('🎫 Invite wird akzeptiert', error: {'token': token.substring(0, 8) + '...'});
+      
+      // API-Call mit Authentifizierung (da User eingeloggt sein muss)
+      final response = await _apiService.post('/invites/accept/$token', {});
+      
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['success'] == true && responseData['data'] != null) {
+          AppLogger.app.i('✅ Invite erfolgreich akzeptiert', error: {
+            'worldId': responseData['data']['world']?['id'],
+            'worldName': responseData['data']['world']?['name']
+          });
+          return responseData['data'];
+        }
+      }
+      
+      // Fehlerbehandlung für spezifische HTTP-Status-Codes
+      if (response.statusCode == 409) {
+        AppLogger.app.w('⚠️ Invite bereits akzeptiert', error: {'token': token.substring(0, 8) + '...'});
+        throw Exception('Invite bereits akzeptiert');
+      } else if (response.statusCode == 403) {
+        AppLogger.app.w('⚠️ E-Mail-Mismatch bei Invite', error: {'token': token.substring(0, 8) + '...'});
+        throw Exception('Diese Einladung ist nicht für deine E-Mail-Adresse bestimmt');
+      } else if (response.statusCode == 410) {
+        AppLogger.app.w('⚠️ Invite-Token abgelaufen', error: {'token': token.substring(0, 8) + '...'});
+        throw Exception('Invite-Token ist abgelaufen');
+      }
+      
+      return null;
+    } catch (e) {
+      AppLogger.logError('Fehler bei Invite-Akzeptierung', e, context: {'token': token.substring(0, 8) + '...'});
+      rethrow;
     }
   }
 } 

@@ -12,6 +12,7 @@ import '../features/landing/landing_page.dart';
 import '../core/services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../main.dart';
+import '../features/world/world_join_page.dart';
 
 // Custom Navigation Observer für Logging
 class AppNavigationObserver extends NavigatorObserver {
@@ -105,15 +106,24 @@ class AppRouter {
           final isLoggedIn = await authService.isLoggedIn();
 
           final isAuthRoute = state.matchedLocation.startsWith('/go/auth');
-          final isProtectedRoute = state.matchedLocation.startsWith('/go/worlds') ||
-                                  state.matchedLocation.startsWith('/go/dashboard');
+          final isInviteRoute = state.matchedLocation.startsWith('/go/world-join/'); // Invite-Routen sind öffentlich
+          final isProtectedRoute = (state.matchedLocation.startsWith('/go/worlds') ||
+                                  state.matchedLocation.startsWith('/go/dashboard')) &&
+                                  !isInviteRoute; // Invite-Routen ausschließen
 
           if (!isLoggedIn && isProtectedRoute) {
+            AppLogger.navigation.i('🔒 Redirect zu Login', error: {'from': state.matchedLocation});
             return '/go/auth/login';
           }
 
           if (isLoggedIn && isAuthRoute) {
+            AppLogger.navigation.i('🏠 Redirect zu Worlds', error: {'from': state.matchedLocation});
             return '/go/worlds';
+          }
+
+          // Invite-Routen werden durchgelassen (keine Weiterleitung)
+          if (isInviteRoute) {
+            AppLogger.navigation.i('🎫 Invite-Route erkannt - keine Weiterleitung', error: {'route': state.matchedLocation});
           }
 
           return null;
@@ -186,7 +196,7 @@ class AppRouter {
         },
       ),
 
-      // World routes
+      // World routes - NORMALE NAVIGATION
       GoRoute(
         path: '/go/worlds',
         name: worldListRoute,
@@ -233,6 +243,7 @@ class AppRouter {
           );
         },
       ),
+      // NORMALE WORLD-JOIN Route (über interne Navigation)
       GoRoute(
         path: '/go/worlds/:id/join',
         name: worldJoinRoute,
@@ -255,7 +266,10 @@ class AppRouter {
             );
           }
           return CustomTransitionPage(
-            child: WorldJoinPage(worldId: worldId),
+            child: WorldJoinPage(
+              worldId: worldId,
+              flowType: WorldJoinFlowType.normal, // KLARE FLOW-KENNZEICHNUNG
+            ),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               SlideTransition(
                 position: Tween<Offset>(
@@ -270,7 +284,7 @@ class AppRouter {
           );
         },
       ),
-      // Neue Route für Invite-Tokens (Direct Link)
+      // INVITE-FLOW Route (externe Links)
       GoRoute(
         path: '/go/world-join/:token',
         name: 'world-join-by-token',
@@ -295,7 +309,10 @@ class AppRouter {
           }
           AppLogger.navigation.i('🎫 Invite-Token erkannt', error: {'token': token.substring(0, 8) + '...'});
           return CustomTransitionPage(
-            child: WorldJoinPage(inviteToken: token),
+            child: WorldJoinPage(
+              inviteToken: token,
+              flowType: WorldJoinFlowType.invite, // KLARE FLOW-KENNZEICHNUNG
+            ),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               SlideTransition(
                 position: Tween<Offset>(
@@ -335,6 +352,7 @@ class AppRouter {
       return const ErrorPage();
     },
   );
+        
         _isInitialized = true;
       } catch (e) {
         // Bei Fehler während der Initialisierung

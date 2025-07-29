@@ -5,6 +5,9 @@ import '../../core/services/auth_service.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
 
+// ServiceLocator Import für DI
+import '../../main.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -26,6 +29,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   String? _loginError;
   bool _rememberMe = false;
   
+  // Invite-Parameter
+  String? _inviteToken;
+  
   // Für bessere Validierung
   bool _hasInteractedWithUsername = false;
   bool _hasInteractedWithPassword = false;
@@ -33,7 +39,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _authService = AuthService();
+    _initializeServices();
+    _loadQueryParameters();
     
     // Animation Setup
     _animationController = AnimationController(
@@ -59,11 +66,33 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     super.dispose();
   }
 
-  Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
+  void _initializeServices() {
+    try {
+      if (ServiceLocator.has<AuthService>()) {
+        _authService = ServiceLocator.get<AuthService>();
+      } else {
+        _authService = AuthService();
+      }
+    } catch (e) {
+      AppLogger.app.w('⚠️ ServiceLocator Fehler - nutze direkte Instanziierung', error: e);
+      _authService = AuthService();
     }
+  }
+
+  void _loadQueryParameters() {
+    // Query-Parameter aus der URL lesen
+    final routeData = GoRouterState.of(context);
+    _inviteToken = routeData.uri.queryParameters['invite_token'];
     
+    AppLogger.app.i('🎫 Login Query-Parameter geladen', error: {
+      'hasInviteToken': _inviteToken != null,
+      'inviteToken': _inviteToken?.substring(0, 8)
+    });
+  }
+
+  Future<void> _login() async {
+    if (!_formKey.currentState!.validate()) return;
+
     setState(() {
       _isLoading = true;
       _loginError = null;
@@ -76,42 +105,40 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       );
 
       if (user != null) {
+        AppLogger.app.i('✅ Login erfolgreich', error: {'userId': user.id, 'username': user.username});
+        
         if (mounted) {
-          // Success Animation
-          await _animationController.reverse();
+          // HINZUGEFÜGT: Post-Auth-Redirect prüfen
+          final pendingRedirect = _authService.getPendingRedirect();
           
-          // Handle Remember Me
-          if (_rememberMe) {
-            // TODO: Save credentials securely
-            AppLogger.logUserAction('remember_me_checked');
+          if (pendingRedirect != null) {
+            AppLogger.app.i('🎫 Post-Auth-Redirect erkannt', error: pendingRedirect);
+            _authService.clearPendingRedirect();
+            
+            // Redirect zur ursprünglichen Invite-Seite
+            final routeName = pendingRedirect['route'] as String;
+            final params = pendingRedirect['params'] as Map<String, String>?;
+            
+            if (params != null) {
+              context.goNamed(routeName, pathParameters: params);
+            } else {
+              context.goNamed(routeName);
+            }
+          } else if (_inviteToken != null) {
+            // Fallback: Wenn Invite-Token in Query-Parametern, direkt zur Invite-Seite
+            AppLogger.app.i('🎫 Invite-Token in Query - direkte Navigation', error: {'token': _inviteToken!.substring(0, 8) + '...'});
+            context.goNamed('world-join-by-token', pathParameters: {'token': _inviteToken!});
+          } else {
+            // Standard-Redirect zu Welten-Liste
+            context.goNamed('world-list');
           }
-          
-          context.goNamed('world-list');
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _loginError = 'Ungültige Anmeldedaten. Bitte überprüfe deinen Benutzernamen und dein Passwort.';
-          });
         }
       }
     } catch (e) {
-      AppLogger.logError('Login-Fehler auf LoginPage', e);
-      
-      if (mounted) {
-        setState(() {
-          // Bessere Fehlermeldungen basierend auf Fehlertyp
-          if (e.toString().contains('network') || e.toString().contains('connection')) {
-            _loginError = 'Netzwerkfehler. Bitte überprüfe deine Internetverbindung.';
-          } else if (e.toString().contains('timeout')) {
-            _loginError = 'Zeitüberschreitung. Bitte versuche es später erneut.';
-          } else if (e.toString().contains('locked')) {
-            _loginError = 'Dein Konto wurde gesperrt. Bitte kontaktiere den Support.';
-          } else {
-            _loginError = 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es später erneut.';
-          }
-        });
-      }
+      AppLogger.logError('Login fehlgeschlagen', e);
+      setState(() {
+        _loginError = e.toString().replaceAll('Exception: ', '');
+      });
     } finally {
       if (mounted) {
         setState(() {

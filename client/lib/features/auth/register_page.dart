@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
+import '../../core/services/world_service.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
-import '../../shared/widgets/user_info_widget.dart';
-import '../../shared/widgets/navigation_widget.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -30,6 +28,10 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
   bool _obscurePassword = true;
   String? _registerError;
+  
+  // Invite-Parameter
+  String? _inviteToken;
+  String? _prefilledEmail;
 
   // E-Mail-Validierung Regex
   static final RegExp _emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -39,6 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
     super.initState();
     // DI-ready: ServiceLocator verwenden mit robuster Fehlerbehandlung
     _initializeServices();
+    _loadQueryParameters();
   }
 
   void _initializeServices() {
@@ -48,9 +51,30 @@ class _RegisterPageState extends State<RegisterPage> {
       } else {
         _authService = AuthService();
       }
+      
     } catch (e) {
       AppLogger.app.w('⚠️ ServiceLocator Fehler - nutze direkte Instanziierung', error: e);
       _authService = AuthService();
+    }
+  }
+
+  void _loadQueryParameters() {
+    // Query-Parameter aus der URL lesen
+    final routeData = GoRouterState.of(context);
+    _inviteToken = routeData.uri.queryParameters['invite_token'];
+    _prefilledEmail = routeData.uri.queryParameters['email'];
+    
+    AppLogger.app.i('📧 Registration Query-Parameter geladen', error: {
+      'hasInviteToken': _inviteToken != null,
+      'hasPrefilledEmail': _prefilledEmail != null,
+      'inviteToken': _inviteToken?.substring(0, 8),
+      'email': _prefilledEmail
+    });
+    
+    // E-Mail vorbefüllen wenn vorhanden
+    if (_prefilledEmail != null && _prefilledEmail!.isNotEmpty) {
+      _emailController.text = _prefilledEmail!;
+      AppLogger.app.i('📧 E-Mail vorbefüllt', error: {'email': _prefilledEmail});
     }
   }
 
@@ -64,7 +88,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> _register() async {
     final formState = _formKey.currentState;
-    if (formState == null || !formState.validate()) return;
+    if (formState == null || !formState.validate()) {
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -74,50 +100,88 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
       final user = await _authService.register(
         _usernameController.text.trim(),
-        _emailController.text.trim(),
+        _emailController.text.trim().toLowerCase(),
         _passwordController.text,
       );
 
       if (user != null) {
+        AppLogger.app.i('✅ Registrierung erfolgreich', error: {
+          'userId': user.id,
+          'username': user.username,
+          'email': user.email,
+        });
+        
         if (mounted) {
-          // Erfolgreiche Registrierung - der AuthService hat bereits die Tokens gespeichert
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Registrierung erfolgreich! Willkommen bei Weltenwind!'),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
-            ),
-          );
+          // HINZUGEFÜGT: Post-Auth-Redirect prüfen
+          final pendingRedirect = _authService.getPendingRedirect();
           
-          // Kurze Verzögerung für bessere UX
-          await Future.delayed(const Duration(milliseconds: 500));
-          
-          if (mounted) {
-            // Direkt zum Dashboard navigieren
+          if (pendingRedirect != null) {
+            AppLogger.app.i('🎫 Post-Auth-Redirect nach Registration erkannt', error: pendingRedirect);
+            _authService.clearPendingRedirect();
+            
+            // Redirect zur ursprünglichen Invite-Seite
+            final routeName = pendingRedirect['route'] as String;
+            final params = pendingRedirect['params'] as Map<String, String>?;
+            
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Registrierung erfolgreich! Du wirst zur Einladung weitergeleitet...'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+              ),
+            );
+            
+            // Kurze Verzögerung für bessere UX
+            await Future.delayed(const Duration(milliseconds: 500));
+            
+            if (mounted) {
+              if (params != null) {
+                context.goNamed(routeName, pathParameters: params);
+              } else {
+                context.goNamed(routeName);
+              }
+            }
+          } else if (_inviteToken != null) {
+            // Fallback: Wenn Invite-Token in Query-Parametern, direkt zur Invite-Seite
+            AppLogger.app.i('🎫 Invite-Token in Query nach Registration - direkte Navigation', error: {'token': _inviteToken!.substring(0, 8) + '...'});
+            
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Registrierung erfolgreich! Du wirst zur Einladung weitergeleitet...'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+              ),
+            );
+            
+            // Kurze Verzögerung für bessere UX
+            await Future.delayed(const Duration(milliseconds: 500));
+            
+            if (mounted) {
+              context.goNamed('world-join-by-token', pathParameters: {'token': _inviteToken!});
+            }
+          } else {
+            // Standard-Redirect zu Welten-Liste
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Registrierung erfolgreich! Willkommen bei Weltenwind!'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+              ),
+            );
+            
             context.goNamed('world-list');
           }
         }
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          // Verbessertes Error-Handling: Spezifische Fehlermeldungen
-          if (e.toString().contains('username already exists') ||
-              e.toString().contains('Username already taken')) {
-            _registerError = 'Dieser Benutzername ist bereits vergeben';
-          } else if (e.toString().contains('email already exists') ||
-                     e.toString().contains('Email already taken')) {
-            _registerError = 'Diese E-Mail-Adresse ist bereits registriert';
-          } else if (e.toString().contains('SocketException') ||
-                     e.toString().contains('Connection refused')) {
-            _registerError = 'Server nicht erreichbar. Bitte überprüfe deine Internetverbindung.';
-          } else if (e.toString().contains('TimeoutException')) {
-            _registerError = 'Verbindung zum Server zeitüberschritten. Bitte versuche es erneut.';
-          } else {
-            _registerError = e.toString().replaceAll('Exception: ', '');
-          }
-        });
-      }
+      AppLogger.logError('Registrierung fehlgeschlagen', e, context: {
+        'username': _usernameController.text.trim(),
+        'email': _emailController.text.trim().toLowerCase(),
+      });
+      
+      setState(() {
+        _registerError = e.toString().replaceAll('Exception: ', '');
+      });
     } finally {
       if (mounted) {
         setState(() {

@@ -99,8 +99,8 @@ router.get('/validate/:token', async (req, res) => {
     }
 
     // E-Mail-Berechtigung prüfen
-    let userStatus: 'not_logged_in' | 'correct_email' | 'wrong_email' = 'not_logged_in';
-    let requiresAction: 'register' | 'join_world' | 'logout_and_register' = 'register';
+    let userStatus: 'not_logged_in' | 'user_exists_not_logged_in' | 'correct_email' | 'wrong_email';
+    let requiresAction: 'register' | 'login' | 'join_world' | 'logout_and_register';
 
     if (currentUser) {
       if (currentUser.email === invite.email) {
@@ -111,8 +111,21 @@ router.get('/validate/:token', async (req, res) => {
         requiresAction = 'logout_and_register';
       }
     } else {
-      userStatus = 'not_logged_in';
-      requiresAction = 'register';
+      // Prüfe ob User mit dieser E-Mail bereits existiert
+      const existingUser = await prisma.user.findUnique({
+        where: { email: invite.email },
+        select: { id: true }
+      });
+      
+      if (existingUser) {
+        // User existiert, ist aber nicht angemeldet → Login erforderlich
+        userStatus = 'user_exists_not_logged_in';
+        requiresAction = 'login';
+      } else {
+        // User existiert nicht → Registrierung erforderlich
+        userStatus = 'not_logged_in';
+        requiresAction = 'register';
+      }
     }
 
     loggers.system.info('✅ Invite-Token erfolgreich validiert', {
@@ -135,7 +148,10 @@ router.get('/validate/:token', async (req, res) => {
           email: invite.email,
           createdAt: invite.createdAt,
           expiresAt: invite.expiresAt,
-          inviterName: invite.invitedBy?.username || 'System'
+          acceptedAt: invite.acceptedAt, // Wichtig für Frontend-Status
+          invitedBy: invite.invitedBy ? {
+            username: invite.invitedBy.username
+          } : null
         },
         userStatus: {
           status: userStatus,
