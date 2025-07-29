@@ -387,7 +387,8 @@ class WorldService {
       
       return null;
     } catch (e) {
-      print('Fehler bei Token-Validierung: $e');
+      AppLogger.logError('Fehler bei Token-Validierung', e, context: {'token': token.substring(0, 8) + '...'});
+      // Fallback für bessere UX
       return null;
     }
   }

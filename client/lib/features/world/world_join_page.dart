@@ -65,19 +65,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   void initState() {
     super.initState();
     
-    print('🚀 WorldJoinPage initState gestartet');
-    
-    // Tab Controller initialisieren
-    _tabController = TabController(length: 3, vsync: this);
-    
-    print('📋 TabController initialisiert');
-    
-    // DI-ready: ServiceLocator verwenden mit robuster Fehlerbehandlung
+    _tabController = TabController(length: 1, vsync: this);
     _initializeServices();
-    print('🔧 Services initialisiert');
-    
     _loadWorldData();
-    print('📊 _loadWorldData aufgerufen');
   }
   
   @override
@@ -143,28 +133,17 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   }
 
   Future<void> _loadWorldData() async {
-    print('🔍 _loadWorldData() GESTARTET - Flow: ${widget.flowType}');
-    print('Widget params: worldId=${widget.worldId}, inviteToken=${widget.inviteToken != null ? widget.inviteToken!.substring(0, 8) + '...' : 'null'}');
-    
     // FIXED: Robustere Loading-State Verwaltung
     if (_isLoading) {
-      print('⏸️ Bereits am Laden - früher Ausstieg');
       return;
     }
 
-    print('🔄 Setting loading state to true');
     setState(() {
       _isLoading = true;
       _errorMessage = null;
-      _infoMessage = null;
-      _showRegistrationButton = false;
-      _showLogoutButton = false;
-      _inviteEmail = null;
     });
 
     try {
-      print('🔄 Loading-State auf true gesetzt');
-      
       // **KLARE FLOW-TRENNUNG**
       switch (widget.flowType) {
         case WorldJoinFlowType.normal:
@@ -176,7 +155,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       }
       
     } catch (e) {
-      print('💥 FEHLER in _loadWorldData: $e');
+      AppLogger.app.w('💥 FEHLER in _loadWorldData: $e');
       setState(() {
         _errorMessage = 'Fehler beim Laden der Welt-Daten: ${e.toString()}';
         _isLoading = false;
@@ -186,8 +165,6 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
 
   // **NORMALE NAVIGATION: Einfach und direkt**
   Future<void> _handleNormalFlow() async {
-    print('🌍 NORMALE NAVIGATION - WorldId: ${widget.worldId}');
-    
     if (widget.worldId == null) {
       setState(() {
         _errorMessage = 'Keine Welt-ID gefunden';
@@ -197,17 +174,12 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     }
     
     // World laden
-    print('📞 Lade World mit ID: ${widget.worldId}');
     _world = await _worldService.getWorld(int.parse(widget.worldId!));
-    print('✅ World erfolgreich geladen: ${_world?.name}');
     
     // Status prüfen
-    print('📞 Prüfe World-Status...');
     await _checkWorldStatus();
-    print('✅ World-Status geprüft - isJoined: $_isJoined, isPreRegistered: $_isPreRegistered');
     
     // Fertig!
-    print('🔄 Setting loading state to false (normale Navigation)');
     setState(() {
       _isLoading = false;
     });
@@ -215,8 +187,6 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
 
   // **INVITE-FLOW: Komplex mit Auth-Prüfung**
   Future<void> _handleInviteFlow() async {
-    print('🎫 INVITE-FLOW - Token: ${widget.inviteToken?.substring(0, 8)}...');
-    
     if (widget.inviteToken == null) {
       setState(() {
         _errorMessage = 'Kein Einladungstoken gefunden';
@@ -225,38 +195,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       return;
     }
     
-    // WICHTIG: Wenn User bereits authentifiziert ist (Post-Auth-Redirect), 
-    // verwende normale Token-Validation statt direktes Auto-Accept
-    // User soll immer bewusst entscheiden können!
-    
-    // ENTFERNT: Direktes Auto-Accept auch für Post-Auth-Redirects
-    // Alle User sollten den "Einladung annehmen" Button sehen
-    /*
-    if (_authService.currentUser != null) {
-      print('🔐 User bereits authentifiziert - versuche direktes Invite-Accept');
-      print('👤 Current User: ${_authService.currentUser?.email}');
-      
-      try {
-        // Versuche direkt das Invite zu akzeptieren
-        print('📞 Versuche direktes Invite-Accept...');
-        await _autoAcceptInvite();
-        print('✅ Direktes Invite-Accept erfolgreich (Post-Auth)');
-        setState(() {
-          _isLoading = false;
-        });
-        return;
-      } catch (e) {
-        print('⚠️ Direktes Invite-Accept fehlgeschlagen: $e');
-        // Falls das fehlschlägt, mache normale Token-Validation
-        print('🔄 Fallback auf normale Token-Validation...');
-      }
-    }
-    */
-    
-    // Token validieren (nur wenn User nicht authentifiziert oder direktes Accept fehlgeschlagen)
-    print('📞 Validiere Invite-Token...');
+    // Token validieren
     final tokenData = await _worldService.validateInviteToken(widget.inviteToken!);
-    print('✅ Token validiert - hasData: ${tokenData != null}');
     
     if (tokenData == null || tokenData['world'] == null) {
       setState(() {
@@ -293,7 +233,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         isAccepted = true;
       }
     } catch (e) {
-      print('⚠️ Fehler beim Parsen der Invite-Zeitstempel: $e');
+      AppLogger.app.w('⚠️ Fehler beim Parsen der Invite-Zeitstempel: $e');
     }
     
     isInviteValid = !isExpired && !isAccepted;
@@ -307,11 +247,6 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     final userStatusData = tokenData['userStatus'];
     final status = userStatusData['status'];
     final requiresAction = userStatusData['requiresAction'];
-    
-    print('🔍 User-Status: $status, Action: $requiresAction, Email: $inviteEmail');
-    print('👋 Eingeladen von: $invitedByName');
-    print('🌍 Welt: $worldName (Status: $worldStatus)');
-    print('📅 Invite gültig bis: ${expiresAt?.toLocal()} (Abgelaufen: $isExpired, Akzeptiert: $isAccepted)');
     
     // **NEUE INTELLIGENTE BUTTON-LOGIK**
     String actionText = '';
@@ -382,15 +317,12 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
           infoText = '$baseInfoText\n\n$actionText';
           showAcceptButton = isInviteValid; // Nur bei gültigen Invites
           
-          // ENTFERNT: Auto-Accept - User soll bewusst entscheiden!
-          // print('📞 User kann beitreten - versuche Auto-Accept...');
-          // await _autoAcceptInvite();
-          // print('✅ Auto-Accept-Invite abgeschlossen');
+          // Auto-Accept entfernt: User soll bewusst entscheiden!
         }
         break;
         
       default:
-        print('❌ Unbekannter User-Status: $status');
+        AppLogger.app.w('❌ Unbekannter User-Status: $status');
         actionText = 'Unbekannter Status: $status';
         infoText = '$baseInfoText\n\n$actionText';
     }
@@ -444,7 +376,6 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     if (widget.inviteToken == null) return;
     
     try {
-      AppLogger.app.i('🎫 Versuche automatische Invite-Akzeptierung');
       final result = await _worldService.acceptInvite(widget.inviteToken!);
       
       if (result != null) {
@@ -466,7 +397,6 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     } catch (e) {
       // SPEZIALBEHANDLUNG: "Invite bereits akzeptiert" ist KEIN Fehler!
       if (e.toString().contains('Invite bereits akzeptiert')) {
-        print('🎉 Invite bereits akzeptiert - das ist ein Erfolg!');
         setState(() {
           _isJoined = true;
           _infoMessage = 'Du bist bereits Mitglied dieser Welt "${_world?.name}"!';
@@ -486,7 +416,6 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       
       // Andere Fehler normal behandeln
       AppLogger.logError('Automatische Invite-Akzeptierung fehlgeschlagen', e);
-      print('⚠️ Direktes Invite-Accept fehlgeschlagen: $e');
       // Fehler nicht als kritisch behandeln - User kann manuell beitreten
       setState(() {
         _infoMessage = 'Du kannst nun der Welt beitreten.';
