@@ -247,6 +247,16 @@ export const loggers = {
         stack: error?.stack,
         metadata
       })
+  },
+
+  // ARB-Logs (Localization Management)
+  arb: {
+    info: (message: string, metadata?: any) => 
+      logger.info(message, { module: 'ARB', metadata }),
+    warn: (message: string, metadata?: any) => 
+      logger.warn(message, { module: 'ARB', metadata }),
+    error: (message: string, error?: any, metadata?: any) => 
+      logger.error(message, { module: 'ARB', error: error?.message, stack: error?.stack, metadata })
   }
 };
 

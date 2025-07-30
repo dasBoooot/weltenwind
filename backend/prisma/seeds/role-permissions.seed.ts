@@ -34,6 +34,8 @@ export async function seedRolePermissions() {
     { role: 'admin', permission: 'invite.manage', scopeType: 'world', scopeObjectId: '*', accessLevel: 'admin' },
     { role: 'admin', permission: 'invite.delete', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
     { role: 'admin', permission: 'invite.delete', scopeType: 'world', scopeObjectId: '*', accessLevel: 'admin' },
+    { role: 'admin', permission: 'localization.manage', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'admin', permission: 'localization.view', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
     { role: 'admin', permission: 'system.view_own', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
 
     // Developer (global) - Entwickler-Funktionen
@@ -47,6 +49,8 @@ export async function seedRolePermissions() {
     { role: 'developer', permission: 'invite.view', scopeType: 'world', scopeObjectId: '*', accessLevel: 'read' },
     { role: 'developer', permission: 'invite.delete', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'write' },
     { role: 'developer', permission: 'invite.delete', scopeType: 'world', scopeObjectId: '*', accessLevel: 'write' },
+    { role: 'developer', permission: 'localization.manage', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'developer', permission: 'localization.view', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
     { role: 'developer', permission: 'system.view_own', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'read' },
 
     // Support (global) - Support-Funktionen

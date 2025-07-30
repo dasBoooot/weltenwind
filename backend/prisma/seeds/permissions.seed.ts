@@ -34,7 +34,11 @@ export async function seedPermissions() {
     'system.moderation',
     'system.support',
     'system.development',
-    'system.view_own'
+    'system.view_own',
+    
+    // Localization-Management
+    'localization.manage',
+    'localization.view'
   ];
 
   for (const name of permissionNames) {

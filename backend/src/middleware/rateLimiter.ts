@@ -20,9 +20,9 @@ declare module 'express' {
 
 // Strenger Rate-Limiter für Auth-Endpoints (Login/Register)
 export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 Minuten
-  max: 5, // Max 5 Requests pro Window
-  message: 'Zu viele Anfragen. Bitte versuche es in 15 Minuten erneut.',
+  windowMs: 5 * 60 * 1000, // 5 Minuten (reduziert für Development)
+  max: 20, // Max 20 Requests pro Window (erhöht für Development)
+  message: 'Zu viele Anfragen. Bitte versuche es in 5 Minuten erneut.',
   standardHeaders: true,
   legacyHeaders: false,
   // Kein custom keyGenerator - verwende den Standard (IP-basiert, IPv6-sicher)
@@ -33,8 +33,8 @@ export const authLimiter = rateLimit({
     // Strukturiertes Logging
     loggers.security.rateLimitHit(identifier, req.originalUrl, {
       limitType: 'auth',
-      maxRequests: 5,
-      windowMs: '15min',
+      maxRequests: 20,
+      windowMs: '5min',
       currentRequests: (req as any).rateLimit?.current,
       userAgent: req.headers['user-agent'],
       method: req.method
@@ -42,7 +42,7 @@ export const authLimiter = rateLimit({
     
     res.status(429).json({
       error: 'Zu viele Anfragen',
-      message: 'Bitte versuche es in 15 Minuten erneut.',
+      message: 'Bitte versuche es in 5 Minuten erneut.',
       retryAfter: (req as any).rateLimit?.resetTime
     });
   }

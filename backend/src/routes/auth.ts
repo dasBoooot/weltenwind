@@ -98,25 +98,34 @@ function extractClientTimezone(req: express.Request) {
 router.post('/login', 
   authLimiter,      // Rate limiting
   authSlowDown,     // Progressive slow-down
-  async (req: express.Request<{}, {}, { username: string; password: string }>, res) => {
-  const { username, password } = req.body;
+  async (req: express.Request<{}, {}, { username?: string; identifier?: string; password: string }>, res) => {
+  const { username, identifier, password } = req.body;
   const { ip, fingerprint } = extractClientInfo(req);
 
-  if (!username || !password) {
-    loggers.auth.login(username || 'unknown', ip, false, { 
+  // Support both 'username' and 'identifier' fields
+  const loginIdentifier = identifier || username;
+
+  if (!loginIdentifier || !password) {
+    loggers.auth.login(loginIdentifier || 'unknown', ip, false, { 
       reason: 'missing_credentials',
       userAgent: req.headers['user-agent']
     });
     return res.status(400).json({ error: 'Benutzername und Passwort erforderlich' });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { username },
+  // Try to find user by username or email
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { username: loginIdentifier },
+        { email: loginIdentifier }
+      ]
+    },
     include: { roles: true }
   });
 
   if (!user) {
-    loggers.auth.login(username, ip, false, { 
+    loggers.auth.login(loginIdentifier, ip, false, { 
       reason: 'user_not_found',
       userAgent: req.headers['user-agent']
     });
@@ -126,7 +135,7 @@ router.post('/login',
   // Prüfe ob Account gesperrt ist
   const lockStatus = await isAccountLocked(user.id);
   if (lockStatus.locked) {
-    loggers.auth.login(username, ip, false, { 
+    loggers.auth.login(loginIdentifier, ip, false, { 
       reason: 'account_locked',
       lockedUntil: lockStatus.until,
       lockType: lockStatus.until ? 'temporary' : 'permanent',
@@ -152,7 +161,7 @@ router.post('/login',
     // Registriere fehlgeschlagenen Versuch
     const attemptResult = await recordFailedLogin(user.id);
     
-    loggers.auth.login(username, ip, false, { 
+    loggers.auth.login(loginIdentifier, ip, false, { 
       reason: 'invalid_password',
       remainingAttempts: attemptResult.remainingAttempts,
       isLocked: attemptResult.isLocked,
@@ -208,7 +217,7 @@ router.post('/login',
   }
 
   // Erfolgreicher Login loggen
-  loggers.auth.login(username, ip, true, {
+  loggers.auth.login(loginIdentifier, ip, true, {
     userId: user.id,
     email: user.email,
     timezone,

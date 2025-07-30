@@ -19,6 +19,7 @@ import authRoutes from './routes/auth';
 import worldRoutes from './routes/worlds';
 import inviteRoutes from './routes/invites';
 import logRoutes from './routes/logs';
+import arbRoutes from './routes/arb';
 import { cleanupExpiredSessions } from './services/session.service';
 import { cleanupExpiredLockouts } from './services/brute-force-protection.service';
 import prisma from './libs/prisma';
@@ -110,6 +111,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/worlds', worldRoutes);
 app.use('/api/invites', inviteRoutes);
 app.use('/api/logs', logRoutes);
+app.use('/api/arb', arbRoutes);
 
 // === API-Doku (OpenAPI) ===
 // === API-combined.yaml direkt bereitstellen ===
@@ -121,6 +123,11 @@ app.get('/api-combined.yaml', (req, res) => {
 // → mit require.resolve (robuster als direkter Pfad)
 const swaggerEditorPath = path.dirname(require.resolve('swagger-editor-dist/index.html'));
 app.use('/docs', express.static(swaggerEditorPath));
+
+// === ARB Manager unter /arb-manager ===
+const publicPath = path.resolve(__dirname, '../public');
+console.log(`🌍 ARB Manager-Pfad: ${publicPath}`);
+app.use('/arb-manager', express.static(publicPath));
 
 // === Flutter-Web-App unter /game ===
 // 1. Statische Dateien zuerst (für Assets)
@@ -238,6 +245,7 @@ process.on('SIGTERM', async () => {
 app.listen(PORT, () => {
   console.log(`🚀 Weltenwind-API läuft auf Port ${PORT}`);
   console.log(`🎮 Flutter-Game verfügbar unter: http://localhost:${PORT}/game`);
+  console.log(`🌍 ARB Manager verfügbar unter: http://localhost:${PORT}/arb-manager/arb-manager.html`);
   console.log(`📘 Swagger Editor verfügbar unter: http://localhost:${PORT}/docs`);
   console.log(`📄 API-Doku YAML erreichbar unter: http://localhost:${PORT}/api-combined.yaml`);
   console.log(`🔍 Log-Viewer verfügbar unter: http://localhost:${PORT}/api/logs/viewer`);
@@ -256,6 +264,7 @@ app.listen(PORT, () => {
     endpoints: {
       api: `http://localhost:${PORT}/api`,
       game: `http://localhost:${PORT}/game`,
+      arbManager: `http://localhost:${PORT}/arb-manager/arb-manager.html`,
       docs: `http://localhost:${PORT}/docs`,
       logs: `http://localhost:${PORT}/api/logs/viewer`,
       openapi: `http://localhost:${PORT}/api-combined.yaml`

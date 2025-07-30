@@ -1,0 +1,222 @@
+paths:
+  /api/arb/languages:
+    get:
+      summary: Get available languages
+      description: Retrieves all available ARB language files and their metadata
+      tags:
+        - ARB Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of available languages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  languages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: "de"
+                        name:
+                          type: string
+                          example: "Deutsch"
+                        keyCount:
+                          type: integer
+                          example: 207
+                        lastModified:
+                          type: string
+                          format: date-time
+                        isMaster:
+                          type: boolean
+                          example: true
+        '403':
+          description: Insufficient permissions
+        '500':
+          description: Server error
+
+  /api/arb/{language}:
+    get:
+      summary: Load ARB file
+      description: Loads the content of a specific ARB language file
+      tags:
+        - ARB Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: language
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [de, en]
+          example: "de"
+      responses:
+        '200':
+          description: ARB file content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  language:
+                    type: string
+                    example: "de"
+                  entries:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                          example: "welcomeMessage"
+                        value:
+                          type: string
+                          example: "Willkommen bei Weltenwind!"
+                        metadata:
+                          type: object
+                          nullable: true
+                          properties:
+                            description:
+                              type: string
+                            context:
+                              type: string
+                            placeholders:
+                              type: object
+                  metadata:
+                    type: object
+                    properties:
+                      keyCount:
+                        type: integer
+                      isMaster:
+                        type: boolean
+        '400':
+          description: Invalid language code
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: ARB file not found
+        '500':
+          description: Server error
+
+    put:
+      summary: Update ARB file
+      description: Updates the master ARB file (German only)
+      tags:
+        - ARB Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: language
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [de]
+          example: "de"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entries:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      key:
+                        type: string
+                        example: "welcomeMessage"
+                      value:
+                        type: string
+                        example: "Willkommen bei Weltenwind!"
+                      metadata:
+                        type: object
+                        nullable: true
+                        properties:
+                          description:
+                            type: string
+                          context:
+                            type: string
+                          placeholders:
+                            type: object
+      responses:
+        '200':
+          description: ARB file updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "ARB-Datei erfolgreich aktualisiert"
+                  entryCount:
+                    type: integer
+                    example: 207
+                  nextStep:
+                    type: string
+                    example: "Führe das translate.ps1 Script aus um andere Sprachen zu aktualisieren"
+        '400':
+          description: Invalid input or only German ARB can be edited
+        '403':
+          description: Insufficient permissions
+        '500':
+          description: Server error
+
+  /api/arb/translate:
+    post:
+      summary: Trigger automatic translation
+      description: Triggers the CLI translation process for all non-master languages
+      tags:
+        - ARB Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Translation request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Übersetzung bereit"
+                  instruction:
+                    type: string
+                    example: "Führe im client-Verzeichnis das Script aus: ./translate.ps1"
+                  command:
+                    type: string
+                    example: "cd client && ./translate.ps1"
+        '403':
+          description: Insufficient permissions
+        '500':
+          description: Server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+security:
+  - bearerAuth: []
+
+tags:
+  - name: ARB Management
+    description: ARB localization file management endpoints

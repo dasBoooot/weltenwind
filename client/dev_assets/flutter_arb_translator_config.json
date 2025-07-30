@@ -1,0 +1,11 @@
+{
+  "DeepL": {
+    "Url": "https://api-free.deepl.com",
+    "ApiKey": "YOUR_DEEPL_API_KEY_HERE"
+  },
+  "GoogleCloud": {
+    "ProjectId": "YOUR_PROJECT_ID",
+    "PrivateKey": "YOUR_PRIVATE_KEY",
+    "ClientEmail": "YOUR_CLIENT_EMAIL"
+  }
+}
