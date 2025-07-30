@@ -1,0 +1,602 @@
+{
+  "@@locale": "en",
+  "@@context": "weltenwind-game",
+  
+  "appTitle": "Weltenwind",
+  "@appTitle": {
+    "description": "The title of the application",
+    "context": "app"
+  },
+  
+  "authLoginTitle": "Sign In",
+  "@authLoginTitle": {
+    "description": "Title for the login page",
+    "context": "authentication"
+  },
+  "authLoginButton": "Sign In",
+  "@authLoginButton": {
+    "description": "Button text for login",
+    "context": "authentication"
+  },
+  "authRegisterTitle": "Register",
+  "@authRegisterTitle": {
+    "description": "Title for the registration page",
+    "context": "authentication"
+  },
+  "authRegisterButton": "Register",
+  "@authRegisterButton": {
+    "description": "Button text for registration",
+    "context": "authentication"
+  },
+  "authLogoutButton": "Sign Out",
+  "@authLogoutButton": {
+    "description": "Button text for logout",
+    "context": "authentication"
+  },
+  "authEmailLabel": "Email",
+  "@authEmailLabel": {
+    "description": "Label for email input field",
+    "context": "authentication"
+  },
+  "authPasswordLabel": "Password",
+  "@authPasswordLabel": {
+    "description": "Label for password input field",
+    "context": "authentication"
+  },
+  "authUsernameLabel": "Username",
+  "@authUsernameLabel": {
+    "description": "Label for username input field",
+    "context": "authentication"
+  },
+  "authLoginWelcome": "Welcome to Weltenwind",
+  "@authLoginWelcome": {
+    "description": "Welcome title on login page",
+    "context": "authentication"
+  },
+  "authLoginSubtitle": "Sign in to manage your worlds",
+  "@authLoginSubtitle": {
+    "description": "Subtitle on login page",
+    "context": "authentication"
+  },
+  "authUsernameRequired": "Please enter your username",
+  "@authUsernameRequired": {
+    "description": "Validation error for empty username field",
+    "context": "authentication"
+  },
+  "authUsernameMinLength": "Username must be at least 3 characters long",
+  "@authUsernameMinLength": {
+    "description": "Validation error for username too short",
+    "context": "authentication"
+  },
+  "authPasswordRequired": "Please enter your password",
+  "@authPasswordRequired": {
+    "description": "Validation error for empty password field",
+    "context": "authentication"
+  },
+  "authPasswordMinLength": "Password must be at least 6 characters long",
+  "@authPasswordMinLength": {
+    "description": "Validation error for password too short",
+    "context": "authentication"
+  },
+  "authRememberMe": "Stay signed in",
+  "@authRememberMe": {
+    "description": "Checkbox text for 'Stay signed in'",
+    "context": "authentication"
+  },
+  "authForgotPassword": "Forgot password?",
+  "@authForgotPassword": {
+    "description": "Link text for forgot password",
+    "context": "authentication"
+  },
+  "authNoAccount": "Don't have an account? ",
+  "@authNoAccount": {
+    "description": "Text before registration link",
+    "context": "authentication"
+  },
+  "authLoginLoading": "Signing in...",
+  "@authLoginLoading": {
+    "description": "Loading text during sign in",
+    "context": "authentication"
+  },
+  "authGoogleLabel": "Google",
+  "@authGoogleLabel": {
+    "description": "Label for Google login button",
+    "context": "authentication"
+  },
+  "authGithubLabel": "GitHub",
+  "@authGithubLabel": {
+    "description": "Label for GitHub login button",
+    "context": "authentication"
+  },
+  "authGoogleComingSoon": "Google login will be available soon",
+  "@authGoogleComingSoon": {
+    "description": "Message when Google login not yet available",
+    "context": "authentication"
+  },
+  "authGithubComingSoon": "GitHub login will be available soon",
+  "@authGithubComingSoon": {
+    "description": "Message when GitHub login not yet available",
+    "context": "authentication"
+  },
+  "authRegisterWelcome": "Registration",
+  "@authRegisterWelcome": {
+    "description": "Welcome title on registration page",
+    "context": "authentication"
+  },
+  "authRegisterSubtitle": "Create your account for Weltenwind",
+  "@authRegisterSubtitle": {
+    "description": "Subtitle on registration page",
+    "context": "authentication"
+  },
+  "authUsernameRequiredAlt": "Username is required",
+  "@authUsernameRequiredAlt": {
+    "description": "Alternative validation message for username",
+    "context": "authentication"
+  },
+  "authUsernameInvalidChars": "Username may only contain letters, numbers and underscores",
+  "@authUsernameInvalidChars": {
+    "description": "Validation error for invalid characters in username",
+    "context": "authentication"
+  },
+  "authEmailRequired": "Email is required",
+  "@authEmailRequired": {
+    "description": "Validation error for empty email field",
+    "context": "authentication"
+  },
+  "authHaveAccount": "Already have an account? ",
+  "@authHaveAccount": {
+    "description": "Text before login link on registration page",
+    "context": "authentication"
+  },
+  "authRegisterSuccessWithInvite": "Registration successful! You will be redirected to the invitation...",
+  "@authRegisterSuccessWithInvite": {
+    "description": "Success message after registration with invite token",
+    "context": "authentication"
+  },
+  "authRegisterSuccessWelcome": "Registration successful! Welcome to Weltenwind!",
+  "@authRegisterSuccessWelcome": {
+    "description": "Success message after normal registration",
+    "context": "authentication"
+  },
+  "authForgotPasswordTitle": "Reset Password",
+  "@authForgotPasswordTitle": {
+    "description": "Title on forgot password page",
+    "context": "authentication"
+  },
+  "authForgotPasswordDescription": "Enter your email address and we'll send you a link to reset your password.",
+  "@authForgotPasswordDescription": {
+    "description": "Description on forgot password page",
+    "context": "authentication"
+  },
+  "authForgotPasswordEmailLabel": "Email Address",
+  "@authForgotPasswordEmailLabel": {
+    "description": "Label for email input field on forgot password page",
+    "context": "authentication"
+  },
+  "authForgotPasswordEmailRequired": "Please enter your email address",
+  "@authForgotPasswordEmailRequired": {
+    "description": "Validation error for empty email field on forgot password page",
+    "context": "authentication"
+  },
+  "authForgotPasswordSuccess": "Email sent! Please check your inbox.",
+  "@authForgotPasswordSuccess": {
+    "description": "Success message after sending password reset link",
+    "context": "authentication"
+  },
+  "authForgotPasswordSendButton": "Send Link",
+  "@authForgotPasswordSendButton": {
+    "description": "Button text to send password reset link",
+    "context": "authentication"
+  },
+  "authForgotPasswordBackToLogin": "Back to Login",
+  "@authForgotPasswordBackToLogin": {
+    "description": "Button text to go back to login after successful sending",
+    "context": "authentication"
+  },
+  "authForgotPasswordCancel": "Cancel",
+  "@authForgotPasswordCancel": {
+    "description": "Button text to cancel password reset request",
+    "context": "authentication"
+  },
+  "authResetPasswordInvalidToken": "The reset link is invalid or expired. Please request a new link.",
+  "@authResetPasswordInvalidToken": {
+    "description": "Error message for invalid reset token",
+    "context": "authentication"
+  },
+  "authResetPasswordSuccessTitle": "Password successfully changed!",
+  "@authResetPasswordSuccessTitle": {
+    "description": "Title after successful password reset",
+    "context": "authentication"
+  },
+  "authResetPasswordTitle": "Set New Password",
+  "@authResetPasswordTitle": {
+    "description": "Title on password reset page",
+    "context": "authentication"
+  },
+  "authResetPasswordSuccessMessage": "You will be automatically redirected to login...",
+  "@authResetPasswordSuccessMessage": {
+    "description": "Message after successful password reset",
+    "context": "authentication"
+  },
+  "authResetPasswordDescription": "Please enter your new password.",
+  "@authResetPasswordDescription": {
+    "description": "Description on password reset page",
+    "context": "authentication"
+  },
+  "authNewPasswordLabel": "New Password",
+  "@authNewPasswordLabel": {
+    "description": "Label for new password input field",
+    "context": "authentication"
+  },
+  "authPasswordHelperText": "At least 6 characters",
+  "@authPasswordHelperText": {
+    "description": "Helper text below password input field",
+    "context": "authentication"
+  },
+  "authNewPasswordRequired": "Please enter a new password",
+  "@authNewPasswordRequired": {
+    "description": "Validation error for empty new password",
+    "context": "authentication"
+  },
+  "authPasswordNoSpaces": "Password must not contain spaces",
+  "@authPasswordNoSpaces": {
+    "description": "Validation error for spaces in password",
+    "context": "authentication"
+  },
+  "authConfirmPasswordLabel": "Confirm Password",
+  "@authConfirmPasswordLabel": {
+    "description": "Label for password confirmation input field",
+    "context": "authentication"
+  },
+  "authConfirmPasswordRequired": "Please confirm your new password",
+  "@authConfirmPasswordRequired": {
+    "description": "Validation error for empty password confirmation",
+    "context": "authentication"
+  },
+  "authPasswordsDoNotMatch": "Passwords do not match",
+  "@authPasswordsDoNotMatch": {
+    "description": "Validation error when passwords don't match",
+    "context": "authentication"
+  },
+  "authPasswordRequirementsTitle": "Password Requirements:",
+  "@authPasswordRequirementsTitle": {
+    "description": "Title for password requirements list",
+    "context": "authentication"
+  },
+  "authRequirementMinLength": "At least 6 characters",
+  "@authRequirementMinLength": {
+    "description": "Password requirement: minimum length",
+    "context": "authentication"
+  },
+  "authRequirementNoSpaces": "No spaces",
+  "@authRequirementNoSpaces": {
+    "description": "Password requirement: no spaces",
+    "context": "authentication"
+  },
+  "authRequirementPasswordsMatch": "Passwords match",
+  "@authRequirementPasswordsMatch": {
+    "description": "Password requirement: passwords match",
+    "context": "authentication"
+  },
+  "authResetPasswordButton": "Reset Password",
+  "@authResetPasswordButton": {
+    "description": "Button text to reset password",
+    "context": "authentication"
+  },
+  "authBackToLogin": "Back to Login",
+  "@authBackToLogin": {
+    "description": "Button text back to login",
+    "context": "authentication"
+  },
+  "authLogoutButton": "Log out",
+  "@authLogoutButton": {
+    "description": "Button to log out",
+    "context": "authentication"
+  },
+  
+  "navDashboard": "Dashboard",
+  "@navDashboard": {
+    "description": "Navigation item for dashboard",
+    "context": "navigation"
+  },
+  "navWorldList": "Worlds",
+  "@navWorldList": {
+    "description": "Navigation item for world list",
+    "context": "navigation"
+  },
+  "navProfile": "Profile",
+  "@navProfile": {
+    "description": "Navigation item for user profile",
+    "context": "navigation"
+  },
+  
+  "worldsTitle": "Game Worlds",
+  "@worldsTitle": {
+    "description": "Title for the worlds page",
+    "context": "worlds"
+  },
+  "worldJoinButton": "Join World",
+  "@worldJoinButton": {
+    "description": "Button text to join a world",
+    "context": "worlds"
+  },
+  "worldLeaveButton": "Leave World",
+  "@worldLeaveButton": {
+    "description": "Button text to leave a world",
+    "context": "worlds"
+  },
+  "worldPreRegisterButton": "Pre-Register",
+  "@worldPreRegisterButton": {
+    "description": "Button text to pre-register for upcoming world",
+    "context": "worlds"
+  },
+  "worldCancelPreRegisterButton": "Cancel Pre-Registration",
+  "@worldCancelPreRegisterButton": {
+    "description": "Button text to cancel pre-registration",
+    "context": "worlds"
+  },
+  "worldStatusUpcoming": "Upcoming",
+  "@worldStatusUpcoming": {
+    "description": "Status text for upcoming worlds",
+    "context": "worlds"
+  },
+  "worldStatusOpen": "Open",
+  "@worldStatusOpen": {
+    "description": "Status text for open worlds",
+    "context": "worlds"
+  },
+  "worldStatusRunning": "Running",
+  "@worldStatusRunning": {
+    "description": "Status text for running worlds",
+    "context": "worlds"
+  },
+  "worldStatusClosed": "Closed",
+  "@worldStatusClosed": {
+    "description": "Status text for closed worlds",
+    "context": "worlds"
+  },
+  
+  "inviteTitle": "World Invitation",
+  "@inviteTitle": {
+    "description": "Title for invitation page",
+    "context": "invites"
+  },
+  "inviteAcceptButton": "Accept Invitation",
+  "@inviteAcceptButton": {
+    "description": "Button text to accept invitation",
+    "context": "invites"
+  },
+  "inviteLoginPrompt": "Please sign in to accept this invitation",
+  "@inviteLoginPrompt": {
+    "description": "Prompt asking user to login for invitation",
+    "context": "invites"
+  },
+  "inviteRegisterPrompt": "Please register to accept this invitation",
+  "@inviteRegisterPrompt": {
+    "description": "Prompt asking user to register for invitation",
+    "context": "invites"
+  },
+  "inviteExpired": "This invitation has expired",
+  "@inviteExpired": {
+    "description": "Message when invitation is expired",
+    "context": "invites"
+  },
+  "inviteAlreadyAccepted": "This invitation has already been accepted",
+  "@inviteAlreadyAccepted": {
+    "description": "Message when invitation is already accepted",
+    "context": "invites"
+  },
+  "inviteInvalidToken": "Invalid invitation link",
+  "@inviteInvalidToken": {
+    "description": "Message when invitation token is invalid",
+    "context": "invites"
+  },
+  
+  "errorGeneral": "An error occurred. Please try again.",
+  "@errorGeneral": {
+    "description": "Generic error message",
+    "context": "errors"
+  },
+  "errorNetwork": "Network error. Please check your connection.",
+  "@errorNetwork": {
+    "description": "Network error message",
+    "context": "errors"
+  },
+  "errorUnauthorized": "You are not authorized to access this resource.",
+  "@errorUnauthorized": {
+    "description": "Authorization error message",
+    "context": "errors"
+  },
+  "errorValidationEmail": "Please enter a valid email address",
+  "@errorValidationEmail": {
+    "description": "Email validation error",
+    "context": "errors"
+  },
+  "errorValidationPassword": "Password must be at least 8 characters long",
+  "@errorValidationPassword": {
+    "description": "Password validation error",
+    "context": "errors"
+  },
+  
+  "buttonOk": "OK",
+  "@buttonOk": {
+    "description": "Generic OK button",
+    "context": "common"
+  },
+  "commonOr": "or",
+  "@commonOr": {
+    "description": "Separator word between options",
+    "context": "common"
+  },
+  "commonLanguage": "Language",
+  "@commonLanguage": {
+    "description": "Label for language selection",
+    "context": "common"
+  },
+  "buttonCancel": "Cancel",
+  "@buttonCancel": {
+    "description": "Generic cancel button",
+    "context": "common"
+  },
+  "buttonSave": "Save",
+  "@buttonSave": {
+    "description": "Generic save button",
+    "context": "common"
+  },
+  "buttonRetry": "Try Again",
+  "@buttonRetry": {
+    "description": "Generic retry button",
+    "context": "common"
+  },
+  "loadingText": "Loading...",
+  "@loadingText": {
+    "description": "Generic loading text",
+    "context": "common"
+  },
+
+  "landingSubtitle": "Your portal to infinite worlds",
+  "@landingSubtitle": {
+    "description": "Subtitle on the landing page",
+    "context": "landing"
+  },
+  "landingTagline": "🎮 Play • 🌍 Explore • 🤝 Connect",
+  "@landingTagline": {
+    "description": "Short description of main features",
+    "context": "landing"
+  },
+  "landingStartButton": "Start free now",
+  "@landingStartButton": {
+    "description": "Main CTA button on landing page",
+    "context": "landing"
+  },
+  "landingNoCreditCard": "No credit card required",
+  "@landingNoCreditCard": {
+    "description": "Note below registration button",
+    "context": "landing"
+  },
+  "landingLoginPrompt": "Already a member? Sign in",
+  "@landingLoginPrompt": {
+    "description": "Link to login for existing users",
+    "context": "landing"
+  },
+  "landingRegisterButton": "Register for free →",
+  "@landingRegisterButton": {
+    "description": "Registration button in CTA area",
+    "context": "landing"
+  },
+  "landingStatsPlayers": "Players",
+  "@landingStatsPlayers": {
+    "description": "Label for player statistics",
+    "context": "landing"
+  },
+  "landingStatsOnline": "Online",
+  "@landingStatsOnline": {
+    "description": "Label for online status statistics",
+    "context": "landing"
+  },
+  "landingDiscoverMore": "Discover more",
+  "@landingDiscoverMore": {
+    "description": "Button text to discover more features",
+    "context": "landing"
+  },
+  "landingFeaturesTitle": "What makes Weltenwind special?",
+  "@landingFeaturesTitle": {
+    "description": "Title of features section",
+    "context": "landing"
+  },
+  "landingFeaturesSubtitle": "Experience gaming on a new level",
+  "@landingFeaturesSubtitle": {
+    "description": "Subtitle of features section",
+    "context": "landing"
+  },
+  "landingFeatureWorldsTitle": "Infinite Worlds",
+  "@landingFeatureWorldsTitle": {
+    "description": "Title of worlds feature",
+    "context": "landing"
+  },
+  "landingFeatureWorldsDesc": "Explore hundreds of unique game worlds or create your own",
+  "@landingFeatureWorldsDesc": {
+    "description": "Description of worlds feature",
+    "context": "landing"
+  },
+  "landingFeatureCommunityTitle": "Community",
+  "@landingFeatureCommunityTitle": {
+    "description": "Title of community feature",
+    "context": "landing"
+  },
+  "landingFeatureCommunityDesc": "Connect with players from around the world",
+  "@landingFeatureCommunityDesc": {
+    "description": "Description of community feature",
+    "context": "landing"
+  },
+  "landingFeatureSecurityTitle": "Safe & Fair",
+  "@landingFeatureSecurityTitle": {
+    "description": "Title of security feature",
+    "context": "landing"
+  },
+  "landingFeatureSecurityDesc": "State-of-the-art security and fair rules for everyone",
+  "@landingFeatureSecurityDesc": {
+    "description": "Description of security feature",
+    "context": "landing"
+  },
+  "landingFeatureSpeedTitle": "Lightning Fast",
+  "@landingFeatureSpeedTitle": {
+    "description": "Title of performance feature",
+    "context": "landing"
+  },
+  "landingFeatureSpeedDesc": "Optimized servers for minimal latency",
+  "@landingFeatureSpeedDesc": {
+    "description": "Description of performance feature",
+    "context": "landing"
+  },
+  "landingFeatureMobileTitle": "Play Everywhere",
+  "@landingFeatureMobileTitle": {
+    "description": "Title of mobile feature",
+    "context": "landing"
+  },
+  "landingFeatureMobileDesc": "On PC, tablet or smartphone - always with you",
+  "@landingFeatureMobileDesc": {
+    "description": "Description of mobile feature",
+    "context": "landing"
+  },
+  "landingFeatureRewardsTitle": "Rewards",
+  "@landingFeatureRewardsTitle": {
+    "description": "Title of rewards feature",
+    "context": "landing"
+  },
+  "landingFeatureRewardsDesc": "Collect achievements and exclusive rewards",
+  "@landingFeatureRewardsDesc": {
+    "description": "Description of rewards feature",
+    "context": "landing"
+  },
+  "landingCtaTitle": "Ready for your adventure?",
+  "@landingCtaTitle": {
+    "description": "Title of final call-to-action area",
+    "context": "landing"
+  },
+  "landingCtaSubtitle": "Join thousands of players and start today!",
+  "@landingCtaSubtitle": {
+    "description": "Subtitle of final call-to-action area",
+    "context": "landing"
+  },
+  "footerCopyright": "© 2024 Weltenwind. All rights reserved.",
+  "@footerCopyright": {
+    "description": "Copyright notice in footer",
+    "context": "footer"
+  },
+  "footerPrivacy": "Privacy",
+  "@footerPrivacy": {
+    "description": "Link to privacy policy in footer",
+    "context": "footer"
+  },
+  "footerLegal": "Legal",
+  "@footerLegal": {
+    "description": "Link to legal notice in footer",
+    "context": "footer"
+  },
+  "footerSupport": "Support",
+  "@footerSupport": {
+    "description": "Link to support in footer",
+    "context": "footer"
+  }
+} 

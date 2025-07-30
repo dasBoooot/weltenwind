@@ -1,0 +1,201 @@
+{
+  "@@locale": "en",
+  "@@context": "weltenwind-game",
+  
+  "appTitle": "Weltenwind",
+  "@appTitle": {
+    "description": "The title of the application",
+    "context": "app"
+  },
+  
+  "authLoginTitle": "Sign In",
+  "@authLoginTitle": {
+    "description": "Title for the login page",
+    "context": "authentication"
+  },
+  "authLoginButton": "Sign In",
+  "@authLoginButton": {
+    "description": "Button text for login",
+    "context": "authentication"
+  },
+  "authRegisterTitle": "Register",
+  "@authRegisterTitle": {
+    "description": "Title for the registration page",
+    "context": "authentication"
+  },
+  "authRegisterButton": "Register",
+  "@authRegisterButton": {
+    "description": "Button text for registration",
+    "context": "authentication"
+  },
+  "authLogoutButton": "Sign Out",
+  "@authLogoutButton": {
+    "description": "Button text for logout",
+    "context": "authentication"
+  },
+  "authEmailLabel": "Email",
+  "@authEmailLabel": {
+    "description": "Label for email input field",
+    "context": "authentication"
+  },
+  "authPasswordLabel": "Password",
+  "@authPasswordLabel": {
+    "description": "Label for password input field",
+    "context": "authentication"
+  },
+  "authUsernameLabel": "Username",
+  "@authUsernameLabel": {
+    "description": "Label for username input field",
+    "context": "authentication"
+  },
+  
+  "navDashboard": "Dashboard",
+  "@navDashboard": {
+    "description": "Navigation item for dashboard",
+    "context": "navigation"
+  },
+  "navWorldList": "Worlds",
+  "@navWorldList": {
+    "description": "Navigation item for world list",
+    "context": "navigation"
+  },
+  "navProfile": "Profile",
+  "@navProfile": {
+    "description": "Navigation item for user profile",
+    "context": "navigation"
+  },
+  
+  "worldsTitle": "Game Worlds",
+  "@worldsTitle": {
+    "description": "Title for the worlds page",
+    "context": "worlds"
+  },
+  "worldJoinButton": "Join World",
+  "@worldJoinButton": {
+    "description": "Button text to join a world",
+    "context": "worlds"
+  },
+  "worldLeaveButton": "Leave World",
+  "@worldLeaveButton": {
+    "description": "Button text to leave a world",
+    "context": "worlds"
+  },
+  "worldPreRegisterButton": "Pre-Register",
+  "@worldPreRegisterButton": {
+    "description": "Button text to pre-register for upcoming world",
+    "context": "worlds"
+  },
+  "worldCancelPreRegisterButton": "Cancel Pre-Registration",
+  "@worldCancelPreRegisterButton": {
+    "description": "Button text to cancel pre-registration",
+    "context": "worlds"
+  },
+  "worldStatusUpcoming": "Upcoming",
+  "@worldStatusUpcoming": {
+    "description": "Status text for upcoming worlds",
+    "context": "worlds"
+  },
+  "worldStatusOpen": "Open",
+  "@worldStatusOpen": {
+    "description": "Status text for open worlds",
+    "context": "worlds"
+  },
+  "worldStatusRunning": "Running",
+  "@worldStatusRunning": {
+    "description": "Status text for running worlds",
+    "context": "worlds"
+  },
+  "worldStatusClosed": "Closed",
+  "@worldStatusClosed": {
+    "description": "Status text for closed worlds",
+    "context": "worlds"
+  },
+  
+  "inviteTitle": "World Invitation",
+  "@inviteTitle": {
+    "description": "Title for invitation page",
+    "context": "invites"
+  },
+  "inviteAcceptButton": "Accept Invitation",
+  "@inviteAcceptButton": {
+    "description": "Button text to accept invitation",
+    "context": "invites"
+  },
+  "inviteLoginPrompt": "Please sign in to accept this invitation",
+  "@inviteLoginPrompt": {
+    "description": "Prompt asking user to login for invitation",
+    "context": "invites"
+  },
+  "inviteRegisterPrompt": "Please register to accept this invitation",
+  "@inviteRegisterPrompt": {
+    "description": "Prompt asking user to register for invitation",
+    "context": "invites"
+  },
+  "inviteExpired": "This invitation has expired",
+  "@inviteExpired": {
+    "description": "Message when invitation is expired",
+    "context": "invites"
+  },
+  "inviteAlreadyAccepted": "This invitation has already been accepted",
+  "@inviteAlreadyAccepted": {
+    "description": "Message when invitation is already accepted",
+    "context": "invites"
+  },
+  "inviteInvalidToken": "Invalid invitation link",
+  "@inviteInvalidToken": {
+    "description": "Message when invitation token is invalid",
+    "context": "invites"
+  },
+  
+  "errorGeneral": "An error occurred. Please try again.",
+  "@errorGeneral": {
+    "description": "Generic error message",
+    "context": "errors"
+  },
+  "errorNetwork": "Network error. Please check your connection.",
+  "@errorNetwork": {
+    "description": "Network error message",
+    "context": "errors"
+  },
+  "errorUnauthorized": "You are not authorized to access this resource.",
+  "@errorUnauthorized": {
+    "description": "Authorization error message",
+    "context": "errors"
+  },
+  "errorValidationEmail": "Please enter a valid email address",
+  "@errorValidationEmail": {
+    "description": "Email validation error",
+    "context": "errors"
+  },
+  "errorValidationPassword": "Password must be at least 8 characters long",
+  "@errorValidationPassword": {
+    "description": "Password validation error",
+    "context": "errors"
+  },
+  
+  "buttonOk": "OK",
+  "@buttonOk": {
+    "description": "Generic OK button",
+    "context": "common"
+  },
+  "buttonCancel": "Cancel",
+  "@buttonCancel": {
+    "description": "Generic cancel button",
+    "context": "common"
+  },
+  "buttonSave": "Save",
+  "@buttonSave": {
+    "description": "Generic save button",
+    "context": "common"
+  },
+  "buttonRetry": "Try Again",
+  "@buttonRetry": {
+    "description": "Generic retry button",
+    "context": "common"
+  },
+  "loadingText": "Loading...",
+  "@loadingText": {
+    "description": "Generic loading text",
+    "context": "common"
+  }
+} 

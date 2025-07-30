@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'config/env.dart';
 import 'config/logger.dart';
 import 'routing/app_router.dart';
@@ -8,9 +9,37 @@ import 'core/services/auth_service.dart';
 import 'core/services/api_service.dart';
 import 'core/services/world_service.dart';
 import 'core/services/invite_service.dart';
+import 'core/providers/locale_provider.dart';
+import 'l10n/app_localizations.dart';
 
-class WeltenwindApp extends StatelessWidget {
+class WeltenwindApp extends StatefulWidget {
   const WeltenwindApp({super.key});
+
+  @override
+  State<WeltenwindApp> createState() => _WeltenwindAppState();
+}
+
+class _WeltenwindAppState extends State<WeltenwindApp> {
+  late final LocaleProvider _localeProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _localeProvider = LocaleProvider();
+    _localeProvider.addListener(_onLocaleChanged);
+  }
+
+  @override
+  void dispose() {
+    _localeProvider.removeListener(_onLocaleChanged);
+    super.dispose();
+  }
+
+  void _onLocaleChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +65,19 @@ class WeltenwindApp extends StatelessWidget {
         ),
         routerConfig: AppRouter.router,
         debugShowCheckedModeBanner: false,
+        
+        // Lokalisierungs-Konfiguration
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('de'),
+          Locale('en'),
+        ],
+        locale: _localeProvider.currentLocale, // Dynamische Sprache vom Provider
       ),
     );
   }
@@ -49,7 +91,12 @@ class WeltenwindApp extends StatelessWidget {
     
     AppLogger.app.i('🌍 Environment initialisiert');
     
-    // 2. Services initialisieren (jetzt sicher, da App bereits läuft)
+    // 2. LocaleProvider initialisieren
+    await LocaleProvider.initialize();
+    
+    AppLogger.app.i('🌐 LocaleProvider initialisiert');
+    
+    // 3. Services initialisieren (jetzt sicher, da App bereits läuft)
     try {
       final authService = AuthService();
       final apiService = ApiService.withAuth(authService);
@@ -63,7 +110,7 @@ class WeltenwindApp extends StatelessWidget {
       
       AppLogger.app.i('⚙️ Services registriert');
       
-      // 3. Token-Validierung beim App-Start (VOR loadStoredUser)
+      // 4. Token-Validierung beim App-Start (VOR loadStoredUser)
       bool isValid = false;
       try {
         isValid = await authService.validateTokensOnStart();
@@ -79,7 +126,7 @@ class WeltenwindApp extends StatelessWidget {
         await authService.logout();
       }
       
-      // 4. Gespeicherte User-Daten laden (nur wenn Tokens gültig)
+      // 5. Gespeicherte User-Daten laden (nur wenn Tokens gültig)
       if (isValid) {
         try {
           final user = await authService.loadStoredUser();

@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import '../../core/services/auth_service.dart';
 import '../../theme/app_theme.dart';
 import '../../main.dart';
+import '../../l10n/app_localizations.dart';
+import 'language_switcher.dart';
 
 class UserInfoWidget extends StatefulWidget {
   const UserInfoWidget({super.key});
@@ -284,6 +286,16 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
                         
                         const SizedBox(height: 12),
                         const Divider(color: Colors.grey, height: 1),
+                        const SizedBox(height: 12),
+                        
+                        // Language Switcher
+                        const LanguageSwitcher(
+                          showLabel: true,
+                          isCompact: false,
+                        ),
+                        
+                        const SizedBox(height: 12),
+                        const Divider(color: Colors.grey, height: 1),
                         const SizedBox(height: 8),
                         
                         // Logout Button
@@ -297,7 +309,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
                               }
                             },
                             icon: const Icon(Icons.logout, size: 16),
-                            label: const Text('Abmelden'),
+                            label: Text(AppLocalizations.of(context).authLogoutButton),
                             style: TextButton.styleFrom(
                               foregroundColor: Colors.red[400],
                               padding: const EdgeInsets.symmetric(vertical: 8),

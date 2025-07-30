@@ -871,7 +871,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                             label: const Text('Bereits registriert? Anmelden'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppTheme.primaryColor,
-                              side: BorderSide(color: AppTheme.primaryColor),
+                              side: const BorderSide(color: AppTheme.primaryColor),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -907,7 +907,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                             label: const Text('Zurück zur Startseite'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.grey,
-                              side: BorderSide(color: Colors.grey),
+                              side: const BorderSide(color: Colors.grey),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),

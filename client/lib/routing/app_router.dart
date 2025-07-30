@@ -307,7 +307,7 @@ class AppRouter {
                 ),
             );
           }
-          AppLogger.navigation.i('🎫 Invite-Token erkannt', error: {'token': token.substring(0, 8) + '...'});
+          AppLogger.navigation.i('🎫 Invite-Token erkannt', error: {'token': '${token.substring(0, 8)}...'});
           return CustomTransitionPage(
             child: WorldJoinPage(
               inviteToken: token,

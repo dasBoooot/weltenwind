@@ -1,0 +1,602 @@
+{
+  "@@locale": "de",
+  "@@context": "weltenwind-game",
+  
+  "appTitle": "Weltenwind",
+  "@appTitle": {
+    "description": "Der Titel der Anwendung",
+    "context": "app"
+  },
+  
+  "authLoginTitle": "Anmelden",
+  "@authLoginTitle": {
+    "description": "Titel für die Anmelde-Seite",
+    "context": "authentication"
+  },
+  "authLoginButton": "Anmelden",
+  "@authLoginButton": {
+    "description": "Button-Text für Anmeldung",
+    "context": "authentication"
+  },
+  "authRegisterTitle": "Registrieren",
+  "@authRegisterTitle": {
+    "description": "Titel für die Registrierungs-Seite",
+    "context": "authentication"
+  },
+  "authRegisterButton": "Registrieren",
+  "@authRegisterButton": {
+    "description": "Button-Text für Registrierung",
+    "context": "authentication"
+  },
+  "authLogoutButton": "Abmelden",
+  "@authLogoutButton": {
+    "description": "Button-Text für Abmeldung",
+    "context": "authentication"
+  },
+  "authEmailLabel": "E-Mail",
+  "@authEmailLabel": {
+    "description": "Bezeichnung für E-Mail-Eingabefeld",
+    "context": "authentication"
+  },
+  "authPasswordLabel": "Passwort",
+  "@authPasswordLabel": {
+    "description": "Bezeichnung für Passwort-Eingabefeld",
+    "context": "authentication"
+  },
+  "authUsernameLabel": "Benutzername",
+  "@authUsernameLabel": {
+    "description": "Bezeichnung für Benutzername-Eingabefeld",
+    "context": "authentication"
+  },
+  "authLoginWelcome": "Willkommen bei Weltenwind",
+  "@authLoginWelcome": {
+    "description": "Willkommens-Titel auf der Login-Seite",
+    "context": "authentication"
+  },
+  "authLoginSubtitle": "Melde dich an, um deine Welten zu verwalten",
+  "@authLoginSubtitle": {
+    "description": "Untertitel auf der Login-Seite",
+    "context": "authentication"
+  },
+  "authUsernameRequired": "Bitte gib deinen Benutzernamen ein",
+  "@authUsernameRequired": {
+    "description": "Validierungsfehler für leeres Benutzername-Feld",
+    "context": "authentication"
+  },
+  "authUsernameMinLength": "Benutzername muss mindestens 3 Zeichen lang sein",
+  "@authUsernameMinLength": {
+    "description": "Validierungsfehler für zu kurzen Benutzernamen",
+    "context": "authentication"
+  },
+  "authPasswordRequired": "Bitte gib dein Passwort ein",
+  "@authPasswordRequired": {
+    "description": "Validierungsfehler für leeres Passwort-Feld",
+    "context": "authentication"
+  },
+  "authPasswordMinLength": "Passwort muss mindestens 6 Zeichen lang sein",
+  "@authPasswordMinLength": {
+    "description": "Validierungsfehler für zu kurzes Passwort",
+    "context": "authentication"
+  },
+  "authRememberMe": "Angemeldet bleiben",
+  "@authRememberMe": {
+    "description": "Checkbox-Text für 'Angemeldet bleiben'",
+    "context": "authentication"
+  },
+  "authForgotPassword": "Passwort vergessen?",
+  "@authForgotPassword": {
+    "description": "Link-Text für Passwort vergessen",
+    "context": "authentication"
+  },
+  "authNoAccount": "Noch kein Konto? ",
+  "@authNoAccount": {
+    "description": "Text vor dem Registrierungs-Link",
+    "context": "authentication"
+  },
+  "authLoginLoading": "Anmeldung läuft...",
+  "@authLoginLoading": {
+    "description": "Ladetext während der Anmeldung",
+    "context": "authentication"
+  },
+  "authGoogleLabel": "Google",
+  "@authGoogleLabel": {
+    "description": "Label für Google-Login-Button",
+    "context": "authentication"
+  },
+  "authGithubLabel": "GitHub",
+  "@authGithubLabel": {
+    "description": "Label für GitHub-Login-Button",
+    "context": "authentication"
+  },
+  "authGoogleComingSoon": "Google Login wird bald verfügbar sein",
+  "@authGoogleComingSoon": {
+    "description": "Nachricht wenn Google Login noch nicht verfügbar",
+    "context": "authentication"
+  },
+  "authGithubComingSoon": "GitHub Login wird bald verfügbar sein",
+  "@authGithubComingSoon": {
+    "description": "Nachricht wenn GitHub Login noch nicht verfügbar",
+    "context": "authentication"
+  },
+  "authRegisterWelcome": "Registrierung",
+  "@authRegisterWelcome": {
+    "description": "Willkommens-Titel auf der Registrierungs-Seite",
+    "context": "authentication"
+  },
+  "authRegisterSubtitle": "Erstelle dein Konto für Weltenwind",
+  "@authRegisterSubtitle": {
+    "description": "Untertitel auf der Registrierungs-Seite",
+    "context": "authentication"
+  },
+  "authUsernameRequiredAlt": "Benutzername ist erforderlich",
+  "@authUsernameRequiredAlt": {
+    "description": "Alternative Validierungsmeldung für Benutzername",
+    "context": "authentication"
+  },
+  "authUsernameInvalidChars": "Benutzername darf nur Buchstaben, Zahlen und Unterstriche enthalten",
+  "@authUsernameInvalidChars": {
+    "description": "Validierungsfehler für ungültige Zeichen im Benutzernamen",
+    "context": "authentication"
+  },
+  "authEmailRequired": "E-Mail ist erforderlich",
+  "@authEmailRequired": {
+    "description": "Validierungsfehler für leeres E-Mail-Feld",
+    "context": "authentication"
+  },
+  "authHaveAccount": "Bereits ein Konto? ",
+  "@authHaveAccount": {
+    "description": "Text vor dem Login-Link auf der Registrierungsseite",
+    "context": "authentication"
+  },
+  "authRegisterSuccessWithInvite": "Registrierung erfolgreich! Du wirst zur Einladung weitergeleitet...",
+  "@authRegisterSuccessWithInvite": {
+    "description": "Erfolgsmeldung nach Registrierung mit Einladungstoken",
+    "context": "authentication"
+  },
+  "authRegisterSuccessWelcome": "Registrierung erfolgreich! Willkommen bei Weltenwind!",
+  "@authRegisterSuccessWelcome": {
+    "description": "Erfolgsmeldung nach normaler Registrierung",
+    "context": "authentication"
+  },
+  "authForgotPasswordTitle": "Passwort zurücksetzen",
+  "@authForgotPasswordTitle": {
+    "description": "Titel auf der Passwort-vergessen-Seite",
+    "context": "authentication"
+  },
+  "authForgotPasswordDescription": "Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen deines Passworts.",
+  "@authForgotPasswordDescription": {
+    "description": "Beschreibung auf der Passwort-vergessen-Seite",
+    "context": "authentication"
+  },
+  "authForgotPasswordEmailLabel": "E-Mail-Adresse",
+  "@authForgotPasswordEmailLabel": {
+    "description": "Label für E-Mail-Eingabefeld auf Passwort-vergessen-Seite",
+    "context": "authentication"
+  },
+  "authForgotPasswordEmailRequired": "Bitte gib deine E-Mail-Adresse ein",
+  "@authForgotPasswordEmailRequired": {
+    "description": "Validierungsfehler für leeres E-Mail-Feld auf Passwort-vergessen-Seite",
+    "context": "authentication"
+  },
+  "authForgotPasswordSuccess": "E-Mail gesendet! Bitte überprüfe deinen Posteingang.",
+  "@authForgotPasswordSuccess": {
+    "description": "Erfolgsmeldung nach dem Senden des Passwort-Reset-Links",
+    "context": "authentication"
+  },
+  "authForgotPasswordSendButton": "Link senden",
+  "@authForgotPasswordSendButton": {
+    "description": "Button-Text zum Senden des Passwort-Reset-Links",
+    "context": "authentication"
+  },
+  "authForgotPasswordBackToLogin": "Zurück zum Login",
+  "@authForgotPasswordBackToLogin": {
+    "description": "Button-Text zurück zum Login nach erfolgreichem Senden",
+    "context": "authentication"
+  },
+  "authForgotPasswordCancel": "Abbrechen",
+  "@authForgotPasswordCancel": {
+    "description": "Button-Text zum Abbrechen der Passwort-Reset-Anfrage",
+    "context": "authentication"
+  },
+  "authResetPasswordInvalidToken": "Der Reset-Link ist ungültig oder abgelaufen. Bitte fordere einen neuen Link an.",
+  "@authResetPasswordInvalidToken": {
+    "description": "Fehlermeldung bei ungültigem Reset-Token",
+    "context": "authentication"
+  },
+  "authResetPasswordSuccessTitle": "Passwort erfolgreich geändert!",
+  "@authResetPasswordSuccessTitle": {
+    "description": "Titel nach erfolgreichem Passwort-Reset",
+    "context": "authentication"
+  },
+  "authResetPasswordTitle": "Neues Passwort festlegen",
+  "@authResetPasswordTitle": {
+    "description": "Titel auf der Passwort-Reset-Seite",
+    "context": "authentication"
+  },
+  "authResetPasswordSuccessMessage": "Du wirst automatisch zur Anmeldung weitergeleitet...",
+  "@authResetPasswordSuccessMessage": {
+    "description": "Nachricht nach erfolgreichem Passwort-Reset",
+    "context": "authentication"
+  },
+  "authResetPasswordDescription": "Bitte gib dein neues Passwort ein.",
+  "@authResetPasswordDescription": {
+    "description": "Beschreibung auf der Passwort-Reset-Seite",
+    "context": "authentication"
+  },
+  "authNewPasswordLabel": "Neues Passwort",
+  "@authNewPasswordLabel": {
+    "description": "Label für neues Passwort-Eingabefeld",
+    "context": "authentication"
+  },
+  "authPasswordHelperText": "Mindestens 6 Zeichen",
+  "@authPasswordHelperText": {
+    "description": "Hilfstext unter Passwort-Eingabefeld",
+    "context": "authentication"
+  },
+  "authNewPasswordRequired": "Bitte gib ein neues Passwort ein",
+  "@authNewPasswordRequired": {
+    "description": "Validierungsfehler für leeres neues Passwort",
+    "context": "authentication"
+  },
+  "authPasswordNoSpaces": "Passwort darf keine Leerzeichen enthalten",
+  "@authPasswordNoSpaces": {
+    "description": "Validierungsfehler für Leerzeichen im Passwort",
+    "context": "authentication"
+  },
+  "authConfirmPasswordLabel": "Passwort bestätigen",
+  "@authConfirmPasswordLabel": {
+    "description": "Label für Passwort-Bestätigung-Eingabefeld",
+    "context": "authentication"
+  },
+  "authConfirmPasswordRequired": "Bitte bestätige dein neues Passwort",
+  "@authConfirmPasswordRequired": {
+    "description": "Validierungsfehler für leere Passwort-Bestätigung",
+    "context": "authentication"
+  },
+  "authPasswordsDoNotMatch": "Die Passwörter stimmen nicht überein",
+  "@authPasswordsDoNotMatch": {
+    "description": "Validierungsfehler wenn Passwörter nicht übereinstimmen",
+    "context": "authentication"
+  },
+  "authPasswordRequirementsTitle": "Passwort-Anforderungen:",
+  "@authPasswordRequirementsTitle": {
+    "description": "Titel für Passwort-Anforderungen-Liste",
+    "context": "authentication"
+  },
+  "authRequirementMinLength": "Mindestens 6 Zeichen",
+  "@authRequirementMinLength": {
+    "description": "Passwort-Anforderung: Mindestlänge",
+    "context": "authentication"
+  },
+  "authRequirementNoSpaces": "Keine Leerzeichen",
+  "@authRequirementNoSpaces": {
+    "description": "Passwort-Anforderung: Keine Leerzeichen",
+    "context": "authentication"
+  },
+  "authRequirementPasswordsMatch": "Passwörter stimmen überein",
+  "@authRequirementPasswordsMatch": {
+    "description": "Passwort-Anforderung: Passwörter stimmen überein",
+    "context": "authentication"
+  },
+  "authResetPasswordButton": "Passwort zurücksetzen",
+  "@authResetPasswordButton": {
+    "description": "Button-Text zum Zurücksetzen des Passworts",
+    "context": "authentication"
+  },
+  "authBackToLogin": "Zurück zur Anmeldung",
+  "@authBackToLogin": {
+    "description": "Button-Text zurück zur Anmeldung",
+    "context": "authentication"
+  },
+  "authLogoutButton": "Abmelden",
+  "@authLogoutButton": {
+    "description": "Button zum Abmelden",
+    "context": "authentication"
+  },
+  
+  "navDashboard": "Dashboard",
+  "@navDashboard": {
+    "description": "Navigations-Element für Dashboard",
+    "context": "navigation"
+  },
+  "navWorldList": "Welten",
+  "@navWorldList": {
+    "description": "Navigations-Element für Weltenliste",
+    "context": "navigation"
+  },
+  "navProfile": "Profil",
+  "@navProfile": {
+    "description": "Navigations-Element für Benutzerprofil",
+    "context": "navigation"
+  },
+  
+  "worldsTitle": "Spielwelten",
+  "@worldsTitle": {
+    "description": "Titel für die Welten-Seite",
+    "context": "worlds"
+  },
+  "worldJoinButton": "Welt beitreten",
+  "@worldJoinButton": {
+    "description": "Button-Text um einer Welt beizutreten",
+    "context": "worlds"
+  },
+  "worldLeaveButton": "Welt verlassen",
+  "@worldLeaveButton": {
+    "description": "Button-Text um eine Welt zu verlassen",
+    "context": "worlds"
+  },
+  "worldPreRegisterButton": "Vorregistrieren",
+  "@worldPreRegisterButton": {
+    "description": "Button-Text für Vorregistrierung bei kommender Welt",
+    "context": "worlds"
+  },
+  "worldCancelPreRegisterButton": "Vorregistrierung zurückziehen",
+  "@worldCancelPreRegisterButton": {
+    "description": "Button-Text um Vorregistrierung zu stornieren",
+    "context": "worlds"
+  },
+  "worldStatusUpcoming": "Kommend",
+  "@worldStatusUpcoming": {
+    "description": "Status-Text für kommende Welten",
+    "context": "worlds"
+  },
+  "worldStatusOpen": "Offen",
+  "@worldStatusOpen": {
+    "description": "Status-Text für offene Welten",  
+    "context": "worlds"
+  },
+  "worldStatusRunning": "Laufend",
+  "@worldStatusRunning": {
+    "description": "Status-Text für laufende Welten",
+    "context": "worlds"
+  },
+  "worldStatusClosed": "Geschlossen",
+  "@worldStatusClosed": {
+    "description": "Status-Text für geschlossene Welten",
+    "context": "worlds"
+  },
+  
+  "inviteTitle": "Welten-Einladung",
+  "@inviteTitle": {
+    "description": "Titel für Einladungsseite",
+    "context": "invites"
+  },
+  "inviteAcceptButton": "Einladung annehmen",
+  "@inviteAcceptButton": {
+    "description": "Button-Text um Einladung anzunehmen",
+    "context": "invites"
+  },
+  "inviteLoginPrompt": "Bitte melden Sie sich an, um diese Einladung anzunehmen",
+  "@inviteLoginPrompt": {
+    "description": "Aufforderung zur Anmeldung für Einladung",
+    "context": "invites"
+  },
+  "inviteRegisterPrompt": "Bitte registrieren Sie sich, um diese Einladung anzunehmen",
+  "@inviteRegisterPrompt": {
+    "description": "Aufforderung zur Registrierung für Einladung",
+    "context": "invites"
+  },
+  "inviteExpired": "Diese Einladung ist abgelaufen",
+  "@inviteExpired": {
+    "description": "Nachricht wenn Einladung abgelaufen ist",
+    "context": "invites"
+  },
+  "inviteAlreadyAccepted": "Diese Einladung wurde bereits angenommen",
+  "@inviteAlreadyAccepted": {
+    "description": "Nachricht wenn Einladung bereits angenommen wurde",
+    "context": "invites"
+  },
+  "inviteInvalidToken": "Ungültiger Einladungslink",
+  "@inviteInvalidToken": {
+    "description": "Nachricht wenn Einladungstoken ungültig ist",
+    "context": "invites"
+  },
+  
+  "errorGeneral": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+  "@errorGeneral": {
+    "description": "Allgemeine Fehlermeldung",
+    "context": "errors"
+  },
+  "errorNetwork": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.",
+  "@errorNetwork": {
+    "description": "Netzwerk-Fehlermeldung",
+    "context": "errors"
+  },
+  "errorUnauthorized": "Sie sind nicht berechtigt, auf diese Ressource zuzugreifen.",
+  "@errorUnauthorized": {
+    "description": "Autorisierungs-Fehlermeldung",
+    "context": "errors"
+  },
+  "errorValidationEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+  "@errorValidationEmail": {
+    "description": "E-Mail-Validierungsfehler",
+    "context": "errors"
+  },
+  "errorValidationPassword": "Das Passwort muss mindestens 8 Zeichen lang sein",
+  "@errorValidationPassword": {
+    "description": "Passwort-Validierungsfehler",
+    "context": "errors"
+  },
+  
+  "buttonOk": "OK",
+  "@buttonOk": {
+    "description": "Allgemeiner OK-Button",
+    "context": "common"
+  },
+  "commonOr": "oder",
+  "@commonOr": {
+    "description": "Trennwort zwischen Optionen",
+    "context": "common"
+  },
+  "commonLanguage": "Sprache",
+  "@commonLanguage": {
+    "description": "Label für Sprach-Auswahl",
+    "context": "common"
+  },
+  "buttonCancel": "Abbrechen",
+  "@buttonCancel": {
+    "description": "Allgemeiner Abbrechen-Button",
+    "context": "common"
+  },
+  "buttonSave": "Speichern",
+  "@buttonSave": {
+    "description": "Allgemeiner Speichern-Button",
+    "context": "common"
+  },
+  "buttonRetry": "Erneut versuchen",
+  "@buttonRetry": {
+    "description": "Allgemeiner Wiederholen-Button",
+    "context": "common"
+  },
+  "loadingText": "Wird geladen...",
+  "@loadingText": {
+    "description": "Allgemeiner Ladetext",
+    "context": "common"
+  },
+
+  "landingSubtitle": "Dein Portal zu unendlichen Welten",
+  "@landingSubtitle": {
+    "description": "Untertitel auf der Landing-Page",
+    "context": "landing"
+  },
+  "landingTagline": "🎮 Spiele • 🌍 Erkunde • 🤝 Verbinde",
+  "@landingTagline": {
+    "description": "Kurze Beschreibung der Hauptfunktionen",
+    "context": "landing"
+  },
+  "landingStartButton": "Jetzt kostenlos starten",
+  "@landingStartButton": {
+    "description": "Haupt-CTA-Button auf der Landing-Page",
+    "context": "landing"
+  },
+  "landingNoCreditCard": "Keine Kreditkarte erforderlich",
+  "@landingNoCreditCard": {
+    "description": "Hinweis unter dem Registrierungs-Button",
+    "context": "landing"
+  },
+  "landingLoginPrompt": "Bereits Mitglied? Anmelden",
+  "@landingLoginPrompt": {
+    "description": "Link zum Login für bestehende Nutzer",
+    "context": "landing"
+  },
+  "landingRegisterButton": "Kostenlos registrieren →",
+  "@landingRegisterButton": {
+    "description": "Registrierungs-Button im CTA-Bereich",
+    "context": "landing"
+  },
+  "landingStatsPlayers": "Spieler",
+  "@landingStatsPlayers": {
+    "description": "Label für Spieler-Statistik",
+    "context": "landing"
+  },
+  "landingStatsOnline": "Online",
+  "@landingStatsOnline": {
+    "description": "Label für Online-Status-Statistik",
+    "context": "landing"
+  },
+  "landingDiscoverMore": "Entdecke mehr",
+  "@landingDiscoverMore": {
+    "description": "Button-Text um mehr Features zu entdecken",
+    "context": "landing"
+  },
+  "landingFeaturesTitle": "Was macht Weltenwind besonders?",
+  "@landingFeaturesTitle": {
+    "description": "Titel der Features-Sektion",
+    "context": "landing"
+  },
+  "landingFeaturesSubtitle": "Erlebe Gaming auf einem neuen Level",
+  "@landingFeaturesSubtitle": {
+    "description": "Untertitel der Features-Sektion",
+    "context": "landing"
+  },
+  "landingFeatureWorldsTitle": "Unendliche Welten",
+  "@landingFeatureWorldsTitle": {
+    "description": "Titel des Welten-Features",
+    "context": "landing"
+  },
+  "landingFeatureWorldsDesc": "Erkunde hunderte einzigartige Spielwelten oder erschaffe deine eigene",
+  "@landingFeatureWorldsDesc": {
+    "description": "Beschreibung des Welten-Features",
+    "context": "landing"
+  },
+  "landingFeatureCommunityTitle": "Community",
+  "@landingFeatureCommunityTitle": {
+    "description": "Titel des Community-Features",
+    "context": "landing"
+  },
+  "landingFeatureCommunityDesc": "Verbinde dich mit Spielern aus der ganzen Welt",
+  "@landingFeatureCommunityDesc": {
+    "description": "Beschreibung des Community-Features",
+    "context": "landing"
+  },
+  "landingFeatureSecurityTitle": "Sicher & Fair",
+  "@landingFeatureSecurityTitle": {
+    "description": "Titel des Sicherheits-Features",
+    "context": "landing"
+  },
+  "landingFeatureSecurityDesc": "Modernste Sicherheit und faire Spielregeln für alle",
+  "@landingFeatureSecurityDesc": {
+    "description": "Beschreibung des Sicherheits-Features",
+    "context": "landing"
+  },
+  "landingFeatureSpeedTitle": "Blitzschnell",
+  "@landingFeatureSpeedTitle": {
+    "description": "Titel des Performance-Features",
+    "context": "landing"
+  },
+  "landingFeatureSpeedDesc": "Optimierte Server für minimale Latenz",
+  "@landingFeatureSpeedDesc": {
+    "description": "Beschreibung des Performance-Features",
+    "context": "landing"
+  },
+  "landingFeatureMobileTitle": "Überall spielen",
+  "@landingFeatureMobileTitle": {
+    "description": "Titel des Mobile-Features",
+    "context": "landing"
+  },
+  "landingFeatureMobileDesc": "Auf PC, Tablet oder Smartphone - immer dabei",
+  "@landingFeatureMobileDesc": {
+    "description": "Beschreibung des Mobile-Features",
+    "context": "landing"
+  },
+  "landingFeatureRewardsTitle": "Belohnungen",
+  "@landingFeatureRewardsTitle": {
+    "description": "Titel des Belohnungs-Features",
+    "context": "landing"
+  },
+  "landingFeatureRewardsDesc": "Sammle Erfolge und exklusive Belohnungen",
+  "@landingFeatureRewardsDesc": {
+    "description": "Beschreibung des Belohnungs-Features",
+    "context": "landing"
+  },
+  "landingCtaTitle": "Bereit für dein Abenteuer?",
+  "@landingCtaTitle": {
+    "description": "Titel des finalen Call-to-Action-Bereichs",
+    "context": "landing"
+  },
+  "landingCtaSubtitle": "Schließe dich tausenden Spielern an und starte noch heute!",
+  "@landingCtaSubtitle": {
+    "description": "Untertitel des finalen Call-to-Action-Bereichs",
+    "context": "landing"
+  },
+  "footerCopyright": "© 2024 Weltenwind. Alle Rechte vorbehalten.",
+  "@footerCopyright": {
+    "description": "Copyright-Hinweis im Footer",
+    "context": "footer"
+  },
+  "footerPrivacy": "Datenschutz",
+  "@footerPrivacy": {
+    "description": "Link zum Datenschutz im Footer",
+    "context": "footer"
+  },
+  "footerLegal": "Impressum",
+  "@footerLegal": {
+    "description": "Link zum Impressum im Footer",
+    "context": "footer"
+  },
+  "footerSupport": "Support",
+  "@footerSupport": {
+    "description": "Link zum Support im Footer",
+    "context": "footer"
+  }
+} 

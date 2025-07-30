@@ -1,0 +1,14 @@
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+preferred-supported-locales: ["de", "en"]
+synthetic-package: false
+nullable-getter: false
+header-file: null
+header: |
+  /// Generated file. Do not edit.
+  /// 
+  /// Weltenwind Game Localizations
+  /// Generated on: {date}
+use-deferred-loading: false 

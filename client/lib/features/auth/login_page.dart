@@ -4,6 +4,8 @@ import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
+import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/language_switcher.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -126,7 +128,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             }
           } else if (_inviteToken != null) {
             // Fallback: Wenn Invite-Token in Query-Parametern, direkt zur Invite-Seite
-            AppLogger.app.i('🎫 Invite-Token in Query - direkte Navigation', error: {'token': _inviteToken!.substring(0, 8) + '...'});
+            AppLogger.app.i('🎫 Invite-Token in Query - direkte Navigation', error: {'token': '${_inviteToken!.substring(0, 8)}...'});
             context.goNamed('world-join-by-token', pathParameters: {'token': _inviteToken!});
           } else {
             // Standard-Redirect zu Welten-Liste
@@ -222,7 +224,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   ),
                                   const SizedBox(height: 20),
                                   Text(
-                                    'Willkommen bei Weltenwind',
+                                    AppLocalizations.of(context).authLoginWelcome,
                                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -231,7 +233,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Melde dich an, um deine Welten zu verwalten',
+                                    AppLocalizations.of(context).authLoginSubtitle,
                                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                       color: Colors.grey[300],
                                       fontSize: 16,
@@ -254,7 +256,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       }
                                     },
                                     decoration: InputDecoration(
-                                      labelText: 'Benutzername',
+                                      labelText: AppLocalizations.of(context).authUsernameLabel,
                                       labelStyle: TextStyle(color: Colors.grey[400]),
                                       prefixIcon: const Icon(Icons.person, color: AppTheme.primaryColor),
                                       filled: true,
@@ -282,10 +284,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     ),
                                     validator: (value) {
                                       if (value == null || value.trim().isEmpty) {
-                                        return 'Bitte gib deinen Benutzernamen ein';
+                                        return AppLocalizations.of(context).authUsernameRequired;
                                       }
                                       if (value.trim().length < 3) {
-                                        return 'Benutzername muss mindestens 3 Zeichen lang sein';
+                                        return AppLocalizations.of(context).authUsernameMinLength;
                                       }
                                       return null;
                                     },
@@ -308,7 +310,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       }
                                     },
                                     decoration: InputDecoration(
-                                      labelText: 'Passwort',
+                                      labelText: AppLocalizations.of(context).authPasswordLabel,
                                       labelStyle: TextStyle(color: Colors.grey[400]),
                                       prefixIcon: const Icon(Icons.lock, color: AppTheme.primaryColor),
                                       suffixIcon: IconButton(
@@ -347,10 +349,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Bitte gib dein Passwort ein';
+                                        return AppLocalizations.of(context).authPasswordRequired;
                                       }
                                       if (_hasInteractedWithPassword && value.length < 6) {
-                                        return 'Passwort muss mindestens 6 Zeichen lang sein';
+                                        return AppLocalizations.of(context).authPasswordMinLength;
                                       }
                                       return null;
                                     },
@@ -389,7 +391,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                               });
                                             },
                                             child: Text(
-                                              'Angemeldet bleiben',
+                                              AppLocalizations.of(context).authRememberMe,
                                               style: TextStyle(
                                                 color: Colors.grey[300],
                                                 fontSize: 14,
@@ -402,9 +404,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       // Forgot Password Link
                                       TextButton(
                                         onPressed: () => context.goNamed('forgot-password'),
-                                        child: const Text(
-                                          'Passwort vergessen?',
-                                          style: TextStyle(
+                                        child: Text(
+                                          AppLocalizations.of(context).authForgotPassword,
+                                          style: const TextStyle(
                                             color: AppTheme.primaryColor,
                                             fontSize: 14,
                                           ),
@@ -470,9 +472,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                                 ),
                                               )
-                                            : const Text(
-                                                'Anmelden',
-                                                style: TextStyle(
+                                            : Text(
+                                                AppLocalizations.of(context).authLoginButton,
+                                                style: const TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -494,7 +496,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: 16),
                                         child: Text(
-                                          'oder',
+                                          AppLocalizations.of(context).commonOr,
                                           style: TextStyle(
                                             color: Colors.grey[400],
                                             fontSize: 14,
@@ -519,26 +521,26 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       _buildSocialLoginButton(
                                         onPressed: () {
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Google Login wird bald verfügbar sein'),
+                                            SnackBar(
+                                              content: Text(AppLocalizations.of(context).authGoogleComingSoon),
                                             ),
                                           );
                                         },
                                         icon: Icons.g_mobiledata,
-                                        label: 'Google',
+                                        label: AppLocalizations.of(context).authGoogleLabel,
                                       ),
                                       const SizedBox(width: 16),
                                       // GitHub Login
                                       _buildSocialLoginButton(
                                         onPressed: () {
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text('GitHub Login wird bald verfügbar sein'),
+                                            SnackBar(
+                                              content: Text(AppLocalizations.of(context).authGithubComingSoon),
                                             ),
                                           );
                                         },
                                         icon: Icons.code,
-                                        label: 'GitHub',
+                                        label: AppLocalizations.of(context).authGithubLabel,
                                       ),
                                     ],
                                   ),
@@ -549,14 +551,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        'Noch kein Konto? ',
+                                        AppLocalizations.of(context).authNoAccount,
                                         style: TextStyle(color: Colors.grey[400]),
                                       ),
                                       TextButton(
                                         onPressed: () => context.goNamed('register'),
-                                        child: const Text(
-                                          'Registrieren',
-                                          style: TextStyle(
+                                        child: Text(
+                                          AppLocalizations.of(context).authRegisterButton,
+                                          style: const TextStyle(
                                             color: AppTheme.primaryColor,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
@@ -585,17 +587,17 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               duration: const Duration(milliseconds: 200),
               child: Container(
                 color: Colors.black.withOpacity(0.7),
-                child: const Center(
+                child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(
+                      const CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
-                        'Anmeldung läuft...',
-                        style: TextStyle(
+                        AppLocalizations.of(context).authLoginLoading,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                         ),
@@ -605,6 +607,18 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 ),
               ),
             ),
+          
+          // Language Switcher (oben links)
+          const Positioned(
+            top: 40.0,
+            left: 20.0,
+            child: SafeArea(
+              child: LanguageSwitcher(
+                showLabel: false,
+                isCompact: true,
+              ),
+            ),
+          ),
         ],
       ),
     );

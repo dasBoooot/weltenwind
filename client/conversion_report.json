@@ -1,0 +1,24 @@
+{
+  "conversion_stats": {
+    "successful": 528,
+    "failed": 0,
+    "total": 528
+  },
+  "replacement_stats": {
+    "total_replacements": 437,
+    "files_modified": 32,
+    "files_processed": 32
+  },
+  "categories": {
+    "auth": 56,
+    "button": 43,
+    "dialog": 4,
+    "error": 170,
+    "invite": 29,
+    "navigation": 50,
+    "world": 103,
+    "form": 15,
+    "ui": 58
+  },
+  "failed_conversions": []
+}

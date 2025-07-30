@@ -29,7 +29,7 @@ class AuthService {
     _pendingInviteToken = inviteToken;
     _pendingRedirectRoute = 'world-join-by-token';
     _pendingRouteParams = {'token': inviteToken};
-    AppLogger.auth.i('🎫 Invite-Redirect gesetzt', error: {'token': inviteToken.substring(0, 8) + '...'});
+    AppLogger.auth.i('🎫 Invite-Redirect gesetzt', error: {'token': '${inviteToken.substring(0, 8)}...'});
   }
 
   void setPendingRoute(String routeName, {Map<String, String>? params}) {
@@ -486,7 +486,7 @@ class AuthService {
   // Passwort zurücksetzen mit Token
   Future<bool> resetPassword(String token, String newPassword) async {
     try {
-      AppLogger.auth.i('🔄 Password-Reset wird versucht', error: {'tokenPreview': token.substring(0, 8) + '...'});
+      AppLogger.auth.i('🔄 Password-Reset wird versucht', error: {'tokenPreview': '${token.substring(0, 8)}...'});
       
       final response = await _apiService.post('/auth/reset-password', {
         'token': token,
