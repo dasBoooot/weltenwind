@@ -58,7 +58,7 @@ class WorldFilters extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            AppLocalizations.of(context)!.worldFiltersStatus,
+            AppLocalizations.of(context).worldFiltersStatus,
             style: TextStyle(
               color: Colors.grey[300],
               fontWeight: FontWeight.w600,
@@ -108,7 +108,7 @@ class WorldFilters extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            AppLocalizations.of(context)!.worldFiltersCategory,
+            AppLocalizations.of(context).worldFiltersCategory,
             style: TextStyle(
               color: Colors.grey[300],
               fontWeight: FontWeight.w600,
@@ -163,7 +163,7 @@ class WorldFilters extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            AppLocalizations.of(context)!.worldFiltersSortBy,
+            AppLocalizations.of(context).worldFiltersSortBy,
             style: TextStyle(
               color: Colors.grey[300],
               fontWeight: FontWeight.w600,
@@ -187,19 +187,19 @@ class WorldFilters extends StatelessWidget {
               items: [
                 DropdownMenuItem(
                   value: 'startDate',
-                  child: Text(AppLocalizations.of(context)!.worldFiltersSortStartDate),
+                  child: Text(AppLocalizations.of(context).worldFiltersSortStartDate),
                 ),
                 DropdownMenuItem(
                   value: 'name',
-                  child: Text(AppLocalizations.of(context)!.worldFiltersSortName),
+                  child: Text(AppLocalizations.of(context).worldFiltersSortName),
                 ),
                 DropdownMenuItem(
                   value: 'status',
-                  child: Text(AppLocalizations.of(context)!.worldFiltersSortStatus),
+                  child: Text(AppLocalizations.of(context).worldFiltersSortStatus),
                 ),
                 DropdownMenuItem(
                   value: 'playerCount',
-                  child: Text(AppLocalizations.of(context)!.worldFiltersSortPlayerCount),
+                  child: Text(AppLocalizations.of(context).worldFiltersSortPlayerCount),
                 ),
               ],
               onChanged: (value) {

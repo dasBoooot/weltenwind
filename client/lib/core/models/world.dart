@@ -121,15 +121,15 @@ extension WorldStatusLocalization on WorldStatus {
   String getDisplayName(BuildContext context) {
     switch (this) {
       case WorldStatus.upcoming:
-        return AppLocalizations.of(context)!.worldStatusUpcoming;
+        return AppLocalizations.of(context).worldStatusUpcoming;
       case WorldStatus.open:
-        return AppLocalizations.of(context)!.worldStatusOpen;
+        return AppLocalizations.of(context).worldStatusOpen;
       case WorldStatus.running:
-        return AppLocalizations.of(context)!.worldStatusRunning;
+        return AppLocalizations.of(context).worldStatusRunning;
       case WorldStatus.closed:
-        return AppLocalizations.of(context)!.worldStatusClosed;
+        return AppLocalizations.of(context).worldStatusClosed;
       case WorldStatus.archived:
-        return AppLocalizations.of(context)!.worldStatusArchived;
+        return AppLocalizations.of(context).worldStatusArchived;
     }
   }
 }
@@ -138,13 +138,13 @@ extension WorldCategoryLocalization on WorldCategory {
   String getDisplayName(BuildContext context) {
     switch (this) {
       case WorldCategory.classic:
-        return AppLocalizations.of(context)!.worldCategoryClassic;
+        return AppLocalizations.of(context).worldCategoryClassic;
       case WorldCategory.pvp:
-        return AppLocalizations.of(context)!.worldCategoryPvP;
+        return AppLocalizations.of(context).worldCategoryPvP;
       case WorldCategory.event:
-        return AppLocalizations.of(context)!.worldCategoryEvent;
+        return AppLocalizations.of(context).worldCategoryEvent;
       case WorldCategory.experimental:
-        return AppLocalizations.of(context)!.worldCategoryExperimental;
+        return AppLocalizations.of(context).worldCategoryExperimental;
     }
   }
   

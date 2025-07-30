@@ -12,7 +12,6 @@ class WorldCard extends StatelessWidget {
   final VoidCallback? onPlay;
   final VoidCallback? onPreRegister;
   final VoidCallback? onCancelPreRegistration;
-  final VoidCallback? onInvite;
   final VoidCallback? onTap;
 
   const WorldCard({
@@ -25,7 +24,6 @@ class WorldCard extends StatelessWidget {
     this.onPlay,
     this.onPreRegister,
     this.onCancelPreRegistration,
-    this.onInvite,
     this.onTap,
   });
 
@@ -123,7 +121,7 @@ class WorldCard extends StatelessWidget {
                     Text(
                         world.description?.isNotEmpty == true 
                           ? world.description! 
-                          : AppLocalizations.of(context)!.worldDefaultDescription,
+                          : AppLocalizations.of(context).worldDefaultDescription,
                         style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[300],
@@ -275,7 +273,7 @@ class WorldCard extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         Text(
-          AppLocalizations.of(context)!.worldPlayersActive(world.playerCount),
+          AppLocalizations.of(context).worldPlayersActive(world.playerCount),
           style: TextStyle(
             color: Colors.grey[400],
             fontSize: 14,
@@ -298,7 +296,7 @@ class WorldCard extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              AppLocalizations.of(context)!.worldStartDate('${world.startsAt.day}.${world.startsAt.month}.${world.startsAt.year}'),
+              AppLocalizations.of(context).worldStartDate('${world.startsAt.day}.${world.startsAt.month}.${world.startsAt.year}'),
               style: TextStyle(
                 color: Colors.grey[400],
                 fontSize: 14,
@@ -322,7 +320,7 @@ class WorldCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        AppLocalizations.of(context)!.worldEndDate('${endDate.day}.${endDate.month}.${endDate.year}'),
+                        AppLocalizations.of(context).worldEndDate('${endDate.day}.${endDate.month}.${endDate.year}'),
                         style: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 14,
@@ -351,7 +349,7 @@ class WorldCard extends StatelessWidget {
             buttons.add(_buildButton(
               onPressed: onCancelPreRegistration,
               icon: Icons.cancel,
-              label: AppLocalizations.of(context)!.worldLeaveButton,
+              label: AppLocalizations.of(context).worldLeaveButton,
               color: Colors.red[600],
             ));
           }
@@ -360,7 +358,7 @@ class WorldCard extends StatelessWidget {
             buttons.add(_buildButton(
               onPressed: onPreRegister,
               icon: Icons.how_to_reg,
-              label: AppLocalizations.of(context)!.worldPreRegisterButton,
+              label: AppLocalizations.of(context).worldPreRegisterButton,
               color: Colors.orange[600],
             ));
           }
@@ -376,7 +374,7 @@ class WorldCard extends StatelessWidget {
             buttons.add(_buildButton(
               onPressed: onPlay,
               icon: Icons.play_circle_filled,
-              label: AppLocalizations.of(context)!.worldPlayButton,
+              label: AppLocalizations.of(context).worldPlayButton,
               color: Colors.green[600],
             ));
           }
@@ -385,7 +383,7 @@ class WorldCard extends StatelessWidget {
             buttons.add(_buildButton(
               onPressed: onLeave,
               icon: Icons.exit_to_app,
-              label: AppLocalizations.of(context)!.worldLeaveButton,
+              label: AppLocalizations.of(context).worldLeaveButton,
               color: Colors.red[600],
             ));
           }
@@ -394,7 +392,7 @@ class WorldCard extends StatelessWidget {
             buttons.add(_buildButton(
               onPressed: onJoin,
               icon: Icons.play_arrow,
-              label: AppLocalizations.of(context)!.worldJoinButton,
+              label: AppLocalizations.of(context).worldJoinNowButton,
               color: AppTheme.primaryColor,
             ));
           }
@@ -405,19 +403,6 @@ class WorldCard extends StatelessWidget {
       case WorldStatus.archived:
         // Keine Aktions-Buttons bei geschlossenen/archivierten Welten
         return _buildStatusBadge(context);
-    }
-    
-    // Invite Button für upcoming, open und running
-    if ([WorldStatus.upcoming, WorldStatus.open, WorldStatus.running].contains(world.status) && 
-        onInvite != null) {
-      buttons.add(_buildButton(
-        onPressed: onInvite,
-        icon: Icons.person_add,
-        label: AppLocalizations.of(context)!.worldInviteButton,
-        color: Colors.purple[600],
-        iconOnly: false,
-        tooltip: AppLocalizations.of(context)!.worldInviteButton,
-      ));
     }
     
     // Wenn keine Buttons verfügbar sind

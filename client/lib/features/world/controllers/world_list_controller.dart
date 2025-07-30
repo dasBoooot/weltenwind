@@ -4,7 +4,6 @@ import '../../../config/logger.dart';
 import '../../../core/models/world.dart';
 import '../../../core/services/world_service.dart';
 import '../../../core/services/invite_service.dart';
-import '../widgets/world_card.dart';
 
 class WorldListController extends ChangeNotifier {
   final WorldService _worldService;

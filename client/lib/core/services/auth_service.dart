@@ -17,49 +17,7 @@ class AuthService {
   // Reaktiver Auth-Status für GoRouter
   final ValueNotifier<bool> isAuthenticated = ValueNotifier(false);
 
-  // HINZUGEFÜGT: Post-Auth-Redirect System für Invite-Flow
-  String? _pendingInviteToken;
-  String? _pendingRedirectRoute;
-  Map<String, String>? _pendingRouteParams;
-
   User? get currentUser => _currentUser;
-
-  // HINZUGEFÜGT: Invite-Redirect Management
-  void setPendingInviteRedirect(String inviteToken) {
-    _pendingInviteToken = inviteToken;
-    _pendingRedirectRoute = 'world-join-by-token';
-    _pendingRouteParams = {'token': inviteToken};
-    AppLogger.auth.i('🎫 Invite-Redirect gesetzt', error: {'token': '${inviteToken.substring(0, 8)}...'});
-  }
-
-  void setPendingRoute(String routeName, {Map<String, String>? params}) {
-    _pendingRedirectRoute = routeName;
-    _pendingRouteParams = params;
-    AppLogger.auth.i('🧭 Pending-Route gesetzt', error: {'route': routeName, 'params': params});
-  }
-
-  Map<String, dynamic>? getPendingRedirect() {
-    if (_pendingRedirectRoute != null) {
-      final redirect = {
-        'route': _pendingRedirectRoute!,
-        'params': _pendingRouteParams,
-        'inviteToken': _pendingInviteToken,
-      };
-      AppLogger.auth.i('🔍 Pending-Redirect abgerufen', error: redirect);
-      return redirect;
-    }
-    return null;
-  }
-
-  void clearPendingRedirect() {
-    AppLogger.auth.i('🧹 Pending-Redirect gelöscht', error: {
-      'hadRoute': _pendingRedirectRoute != null,
-      'hadInvite': _pendingInviteToken != null
-    });
-    _pendingInviteToken = null;
-    _pendingRedirectRoute = null;
-    _pendingRouteParams = null;
-  }
 
   Future<bool> isLoggedIn() async {
     try {

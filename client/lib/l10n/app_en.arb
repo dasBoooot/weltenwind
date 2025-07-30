@@ -148,11 +148,6 @@
     "description": "Text before login link on registration page",
     "context": "authentication"
   },
-  "authRegisterSuccessWithInvite": "Registration successful! You will be redirected to the invitation...",
-  "@authRegisterSuccessWithInvite": {
-    "description": "Success message after registration with invite token",
-    "context": "authentication"
-  },
   "authRegisterSuccessWelcome": "Registration successful! Welcome to Weltenwind!",
   "@authRegisterSuccessWelcome": {
     "description": "Success message after normal registration",
@@ -293,7 +288,6 @@
     "description": "Button to log out",
     "context": "authentication"
   },
-  
   "navDashboard": "Dashboard",
   "@navDashboard": {
     "description": "Navigation item for dashboard",
@@ -309,15 +303,9 @@
     "description": "Navigation item for user profile",
     "context": "navigation"
   },
-  
   "worldsTitle": "Game Worlds",
   "@worldsTitle": {
     "description": "Title for the worlds page",
-    "context": "worlds"
-  },
-  "worldJoinButton": "Join World",
-  "@worldJoinButton": {
-    "description": "Button text to join a world",
     "context": "worlds"
   },
   "worldLeaveButton": "Leave World",
@@ -355,43 +343,6 @@
     "description": "Status text for closed worlds",
     "context": "worlds"
   },
-  
-  "inviteTitle": "World Invitation",
-  "@inviteTitle": {
-    "description": "Title for invitation page",
-    "context": "invites"
-  },
-  "inviteAcceptButton": "Accept Invitation",
-  "@inviteAcceptButton": {
-    "description": "Button text to accept invitation",
-    "context": "invites"
-  },
-  "inviteLoginPrompt": "Please sign in to accept this invitation",
-  "@inviteLoginPrompt": {
-    "description": "Prompt asking user to login for invitation",
-    "context": "invites"
-  },
-  "inviteRegisterPrompt": "Please register to accept this invitation",
-  "@inviteRegisterPrompt": {
-    "description": "Prompt asking user to register for invitation",
-    "context": "invites"
-  },
-  "inviteExpired": "This invitation has expired",
-  "@inviteExpired": {
-    "description": "Message when invitation is expired",
-    "context": "invites"
-  },
-  "inviteAlreadyAccepted": "This invitation has already been accepted",
-  "@inviteAlreadyAccepted": {
-    "description": "Message when invitation is already accepted",
-    "context": "invites"
-  },
-  "inviteInvalidToken": "Invalid invitation link",
-  "@inviteInvalidToken": {
-    "description": "Message when invitation token is invalid",
-    "context": "invites"
-  },
-  
   "errorGeneral": "An error occurred. Please try again.",
   "@errorGeneral": {
     "description": "Generic error message",
@@ -417,7 +368,6 @@
     "description": "Password validation error",
     "context": "errors"
   },
-  
   "buttonOk": "OK",
   "@buttonOk": {
     "description": "Generic OK button",
@@ -453,7 +403,6 @@
     "description": "Generic loading text",
     "context": "common"
   },
-
   "landingSubtitle": "Your portal to infinite worlds",
   "@landingSubtitle": {
     "description": "Subtitle on the landing page",
@@ -599,7 +548,6 @@
     "description": "Link to support in footer",
     "context": "footer"
   },
-
   "worldListTitle": "Choose your world",
   "@worldListTitle": {
     "description": "Main title on world list page", 
@@ -655,29 +603,6 @@
   "@worldListLoadingText": {
     "description": "Loading text for world list",
     "context": "worlds"
-  },
-
-  "worldJoinSuccessful": "Successfully joined {worldName}!",
-  "@worldJoinSuccessful": {
-    "description": "Success message after joining a world",
-    "context": "worldActions",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "Name of the world"
-      }
-    }
-  },
-  "worldJoinSuccessfulDetailed": "Successfully joined world \"{worldName}\"!",
-  "@worldJoinSuccessfulDetailed": {
-    "description": "Detailed success message after joining a world",
-    "context": "worldActions",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "Name of the world"
-      }
-    }
   },
   "worldAlreadyMember": "You are already a member of world \"{worldName}\"!",
   "@worldAlreadyMember": {
@@ -744,11 +669,6 @@
       }
     }
   },
-  "worldInviteSent": "Invitation sent successfully!",
-  "@worldInviteSent": {
-    "description": "Success message after sending an invitation",
-    "context": "worldActions"
-  },
   "worldPlayButton": "Play",
   "@worldPlayButton": {
     "description": "Button to play a world",
@@ -759,7 +679,6 @@
     "description": "Error message when logging out",
     "context": "worldActions"
   },
-
   "worldRegisterNow": "Register now",
   "@worldRegisterNow": {
     "description": "Button for new registration",
@@ -795,17 +714,11 @@
     "description": "Button for registration in world context",
     "context": "worldAuth"
   },
-  "worldAcceptInviteButton": "Accept invitation",
-  "@worldAcceptInviteButton": {
-    "description": "Button to accept an invitation",
-    "context": "worldAuth"
-  },
   "worldLogoutButton": "Sign Out",
   "@worldLogoutButton": {
     "description": "Button to sign out in world context",
     "context": "worldAuth"
   },
-
   "worldNotFoundTitle": "World not found",
   "@worldNotFoundTitle": {
     "description": "Title when world was not found",
@@ -826,7 +739,6 @@
     "description": "Title for information about a world",
     "context": "worldStates"
   },
-
   "worldStartDate": "Start: {date}",
   "@worldStartDate": {
     "description": "Start date of a world",
@@ -890,7 +802,6 @@
     "description": "Default description for world cards",
     "context": "worldInfo"
   },
-
   "worldCategoryClassic": "Classic",
   "@worldCategoryClassic": {
     "description": "Category label for Classic worlds",
@@ -911,7 +822,6 @@
     "description": "Category label for Experimental worlds",
     "context": "worldCategories"
   },
-
   "worldFiltersStatus": "Status: ",
   "@worldFiltersStatus": {
     "description": "Label for status filter",
@@ -982,19 +892,9 @@
     "description": "World Status: Archived",
     "context": "worldStatus"
   },
-  "worldJoinButton": "Join",
-  "@worldJoinButton": {
-    "description": "Button to join a world",
-    "context": "worldActions"
-  },
   "worldLeaveButton": "Leave",
   "@worldLeaveButton": {
     "description": "Button to leave a world",
-    "context": "worldActions"
-  },
-  "worldInviteButton": "Invite",
-  "@worldInviteButton": {
-    "description": "Button to invite players",
     "context": "worldActions"
   },
   "worldFiltersSortStartDate": "Start Date",
@@ -1027,7 +927,6 @@
     "description": "Button to play in a world",
     "context": "worldActions"
   },
-
   "userInfoClickForDetails": "Click for details",
   "@userInfoClickForDetails": {
     "description": "Hint text for user info details",
@@ -1038,7 +937,6 @@
     "description": "Label for roles display",
     "context": "userInterface"
   },
-
   "navigationJoinRequiredMessage": "You must join the world first to see the dashboard",
   "@navigationJoinRequiredMessage": {
     "description": "Message when joining the world is required",
@@ -1084,159 +982,6 @@
     "description": "Tooltip text for locked dashboard feature",
     "context": "navigation"
   },
-
-  "worldJoinPreRegisterFor": "to pre-register for",
-  "@worldJoinPreRegisterFor": {
-    "description": "Text for pre-registration in invitation",
-    "context": "worldJoin"
-  },
-  "worldJoinToJoin": "to join",
-  "@worldJoinToJoin": {
-    "description": "Text for joining in invitation",
-    "context": "worldJoin"
-  },
-  "worldJoinInvitedBy": "You have been invited by {inviter} {action} the world \"{worldName}\".{validity}",
-  "@worldJoinInvitedBy": {
-    "description": "Base text for invitation",
-    "context": "worldJoin",
-    "placeholders": {
-      "inviter": {
-        "type": "String",
-        "description": "Name of the inviter"
-      },
-      "worldName": {
-        "type": "String",
-        "description": "Name of the world"
-      },
-      "action": {
-        "type": "String",
-        "description": "Action (register/join)"
-      },
-      "validity": {
-        "type": "String",
-        "description": "Validity of the invitation"
-      }
-    }
-  },
-  "worldJoinValidUntil": "\n\n\u23f0 Valid until: {date}",
-  "@worldJoinValidUntil": {
-    "description": "Validity date of the invitation",
-    "context": "worldJoin",
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "description": "Date and time"
-      }
-    }
-  },
-  "worldJoinAlreadyAccepted": "\n\n✅ This invitation has already been accepted.",
-  "@worldJoinAlreadyAccepted": {
-    "description": "Message when invitation already accepted",
-    "context": "worldJoin"
-  },
-  "worldJoinExpired": "\n\n❌ This invitation expired on {date}.",
-  "@worldJoinExpired": {
-    "description": "Message when invitation expired",
-    "context": "worldJoin",
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "description": "Expiry date"
-      }
-    }
-  },
-  "worldJoinMustRegisterWith": "You must register with the email address {email}.",
-  "@worldJoinMustRegisterWith": {
-    "description": "Message for registration with specific email",
-    "context": "worldJoin",
-    "placeholders": {
-      "email": {
-        "type": "String",
-        "description": "Email address"
-      }
-    }
-  },
-  "worldJoinAccountExistsLogin": "Your account with {email} is already registered. Please log in.",
-  "@worldJoinAccountExistsLogin": {
-    "description": "Message when account exists",
-    "context": "worldJoin",
-    "placeholders": {
-      "email": {
-        "type": "String",
-        "description": "Email address"
-      }
-    }
-  },
-  "worldJoinWrongEmail": "This invitation is intended for {inviteEmail}, but you are logged in as {currentEmail}.",
-  "@worldJoinWrongEmail": {
-    "description": "Message when wrong email is logged in",
-    "context": "worldJoin",
-    "placeholders": {
-      "inviteEmail": {
-        "type": "String",
-        "description": "Invitation email"
-      },
-      "currentEmail": {
-        "type": "String",
-        "description": "Currently logged in email"
-      }
-    }
-  },
-  "worldJoinCorrectEmailCanAccept": "You are logged in with the correct email address and can now accept the invitation.",
-  "@worldJoinCorrectEmailCanAccept": {
-    "description": "Message when correct email is logged in",
-    "context": "worldJoin"
-  },
-  "worldJoinUnknownStatus": "Unknown status: {status}",
-  "@worldJoinUnknownStatus": {
-    "description": "Message for unknown status",
-    "context": "worldJoin",
-    "placeholders": {
-      "status": {
-        "type": "String",
-        "description": "Status value"
-      }
-    }
-  },
-
-  "worldJoinWelcome": "Welcome to the world \"{worldName}\"! The invite was automatically accepted.",
-  "@worldJoinWelcome": {
-    "description": "Welcome message after automatic invite acceptance",
-    "context": "worldJoin",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "Name of the world"
-      }
-    }
-  },
-  "worldJoinAlreadyMember": "You are already a member of this world \"{worldName}\"!",
-  "@worldJoinAlreadyMember": {
-    "description": "Message when already a member",
-    "context": "worldJoin",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "Name of the world"
-      }
-    }
-  },
-  "worldJoinCanJoinNow": "You can now join the world.",
-  "@worldJoinCanJoinNow": {
-    "description": "Message that joining is possible",
-    "context": "worldJoin"
-  },
-  "worldJoinInviteAcceptedSuccess": "Invitation accepted! Welcome to the world \"{worldName}\"!",
-  "@worldJoinInviteAcceptedSuccess": {
-    "description": "Success message after invite acceptance",
-    "context": "worldJoin",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "Name of the world"
-      }
-    }
-  },
   "worldJoinSuccess": "Successfully joined the world \"{worldName}\"!",
   "@worldJoinSuccess": {
     "description": "Success message after world join",
@@ -1251,21 +996,6 @@
   "worldJoinFailed": "Join failed. Please try again.",
   "@worldJoinFailed": {
     "description": "Error message on join failure",
-    "context": "worldJoin"
-  },
-  "worldJoinInviteAlreadyAcceptedError": "This invitation has already been accepted.",
-  "@worldJoinInviteAlreadyAcceptedError": {
-    "description": "Error message when invitation already accepted",
-    "context": "worldJoin"
-  },
-  "worldJoinInviteNotForYourEmail": "This invitation is not intended for your email address.",
-  "@worldJoinInviteNotForYourEmail": {
-    "description": "Error message when invitation not for email",
-    "context": "worldJoin"
-  },
-  "worldJoinInviteExpiredError": "This invitation has expired.",
-  "@worldJoinInviteExpiredError": {
-    "description": "Error message when invitation expired",
     "context": "worldJoin"
   },
   "worldJoinPreRegistrationError": "Error during pre-registration",
@@ -1314,7 +1044,6 @@
     "description": "Button text while canceling pre-registration",
     "context": "worldJoin"
   },
-
   "worldJoinGenericError": "An error occurred: {error}",
   "@worldJoinGenericError": {
     "description": "Generic error message",
@@ -1331,22 +1060,11 @@
     "description": "Text for unknown errors",
     "context": "worldJoin"
   },
-  "worldJoinNoInformationAvailable": "No information available",
-  "@worldJoinNoInformationAvailable": {
-    "description": "Text when no information is available",
-    "context": "worldJoin"
-  },
   "worldJoinUnknownWorldName": "Unknown World",
   "@worldJoinUnknownWorldName": {
     "description": "Text for unknown world",
     "context": "worldJoin"
   },
-  "worldJoinUnknownUser": "Unknown",
-  "@worldJoinUnknownUser": {
-    "description": "Text for unknown user",
-    "context": "worldJoin"
-  },
-
   "worldJoinPreRegisterButton": "Pre-register",
   "@worldJoinPreRegisterButton": {
     "description": "Button text for pre-registration",
@@ -1372,7 +1090,6 @@
     "description": "Button text during join",
     "context": "worldJoin"
   },
-
   "worldJoinWorldClosedStatus": "This world is currently closed",
   "@worldJoinWorldClosedStatus": {
     "description": "Status text for closed world",
@@ -1383,7 +1100,6 @@
     "description": "Status text for archived world",
     "context": "worldJoin"
   },
-
   "worldJoinErrorLoadingWorldData": "Error loading world data: {error}",
   "@worldJoinErrorLoadingWorldData": {
     "description": "Error message when loading world data",
@@ -1394,26 +1110,5 @@
         "description": "Error message"
       }
     }
-  },
-  "worldJoinNoWorldIdFound": "No world ID found",
-  "@worldJoinNoWorldIdFound": {
-    "description": "Error message when no world ID found",
-    "context": "worldJoin"
-  },
-  "worldJoinNoInviteTokenFound": "No invitation token found",
-  "@worldJoinNoInviteTokenFound": {
-    "description": "Error message when no invitation token found",
-    "context": "worldJoin"
-  },
-  "worldJoinInvalidOrExpiredInviteLink": "Invalid or expired invitation link",
-  "@worldJoinInvalidOrExpiredInviteLink": {
-    "description": "Error message for invalid invitation link",
-    "context": "worldJoin"
-  },
-
-  "worldJoinLogoutForInvite": "Please log out and register with the correct email address.",
-  "@worldJoinLogoutForInvite": {
-    "description": "Instruction to log out for invitation",
-    "context": "worldJoin"
   }
 } 

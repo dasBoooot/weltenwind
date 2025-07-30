@@ -16,7 +16,7 @@ class WorldListLoadingState extends StatelessWidget {
           ),
           SizedBox(height: 16),
           Text(
-            AppLocalizations.of(context)!.loadingText,
+            AppLocalizations.of(context).loadingText,
             style: TextStyle(
               color: Colors.grey,
               fontSize: 16,
@@ -77,7 +77,7 @@ class WorldListEmptyState extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: onRefresh,
               icon: const Icon(Icons.refresh, size: 18),
-              label: Text(AppLocalizations.of(context)!.buttonRetry),
+              label: Text(AppLocalizations.of(context).buttonRetry),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
                 foregroundColor: Colors.white,
@@ -129,7 +129,7 @@ class WorldListErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              AppLocalizations.of(context)!.worldLoadingError,
+              AppLocalizations.of(context).worldLoadingError,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -151,7 +151,7 @@ class WorldListErrorState extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh, size: 18),
-                label: Text(AppLocalizations.of(context)!.buttonRetry),
+                label: Text(AppLocalizations.of(context).buttonRetry),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryColor,
                   foregroundColor: Colors.white,

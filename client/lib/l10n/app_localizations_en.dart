@@ -104,10 +104,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authHaveAccount => 'Already have an account? ';
 
   @override
-  String get authRegisterSuccessWithInvite =>
-      'Registration successful! You will be redirected to the invitation...';
-
-  @override
   String get authRegisterSuccessWelcome =>
       'Registration successful! Welcome to Weltenwind!';
 
@@ -207,9 +203,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldsTitle => 'Game Worlds';
 
   @override
-  String get worldJoinButton => 'Join';
-
-  @override
   String get worldLeaveButton => 'Leave';
 
   @override
@@ -229,29 +222,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get worldStatusClosed => 'Closed';
-
-  @override
-  String get inviteTitle => 'World Invitation';
-
-  @override
-  String get inviteAcceptButton => 'Accept Invitation';
-
-  @override
-  String get inviteLoginPrompt => 'Please sign in to accept this invitation';
-
-  @override
-  String get inviteRegisterPrompt =>
-      'Please register to accept this invitation';
-
-  @override
-  String get inviteExpired => 'This invitation has expired';
-
-  @override
-  String get inviteAlreadyAccepted =>
-      'This invitation has already been accepted';
-
-  @override
-  String get inviteInvalidToken => 'Invalid invitation link';
 
   @override
   String get errorGeneral => 'An error occurred. Please try again.';
@@ -416,16 +386,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldListLoadingText => 'Loading worlds...';
 
   @override
-  String worldJoinSuccessful(String worldName) {
-    return 'Successfully joined $worldName!';
-  }
-
-  @override
-  String worldJoinSuccessfulDetailed(String worldName) {
-    return 'Successfully joined world \"$worldName\"!';
-  }
-
-  @override
   String worldAlreadyMember(String worldName) {
     return 'You are already a member of world \"$worldName\"!';
   }
@@ -457,9 +417,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get worldInviteSent => 'Invitation sent successfully!';
-
-  @override
   String get worldPlayButton => 'Play';
 
   @override
@@ -485,9 +442,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get worldRegisterButton => 'Register';
-
-  @override
-  String get worldAcceptInviteButton => 'Accept invitation';
 
   @override
   String get worldLogoutButton => 'Sign Out';
@@ -582,9 +536,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldStatusArchived => 'Archived';
 
   @override
-  String get worldInviteButton => 'Invite';
-
-  @override
   String get userInfoClickForDetails => 'Click for details';
 
   @override
@@ -620,91 +571,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'You must join the world to see the dashboard';
 
   @override
-  String get worldJoinPreRegisterFor => 'to pre-register for';
-
-  @override
-  String get worldJoinToJoin => 'to join';
-
-  @override
-  String worldJoinInvitedBy(
-      String inviter, String worldName, String action, String validity) {
-    return 'You have been invited by $inviter $action the world \"$worldName\".$validity';
-  }
-
-  @override
-  String worldJoinValidUntil(String date) {
-    return '\n\n⏰ Valid until: $date';
-  }
-
-  @override
-  String get worldJoinAlreadyAccepted =>
-      '\n\n✅ This invitation has already been accepted.';
-
-  @override
-  String worldJoinExpired(String date) {
-    return '\n\n❌ This invitation expired on $date.';
-  }
-
-  @override
-  String worldJoinMustRegisterWith(String email) {
-    return 'You must register with the email address $email.';
-  }
-
-  @override
-  String worldJoinAccountExistsLogin(String email) {
-    return 'Your account with $email is already registered. Please log in.';
-  }
-
-  @override
-  String worldJoinWrongEmail(String inviteEmail, String currentEmail) {
-    return 'This invitation is intended for $inviteEmail, but you are logged in as $currentEmail.';
-  }
-
-  @override
-  String get worldJoinCorrectEmailCanAccept =>
-      'You are logged in with the correct email address and can now accept the invitation.';
-
-  @override
-  String worldJoinUnknownStatus(String status) {
-    return 'Unknown status: $status';
-  }
-
-  @override
-  String worldJoinWelcome(String worldName) {
-    return 'Welcome to the world \"$worldName\"! The invite was automatically accepted.';
-  }
-
-  @override
-  String worldJoinAlreadyMember(String worldName) {
-    return 'You are already a member of this world \"$worldName\"!';
-  }
-
-  @override
-  String get worldJoinCanJoinNow => 'You can now join the world.';
-
-  @override
-  String worldJoinInviteAcceptedSuccess(String worldName) {
-    return 'Invitation accepted! Welcome to the world \"$worldName\"!';
-  }
-
-  @override
   String worldJoinSuccess(String worldName) {
     return 'Successfully joined the world \"$worldName\"!';
   }
 
   @override
   String get worldJoinFailed => 'Join failed. Please try again.';
-
-  @override
-  String get worldJoinInviteAlreadyAcceptedError =>
-      'This invitation has already been accepted.';
-
-  @override
-  String get worldJoinInviteNotForYourEmail =>
-      'This invitation is not intended for your email address.';
-
-  @override
-  String get worldJoinInviteExpiredError => 'This invitation has expired.';
 
   @override
   String get worldJoinPreRegistrationError => 'Error during pre-registration';
@@ -742,13 +614,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldJoinUnknownError => 'Unknown error';
 
   @override
-  String get worldJoinNoInformationAvailable => 'No information available';
-
-  @override
   String get worldJoinUnknownWorldName => 'Unknown World';
-
-  @override
-  String get worldJoinUnknownUser => 'Unknown';
 
   @override
   String get worldJoinPreRegisterButton => 'Pre-register';
@@ -775,18 +641,4 @@ class AppLocalizationsEn extends AppLocalizations {
   String worldJoinErrorLoadingWorldData(String error) {
     return 'Error loading world data: $error';
   }
-
-  @override
-  String get worldJoinNoWorldIdFound => 'No world ID found';
-
-  @override
-  String get worldJoinNoInviteTokenFound => 'No invitation token found';
-
-  @override
-  String get worldJoinInvalidOrExpiredInviteLink =>
-      'Invalid or expired invitation link';
-
-  @override
-  String get worldJoinLogoutForInvite =>
-      'Please log out and register with the correct email address.';
 }

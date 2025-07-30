@@ -178,7 +178,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
                                 ),
                                 if (!_isExpanded)
                                   Text(
-                                    AppLocalizations.of(context)!.userInfoClickForDetails,
+                                    AppLocalizations.of(context).userInfoClickForDetails,
                                     style: TextStyle(
                                       color: Colors.grey[400],
                                       fontSize: 12,
@@ -229,7 +229,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
                           Icon(Icons.security, size: 16, color: Colors.grey[400]),
                           const SizedBox(width: 8),
                           Text(
-                            AppLocalizations.of(context)!.userInfoRoles,
+                            AppLocalizations.of(context).userInfoRoles,
                             style: TextStyle(
                               color: Colors.grey[400],
                               fontSize: 14,

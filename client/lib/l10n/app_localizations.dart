@@ -277,12 +277,6 @@ abstract class AppLocalizations {
   /// **'Already have an account? '**
   String get authHaveAccount;
 
-  /// Success message after registration with invite token
-  ///
-  /// In en, this message translates to:
-  /// **'Registration successful! You will be redirected to the invitation...'**
-  String get authRegisterSuccessWithInvite;
-
   /// Success message after normal registration
   ///
   /// In en, this message translates to:
@@ -469,12 +463,6 @@ abstract class AppLocalizations {
   /// **'Game Worlds'**
   String get worldsTitle;
 
-  /// Button to join a world
-  ///
-  /// In en, this message translates to:
-  /// **'Join'**
-  String get worldJoinButton;
-
   /// Button to leave a world
   ///
   /// In en, this message translates to:
@@ -516,48 +504,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Closed'**
   String get worldStatusClosed;
-
-  /// Title for invitation page
-  ///
-  /// In en, this message translates to:
-  /// **'World Invitation'**
-  String get inviteTitle;
-
-  /// Button text to accept invitation
-  ///
-  /// In en, this message translates to:
-  /// **'Accept Invitation'**
-  String get inviteAcceptButton;
-
-  /// Prompt asking user to login for invitation
-  ///
-  /// In en, this message translates to:
-  /// **'Please sign in to accept this invitation'**
-  String get inviteLoginPrompt;
-
-  /// Prompt asking user to register for invitation
-  ///
-  /// In en, this message translates to:
-  /// **'Please register to accept this invitation'**
-  String get inviteRegisterPrompt;
-
-  /// Message when invitation is expired
-  ///
-  /// In en, this message translates to:
-  /// **'This invitation has expired'**
-  String get inviteExpired;
-
-  /// Message when invitation is already accepted
-  ///
-  /// In en, this message translates to:
-  /// **'This invitation has already been accepted'**
-  String get inviteAlreadyAccepted;
-
-  /// Message when invitation token is invalid
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid invitation link'**
-  String get inviteInvalidToken;
 
   /// Generic error message
   ///
@@ -865,18 +811,6 @@ abstract class AppLocalizations {
   /// **'Loading worlds...'**
   String get worldListLoadingText;
 
-  /// Success message after joining a world
-  ///
-  /// In en, this message translates to:
-  /// **'Successfully joined {worldName}!'**
-  String worldJoinSuccessful(String worldName);
-
-  /// Detailed success message after joining a world
-  ///
-  /// In en, this message translates to:
-  /// **'Successfully joined world \"{worldName}\"!'**
-  String worldJoinSuccessfulDetailed(String worldName);
-
   /// Message when user is already member of a world
   ///
   /// In en, this message translates to:
@@ -918,12 +852,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You have left {worldName}.'**
   String worldLeaveSuccessful(String worldName);
-
-  /// Success message after sending an invitation
-  ///
-  /// In en, this message translates to:
-  /// **'Invitation sent successfully!'**
-  String get worldInviteSent;
 
   /// Button to play in a world
   ///
@@ -978,12 +906,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Register'**
   String get worldRegisterButton;
-
-  /// Button to accept an invitation
-  ///
-  /// In en, this message translates to:
-  /// **'Accept invitation'**
-  String get worldAcceptInviteButton;
 
   /// Button to sign out in world context
   ///
@@ -1153,12 +1075,6 @@ abstract class AppLocalizations {
   /// **'Archived'**
   String get worldStatusArchived;
 
-  /// Button to invite players
-  ///
-  /// In en, this message translates to:
-  /// **'Invite'**
-  String get worldInviteButton;
-
   /// Hint text for user info details
   ///
   /// In en, this message translates to:
@@ -1225,97 +1141,6 @@ abstract class AppLocalizations {
   /// **'You must join the world to see the dashboard'**
   String get navigationTooltipJoinRequired;
 
-  /// Text for pre-registration in invitation
-  ///
-  /// In en, this message translates to:
-  /// **'to pre-register for'**
-  String get worldJoinPreRegisterFor;
-
-  /// Text for joining in invitation
-  ///
-  /// In en, this message translates to:
-  /// **'to join'**
-  String get worldJoinToJoin;
-
-  /// Base text for invitation
-  ///
-  /// In en, this message translates to:
-  /// **'You have been invited by {inviter} {action} the world \"{worldName}\".{validity}'**
-  String worldJoinInvitedBy(
-      String inviter, String worldName, String action, String validity);
-
-  /// Validity date of the invitation
-  ///
-  /// In en, this message translates to:
-  /// **'\n\n⏰ Valid until: {date}'**
-  String worldJoinValidUntil(String date);
-
-  /// Message when invitation already accepted
-  ///
-  /// In en, this message translates to:
-  /// **'\n\n✅ This invitation has already been accepted.'**
-  String get worldJoinAlreadyAccepted;
-
-  /// Message when invitation expired
-  ///
-  /// In en, this message translates to:
-  /// **'\n\n❌ This invitation expired on {date}.'**
-  String worldJoinExpired(String date);
-
-  /// Message for registration with specific email
-  ///
-  /// In en, this message translates to:
-  /// **'You must register with the email address {email}.'**
-  String worldJoinMustRegisterWith(String email);
-
-  /// Message when account exists
-  ///
-  /// In en, this message translates to:
-  /// **'Your account with {email} is already registered. Please log in.'**
-  String worldJoinAccountExistsLogin(String email);
-
-  /// Message when wrong email is logged in
-  ///
-  /// In en, this message translates to:
-  /// **'This invitation is intended for {inviteEmail}, but you are logged in as {currentEmail}.'**
-  String worldJoinWrongEmail(String inviteEmail, String currentEmail);
-
-  /// Message when correct email is logged in
-  ///
-  /// In en, this message translates to:
-  /// **'You are logged in with the correct email address and can now accept the invitation.'**
-  String get worldJoinCorrectEmailCanAccept;
-
-  /// Message for unknown status
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown status: {status}'**
-  String worldJoinUnknownStatus(String status);
-
-  /// Welcome message after automatic invite acceptance
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome to the world \"{worldName}\"! The invite was automatically accepted.'**
-  String worldJoinWelcome(String worldName);
-
-  /// Message when already a member
-  ///
-  /// In en, this message translates to:
-  /// **'You are already a member of this world \"{worldName}\"!'**
-  String worldJoinAlreadyMember(String worldName);
-
-  /// Message that joining is possible
-  ///
-  /// In en, this message translates to:
-  /// **'You can now join the world.'**
-  String get worldJoinCanJoinNow;
-
-  /// Success message after invite acceptance
-  ///
-  /// In en, this message translates to:
-  /// **'Invitation accepted! Welcome to the world \"{worldName}\"!'**
-  String worldJoinInviteAcceptedSuccess(String worldName);
-
   /// Success message after world join
   ///
   /// In en, this message translates to:
@@ -1327,24 +1152,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join failed. Please try again.'**
   String get worldJoinFailed;
-
-  /// Error message when invitation already accepted
-  ///
-  /// In en, this message translates to:
-  /// **'This invitation has already been accepted.'**
-  String get worldJoinInviteAlreadyAcceptedError;
-
-  /// Error message when invitation not for email
-  ///
-  /// In en, this message translates to:
-  /// **'This invitation is not intended for your email address.'**
-  String get worldJoinInviteNotForYourEmail;
-
-  /// Error message when invitation expired
-  ///
-  /// In en, this message translates to:
-  /// **'This invitation has expired.'**
-  String get worldJoinInviteExpiredError;
 
   /// Error message on pre-registration failure
   ///
@@ -1406,23 +1213,11 @@ abstract class AppLocalizations {
   /// **'Unknown error'**
   String get worldJoinUnknownError;
 
-  /// Text when no information is available
-  ///
-  /// In en, this message translates to:
-  /// **'No information available'**
-  String get worldJoinNoInformationAvailable;
-
   /// Text for unknown world
   ///
   /// In en, this message translates to:
   /// **'Unknown World'**
   String get worldJoinUnknownWorldName;
-
-  /// Text for unknown user
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown'**
-  String get worldJoinUnknownUser;
 
   /// Button text for pre-registration
   ///
@@ -1471,30 +1266,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error loading world data: {error}'**
   String worldJoinErrorLoadingWorldData(String error);
-
-  /// Error message when no world ID found
-  ///
-  /// In en, this message translates to:
-  /// **'No world ID found'**
-  String get worldJoinNoWorldIdFound;
-
-  /// Error message when no invitation token found
-  ///
-  /// In en, this message translates to:
-  /// **'No invitation token found'**
-  String get worldJoinNoInviteTokenFound;
-
-  /// Error message for invalid invitation link
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid or expired invitation link'**
-  String get worldJoinInvalidOrExpiredInviteLink;
-
-  /// Instruction to log out for invitation
-  ///
-  /// In en, this message translates to:
-  /// **'Please log out and register with the correct email address.'**
-  String get worldJoinLogoutForInvite;
 }
 
 class _AppLocalizationsDelegate

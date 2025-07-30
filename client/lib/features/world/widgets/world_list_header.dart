@@ -40,7 +40,7 @@ class WorldListHeader extends StatelessWidget {
         
         // Title
         Text(
-          AppLocalizations.of(context)!.appTitle,
+          AppLocalizations.of(context).appTitle,
           style: Theme.of(context).textTheme.headlineLarge?.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -51,7 +51,7 @@ class WorldListHeader extends StatelessWidget {
         
         // Subtitle
         Text(
-          AppLocalizations.of(context)!.worldListTitle,
+          AppLocalizations.of(context).worldListTitle,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             color: Colors.grey[300],
             fontSize: 18,
@@ -74,7 +74,7 @@ class WorldListHeader extends StatelessWidget {
         ElevatedButton.icon(
           onPressed: onRefresh,
           icon: const Icon(Icons.refresh, size: 18),
-          label: Text(AppLocalizations.of(context)!.worldListRefreshButton),
+          label: Text(AppLocalizations.of(context).worldListRefreshButton),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.primaryColor,
             foregroundColor: Colors.white,
@@ -92,7 +92,7 @@ class WorldListHeader extends StatelessWidget {
         ElevatedButton.icon(
           onPressed: onCreateWorld,
           icon: const Icon(Icons.add, size: 18),
-          label: Text(AppLocalizations.of(context)!.worldListCreateButton),
+          label: Text(AppLocalizations.of(context).worldListCreateButton),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green[600],
             foregroundColor: Colors.white,

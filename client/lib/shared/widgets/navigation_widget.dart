@@ -59,7 +59,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
   void _showJoinRequiredMessage() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(AppLocalizations.of(context)!.navigationJoinRequiredMessage),
+        content: Text(AppLocalizations.of(context).navigationJoinRequiredMessage),
         backgroundColor: Colors.orange[700],
         duration: const Duration(seconds: 3),
       ),
@@ -73,7 +73,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
     if (widget.currentRoute != 'world-list') {
       items.add(NavigationItem(
         icon: Icons.arrow_back,
-        label: AppLocalizations.of(context)!.navigationBack,
+        label: AppLocalizations.of(context).navigationBack,
         onTap: () => Navigator.of(context).canPop() 
           ? Navigator.of(context).pop()
           : context.goNamed('world-list'),
@@ -90,7 +90,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
     // Immer zur Welten-Liste
     items.add(NavigationItem(
       icon: Icons.public,
-              label: AppLocalizations.of(context)!.navigationWorldOverview,
+              label: AppLocalizations.of(context).navigationWorldOverview,
       onTap: () => context.goNamed('world-list'),
       isActive: widget.currentRoute == 'world-list',
     ));
@@ -102,7 +102,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
       if (worldIdParam != null) {
         items.add(NavigationItem(
           icon: Icons.info_outline,
-          label: AppLocalizations.of(context)!.navigationWorldDetails,
+          label: AppLocalizations.of(context).navigationWorldDetails,
           onTap: () => context.goNamed('world-join', 
             pathParameters: {'id': worldIdParam.toString()}
           ),
@@ -121,7 +121,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
         
         items.add(NavigationItem(
           icon: Icons.dashboard,
-          label: isJoined ? AppLocalizations.of(context)!.navigationDashboard : AppLocalizations.of(context)!.navigationDashboardRequiresJoin,
+          label: isJoined ? AppLocalizations.of(context).navigationDashboard : AppLocalizations.of(context).navigationDashboardRequiresJoin,
           onTap: isJoined 
             ? () => context.goNamed('world-dashboard', pathParameters: {'id': worldId})
             : () => _showJoinRequiredMessage(),
@@ -200,7 +200,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.navigationTitle,
+                  AppLocalizations.of(context).navigationTitle,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
@@ -208,7 +208,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
                   ),
                 ),
                 Text(
-                  AppLocalizations.of(context)!.navigationOpenMenu,
+                  AppLocalizations.of(context).navigationOpenMenu,
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 12,
@@ -260,7 +260,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  AppLocalizations.of(context)!.navigationTitle,
+                  AppLocalizations.of(context).navigationTitle,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -357,7 +357,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
     // Tooltip hinzufügen wenn disabled
     if (isDisabled && item.label.contains('Dashboard')) {
       return Tooltip(
-        message: AppLocalizations.of(context)!.navigationTooltipJoinRequired,
+        message: AppLocalizations.of(context).navigationTooltipJoinRequired,
         child: widget,
       );
     }

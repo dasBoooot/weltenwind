@@ -110,30 +110,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         AppLogger.app.i('✅ Login erfolgreich', error: {'userId': user.id, 'username': user.username});
         
         if (mounted) {
-          // HINZUGEFÜGT: Post-Auth-Redirect prüfen
-          final pendingRedirect = _authService.getPendingRedirect();
-          
-          if (pendingRedirect != null) {
-            AppLogger.app.i('🎫 Post-Auth-Redirect erkannt', error: pendingRedirect);
-            _authService.clearPendingRedirect();
-            
-            // Redirect zur ursprünglichen Invite-Seite
-            final routeName = pendingRedirect['route'] as String;
-            final params = pendingRedirect['params'] as Map<String, String>?;
-            
-            if (params != null) {
-              context.goNamed(routeName, pathParameters: params);
-            } else {
-              context.goNamed(routeName);
-            }
-          } else if (_inviteToken != null) {
-            // Fallback: Wenn Invite-Token in Query-Parametern, direkt zur Invite-Seite
-            AppLogger.app.i('🎫 Invite-Token in Query - direkte Navigation', error: {'token': '${_inviteToken!.substring(0, 8)}...'});
-            context.goNamed('world-join-by-token', pathParameters: {'token': _inviteToken!});
-          } else {
-            // Standard-Redirect zu Welten-Liste
-            context.goNamed('world-list');
-          }
+          // Standard-Redirect zu Welten-Liste
+          context.goNamed('world-list');
         }
       }
     } catch (e) {

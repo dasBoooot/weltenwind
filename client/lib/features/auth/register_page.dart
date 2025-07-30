@@ -113,65 +113,16 @@ class _RegisterPageState extends State<RegisterPage> {
         });
         
         if (mounted) {
-          // HINZUGEFÜGT: Post-Auth-Redirect prüfen
-          final pendingRedirect = _authService.getPendingRedirect();
-          
-          if (pendingRedirect != null) {
-            AppLogger.app.i('🎫 Post-Auth-Redirect nach Registration erkannt', error: pendingRedirect);
-            _authService.clearPendingRedirect();
+          // Standard-Redirect zu Welten-Liste  
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).authRegisterSuccessWelcome),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
             
-            // Redirect zur ursprünglichen Invite-Seite
-            final routeName = pendingRedirect['route'] as String;
-            final params = pendingRedirect['params'] as Map<String, String>?;
-            
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context).authRegisterSuccessWithInvite),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 2),
-              ),
-            );
-            
-            // Kurze Verzögerung für bessere UX
-            await Future.delayed(const Duration(milliseconds: 500));
-            
-            if (mounted) {
-              if (params != null) {
-                context.goNamed(routeName, pathParameters: params);
-              } else {
-                context.goNamed(routeName);
-              }
-            }
-          } else if (_inviteToken != null) {
-            // Fallback: Wenn Invite-Token in Query-Parametern, direkt zur Invite-Seite
-            AppLogger.app.i('🎫 Invite-Token in Query nach Registration - direkte Navigation', error: {'token': '${_inviteToken!.substring(0, 8)}...'});
-            
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context).authRegisterSuccessWithInvite),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 2),
-              ),
-            );
-            
-            // Kurze Verzögerung für bessere UX
-            await Future.delayed(const Duration(milliseconds: 500));
-            
-            if (mounted) {
-              context.goNamed('world-join-by-token', pathParameters: {'token': _inviteToken!});
-            }
-          } else {
-            // Standard-Redirect zu Welten-Liste
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context).authRegisterSuccessWelcome),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 2),
-              ),
-            );
-            
-            context.goNamed('world-list');
-          }
+          context.goNamed('world-list');
         }
       }
     } catch (e) {

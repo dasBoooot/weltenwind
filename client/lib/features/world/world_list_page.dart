@@ -3,12 +3,10 @@ import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/world_service.dart';
-import '../../core/services/invite_service.dart';
 import '../../core/models/world.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
 import '../../routing/app_router.dart';
-import '../../shared/widgets/invite_dialog.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
 import './widgets/world_card.dart';
@@ -30,7 +28,6 @@ class _WorldListPageState extends State<WorldListPage> {
   // DI-ready: ServiceLocator verwenden
   late final AuthService _authService;
   late final WorldService _worldService;
-  late final InviteService _inviteService;
   
   List<World> _worlds = [];
   List<World> _filteredWorlds = [];
@@ -70,16 +67,11 @@ class _WorldListPageState extends State<WorldListPage> {
         _worldService = WorldService();
       }
       
-      if (ServiceLocator.has<InviteService>()) {
-        _inviteService = ServiceLocator.get<InviteService>();
-      } else {
-        _inviteService = InviteService();
-      }
     } catch (e) {
       AppLogger.app.w('⚠️ ServiceLocator Fehler - nutze direkte Instanziierung', error: e);
       _authService = AuthService();
       _worldService = WorldService();
-      _inviteService = InviteService();
+
     }
   }
 
@@ -118,7 +110,7 @@ class _WorldListPageState extends State<WorldListPage> {
           
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.worldListLoadingError(e.toString())),
+              content: Text(AppLocalizations.of(context).worldListLoadingError(e.toString())),
               backgroundColor: AppTheme.errorColor,
             ),
           );
@@ -285,7 +277,7 @@ class _WorldListPageState extends State<WorldListPage> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.worldJoinSuccessful(world.name)),
+            content: Text(AppLocalizations.of(context).worldJoinSuccess(world.name)),
             backgroundColor: Colors.green,
           ),
         );
@@ -325,7 +317,7 @@ class _WorldListPageState extends State<WorldListPage> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.worldPreRegisterSuccessful(world.name)),
+            content: Text(AppLocalizations.of(context).worldPreRegisterSuccessful(world.name)),
             backgroundColor: Colors.green,
           ),
         );
@@ -358,19 +350,19 @@ class _WorldListPageState extends State<WorldListPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.worldLeaveDialogTitle),
-        content: Text(AppLocalizations.of(context)!.worldLeaveDialogMessage(world.name)),
+        title: Text(AppLocalizations.of(context).worldLeaveDialogTitle),
+        content: Text(AppLocalizations.of(context).worldLeaveDialogMessage(world.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)!.buttonCancel),
+            child: Text(AppLocalizations.of(context).buttonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(
               foregroundColor: Colors.red,
             ),
-            child: Text(AppLocalizations.of(context)!.worldLeaveConfirm),
+            child: Text(AppLocalizations.of(context).worldLeaveConfirm),
           ),
         ],
       ),
@@ -387,7 +379,7 @@ class _WorldListPageState extends State<WorldListPage> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.worldLeaveSuccessful(world.name)),
+            content: Text(AppLocalizations.of(context).worldLeaveSuccessful(world.name)),
             backgroundColor: Colors.orange,
           ),
         );
@@ -426,7 +418,7 @@ class _WorldListPageState extends State<WorldListPage> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.worldPreRegisterCancelled(world.name)),
+            content: Text(AppLocalizations.of(context).worldPreRegisterCancelled(world.name)),
             backgroundColor: Colors.orange,
           ),
         );
@@ -449,47 +441,6 @@ class _WorldListPageState extends State<WorldListPage> {
               backgroundColor: AppTheme.errorColor,
             ),
           );
-        }
-      }
-    }
-  }
-
-  Future<void> _createInvite(World world) async {
-    final result = await showDialog<String>(
-      context: context,
-      builder: (context) => InviteDialog(worldName: world.name),
-    );
-
-    if (result != null && result.isNotEmpty) {
-      try {
-        final success = await _inviteService.createInvite(world.id, result);
-        if (success && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.worldInviteSent),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          // Prüfe ob es ein Token-Problem ist
-          if (e.toString().contains('401') || e.toString().contains('Token fehlt')) {
-            await _authService.logout();
-            // Cache invalidieren nach Logout
-            AppRouter.invalidateAuthCache();
-            if (mounted) {
-              context.goNamed('login');
-            }
-          } else {
-            final errorMessage = e.toString().replaceAll('Exception: ', '');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(errorMessage),
-                backgroundColor: AppTheme.errorColor,
-              ),
-            );
-          }
         }
       }
     }
@@ -569,7 +520,7 @@ class _WorldListPageState extends State<WorldListPage> {
                               
                               // Title
                               Text(
-                                AppLocalizations.of(context)!.appTitle,
+                                AppLocalizations.of(context).appTitle,
                                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -579,7 +530,7 @@ class _WorldListPageState extends State<WorldListPage> {
                               
                               // Subtitle
                               Text(
-                                AppLocalizations.of(context)!.worldListSubtitle,
+                                AppLocalizations.of(context).worldListSubtitle,
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                   color: Colors.grey[300],
                                 ),
@@ -657,7 +608,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       ),
                                       const SizedBox(height: 16),
                                       Text(
-                                        AppLocalizations.of(context)!.worldListErrorTitle,
+                                        AppLocalizations.of(context).worldListErrorTitle,
                                         style: TextStyle(
                                           color: Colors.red[200],
                                           fontWeight: FontWeight.bold,
@@ -665,7 +616,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        _error ?? AppLocalizations.of(context)!.worldListErrorUnknown,
+                                        _error ?? AppLocalizations.of(context).worldListErrorUnknown,
                                         style: TextStyle(
                                           color: (Colors.red[200] ?? Colors.red).withOpacity(0.8),
                                         ),
@@ -693,7 +644,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       ),
                                       const SizedBox(height: 16),
                                       Text(
-                                        AppLocalizations.of(context)!.worldListEmptyTitle,
+                                        AppLocalizations.of(context).worldListEmptyTitle,
                                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                           color: Colors.grey[300],
                                         ),
@@ -701,7 +652,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        AppLocalizations.of(context)!.worldListEmptyMessage,
+                                        AppLocalizations.of(context).worldListEmptyMessage,
                                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                           color: Colors.grey[400],
                                         ),
@@ -732,9 +683,6 @@ class _WorldListPageState extends State<WorldListPage> {
                                     onCancelPreRegistration: (_preRegisteredWorlds[world.id] ?? false)
                                       ? () => _cancelPreRegistration(world)
                                       : null,
-                                    onInvite: world.canInvite
-                                      ? () => _createInvite(world)
-                                      : null,
                                     onTap: () => _navigateToWorldJoin(world),
                                   )).toList(),
                                 ),
@@ -750,7 +698,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                     child: ElevatedButton.icon(
                                       onPressed: _loadWorlds,
                                       icon: const Icon(Icons.refresh),
-                                      label: Text(AppLocalizations.of(context)!.worldListRefreshButton),
+                                      label: Text(AppLocalizations.of(context).worldListRefreshButton),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: AppTheme.primaryColor,
                                         foregroundColor: Colors.white,

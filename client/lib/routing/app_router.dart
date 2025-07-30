@@ -12,7 +12,6 @@ import '../features/landing/landing_page.dart';
 import '../core/services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../main.dart';
-import '../features/world/world_join_page.dart';
 
 // Custom Navigation Observer für Logging
 class AppNavigationObserver extends NavigatorObserver {
@@ -106,10 +105,8 @@ class AppRouter {
           final isLoggedIn = await authService.isLoggedIn();
 
           final isAuthRoute = state.matchedLocation.startsWith('/go/auth');
-          final isInviteRoute = state.matchedLocation.startsWith('/go/world-join/'); // Invite-Routen sind öffentlich
           final isProtectedRoute = (state.matchedLocation.startsWith('/go/worlds') ||
-                                  state.matchedLocation.startsWith('/go/dashboard')) &&
-                                  !isInviteRoute; // Invite-Routen ausschließen
+                                  state.matchedLocation.startsWith('/go/dashboard'));
 
           if (!isLoggedIn && isProtectedRoute) {
             AppLogger.navigation.i('🔒 Redirect zu Login', error: {'from': state.matchedLocation});
@@ -120,12 +117,7 @@ class AppRouter {
             AppLogger.navigation.i('🏠 Redirect zu Worlds', error: {'from': state.matchedLocation});
             return '/go/worlds';
           }
-
-          // Invite-Routen werden durchgelassen (keine Weiterleitung)
-          if (isInviteRoute) {
-            AppLogger.navigation.i('🎫 Invite-Route erkannt - keine Weiterleitung', error: {'route': state.matchedLocation});
-          }
-
+          
           return null;
         } catch (e) {
           AppLogger.navigation.e('❌ Router Redirect Fehler', error: e, stackTrace: StackTrace.current);
@@ -268,50 +260,6 @@ class AppRouter {
           return CustomTransitionPage(
             child: WorldJoinPage(
               worldId: worldId,
-              flowType: WorldJoinFlowType.normal, // KLARE FLOW-KENNZEICHNUNG
-            ),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0.0, 1.0),
-                  end: Offset.zero,
-                ).animate(CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.easeInOut,
-                )),
-                child: child,
-              ),
-          );
-        },
-      ),
-      // INVITE-FLOW Route (externe Links)
-      GoRoute(
-        path: '/go/world-join/:token',
-        name: 'world-join-by-token',
-        pageBuilder: (context, state) {
-          final token = state.pathParameters['token'];
-          if (token == null || token.isEmpty) {
-            AppLogger.navigation.w('⚠️ Invite-Token fehlt', error: {'path': state.matchedLocation});
-            return CustomTransitionPage(
-              child: const ErrorPage(),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0.0, 1.0),
-                    end: Offset.zero,
-                  ).animate(CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.easeInOut,
-                  )),
-                  child: child,
-                ),
-            );
-          }
-          AppLogger.navigation.i('🎫 Invite-Token erkannt', error: {'token': '${token.substring(0, 8)}...'});
-          return CustomTransitionPage(
-            child: WorldJoinPage(
-              inviteToken: token,
-              flowType: WorldJoinFlowType.invite, // KLARE FLOW-KENNZEICHNUNG
             ),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               SlideTransition(
