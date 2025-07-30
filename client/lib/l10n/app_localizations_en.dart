@@ -207,10 +207,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldsTitle => 'Game Worlds';
 
   @override
-  String get worldJoinButton => 'Join World';
+  String get worldJoinButton => 'Join';
 
   @override
-  String get worldLeaveButton => 'Leave World';
+  String get worldLeaveButton => 'Leave';
 
   @override
   String get worldPreRegisterButton => 'Pre-Register';
@@ -382,4 +382,411 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get footerSupport => 'Support';
+
+  @override
+  String get worldListTitle => 'Choose your world';
+
+  @override
+  String get worldListSubtitle => 'Select your world';
+
+  @override
+  String worldListLoadingError(String error) {
+    return 'Error loading worlds: $error';
+  }
+
+  @override
+  String get worldListErrorTitle => 'Error loading worlds';
+
+  @override
+  String get worldListErrorUnknown => 'Unknown error';
+
+  @override
+  String get worldListEmptyTitle => 'No worlds found';
+
+  @override
+  String get worldListEmptyMessage => 'Try different filter settings.';
+
+  @override
+  String get worldListRefreshButton => 'Refresh';
+
+  @override
+  String get worldListCreateButton => 'New World';
+
+  @override
+  String get worldListLoadingText => 'Loading worlds...';
+
+  @override
+  String worldJoinSuccessful(String worldName) {
+    return 'Successfully joined $worldName!';
+  }
+
+  @override
+  String worldJoinSuccessfulDetailed(String worldName) {
+    return 'Successfully joined world \"$worldName\"!';
+  }
+
+  @override
+  String worldAlreadyMember(String worldName) {
+    return 'You are already a member of world \"$worldName\"!';
+  }
+
+  @override
+  String worldPreRegisterSuccessful(String worldName) {
+    return 'Successfully pre-registered for $worldName!';
+  }
+
+  @override
+  String worldPreRegisterCancelled(String worldName) {
+    return 'Pre-registration for $worldName cancelled.';
+  }
+
+  @override
+  String get worldLeaveDialogTitle => 'Leave world?';
+
+  @override
+  String worldLeaveDialogMessage(String worldName) {
+    return 'Do you really want to leave world \"$worldName\"?';
+  }
+
+  @override
+  String get worldLeaveConfirm => 'Leave';
+
+  @override
+  String worldLeaveSuccessful(String worldName) {
+    return 'You have left $worldName.';
+  }
+
+  @override
+  String get worldInviteSent => 'Invitation sent successfully!';
+
+  @override
+  String get worldPlayButton => 'Play';
+
+  @override
+  String get worldLogoutError => 'Error logging out';
+
+  @override
+  String get worldRegisterNow => 'Register now';
+
+  @override
+  String get worldAlreadyRegistered => 'Already registered? Sign in';
+
+  @override
+  String get worldLogoutAndRegister => 'Sign out & register again';
+
+  @override
+  String get worldBackToHome => 'Back to homepage';
+
+  @override
+  String get worldBackToWorlds => 'Back to worlds';
+
+  @override
+  String get worldLoginButton => 'Sign In';
+
+  @override
+  String get worldRegisterButton => 'Register';
+
+  @override
+  String get worldAcceptInviteButton => 'Accept invitation';
+
+  @override
+  String get worldLogoutButton => 'Sign Out';
+
+  @override
+  String get worldNotFoundTitle => 'World not found';
+
+  @override
+  String get worldNotFoundMessage =>
+      'The requested world does not exist or is not available.';
+
+  @override
+  String get worldLoadingError => 'Error loading';
+
+  @override
+  String get worldInformationTitle => 'Information';
+
+  @override
+  String worldStartDate(String date) {
+    return 'Start: $date';
+  }
+
+  @override
+  String worldEndDate(String date) {
+    return 'End: $date';
+  }
+
+  @override
+  String get worldDateUnknown => 'Unknown';
+
+  @override
+  String get worldAboutTitle => 'About this world';
+
+  @override
+  String get worldAboutDescription =>
+      'This is an exciting world full of adventures and challenges. Explore unknown territories, form alliances and become a legend!';
+
+  @override
+  String get worldRulesTitle => 'Game rules';
+
+  @override
+  String get worldStatsTitle => 'World statistics';
+
+  @override
+  String worldPlayersActive(int count) {
+    return '$count players active';
+  }
+
+  @override
+  String get worldDefaultDescription => 'An exciting world full of adventures';
+
+  @override
+  String get worldCategoryClassic => 'Classic';
+
+  @override
+  String get worldCategoryPvP => 'Player vs Player';
+
+  @override
+  String get worldCategoryEvent => 'Event';
+
+  @override
+  String get worldCategoryExperimental => 'Experimental';
+
+  @override
+  String get worldFiltersStatus => 'Status: ';
+
+  @override
+  String get worldFiltersCategory => 'Category: ';
+
+  @override
+  String get worldFiltersSortBy => 'Sort by: ';
+
+  @override
+  String get worldFiltersSortStartDate => 'Start Date';
+
+  @override
+  String get worldFiltersSortName => 'Name';
+
+  @override
+  String get worldFiltersSortStatus => 'Status';
+
+  @override
+  String get worldFiltersSortPlayerCount => 'Player Count';
+
+  @override
+  String get worldFiltersActiveFilters => 'Active filters: ';
+
+  @override
+  String get worldFiltersResetAll => 'Reset all';
+
+  @override
+  String get worldStatusArchived => 'Archived';
+
+  @override
+  String get worldInviteButton => 'Invite';
+
+  @override
+  String get userInfoClickForDetails => 'Click for details';
+
+  @override
+  String get userInfoRoles => 'Roles:';
+
+  @override
+  String get navigationJoinRequiredMessage =>
+      'You must join the world first to see the dashboard';
+
+  @override
+  String get navigationBack => 'Back';
+
+  @override
+  String get navigationWorldOverview => 'World Overview';
+
+  @override
+  String get navigationWorldDetails => 'World Details';
+
+  @override
+  String get navigationDashboard => 'To Dashboard';
+
+  @override
+  String get navigationDashboardRequiresJoin => 'Dashboard (Join required)';
+
+  @override
+  String get navigationTitle => 'Navigation';
+
+  @override
+  String get navigationOpenMenu => 'Open menu';
+
+  @override
+  String get navigationTooltipJoinRequired =>
+      'You must join the world to see the dashboard';
+
+  @override
+  String get worldJoinPreRegisterFor => 'to pre-register for';
+
+  @override
+  String get worldJoinToJoin => 'to join';
+
+  @override
+  String worldJoinInvitedBy(
+      String inviter, String worldName, String action, String validity) {
+    return 'You have been invited by $inviter $action the world \"$worldName\".$validity';
+  }
+
+  @override
+  String worldJoinValidUntil(String date) {
+    return '\n\n⏰ Valid until: $date';
+  }
+
+  @override
+  String get worldJoinAlreadyAccepted =>
+      '\n\n✅ This invitation has already been accepted.';
+
+  @override
+  String worldJoinExpired(String date) {
+    return '\n\n❌ This invitation expired on $date.';
+  }
+
+  @override
+  String worldJoinMustRegisterWith(String email) {
+    return 'You must register with the email address $email.';
+  }
+
+  @override
+  String worldJoinAccountExistsLogin(String email) {
+    return 'Your account with $email is already registered. Please log in.';
+  }
+
+  @override
+  String worldJoinWrongEmail(String inviteEmail, String currentEmail) {
+    return 'This invitation is intended for $inviteEmail, but you are logged in as $currentEmail.';
+  }
+
+  @override
+  String get worldJoinCorrectEmailCanAccept =>
+      'You are logged in with the correct email address and can now accept the invitation.';
+
+  @override
+  String worldJoinUnknownStatus(String status) {
+    return 'Unknown status: $status';
+  }
+
+  @override
+  String worldJoinWelcome(String worldName) {
+    return 'Welcome to the world \"$worldName\"! The invite was automatically accepted.';
+  }
+
+  @override
+  String worldJoinAlreadyMember(String worldName) {
+    return 'You are already a member of this world \"$worldName\"!';
+  }
+
+  @override
+  String get worldJoinCanJoinNow => 'You can now join the world.';
+
+  @override
+  String worldJoinInviteAcceptedSuccess(String worldName) {
+    return 'Invitation accepted! Welcome to the world \"$worldName\"!';
+  }
+
+  @override
+  String worldJoinSuccess(String worldName) {
+    return 'Successfully joined the world \"$worldName\"!';
+  }
+
+  @override
+  String get worldJoinFailed => 'Join failed. Please try again.';
+
+  @override
+  String get worldJoinInviteAlreadyAcceptedError =>
+      'This invitation has already been accepted.';
+
+  @override
+  String get worldJoinInviteNotForYourEmail =>
+      'This invitation is not intended for your email address.';
+
+  @override
+  String get worldJoinInviteExpiredError => 'This invitation has expired.';
+
+  @override
+  String get worldJoinPreRegistrationError => 'Error during pre-registration';
+
+  @override
+  String get worldJoinCancelPreRegistrationError =>
+      'Error canceling pre-registration';
+
+  @override
+  String get worldJoinLeaveDialogTitle => 'Leave world?';
+
+  @override
+  String worldJoinLeaveDialogContent(String worldName) {
+    return 'Do you really want to leave the world \"$worldName\"?';
+  }
+
+  @override
+  String get worldJoinUnknownWorld => 'Unknown';
+
+  @override
+  String get worldJoinBackToWorldsButton => 'Back to Worlds';
+
+  @override
+  String get worldJoinCancelPreRegistrationButton => 'Cancel Pre-registration';
+
+  @override
+  String get worldJoinCancelPreRegistrationInProgress => 'Canceling...';
+
+  @override
+  String worldJoinGenericError(String error) {
+    return 'An error occurred: $error';
+  }
+
+  @override
+  String get worldJoinUnknownError => 'Unknown error';
+
+  @override
+  String get worldJoinNoInformationAvailable => 'No information available';
+
+  @override
+  String get worldJoinUnknownWorldName => 'Unknown World';
+
+  @override
+  String get worldJoinUnknownUser => 'Unknown';
+
+  @override
+  String get worldJoinPreRegisterButton => 'Pre-register';
+
+  @override
+  String get worldJoinPreRegisterInProgress => 'Registering...';
+
+  @override
+  String get worldJoinLeaveInProgress => 'Leaving...';
+
+  @override
+  String get worldJoinNowButton => 'Join Now';
+
+  @override
+  String get worldJoinInProgress => 'Joining...';
+
+  @override
+  String get worldJoinWorldClosedStatus => 'This world is currently closed';
+
+  @override
+  String get worldJoinWorldArchivedStatus => 'This world is archived';
+
+  @override
+  String worldJoinErrorLoadingWorldData(String error) {
+    return 'Error loading world data: $error';
+  }
+
+  @override
+  String get worldJoinNoWorldIdFound => 'No world ID found';
+
+  @override
+  String get worldJoinNoInviteTokenFound => 'No invitation token found';
+
+  @override
+  String get worldJoinInvalidOrExpiredInviteLink =>
+      'Invalid or expired invitation link';
+
+  @override
+  String get worldJoinLogoutForInvite =>
+      'Please log out and register with the correct email address.';
 }

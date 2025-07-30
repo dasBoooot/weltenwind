@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 
 class WorldListHeader extends StatelessWidget {
   final VoidCallback? onRefresh;
@@ -39,7 +40,7 @@ class WorldListHeader extends StatelessWidget {
         
         // Title
         Text(
-          'Weltenwind',
+          AppLocalizations.of(context)!.appTitle,
           style: Theme.of(context).textTheme.headlineLarge?.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -50,7 +51,7 @@ class WorldListHeader extends StatelessWidget {
         
         // Subtitle
         Text(
-          'Wähle deine Welt',
+          AppLocalizations.of(context)!.worldListTitle,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             color: Colors.grey[300],
             fontSize: 18,
@@ -73,7 +74,7 @@ class WorldListHeader extends StatelessWidget {
         ElevatedButton.icon(
           onPressed: onRefresh,
           icon: const Icon(Icons.refresh, size: 18),
-          label: const Text('Aktualisieren'),
+          label: Text(AppLocalizations.of(context)!.worldListRefreshButton),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.primaryColor,
             foregroundColor: Colors.white,
@@ -91,7 +92,7 @@ class WorldListHeader extends StatelessWidget {
         ElevatedButton.icon(
           onPressed: onCreateWorld,
           icon: const Icon(Icons.add, size: 18),
-          label: const Text('Neue Welt'),
+          label: Text(AppLocalizations.of(context)!.worldListCreateButton),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green[600],
             foregroundColor: Colors.white,

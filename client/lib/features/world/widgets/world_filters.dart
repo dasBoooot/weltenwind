@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/world.dart';
 import './world_card.dart';
+import '../../../l10n/app_localizations.dart';
 
 class WorldFilters extends StatelessWidget {
   final WorldStatus? statusFilter;
@@ -32,32 +33,32 @@ class WorldFilters extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Status Filter
-        _buildStatusFilter(),
+        _buildStatusFilter(context),
         const SizedBox(height: 12),
         
         // Category Filter
-        _buildCategoryFilter(),
+        _buildCategoryFilter(context),
         const SizedBox(height: 12),
         
         // Sort Options
-        _buildSortOptions(),
+        _buildSortOptions(context),
         const SizedBox(height: 12),
         
         // Active Filters & Reset
         if (statusFilter != null || categoryFilter != null)
-          _buildActiveFilters(),
+          _buildActiveFilters(context),
       ],
     );
   }
 
-  Widget _buildStatusFilter() {
+  Widget _buildStatusFilter(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           Text(
-            'Status: ',
+            AppLocalizations.of(context)!.worldFiltersStatus,
             style: TextStyle(
               color: Colors.grey[300],
               fontWeight: FontWeight.w600,
@@ -70,10 +71,12 @@ class WorldFilters extends StatelessWidget {
               padding: const EdgeInsets.only(right: 8),
               child: FilterChip(
                 selected: isSelected,
-                label: Text(
-                  _getStatusLabel(status),
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.grey[300],
+                label: Builder(
+                  builder: (context) => Text(
+                    _getStatusLabel(status, context),
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.grey[300],
+                    ),
                   ),
                 ),
                 avatar: Icon(
@@ -98,14 +101,14 @@ class WorldFilters extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryFilter() {
+  Widget _buildCategoryFilter(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           Text(
-            'Kategorie: ',
+            AppLocalizations.of(context)!.worldFiltersCategory,
             style: TextStyle(
               color: Colors.grey[300],
               fontWeight: FontWeight.w600,
@@ -127,10 +130,12 @@ class WorldFilters extends StatelessWidget {
                       color: isSelected ? Colors.white : _getCategoryColor(category),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      _getCategoryLabel(category),
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey[300],
+                    Builder(
+                      builder: (context) => Text(
+                        _getCategoryLabel(category, context),
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.grey[300],
+                        ),
                       ),
                     ),
                   ],
@@ -152,13 +157,13 @@ class WorldFilters extends StatelessWidget {
     );
   }
 
-  Widget _buildSortOptions() {
+  Widget _buildSortOptions(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           Text(
-            'Sortieren nach: ',
+            AppLocalizations.of(context)!.worldFiltersSortBy,
             style: TextStyle(
               color: Colors.grey[300],
               fontWeight: FontWeight.w600,
@@ -179,22 +184,22 @@ class WorldFilters extends StatelessWidget {
               style: const TextStyle(color: Colors.white),
               underline: Container(),
               icon: Icon(Icons.arrow_drop_down, color: Colors.grey[300]),
-              items: const [
+              items: [
                 DropdownMenuItem(
                   value: 'startDate',
-                  child: Text('Startdatum'),
+                  child: Text(AppLocalizations.of(context)!.worldFiltersSortStartDate),
                 ),
                 DropdownMenuItem(
                   value: 'name',
-                  child: Text('Name'),
+                  child: Text(AppLocalizations.of(context)!.worldFiltersSortName),
                 ),
                 DropdownMenuItem(
                   value: 'status',
-                  child: Text('Status'),
+                  child: Text(AppLocalizations.of(context)!.worldFiltersSortStatus),
                 ),
                 DropdownMenuItem(
                   value: 'playerCount',
-                  child: Text('Spieleranzahl'),
+                  child: Text(AppLocalizations.of(context)!.worldFiltersSortPlayerCount),
                 ),
               ],
               onChanged: (value) {
@@ -227,7 +232,7 @@ class WorldFilters extends StatelessWidget {
     );
   }
 
-  Widget _buildActiveFilters() {
+  Widget _buildActiveFilters(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -248,7 +253,7 @@ class WorldFilters extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 8),
                   child: Chip(
                     label: Text(
-                      _getStatusLabel(filter),
+                      _getStatusLabel(filter, context),
                       style: const TextStyle(fontSize: 12),
                     ),
                     backgroundColor: _getStatusColor(filter).withOpacity(0.2),
@@ -269,7 +274,7 @@ class WorldFilters extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 8),
                   child: Chip(
                     label: Text(
-                      _getCategoryLabel(filter),
+                      _getCategoryLabel(filter, context),
                       style: const TextStyle(fontSize: 12),
                     ),
                     backgroundColor: _getCategoryColor(filter).withOpacity(0.2),
@@ -296,19 +301,8 @@ class WorldFilters extends StatelessWidget {
     );
   }
 
-  String _getStatusLabel(WorldStatus status) {
-    switch (status) {
-      case WorldStatus.upcoming:
-        return 'Kommend';
-      case WorldStatus.open:
-        return 'Offen';
-      case WorldStatus.running:
-        return 'Läuft';
-      case WorldStatus.closed:
-        return 'Geschlossen';
-      case WorldStatus.archived:
-        return 'Archiviert';
-    }
+  String _getStatusLabel(WorldStatus status, BuildContext context) {
+    return status.getDisplayName(context);
   }
 
   IconData _getStatusIcon(WorldStatus status) {
@@ -341,17 +335,8 @@ class WorldFilters extends StatelessWidget {
     }
   }
 
-  String _getCategoryLabel(WorldCategory category) {
-    switch (category) {
-      case WorldCategory.classic:
-        return 'Classic';
-      case WorldCategory.pvp:
-        return 'PvP';
-      case WorldCategory.event:
-        return 'Event';
-      case WorldCategory.experimental:
-        return 'Experimental';
-    }
+  String _getCategoryLabel(WorldCategory category, BuildContext context) {
+    return category.getDisplayName(context);
   }
 
   IconData _getCategoryIcon(WorldCategory category) {

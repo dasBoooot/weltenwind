@@ -8,12 +8,13 @@ import '../../core/models/world.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
 import '../../routing/app_router.dart';
-// Unused import removed
 import '../../shared/widgets/invite_dialog.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
 import './widgets/world_card.dart';
 import './widgets/world_filters.dart';
+import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/language_switcher.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -45,9 +46,6 @@ class _WorldListPageState extends State<WorldListPage> {
   WorldCategory? _categoryFilter;
   String _sortBy = 'startDate'; // 'startDate', 'name', 'status'
   bool _sortAscending = true;
-  
-  // Spieleranzahl (Simulation - später vom Backend)
-  final Map<int, int> _playerCounts = {};
 
   @override
   void initState() {
@@ -120,7 +118,7 @@ class _WorldListPageState extends State<WorldListPage> {
           
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Fehler beim Laden der Welten: ${e.toString()}'),
+              content: Text(AppLocalizations.of(context)!.worldListLoadingError(e.toString())),
               backgroundColor: AppTheme.errorColor,
             ),
           );
@@ -164,7 +162,6 @@ class _WorldListPageState extends State<WorldListPage> {
           baseCount = 0 + (random % 10); // 0-10 players
           break;
       }
-      _playerCounts[world.id] = baseCount;
     }
   }
 
@@ -176,25 +173,9 @@ class _WorldListPageState extends State<WorldListPage> {
       filtered = filtered.where((world) => world.status == _statusFilter).toList();
     }
     
-    // Apply category filter (mock implementation)
+    // Apply category filter
     if (_categoryFilter != null) {
-      // In real app, this would be based on world.category field
-      // For now, we'll use a simple hash-based categorization
-      filtered = filtered.where((world) {
-        final categoryHash = world.id % 4;
-        switch (_categoryFilter) {
-          case WorldCategory.classic:
-            return categoryHash == 0;
-          case WorldCategory.pvp:
-            return categoryHash == 1;
-          case WorldCategory.event:
-            return categoryHash == 2;
-          case WorldCategory.experimental:
-            return categoryHash == 3;
-          default:
-            return false;
-        }
-      }).toList();
+      filtered = filtered.where((world) => world.category == _categoryFilter).toList();
     }
     
     // Apply sorting
@@ -211,9 +192,7 @@ class _WorldListPageState extends State<WorldListPage> {
           comparison = a.status.index.compareTo(b.status.index);
           break;
         case 'playerCount':
-          final countA = _playerCounts[a.id] ?? 0;
-          final countB = _playerCounts[b.id] ?? 0;
-          comparison = countA.compareTo(countB);
+          comparison = a.playerCount.compareTo(b.playerCount);
           break;
       }
       return _sortAscending ? comparison : -comparison;
@@ -306,7 +285,7 @@ class _WorldListPageState extends State<WorldListPage> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erfolgreich zu ${world.name} beigetreten!'),
+            content: Text(AppLocalizations.of(context)!.worldJoinSuccessful(world.name)),
             backgroundColor: Colors.green,
           ),
         );
@@ -346,7 +325,7 @@ class _WorldListPageState extends State<WorldListPage> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erfolgreich für ${world.name} vorregistriert!'),
+            content: Text(AppLocalizations.of(context)!.worldPreRegisterSuccessful(world.name)),
             backgroundColor: Colors.green,
           ),
         );
@@ -379,19 +358,19 @@ class _WorldListPageState extends State<WorldListPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Welt verlassen?'),
-        content: Text('Möchtest du die Welt "${world.name}" wirklich verlassen?'),
+        title: Text(AppLocalizations.of(context)!.worldLeaveDialogTitle),
+        content: Text(AppLocalizations.of(context)!.worldLeaveDialogMessage(world.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Abbrechen'),
+            child: Text(AppLocalizations.of(context)!.buttonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(
               foregroundColor: Colors.red,
             ),
-            child: const Text('Verlassen'),
+            child: Text(AppLocalizations.of(context)!.worldLeaveConfirm),
           ),
         ],
       ),
@@ -404,16 +383,11 @@ class _WorldListPageState extends State<WorldListPage> {
       if (success && mounted) {
         setState(() {
           _joinedWorlds[world.id] = false;
-          // Update player count
-          final currentCount = _playerCounts[world.id] ?? 0;
-          if (currentCount > 0) {
-            _playerCounts[world.id] = currentCount - 1;
-          }
         });
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Du hast ${world.name} verlassen.'),
+            content: Text(AppLocalizations.of(context)!.worldLeaveSuccessful(world.name)),
             backgroundColor: Colors.orange,
           ),
         );
@@ -452,7 +426,7 @@ class _WorldListPageState extends State<WorldListPage> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Vorregistrierung für ${world.name} zurückgezogen.'),
+            content: Text(AppLocalizations.of(context)!.worldPreRegisterCancelled(world.name)),
             backgroundColor: Colors.orange,
           ),
         );
@@ -491,8 +465,8 @@ class _WorldListPageState extends State<WorldListPage> {
         final success = await _inviteService.createInvite(world.id, result);
         if (success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Einladung erfolgreich versendet!'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.worldInviteSent),
               backgroundColor: Colors.green,
             ),
           );
@@ -595,7 +569,7 @@ class _WorldListPageState extends State<WorldListPage> {
                               
                               // Title
                               Text(
-                                'Weltenwind',
+                                AppLocalizations.of(context)!.appTitle,
                                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -605,7 +579,7 @@ class _WorldListPageState extends State<WorldListPage> {
                               
                               // Subtitle
                               Text(
-                                'Wähle deine Welt aus',
+                                AppLocalizations.of(context)!.worldListSubtitle,
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                   color: Colors.grey[300],
                                 ),
@@ -683,7 +657,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       ),
                                       const SizedBox(height: 16),
                                       Text(
-                                        'Fehler beim Laden der Welten',
+                                        AppLocalizations.of(context)!.worldListErrorTitle,
                                         style: TextStyle(
                                           color: Colors.red[200],
                                           fontWeight: FontWeight.bold,
@@ -691,7 +665,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        _error ?? 'Unbekannter Fehler',
+                                        _error ?? AppLocalizations.of(context)!.worldListErrorUnknown,
                                         style: TextStyle(
                                           color: (Colors.red[200] ?? Colors.red).withOpacity(0.8),
                                         ),
@@ -719,7 +693,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       ),
                                       const SizedBox(height: 16),
                                       Text(
-                                        'Keine Welten gefunden',
+                                        AppLocalizations.of(context)!.worldListEmptyTitle,
                                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                           color: Colors.grey[300],
                                         ),
@@ -727,7 +701,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        'Versuche andere Filter-Einstellungen.',
+                                        AppLocalizations.of(context)!.worldListEmptyMessage,
                                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                           color: Colors.grey[400],
                                         ),
@@ -740,8 +714,6 @@ class _WorldListPageState extends State<WorldListPage> {
                                 Column(
                                   children: _filteredWorlds.map((world) => WorldCard(
                                     world: world,
-                                    playerCount: _playerCounts[world.id] ?? 0,
-                                    category: _getWorldCategory(world),
                                     isPreRegistered: _preRegisteredWorlds[world.id] ?? false,
                                     isJoined: _joinedWorlds[world.id] ?? false,
                                     onJoin: world.canJoin && !(_joinedWorlds[world.id] ?? false) 
@@ -778,7 +750,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                     child: ElevatedButton.icon(
                                       onPressed: _loadWorlds,
                                       icon: const Icon(Icons.refresh),
-                                      label: const Text('Aktualisieren'),
+                                      label: Text(AppLocalizations.of(context)!.worldListRefreshButton),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: AppTheme.primaryColor,
                                         foregroundColor: Colors.white,
@@ -803,12 +775,10 @@ class _WorldListPageState extends State<WorldListPage> {
                 ),
               ),
             ),
-            
             // User info widget in top-left corner
             const UserInfoWidget(),
-            
             // Navigation widget in top-right corner
-            const NavigationWidget(currentRoute: 'world-list'),
+            const NavigationWidget(currentRoute: 'world-list'),        
           ],
         ),
       ),

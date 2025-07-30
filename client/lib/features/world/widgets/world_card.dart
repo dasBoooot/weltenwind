@@ -1,18 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/world.dart';
 import '../../../theme/app_theme.dart';
-
-enum WorldCategory {
-  classic,
-  pvp,
-  event,
-  experimental,
-}
+import '../../../l10n/app_localizations.dart';
 
 class WorldCard extends StatelessWidget {
   final World world;
-  final int playerCount;
-  final WorldCategory category;
   final bool isPreRegistered;
   final bool isJoined;
   final VoidCallback? onJoin;
@@ -26,8 +18,6 @@ class WorldCard extends StatelessWidget {
   const WorldCard({
     super.key,
     required this.world,
-    required this.playerCount,
-    required this.category,
     this.isPreRegistered = false,
     this.isJoined = false,
     this.onJoin,
@@ -39,47 +29,12 @@ class WorldCard extends StatelessWidget {
     this.onTap,
   });
 
-  Color get categoryColor {
-    switch (category) {
-      case WorldCategory.classic:
-        return Colors.blue;
-      case WorldCategory.pvp:
-        return Colors.red;
-      case WorldCategory.event:
-        return Colors.purple;
-      case WorldCategory.experimental:
-        return Colors.orange;
-    }
-  }
-
-  String get categoryLabel {
-    switch (category) {
-      case WorldCategory.classic:
-        return 'Classic';
-      case WorldCategory.pvp:
-        return 'PvP';
-      case WorldCategory.event:
-        return 'Event';
-      case WorldCategory.experimental:
-        return 'Experimental';
-    }
-  }
-
-  IconData get categoryIcon {
-    switch (category) {
-      case WorldCategory.classic:
-        return Icons.castle;
-      case WorldCategory.pvp:
-        return Icons.sports_kabaddi;
-      case WorldCategory.event:
-        return Icons.celebration;
-      case WorldCategory.experimental:
-        return Icons.science;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    return _buildCard(context);
+  }
+
+  Widget _buildCard(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -96,14 +51,14 @@ class WorldCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: world.isActive
-                ? categoryColor.withOpacity(0.5)
+                ? world.category.color.withOpacity(0.5)
                 : Colors.grey.withOpacity(0.3),
             width: world.isActive ? 2 : 1,
           ),
           boxShadow: world.isActive
               ? [
                   BoxShadow(
-                    color: categoryColor.withOpacity(0.3),
+                    color: world.category.color.withOpacity(0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -114,8 +69,8 @@ class WorldCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           child: Column(
             children: [
-              _buildHeader(),
-              _buildContent(),
+              _buildHeader(context),
+              _buildContent(context),
             ],
           ),
         ),
@@ -123,7 +78,7 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -131,8 +86,8 @@ class WorldCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            categoryColor.withOpacity(0.2),
-            categoryColor.withOpacity(0.1),
+            world.category.color.withOpacity(0.2),
+            world.category.color.withOpacity(0.1),
           ],
         ),
       ),
@@ -142,8 +97,8 @@ class WorldCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildCategoryBadge(),
-              _buildStatusBadge(),
+              _buildCategoryBadge(context),
+              _buildStatusBadge(context),
             ],
           ),
           const SizedBox(height: 16),
@@ -166,13 +121,15 @@ class WorldCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Eine spannende Welt voller Abenteuer',
-                      style: TextStyle(
+                        world.description?.isNotEmpty == true 
+                          ? world.description! 
+                          : AppLocalizations.of(context)!.worldDefaultDescription,
+                        style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[300],
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -189,43 +146,43 @@ class WorldCard extends StatelessWidget {
       width: 48,
       height: 48,
       decoration: BoxDecoration(
-        color: categoryColor.withOpacity(0.2),
+        color: world.category.color.withOpacity(0.2),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: categoryColor.withOpacity(0.5),
+          color: world.category.color.withOpacity(0.5),
         ),
       ),
       child: Icon(
         Icons.public,
-        color: categoryColor,
+        color: world.category.color,
         size: 24,
       ),
     );
   }
 
-  Widget _buildCategoryBadge() {
+  Widget _buildCategoryBadge(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: categoryColor.withOpacity(0.3),
+        color: world.category.color.withOpacity(0.3),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: categoryColor.withOpacity(0.5),
+          color: world.category.color.withOpacity(0.5),
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            categoryIcon,
+            world.category.icon,
             size: 16,
-            color: categoryColor,
+            color: world.category.color,
           ),
           const SizedBox(width: 6),
           Text(
-            categoryLabel,
+            world.category.getDisplayName(context),
             style: TextStyle(
-              color: categoryColor,
+              color: world.category.color,
               fontWeight: FontWeight.bold,
               fontSize: 12,
             ),
@@ -235,7 +192,7 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge() {
+  Widget _buildStatusBadge(BuildContext context) {
     Color statusColor;
     IconData statusIcon;
     
@@ -281,7 +238,7 @@ class WorldCard extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            world.statusText,
+            world.status.getDisplayName(context),
             style: TextStyle(
               color: statusColor,
               fontWeight: FontWeight.bold,
@@ -293,22 +250,22 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          _buildPlayerInfo(),
+          _buildPlayerInfo(context),
           const SizedBox(height: 16),
-          _buildDateInfo(),
+          _buildDateInfo(context),
           const SizedBox(height: 16),
-          _buildActionButtons(),
+          _buildActionButtons(context),
         ],
       ),
     );
   }
 
-  Widget _buildPlayerInfo() {
+  Widget _buildPlayerInfo(BuildContext context) {
     return Row(
       children: [
         Icon(
@@ -318,7 +275,7 @@ class WorldCard extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         Text(
-          '$playerCount Spieler aktiv',
+          AppLocalizations.of(context)!.worldPlayersActive(world.playerCount),
           style: TextStyle(
             color: Colors.grey[400],
             fontSize: 14,
@@ -328,7 +285,7 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDateInfo() {
+  Widget _buildDateInfo(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -341,7 +298,7 @@ class WorldCard extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              'Start: ${world.startsAt.day}.${world.startsAt.month}.${world.startsAt.year}',
+              AppLocalizations.of(context)!.worldStartDate('${world.startsAt.day}.${world.startsAt.month}.${world.startsAt.year}'),
               style: TextStyle(
                 color: Colors.grey[400],
                 fontSize: 14,
@@ -351,7 +308,7 @@ class WorldCard extends StatelessWidget {
         ),
         if (world.endsAt != null) ...[
           Builder(
-            builder: (context) {
+            builder: (_) {
               final endDate = world.endsAt!;
               return Column(
                 children: [
@@ -365,7 +322,7 @@ class WorldCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Ende: ${endDate.day}.${endDate.month}.${endDate.year}',
+                        AppLocalizations.of(context)!.worldEndDate('${endDate.day}.${endDate.month}.${endDate.year}'),
                         style: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 14,
@@ -382,7 +339,7 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(BuildContext context) {
     final List<Widget> buttons = [];
     
     // Status-basierte Button-Logik
@@ -394,7 +351,7 @@ class WorldCard extends StatelessWidget {
             buttons.add(_buildButton(
               onPressed: onCancelPreRegistration,
               icon: Icons.cancel,
-              label: 'Zurückziehen',
+              label: AppLocalizations.of(context)!.worldLeaveButton,
               color: Colors.red[600],
             ));
           }
@@ -403,7 +360,7 @@ class WorldCard extends StatelessWidget {
             buttons.add(_buildButton(
               onPressed: onPreRegister,
               icon: Icons.how_to_reg,
-              label: 'Vorregistrieren',
+              label: AppLocalizations.of(context)!.worldPreRegisterButton,
               color: Colors.orange[600],
             ));
           }
@@ -419,7 +376,7 @@ class WorldCard extends StatelessWidget {
             buttons.add(_buildButton(
               onPressed: onPlay,
               icon: Icons.play_circle_filled,
-              label: 'Spielen',
+              label: AppLocalizations.of(context)!.worldPlayButton,
               color: Colors.green[600],
             ));
           }
@@ -428,7 +385,7 @@ class WorldCard extends StatelessWidget {
             buttons.add(_buildButton(
               onPressed: onLeave,
               icon: Icons.exit_to_app,
-              label: 'Verlassen',
+              label: AppLocalizations.of(context)!.worldLeaveButton,
               color: Colors.red[600],
             ));
           }
@@ -437,7 +394,7 @@ class WorldCard extends StatelessWidget {
             buttons.add(_buildButton(
               onPressed: onJoin,
               icon: Icons.play_arrow,
-              label: 'Beitreten',
+              label: AppLocalizations.of(context)!.worldJoinButton,
               color: AppTheme.primaryColor,
             ));
           }
@@ -447,7 +404,7 @@ class WorldCard extends StatelessWidget {
       case WorldStatus.closed:
       case WorldStatus.archived:
         // Keine Aktions-Buttons bei geschlossenen/archivierten Welten
-        return _buildStatusBadge();
+        return _buildStatusBadge(context);
     }
     
     // Invite Button für upcoming, open und running
@@ -456,16 +413,16 @@ class WorldCard extends StatelessWidget {
       buttons.add(_buildButton(
         onPressed: onInvite,
         icon: Icons.person_add,
-        label: null,
+        label: AppLocalizations.of(context)!.worldInviteButton,
         color: Colors.purple[600],
-        iconOnly: true,
-        tooltip: 'Spieler einladen',
+        iconOnly: false,
+        tooltip: AppLocalizations.of(context)!.worldInviteButton,
       ));
     }
     
     // Wenn keine Buttons verfügbar sind
     if (buttons.isEmpty) {
-      return _buildStatusBadge();
+      return _buildStatusBadge(context);
     }
     
     return Wrap(

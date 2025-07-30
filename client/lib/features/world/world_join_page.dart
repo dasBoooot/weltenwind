@@ -10,6 +10,8 @@ import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
+import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/language_switcher.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -36,13 +38,12 @@ class WorldJoinPage extends StatefulWidget {
   State<WorldJoinPage> createState() => _WorldJoinPageState();
 }
 
-class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProviderStateMixin {
+class _WorldJoinPageState extends State<WorldJoinPage> {
   // DI-ready: ServiceLocator verwenden
   late final WorldService _worldService;
   late final AuthService _authService;
   
   // Tab Controller
-  late TabController _tabController;
   
   bool _isLoading = false;
   bool _isJoining = false;
@@ -64,15 +65,13 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    
-    _tabController = TabController(length: 1, vsync: this);
+
     _initializeServices();
     _loadWorldData();
   }
   
   @override
   void dispose() {
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -157,7 +156,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     } catch (e) {
       AppLogger.app.w('💥 FEHLER in _loadWorldData: $e');
       setState(() {
-        _errorMessage = 'Fehler beim Laden der Welt-Daten: ${e.toString()}';
+        _errorMessage = AppLocalizations.of(context)!.worldJoinErrorLoadingWorldData(e.toString());
         _isLoading = false;
       });
     }
@@ -167,7 +166,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   Future<void> _handleNormalFlow() async {
     if (widget.worldId == null) {
       setState(() {
-        _errorMessage = 'Keine Welt-ID gefunden';
+        _errorMessage = AppLocalizations.of(context)!.worldJoinNoWorldIdFound;
         _isLoading = false;
       });
       return;
@@ -189,7 +188,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   Future<void> _handleInviteFlow() async {
     if (widget.inviteToken == null) {
       setState(() {
-        _errorMessage = 'Kein Einladungstoken gefunden';
+        _errorMessage = AppLocalizations.of(context)!.worldJoinNoInviteTokenFound;
         _isLoading = false;
       });
       return;
@@ -200,7 +199,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     
     if (tokenData == null || tokenData['world'] == null) {
       setState(() {
-        _errorMessage = 'Ungültiger oder abgelaufener Einladungslink';
+        _errorMessage = AppLocalizations.of(context)!.worldJoinInvalidOrExpiredInviteLink;
         _isLoading = false;
       });
       return;
@@ -213,7 +212,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     final inviteData = tokenData['invite'];
     final inviteEmail = inviteData['email'];
     final invitedByData = inviteData['invitedBy'];
-    final invitedByName = invitedByData?['username'] ?? 'Unbekannt';
+    final invitedByName = invitedByData?['username'] ?? AppLocalizations.of(context)!.worldJoinUnknownUser;
     
     // Invite-Zeitstempel verarbeiten
     final expiresAtString = inviteData['expiresAt'];
@@ -239,7 +238,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     isInviteValid = !isExpired && !isAccepted;
     
     // World-Details
-    final worldName = _world?.name ?? 'Unbekannte Welt';
+    final worldName = _world?.name ?? AppLocalizations.of(context)!.worldJoinUnknownWorldName;
     final worldStatus = _world?.status ?? WorldStatus.upcoming;
     final isUpcoming = worldStatus == WorldStatus.upcoming;
     
@@ -260,8 +259,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     final inviterText = invitedByName;
     
     final actionTypeText = isUpcoming 
-      ? 'dich vorab zu registrieren für' 
-      : 'beizutreten';
+      ? AppLocalizations.of(context)!.worldJoinPreRegisterFor
+      : AppLocalizations.of(context)!.worldJoinToJoin;
     
     // Gültigkeitstext erstellen
     String validityText = '';
@@ -270,22 +269,22 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       final dateStr = '${expiresAtLocal.day.toString().padLeft(2, '0')}.${expiresAtLocal.month.toString().padLeft(2, '0')}.${expiresAtLocal.year} ${expiresAtLocal.hour.toString().padLeft(2, '0')}:${expiresAtLocal.minute.toString().padLeft(2, '0')}';
       
       if (isAccepted) {
-        validityText = '\n\n✅ Diese Einladung wurde bereits akzeptiert.';
+        validityText = AppLocalizations.of(context)!.worldJoinAlreadyAccepted;
       } else if (isExpired) {
-        validityText = '\n\n❌ Diese Einladung ist am $dateStr abgelaufen.';
+        validityText = AppLocalizations.of(context)!.worldJoinExpired(dateStr);
       } else {
-        validityText = '\n\n⏰ Gültig bis: $dateStr';
+        validityText = AppLocalizations.of(context)!.worldJoinValidUntil(dateStr);
       }
     }
     
-    final baseInfoText = 'Du wurdest von $inviterText eingeladen, der Welt "$worldName" $actionTypeText.$validityText';
+    final baseInfoText = AppLocalizations.of(context)!.worldJoinInvitedBy(inviterText, worldName, actionTypeText, validityText);
     
     // Je nach Status unterschiedliche Logik
     switch (status) {
       case 'not_logged_in':
         if (requiresAction == 'register') {
           // Mail ist unbekannt -> nur Register
-          actionText = 'Du musst dich mit der E-Mail-Adresse $inviteEmail registrieren.';
+          actionText = AppLocalizations.of(context)!.worldJoinMustRegisterWith(inviteEmail);
           infoText = '$baseInfoText\n\n$actionText';
           showRegisterButton = isInviteValid; // Nur bei gültigen Invites
         }
@@ -294,7 +293,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       case 'user_exists_not_logged_in':
         if (requiresAction == 'login') {
           // Mail ist bekannt, User nicht angemeldet -> nur Login
-          actionText = 'Dein Account mit $inviteEmail ist bereits registriert. Bitte melde dich an.';
+          actionText = AppLocalizations.of(context)!.worldJoinAccountExistsLogin(inviteEmail);
           infoText = '$baseInfoText\n\n$actionText';
           showLoginButton = isInviteValid; // Nur bei gültigen Invites
         }
@@ -304,8 +303,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         if (requiresAction == 'logout_and_register') {
           final currentUserEmail = userStatusData['currentUser']?['email'];
           // User mit falscher Mail angemeldet -> Logout + Register
-          actionText = 'Diese Einladung ist für $inviteEmail bestimmt, aber du bist als $currentUserEmail angemeldet.';
-          infoText = '$baseInfoText\n\n$actionText\n\nBitte melde dich ab und registriere dich mit der richtigen E-Mail-Adresse.';
+          actionText = AppLocalizations.of(context)!.worldJoinWrongEmail(inviteEmail, currentUserEmail);
+          infoText = '$baseInfoText\n\n$actionText\n\n${AppLocalizations.of(context)!.worldJoinLogoutForInvite}';
           showLogoutButton = isInviteValid; // Nur bei gültigen Invites
         }
         break;
@@ -313,7 +312,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       case 'correct_email':
         if (requiresAction == 'join_world') {
           // User richtig angemeldet -> nur Accept Button (KEIN Auto-Accept!)
-          actionText = 'Du bist mit der richtigen E-Mail-Adresse angemeldet und kannst die Einladung jetzt annehmen.';
+          actionText = AppLocalizations.of(context)!.worldJoinCorrectEmailCanAccept;
           infoText = '$baseInfoText\n\n$actionText';
           showAcceptButton = isInviteValid; // Nur bei gültigen Invites
           
@@ -323,7 +322,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         
       default:
         AppLogger.app.w('❌ Unbekannter User-Status: $status');
-        actionText = 'Unbekannter Status: $status';
+        actionText = AppLocalizations.of(context)!.worldJoinUnknownStatus(status);
         infoText = '$baseInfoText\n\n$actionText';
     }
     
@@ -381,13 +380,13 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       if (result != null) {
         setState(() {
           _isJoined = true;
-          _infoMessage = 'Willkommen in der Welt "${_world?.name}"! Das Invite wurde automatisch akzeptiert.';
+          _infoMessage = AppLocalizations.of(context)!.worldJoinWelcome(_world?.name ?? '');
         });
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Erfolgreich der Welt "${_world!.name}" beigetreten!'),
+              content: Text(AppLocalizations.of(context)!.worldJoinSuccessfulDetailed(_world!.name)),
               backgroundColor: Colors.green,
               duration: const Duration(seconds: 3),
             ),
@@ -399,13 +398,13 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       if (e.toString().contains('Invite bereits akzeptiert')) {
         setState(() {
           _isJoined = true;
-          _infoMessage = 'Du bist bereits Mitglied dieser Welt "${_world?.name}"!';
+          _infoMessage = AppLocalizations.of(context)!.worldJoinAlreadyMember(_world?.name ?? '');
         });
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Du bist bereits Mitglied der Welt "${_world?.name}"!'),
+              content: Text(AppLocalizations.of(context)!.worldAlreadyMember(_world?.name ?? "")),
               backgroundColor: Colors.orange,
               duration: const Duration(seconds: 3),
             ),
@@ -418,7 +417,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       AppLogger.logError('Automatische Invite-Akzeptierung fehlgeschlagen', e);
       // Fehler nicht als kritisch behandeln - User kann manuell beitreten
       setState(() {
-        _infoMessage = 'Du kannst nun der Welt beitreten.';
+        _infoMessage = AppLocalizations.of(context)!.worldJoinCanJoinNow;
       });
     }
   }
@@ -459,8 +458,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         
         if (mounted) {
           final message = widget.inviteToken != null 
-            ? 'Einladung akzeptiert! Willkommen in der Welt "${_world!.name}"!'
-            : 'Erfolgreich der Welt "${_world!.name}" beigetreten!';
+          ? AppLocalizations.of(context)!.worldJoinInviteAcceptedSuccess(_world!.name)
+          : AppLocalizations.of(context)!.worldJoinSuccess(_world!.name);
             
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -472,7 +471,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         }
       } else {
         setState(() {
-          _joinError = 'Beitritt fehlgeschlagen. Versuche es erneut.';
+          _joinError = AppLocalizations.of(context)!.worldJoinFailed;
         });
       }
     } catch (e) {
@@ -486,14 +485,14 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       setState(() {
         // Bessere Fehlermeldungen für verschiedene Szenarien
         if (e.toString().contains('bereits akzeptiert')) {
-          _joinError = 'Diese Einladung wurde bereits akzeptiert.';
+          _joinError = AppLocalizations.of(context)!.worldJoinInviteAlreadyAcceptedError;
           _isJoined = true; // User ist bereits Mitglied
         } else if (e.toString().contains('nicht für deine E-Mail-Adresse')) {
-          _joinError = 'Diese Einladung ist nicht für deine E-Mail-Adresse bestimmt.';
+          _joinError = AppLocalizations.of(context)!.worldJoinInviteNotForYourEmail;
         } else if (e.toString().contains('abgelaufen')) {
-          _joinError = 'Diese Einladung ist abgelaufen.';
+          _joinError = AppLocalizations.of(context)!.worldJoinInviteExpiredError;
         } else {
-          _joinError = 'Ein Fehler ist aufgetreten: ${e.toString().replaceAll('Exception: ', '')}';
+          _joinError = AppLocalizations.of(context)!.worldJoinGenericError(e.toString().replaceAll('Exception: ', ''));
         }
       });
     } finally {
@@ -523,19 +522,19 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Erfolgreich für ${world.name} vorregistriert!'),
+              content: Text(AppLocalizations.of(context)!.worldPreRegisterSuccessful(world.name)),
               backgroundColor: Colors.green,
             ),
           );
         }
       } else {
         setState(() {
-          _joinError = 'Fehler bei der Vorregistrierung';
+          _joinError = AppLocalizations.of(context)!.worldJoinPreRegistrationError;
         });
       }
     } catch (e) {
       setState(() {
-        _joinError = e.toString().replaceAll('Exception: ', '');
+        _joinError = AppLocalizations.of(context)!.worldJoinGenericError(e.toString().replaceAll('Exception: ', ''));
       });
     } finally {
       if (mounted) {
@@ -565,19 +564,19 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Vorregistrierung für ${world.name} zurückgezogen.'),
+              content: Text(AppLocalizations.of(context)!.worldPreRegisterCancelled(world.name)),
               backgroundColor: Colors.orange,
             ),
           );
         }
       } else {
         setState(() {
-          _joinError = 'Fehler beim Zurückziehen der Vorregistrierung';
+          _joinError = AppLocalizations.of(context)!.worldJoinCancelPreRegistrationError;
         });
       }
     } catch (e) {
       setState(() {
-        _joinError = e.toString().replaceAll('Exception: ', '');
+        _joinError = AppLocalizations.of(context)!.worldJoinGenericError(e.toString().replaceAll('Exception: ', ''));
       });
     } finally {
       if (mounted) {
@@ -596,19 +595,19 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Welt verlassen?'),
-        content: Text('Möchtest du die Welt "${world.name}" wirklich verlassen?'),
+        title: Text(AppLocalizations.of(context)!.worldJoinLeaveDialogTitle),
+        content: Text(AppLocalizations.of(context)!.worldJoinLeaveDialogContent(world.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Abbrechen'),
+            child: Text(AppLocalizations.of(context)!.buttonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(
               foregroundColor: Colors.red,
             ),
-            child: const Text('Verlassen'),
+            child: Text(AppLocalizations.of(context)!.worldLeaveButton),
           ),
         ],
       ),
@@ -630,14 +629,14 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Du hast ${world.name} verlassen.'),
+            content: Text(AppLocalizations.of(context)!.worldLeaveSuccessful(world.name)),
             backgroundColor: Colors.orange,
           ),
         );
       }
     } catch (e) {
       setState(() {
-        _joinError = e.toString().replaceAll('Exception: ', '');
+        _joinError = AppLocalizations.of(context)!.worldJoinGenericError(e.toString().replaceAll('Exception: ', ''));
       });
     } finally {
       if (mounted) {
@@ -658,8 +657,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
   // Welt-Status bestimmen
   String _getWorldStatusText() {
     final world = _world;
-    if (world == null) return 'Unbekannt';
-    return world.statusText;
+    if (world == null) return AppLocalizations.of(context)!.worldJoinUnknownWorld;
+    return world.status.getDisplayName(context);
   }
 
   // Welt-Status-Farbe
@@ -734,8 +733,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       AppLogger.logError('Logout für Invite fehlgeschlagen', e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Fehler beim Abmelden'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.worldLogoutError),
             backgroundColor: Colors.red,
           ),
         );
@@ -825,7 +824,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'Fehler beim Laden',
+                        AppLocalizations.of(context)!.worldLoadingError,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -833,7 +832,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        _errorMessage ?? 'Unbekannter Fehler',
+                        _errorMessage ?? AppLocalizations.of(context)!.worldJoinUnknownError,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.grey[300],
                         ),
@@ -850,7 +849,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                           child: ElevatedButton.icon(
                             onPressed: () => _navigateToRegistration(_inviteEmail!),
                             icon: const Icon(Icons.person_add),
-                            label: const Text('Jetzt registrieren'),
+                            label: Text(AppLocalizations.of(context)!.worldRegisterNow),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.primaryColor,
                               foregroundColor: Colors.white,
@@ -868,7 +867,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                           child: OutlinedButton.icon(
                             onPressed: () => _navigateToLogin(_inviteEmail!),
                             icon: const Icon(Icons.login),
-                            label: const Text('Bereits registriert? Anmelden'),
+                            label: Text(AppLocalizations.of(context)!.worldAlreadyRegistered),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppTheme.primaryColor,
                               side: const BorderSide(color: AppTheme.primaryColor),
@@ -886,7 +885,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                           child: ElevatedButton.icon(
                             onPressed: _logout,
                             icon: const Icon(Icons.logout),
-                            label: const Text('Abmelden & neu registrieren'),
+                            label: Text(AppLocalizations.of(context)!.worldLogoutAndRegister),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.orange,
                               foregroundColor: Colors.white,
@@ -904,7 +903,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                           child: OutlinedButton.icon(
                             onPressed: () => context.goNamed('landing'),
                             icon: const Icon(Icons.arrow_back),
-                            label: const Text('Zurück zur Startseite'),
+                            label: Text(AppLocalizations.of(context)!.worldBackToHome),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.grey,
                               side: const BorderSide(color: Colors.grey),
@@ -922,7 +921,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                           child: ElevatedButton.icon(
                             onPressed: _retry,
                             icon: const Icon(Icons.refresh),
-                            label: const Text('Erneut versuchen'),
+                            label: Text(AppLocalizations.of(context)!.buttonRetry),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.primaryColor,
                               foregroundColor: Colors.white,
@@ -936,9 +935,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                       const SizedBox(height: 16),
                       TextButton(
                         onPressed: () => context.goNamed('world-list'),
-                        child: const Text(
-                          'Zurück zu den Welten',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context)!.worldJoinBackToWorldsButton,
+                          style: const TextStyle(
                             color: AppTheme.primaryColor,
                             fontWeight: FontWeight.bold,
                           ),
@@ -996,7 +995,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'Information',
+                        AppLocalizations.of(context)!.worldInformationTitle,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -1004,7 +1003,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        _infoMessage ?? 'Keine Information verfügbar',
+                        _infoMessage ?? AppLocalizations.of(context)!.worldJoinNoInformationAvailable,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.grey[300],
                         ),
@@ -1020,9 +1019,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                         const SizedBox(height: 16),
                         TextButton(
                           onPressed: () => context.goNamed('world-list'),
-                          child: const Text(
-                            'Zurück zu den Welten',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)!.worldJoinBackToWorldsButton,
+                            style: const TextStyle(
                               color: AppTheme.primaryColor,
                               fontWeight: FontWeight.bold,
                             ),
@@ -1081,7 +1080,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'Welt nicht gefunden',
+                        AppLocalizations.of(context)!.worldNotFoundTitle,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -1089,7 +1088,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Die angeforderte Welt existiert nicht oder ist nicht verfügbar.',
+                        AppLocalizations.of(context)!.worldNotFoundMessage,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.grey[300],
                         ),
@@ -1108,7 +1107,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text('Zurück zu den Welten'),
+                          child: Text(AppLocalizations.of(context)!.worldBackToWorlds),
                         ),
                       ),
                     ],
@@ -1167,7 +1166,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _world?.name ?? 'Unbekannte Welt',
+                                _world?.name ?? AppLocalizations.of(context)!.worldJoinUnknownWorldName,
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -1179,7 +1178,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                                   Icon(Icons.calendar_today, size: 16, color: Colors.grey[400]),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'Start: ${_world?.startsAt.toString().split(' ')[0] ?? 'Unbekannt'}',
+                                    AppLocalizations.of(context)!.worldStartDate(_world?.startsAt.toString().split(' ')[0] ?? AppLocalizations.of(context)!.worldDateUnknown),
                                     style: TextStyle(color: Colors.grey[400], fontSize: 14),
                                   ),
                                   if (_world?.endsAt != null) ...[
@@ -1187,7 +1186,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                                     Icon(Icons.event, size: 16, color: Colors.grey[400]),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'Ende: ${_world?.endsAt.toString().split(' ')[0] ?? 'Unbekannt'}',
+                                      AppLocalizations.of(context)!.worldEndDate(_world?.endsAt.toString().split(' ')[0] ?? AppLocalizations.of(context)!.worldDateUnknown),
                                       style: TextStyle(color: Colors.grey[400], fontSize: 14),
                                     ),
                                   ],
@@ -1196,6 +1195,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                             ],
                           ),
                         ),
+                        // Status Badge
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
@@ -1223,56 +1223,37 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                             ],
                           ),
                         ),
+                        const SizedBox(width: 8),
+                        // Category Badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _world!.category.color.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: _world!.category.color.withOpacity(0.5)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                _world!.category.icon,
+                                color: _world!.category.color,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                _world!.category.getDisplayName(context),
+                                style: TextStyle(
+                                  color: _world!.category.color,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-              
-              // Tab Bar
-              Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2A2A2A),
-                  border: Border(
-                    bottom: BorderSide(
-                      color: AppTheme.primaryColor.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                ),
-                child: TabBar(
-                  controller: _tabController,
-                  indicatorColor: AppTheme.primaryColor,
-                  indicatorWeight: 3,
-                  labelColor: AppTheme.primaryColor,
-                  unselectedLabelColor: Colors.grey[400],
-                  labelStyle: const TextStyle(fontWeight: FontWeight.w600),
-                  tabs: const [
-                    Tab(
-                      icon: Icon(Icons.description_outlined),
-                      text: 'Beschreibung',
-                    ),
-                    Tab(
-                      icon: Icon(Icons.rule_outlined),
-                      text: 'Spielregeln',
-                    ),
-                    Tab(
-                      icon: Icon(Icons.analytics_outlined),
-                      text: 'Statistiken',
-                    ),
-                  ],
-                ),
-              ),
-              
-              // Tab Content
-              SizedBox(
-                height: 300, // Feste Höhe für Tab-Content
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildDescriptionTab(),
-                    _buildRulesTab(),
-                    _buildStatisticsTab(),
                   ],
                 ),
               ),
@@ -1307,7 +1288,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                _joinError ?? 'Unbekannter Fehler',
+                                _joinError ?? AppLocalizations.of(context)!.worldJoinUnknownError,
                                 style: TextStyle(color: Colors.red[400], fontSize: 14),
                               ),
                             ),
@@ -1324,223 +1305,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       ),
     );
   }
-  
-  Widget _buildDescriptionTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.info_outline, color: AppTheme.primaryColor, size: 24),
-              SizedBox(width: 8),
-              Text(
-                'Über diese Welt',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Dies ist eine spannende Welt voller Abenteuer und Herausforderungen. '
-            'Erkunde unbekannte Gebiete, schließe Allianzen und werde zur Legende!',
-            style: TextStyle(color: Colors.grey[300], height: 1.5),
-          ),
-          const SizedBox(height: 24),
-          _buildInfoCard('Kategorie', 'Standard', Icons.category),
-          _buildInfoCard('Welt-ID', '#${_world?.id ?? 'N/A'}', Icons.tag),
-          _buildInfoCard('Erstellt', _world?.createdAt.toString().split(' ')[0] ?? 'Unbekannt', Icons.access_time),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildRulesTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.rule, color: AppTheme.primaryColor, size: 24),
-              SizedBox(width: 8),
-              Text(
-                'Spielregeln',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildRuleItem('1.', 'Respektiere andere Spieler'),
-          _buildRuleItem('2.', 'Keine Cheats oder Exploits verwenden'),
-          _buildRuleItem('3.', 'Faire Spielweise ist Pflicht'),
-          _buildRuleItem('4.', 'Kommunikation nur im Spielchat'),
-          _buildRuleItem('5.', 'Entscheidungen der Spielleitung sind final'),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildStatisticsTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.bar_chart, color: AppTheme.primaryColor, size: 24),
-              SizedBox(width: 8),
-              Text(
-                'Welt-Statistiken',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(child: _buildStatCard('Spieler', '0 / 50', Icons.people)),
-              const SizedBox(width: 16),
-              Expanded(child: _buildStatCard('Dauer', '30 Tage', Icons.timer)),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(child: _buildStatCard('Status', _getWorldStatusText(), Icons.circle)),
-              const SizedBox(width: 16),
-              Expanded(child: _buildStatCard('Typ', 'Standard', Icons.public)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildInfoCard(String label, String value, IconData icon) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[800] ?? Colors.grey),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppTheme.primaryColor, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(color: Colors.grey[400], fontSize: 12),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildRuleItem(String number, String rule) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[800] ?? Colors.grey),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                number,
-                style: const TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              rule,
-              style: TextStyle(color: Colors.grey[300], height: 1.3),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildStatCard(String label, String value, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: AppTheme.primaryColor, size: 32),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  
+
   IconData _getWorldStatusIcon() {
     switch (_world?.status) {
       case WorldStatus.upcoming:
@@ -1584,105 +1349,105 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       ),
     );
   }
+
+  Widget _buildButton({
+    required VoidCallback? onPressed,
+    required IconData icon,
+    required String label,
+    required Color? color,
+    String? tooltip,
+  }) {
+    if (onPressed == null) return const SizedBox.shrink();
+    
+    final button = ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 16),
+      label: Text(label),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+    
+    // Wrap mit Tooltip wenn vorhanden
+    if (tooltip != null) {
+      return Tooltip(
+        message: tooltip,
+        child: button,
+      );
+    }
+    
+    return button;
+  }
   
   Widget _buildActionButtons() {
     List<Widget> buttons = [];
 
     // **LOGIN BUTTON (wenn User existiert aber nicht angemeldet)**
     if (_showLoginButton && _inviteEmail != null) {
-      buttons.add(
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 12.0),
-          child: ElevatedButton(
-            onPressed: () {
-              // Redirect auf Login-Seite mit E-Mail vorausgefüllt
-              final loginRoute = '/go/auth/login?email=${Uri.encodeComponent(_inviteEmail!)}';
-              
-              // Pending Redirect setzen für Post-Auth-Redirect
-              _authService.setPendingInviteRedirect(widget.inviteToken!);
-              
-              context.go(loginRoute);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Anmelden',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      );
+      buttons.add(_buildButton(
+        onPressed: () {
+          // Redirect auf Login-Seite mit E-Mail vorausgefüllt
+          final loginRoute = '/go/auth/login?email=${Uri.encodeComponent(_inviteEmail!)}';
+          
+          // Pending Redirect setzen für Post-Auth-Redirect
+          _authService.setPendingInviteRedirect(widget.inviteToken!);
+          
+          context.go(loginRoute);
+        },
+        icon: Icons.login,
+        label: AppLocalizations.of(context)!.worldLoginButton,
+        color: AppTheme.primaryColor,
+      ));
     }
 
     // **REGISTRATION BUTTON**
     if (_showRegistrationButton && _inviteEmail != null) {
-      buttons.add(
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 12.0),
-          child: ElevatedButton(
-            onPressed: () {
-              // Redirect auf Register-Seite mit E-Mail vorausgefüllt
-              final registerRoute = '/go/auth/register?email=${Uri.encodeComponent(_inviteEmail!)}';
-              
-              // Pending Redirect setzen für Post-Auth-Redirect
-              _authService.setPendingInviteRedirect(widget.inviteToken!);
-              
-              context.go(registerRoute);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.secondaryColor,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Registrieren',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      );
+      buttons.add(_buildButton(
+        onPressed: () {
+          // Redirect auf Register-Seite mit E-Mail vorausgefüllt
+          final registerRoute = '/go/auth/register?email=${Uri.encodeComponent(_inviteEmail!)}';
+          
+          // Pending Redirect setzen für Post-Auth-Redirect
+          _authService.setPendingInviteRedirect(widget.inviteToken!);
+          
+          context.go(registerRoute);
+        },
+        icon: Icons.person_add,
+        label: AppLocalizations.of(context)!.worldRegisterButton,
+        color: AppTheme.secondaryColor,
+      ));
     }
 
     // **ACCEPT INVITE BUTTON (wenn User korrekt angemeldet)**
     if (_showAcceptInviteButton && widget.inviteToken != null) {
       buttons.add(
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 12.0),
-          child: ElevatedButton(
-            onPressed: _isJoining || !isInviteValid ? null : () => _joinWorld(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[600],
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+        ElevatedButton.icon(
+          onPressed: _isJoining || !isInviteValid ? null : () => _joinWorld(),
+          icon: _isJoining 
+            ? const SizedBox(
+                height: 16,
+                width: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : const Icon(Icons.check_circle, size: 16),
+          label: Text(_isJoining 
+            ? AppLocalizations.of(context)!.worldJoinInProgress
+            : AppLocalizations.of(context)!.worldAcceptInviteButton),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green[600],
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: _isJoining
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                : const Text(
-                    'Einladung annehmen',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
           ),
         ),
       );
@@ -1690,33 +1455,18 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
 
     // **LOGOUT BUTTON (wenn User mit falscher E-Mail angemeldet)**
     if (_showLogoutButton) {
-      buttons.add(
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 12.0),
-          child: ElevatedButton(
-            onPressed: () async {
-              await _authService.logout();
-              // Nach Logout zur Landing-Page
-              if (mounted) {
-                context.go('/go/landing');
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red[600],
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Abmelden',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      );
+      buttons.add(_buildButton(
+        onPressed: () async {
+          await _authService.logout();
+          // Nach Logout zur Landing-Page
+          if (mounted) {
+            context.go('/go/landing');
+          }
+        },
+        icon: Icons.logout,
+        label: AppLocalizations.of(context)!.worldLogoutButton,
+        color: Colors.red[600],
+      ));
     }
 
     // FALLBACK: Normale World-Join-Buttons wenn keine spezifischen Buttons
@@ -1731,43 +1481,35 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
             // Vorregistrierung oder Zurückziehen
             if (_isPreRegistered) {
               buttons.add(
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 12.0),
-                  child: ElevatedButton.icon(
+                ElevatedButton.icon(
                     onPressed: (_isPreRegistering || _isJoining) ? null : _cancelPreRegistration,
                     icon: const Icon(Icons.cancel),
-                    label: Text(_isPreRegistering ? 'Wird zurückgezogen...' : 'Vorregistrierung zurückziehen'),
+                    label: Text(_isPreRegistering ? AppLocalizations.of(context)!.worldJoinCancelPreRegistrationInProgress : AppLocalizations.of(context)!.worldJoinCancelPreRegistrationButton),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red[600],
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
-                ),
               );
             } else {
               buttons.add(
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 12.0),
-                  child: ElevatedButton.icon(
+                ElevatedButton.icon(
                     onPressed: (_isPreRegistering || _isJoining) ? null : _preRegisterWorld,
                     icon: const Icon(Icons.how_to_reg),
-                    label: Text(_isPreRegistering ? 'Wird registriert...' : 'Vorregistrieren'),
+                    label: Text(_isPreRegistering ? AppLocalizations.of(context)!.worldJoinPreRegisterInProgress : AppLocalizations.of(context)!.worldJoinPreRegisterButton),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange[600],
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
-                ),
               );
             }
             break;
@@ -1778,65 +1520,53 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
             if (_isJoined) {
               // Spielen Button
               buttons.add(
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 12.0),
-                  child: ElevatedButton.icon(
+                ElevatedButton.icon(
                     onPressed: _playWorld,
                     icon: const Icon(Icons.play_circle_filled),
-                    label: const Text('Spielen'),
+                    label: Text(AppLocalizations.of(context)!.worldPlayButton),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green[600],
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
-                ),
               );
               
               // Verlassen Button
               buttons.add(
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 12.0),
-                  child: ElevatedButton.icon(
+                ElevatedButton.icon(
                     onPressed: _isJoining ? null : _leaveWorld,
                     icon: const Icon(Icons.exit_to_app),
-                    label: Text(_isJoining ? 'Wird verlassen...' : 'Welt verlassen'),
+                    label: Text(_isJoining ? AppLocalizations.of(context)!.worldJoinLeaveInProgress : AppLocalizations.of(context)!.worldLeaveButton),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red[600],
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
-                ),
               );
             } else {
               // Beitreten Button
               buttons.add(
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 12.0),
-                  child: ElevatedButton.icon(
+                ElevatedButton.icon(
                     onPressed: _isJoining ? null : _joinWorld,
                     icon: const Icon(Icons.play_arrow),
-                    label: Text(_isJoining ? 'Wird beigetreten...' : 'Jetzt beitreten'),
+                    label: Text(_isJoining ? AppLocalizations.of(context)!.worldJoinInProgress : AppLocalizations.of(context)!.worldJoinNowButton),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
-                ),
               );
             }
             break;
@@ -1864,8 +1594,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
                     const SizedBox(height: 8),
                     Text(
                       world.status == WorldStatus.closed
-                          ? 'Diese Welt ist derzeit geschlossen'
-                          : 'Diese Welt ist archiviert',
+                                  ? AppLocalizations.of(context)!.worldJoinWorldClosedStatus
+        : AppLocalizations.of(context)!.worldJoinWorldArchivedStatus,
                       style: TextStyle(
                         color: Colors.grey[700],
                         fontWeight: FontWeight.w500,
@@ -1881,7 +1611,14 @@ class _WorldJoinPageState extends State<WorldJoinPage> with SingleTickerProvider
       }
     }
 
-    return Column(
+    // Wenn keine Buttons vorhanden, zeige leeren Container
+    if (buttons.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
       children: buttons,
     );
   }

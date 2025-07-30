@@ -598,5 +598,822 @@
   "@footerSupport": {
     "description": "Link zum Support im Footer",
     "context": "footer"
+  },
+
+  "worldListTitle": "Wähle deine Welt",
+  "@worldListTitle": {
+    "description": "Haupttitel auf der Weltenliste-Seite", 
+    "context": "worlds"
+  },
+  "worldListSubtitle": "Wähle deine Welt aus",
+  "@worldListSubtitle": {
+    "description": "Untertitel auf der Weltenliste-Seite",
+    "context": "worlds"  
+  },
+  "worldListLoadingError": "Fehler beim Laden der Welten: {error}",
+  "@worldListLoadingError": {
+    "description": "Fehlermeldung beim Laden der Welten",
+    "context": "worlds",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Die Fehlermeldung"
+      }
+    }
+  },
+  "worldListErrorTitle": "Fehler beim Laden der Welten",
+  "@worldListErrorTitle": {
+    "description": "Titel für Fehler beim Laden der Welten",
+    "context": "worlds"
+  },
+  "worldListErrorUnknown": "Unbekannter Fehler",
+  "@worldListErrorUnknown": {
+    "description": "Unbekannter Fehler beim Laden der Welten",
+    "context": "worlds"
+  },
+  "worldListEmptyTitle": "Keine Welten gefunden",
+  "@worldListEmptyTitle": {
+    "description": "Titel wenn keine Welten vorhanden sind",
+    "context": "worlds"
+  },
+  "worldListEmptyMessage": "Versuche andere Filter-Einstellungen.",
+  "@worldListEmptyMessage": {
+    "description": "Nachricht wenn keine Welten gefunden wurden",
+    "context": "worlds"
+  },
+  "worldListRefreshButton": "Aktualisieren",
+  "@worldListRefreshButton": {
+    "description": "Button zum Aktualisieren der Weltenliste",
+    "context": "worlds"
+  },
+  "worldListCreateButton": "Neue Welt",
+  "@worldListCreateButton": {
+    "description": "Button zum Erstellen einer neuen Welt",
+    "context": "worlds"
+  },
+  "worldListLoadingText": "Welten werden geladen...",
+  "@worldListLoadingText": {
+    "description": "Ladetext für Weltenliste",
+    "context": "worlds"
+  },
+
+  "worldJoinSuccessful": "Erfolgreich zu {worldName} beigetreten!",
+  "@worldJoinSuccessful": {
+    "description": "Erfolgsmeldung nach dem Beitreten einer Welt",
+    "context": "worldActions",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldJoinSuccessfulDetailed": "Erfolgreich der Welt \"{worldName}\" beigetreten!",
+  "@worldJoinSuccessfulDetailed": {
+    "description": "Detaillierte Erfolgsmeldung nach dem Beitreten einer Welt",
+    "context": "worldActions",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldAlreadyMember": "Du bist bereits Mitglied der Welt \"{worldName}\"!",
+  "@worldAlreadyMember": {
+  "description": "Nachricht wenn User bereits Mitglied einer Welt ist",
+    "context": "worldActions",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldPreRegisterSuccessful": "Erfolgreich für {worldName} vorregistriert!",
+  "@worldPreRegisterSuccessful": {
+    "description": "Erfolgsmeldung nach Vorregistrierung",
+    "context": "worldActions",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldPreRegisterCancelled": "Vorregistrierung für {worldName} zurückgezogen.",
+  "@worldPreRegisterCancelled": {
+    "description": "Meldung nach Stornierung der Vorregistrierung",
+    "context": "worldActions",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldLeaveDialogTitle": "Welt verlassen?",
+  "@worldLeaveDialogTitle": {
+    "description": "Titel des Dialogs zum Verlassen einer Welt",
+    "context": "worldActions"
+  },
+  "worldLeaveDialogMessage": "Möchtest du die Welt \"{worldName}\" wirklich verlassen?",
+  "@worldLeaveDialogMessage": {
+    "description": "Nachricht im Dialog zum Verlassen einer Welt",
+    "context": "worldActions",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldLeaveConfirm": "Verlassen",
+  "@worldLeaveConfirm": {
+    "description": "Bestätigungs-Button zum Verlassen einer Welt",
+    "context": "worldActions"
+  },
+  "worldLeaveSuccessful": "Du hast {worldName} verlassen.",
+  "@worldLeaveSuccessful": {
+    "description": "Erfolgsmeldung nach dem Verlassen einer Welt",
+    "context": "worldActions",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldInviteSent": "Einladung erfolgreich versendet!",
+  "@worldInviteSent": {
+    "description": "Erfolgsmeldung nach dem Versenden einer Einladung",
+    "context": "worldActions"
+  },
+  "worldPlayButton": "Spielen",
+  "@worldPlayButton": {
+    "description": "Button zum Spielen einer Welt",
+    "context": "worldActions"
+  },
+  "worldLogoutError": "Fehler beim Abmelden",
+  "@worldLogoutError": {
+    "description": "Fehlermeldung beim Abmelden",
+    "context": "worldActions"
+  },
+
+  "worldRegisterNow": "Jetzt registrieren",
+  "@worldRegisterNow": {
+    "description": "Button für Neuregistrierung",
+    "context": "worldAuth"
+  },
+  "worldAlreadyRegistered": "Bereits registriert? Anmelden",
+  "@worldAlreadyRegistered": {
+    "description": "Link für bereits registrierte User",
+    "context": "worldAuth"
+  },
+  "worldLogoutAndRegister": "Abmelden & neu registrieren",
+  "@worldLogoutAndRegister": {
+    "description": "Button zum Abmelden und Neuregistrieren",
+    "context": "worldAuth"
+  },
+  "worldBackToHome": "Zurück zur Startseite",
+  "@worldBackToHome": {
+    "description": "Button zurück zur Startseite",
+    "context": "worldAuth"
+  },
+  "worldBackToWorlds": "Zurück zu den Welten",
+  "@worldBackToWorlds": {
+    "description": "Button zurück zur Weltenliste",
+    "context": "worldAuth"
+  },
+  "worldLoginButton": "Anmelden",
+  "@worldLoginButton": {
+    "description": "Button für Anmeldung in World-Kontext",
+    "context": "worldAuth"
+  },
+  "worldRegisterButton": "Registrieren",
+  "@worldRegisterButton": {
+    "description": "Button für Registrierung in World-Kontext",
+    "context": "worldAuth"
+  },
+  "worldAcceptInviteButton": "Einladung annehmen",
+  "@worldAcceptInviteButton": {
+    "description": "Button zum Annehmen einer Einladung",
+    "context": "worldAuth"
+  },
+  "worldLogoutButton": "Abmelden",
+  "@worldLogoutButton": {
+    "description": "Button zum Abmelden in World-Kontext",
+    "context": "worldAuth"
+  },
+
+  "worldNotFoundTitle": "Welt nicht gefunden",
+  "@worldNotFoundTitle": {
+    "description": "Titel wenn Welt nicht gefunden wurde",
+    "context": "worldStates"
+  },
+  "worldNotFoundMessage": "Die angeforderte Welt existiert nicht oder ist nicht verfügbar.",
+  "@worldNotFoundMessage": {
+    "description": "Nachricht wenn Welt nicht gefunden wurde",
+    "context": "worldStates"
+  },
+  "worldLoadingError": "Fehler beim Laden",
+  "@worldLoadingError": {
+    "description": "Fehler beim Laden einer Welt",
+    "context": "worldStates"
+  },
+  "worldInformationTitle": "Information",
+  "@worldInformationTitle": {
+    "description": "Titel für Informationen über eine Welt",
+    "context": "worldStates"
+  },
+
+  "worldStartDate": "Start: {date}",
+  "@worldStartDate": {
+    "description": "Startdatum einer Welt",
+    "context": "worldInfo",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "description": "Das Startdatum"
+      }
+    }
+  },
+  "worldEndDate": "Ende: {date}",
+  "@worldEndDate": {
+    "description": "Enddatum einer Welt",
+    "context": "worldInfo",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "description": "Das Enddatum"
+      }
+    }
+  },
+  "worldDateUnknown": "Unbekannt",
+  "@worldDateUnknown": {
+    "description": "Unbekanntes Datum",
+    "context": "worldInfo"
+  },
+  "worldAboutTitle": "Über diese Welt",
+  "@worldAboutTitle": {
+    "description": "Titel für 'Über diese Welt' Sektion",
+    "context": "worldInfo"
+  },
+  "worldAboutDescription": "Dies ist eine spannende Welt voller Abenteuer und Herausforderungen. Erkunde unbekannte Gebiete, schließe Allianzen und werde zur Legende!",
+  "@worldAboutDescription": {
+    "description": "Standard-Beschreibung für eine Welt",
+    "context": "worldInfo"
+  },
+  "worldRulesTitle": "Spielregeln",
+  "@worldRulesTitle": {
+    "description": "Titel für Spielregeln-Sektion",
+    "context": "worldInfo"
+  },
+  "worldStatsTitle": "Welt-Statistiken",
+  "@worldStatsTitle": {
+    "description": "Titel für Welt-Statistiken",
+    "context": "worldInfo"
+  },
+  "worldPlayersActive": "{count} Spieler aktiv",
+  "@worldPlayersActive": {
+    "description": "Anzahl aktiver Spieler",
+    "context": "worldInfo",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Anzahl der Spieler"
+      }
+    }
+  },
+  "worldDefaultDescription": "Eine spannende Welt voller Abenteuer",
+  "@worldDefaultDescription": {
+    "description": "Standard-Beschreibung für World-Cards",
+    "context": "worldInfo"
+  },
+
+  "worldCategoryClassic": "Klassisch",
+  "@worldCategoryClassic": {
+    "description": "Kategorie-Label für Classic-Welten",
+    "context": "worldCategories"
+  },
+  "worldCategoryPvP": "Spieler vs Spieler",
+  "@worldCategoryPvP": {
+    "description": "Kategorie-Label für PvP-Welten",
+    "context": "worldCategories"
+  },
+  "worldCategoryEvent": "Event",
+  "@worldCategoryEvent": {
+    "description": "Kategorie-Label für Event-Welten",
+    "context": "worldCategories"
+  },
+  "worldCategoryExperimental": "Experimentell",
+  "@worldCategoryExperimental": {
+    "description": "Kategorie-Label für Experimental-Welten",
+    "context": "worldCategories"
+  },
+
+  "worldFiltersStatus": "Status: ",
+  "@worldFiltersStatus": {
+    "description": "Label für Status-Filter",
+    "context": "worldFilters"
+  },
+  "worldFiltersCategory": "Kategorie: ",
+  "@worldFiltersCategory": {
+    "description": "Label für Kategorie-Filter",
+    "context": "worldFilters"
+  },
+  "worldFiltersSortBy": "Sortieren nach: ",
+  "@worldFiltersSortBy": {
+    "description": "Label für Sortier-Optionen",
+    "context": "worldFilters"
+  },
+  "worldFiltersSortStartDate": "Startdatum",
+  "@worldFiltersSortStartDate": {
+    "description": "Sortier-Option: Startdatum",
+    "context": "worldFilters"
+  },
+  "worldFiltersSortName": "Name",
+  "@worldFiltersSortName": {
+    "description": "Sortier-Option: Name",
+    "context": "worldFilters"
+  },
+  "worldFiltersSortStatus": "Status",
+  "@worldFiltersSortStatus": {
+    "description": "Sortier-Option: Status",
+    "context": "worldFilters"
+  },
+  "worldFiltersSortPlayerCount": "Spieleranzahl",
+  "@worldFiltersSortPlayerCount": {
+    "description": "Sortier-Option: Spieleranzahl",
+    "context": "worldFilters"
+  },
+  "worldFiltersActiveFilters": "Aktive Filter: ",
+  "@worldFiltersActiveFilters": {
+    "description": "Label für aktive Filter",
+    "context": "worldFilters"
+  },
+  "worldFiltersResetAll": "Alle zurücksetzen",
+  "@worldFiltersResetAll": {
+    "description": "Button zum Zurücksetzen aller Filter",
+    "context": "worldFilters"
+  },
+  "worldStatusUpcoming": "Geplant",
+  "@worldStatusUpcoming": {
+    "description": "Welt Status: Geplant/Bevorstehend",
+    "context": "worldStatus"
+  },
+  "worldStatusOpen": "Offen",
+  "@worldStatusOpen": {
+    "description": "Welt Status: Offen für Beitritt",
+    "context": "worldStatus"
+  },
+  "worldStatusRunning": "Läuft",
+  "@worldStatusRunning": {
+    "description": "Welt Status: Läuft bereits",
+    "context": "worldStatus"
+  },
+  "worldStatusClosed": "Geschlossen",
+  "@worldStatusClosed": {
+    "description": "Welt Status: Geschlossen",
+    "context": "worldStatus"
+  },
+  "worldStatusArchived": "Archiviert",
+  "@worldStatusArchived": {
+    "description": "Welt Status: Archiviert",
+    "context": "worldStatus"
+  },
+  "worldJoinButton": "Beitreten",
+  "@worldJoinButton": {
+    "description": "Button zum Beitreten einer Welt",
+    "context": "worldActions"
+  },
+  "worldLeaveButton": "Verlassen",
+  "@worldLeaveButton": {
+    "description": "Button zum Verlassen einer Welt",
+    "context": "worldActions"
+  },
+  "worldInviteButton": "Einladen",
+  "@worldInviteButton": {
+    "description": "Button zum Einladen von Spielern",
+    "context": "worldActions"
+  },
+  "worldFiltersSortStartDate": "Startdatum",
+  "@worldFiltersSortStartDate": {
+    "description": "Sortieren nach Startdatum",
+    "context": "worldFilters"
+  },
+  "worldFiltersSortName": "Name",
+  "@worldFiltersSortName": {
+    "description": "Sortieren nach Name",
+    "context": "worldFilters"
+  },
+  "worldFiltersSortStatus": "Status",
+  "@worldFiltersSortStatus": {
+    "description": "Sortieren nach Status",
+    "context": "worldFilters"
+  },
+  "worldFiltersSortPlayerCount": "Spieleranzahl",
+  "@worldFiltersSortPlayerCount": {
+    "description": "Sortieren nach Spieleranzahl",
+    "context": "worldFilters"
+  },
+  "worldPreRegisterButton": "Vorregistrieren",
+  "@worldPreRegisterButton": {
+    "description": "Button zur Vorregistrierung für eine Welt",
+    "context": "worldActions"
+  },
+  "worldPlayButton": "Spielen",
+  "@worldPlayButton": {
+    "description": "Button zum Spielen in einer Welt",
+    "context": "worldActions"
+  },
+
+  "userInfoClickForDetails": "Klicken für Details",
+  "@userInfoClickForDetails": {
+    "description": "Hinweis-Text für User-Info Details",
+    "context": "userInterface"
+  },
+  "userInfoRoles": "Rollen:",
+  "@userInfoRoles": {
+    "description": "Label für Rollen-Anzeige",
+    "context": "userInterface"
+  },
+
+  "navigationJoinRequiredMessage": "Sie müssen erst der Welt beitreten, um das Dashboard zu sehen",
+  "@navigationJoinRequiredMessage": {
+    "description": "Nachricht wenn Beitritt zur Welt erforderlich ist",
+    "context": "navigation"
+  },
+  "navigationBack": "Zurück",
+  "@navigationBack": {
+    "description": "Zurück-Button in Navigation",
+    "context": "navigation"
+  },
+  "navigationWorldOverview": "Welten-Übersicht",
+  "@navigationWorldOverview": {
+    "description": "Navigations-Element für Welten-Übersicht",
+    "context": "navigation"
+  },
+  "navigationWorldDetails": "Welt-Details",
+  "@navigationWorldDetails": {
+    "description": "Navigations-Element für Welt-Details",
+    "context": "navigation"
+  },
+  "navigationDashboard": "Zum Dashboard",
+  "@navigationDashboard": {
+    "description": "Navigations-Element für Dashboard",
+    "context": "navigation"
+  },
+  "navigationDashboardRequiresJoin": "Dashboard (Beitreten erforderlich)",
+  "@navigationDashboardRequiresJoin": {
+    "description": "Dashboard-Link wenn Beitritt erforderlich",
+    "context": "navigation"
+  },
+  "navigationTitle": "Navigation",
+  "@navigationTitle": {
+    "description": "Titel des Navigations-Widgets",
+    "context": "navigation"
+  },
+  "navigationOpenMenu": "Menü öffnen",
+  "@navigationOpenMenu": {
+    "description": "Untertitel zum Öffnen des Navigations-Menüs",
+    "context": "navigation"
+  },
+  "navigationTooltipJoinRequired": "Sie müssen der Welt beitreten, um das Dashboard zu sehen",
+  "@navigationTooltipJoinRequired": {
+    "description": "Tooltip-Text für gesperrte Dashboard-Funktion",
+    "context": "navigation"
+  },
+
+  "worldJoinPreRegisterFor": "dich vorab zu registrieren für",
+  "@worldJoinPreRegisterFor": {
+    "description": "Text für Vorregistrierung in Einladung",
+    "context": "worldJoin"
+  },
+  "worldJoinToJoin": "beizutreten",
+  "@worldJoinToJoin": {
+    "description": "Text für Beitritt in Einladung",
+    "context": "worldJoin"
+  },
+  "worldJoinInvitedBy": "Du wurdest von {inviter} eingeladen, der Welt \"{worldName}\" {action}.{validity}",
+  "@worldJoinInvitedBy": {
+    "description": "Basis-Text für Einladung",
+    "context": "worldJoin",
+    "placeholders": {
+      "inviter": {
+        "type": "String",
+        "description": "Name des Einladenden"
+      },
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      },
+      "action": {
+        "type": "String",
+        "description": "Aktion (registrieren/beitreten)"
+      },
+      "validity": {
+        "type": "String",
+        "description": "Gültigkeit der Einladung"
+      }
+    }
+  },
+  "worldJoinValidUntil": "\n\n\u23f0 Gültig bis: {date}",
+  "@worldJoinValidUntil": {
+    "description": "Gültigkeitsdatum der Einladung",
+    "context": "worldJoin",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "description": "Datum und Uhrzeit"
+      }
+    }
+  },
+  "worldJoinAlreadyAccepted": "\n\n✅ Diese Einladung wurde bereits akzeptiert.",
+  "@worldJoinAlreadyAccepted": {
+    "description": "Nachricht wenn Einladung bereits akzeptiert",
+    "context": "worldJoin"
+  },
+  "worldJoinExpired": "\n\n❌ Diese Einladung ist am {date} abgelaufen.",
+  "@worldJoinExpired": {
+    "description": "Nachricht wenn Einladung abgelaufen",
+    "context": "worldJoin",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "description": "Ablaufdatum"
+      }
+    }
+  },
+  "worldJoinMustRegisterWith": "Du musst dich mit der E-Mail-Adresse {email} registrieren.",
+  "@worldJoinMustRegisterWith": {
+    "description": "Nachricht für Registrierung mit spezifischer E-Mail",
+    "context": "worldJoin",
+    "placeholders": {
+      "email": {
+        "type": "String",
+        "description": "E-Mail-Adresse"
+      }
+    }
+  },
+  "worldJoinAccountExistsLogin": "Dein Account mit {email} ist bereits registriert. Bitte melde dich an.",
+  "@worldJoinAccountExistsLogin": {
+    "description": "Nachricht wenn Account existiert",
+    "context": "worldJoin",
+    "placeholders": {
+      "email": {
+        "type": "String",
+        "description": "E-Mail-Adresse"
+      }
+    }
+  },
+  "worldJoinWrongEmail": "Diese Einladung ist für {inviteEmail} bestimmt, aber du bist als {currentEmail} angemeldet.",
+  "@worldJoinWrongEmail": {
+    "description": "Nachricht wenn falsche E-Mail angemeldet",
+    "context": "worldJoin",
+    "placeholders": {
+      "inviteEmail": {
+        "type": "String",
+        "description": "Einladungs-E-Mail"
+      },
+      "currentEmail": {
+        "type": "String",
+        "description": "Aktuell angemeldete E-Mail"
+      }
+    }
+  },
+  "worldJoinCorrectEmailCanAccept": "Du bist mit der richtigen E-Mail-Adresse angemeldet und kannst die Einladung jetzt annehmen.",
+  "@worldJoinCorrectEmailCanAccept": {
+    "description": "Nachricht wenn richtige E-Mail angemeldet",
+    "context": "worldJoin"
+  },
+  "worldJoinUnknownStatus": "Unbekannter Status: {status}",
+  "@worldJoinUnknownStatus": {
+    "description": "Nachricht für unbekannten Status",
+    "context": "worldJoin",
+    "placeholders": {
+      "status": {
+        "type": "String",
+        "description": "Status-Wert"
+      }
+    }
+  },
+
+  "worldJoinWelcome": "Willkommen in der Welt \"{worldName}\"! Das Invite wurde automatisch akzeptiert.",
+  "@worldJoinWelcome": {
+    "description": "Willkommensnachricht nach automatischer Invite-Akzeptierung",
+    "context": "worldJoin",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldJoinAlreadyMember": "Du bist bereits Mitglied dieser Welt \"{worldName}\"!",
+  "@worldJoinAlreadyMember": {
+    "description": "Nachricht wenn bereits Mitglied",
+    "context": "worldJoin",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldJoinCanJoinNow": "Du kannst nun der Welt beitreten.",
+  "@worldJoinCanJoinNow": {
+    "description": "Nachricht dass Beitritt möglich ist",
+    "context": "worldJoin"
+  },
+  "worldJoinInviteAcceptedSuccess": "Einladung akzeptiert! Willkommen in der Welt \"{worldName}\"!",
+  "@worldJoinInviteAcceptedSuccess": {
+    "description": "Erfolgsnachricht nach Invite-Akzeptierung",
+    "context": "worldJoin",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldJoinSuccess": "Erfolgreich der Welt \"{worldName}\" beigetreten!",
+  "@worldJoinSuccess": {
+    "description": "Erfolgsnachricht nach Welt-Beitritt",
+    "context": "worldJoin",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldJoinFailed": "Beitritt fehlgeschlagen. Versuche es erneut.",
+  "@worldJoinFailed": {
+    "description": "Fehlernachricht bei Beitritts-Fehler",
+    "context": "worldJoin"
+  },
+  "worldJoinInviteAlreadyAcceptedError": "Diese Einladung wurde bereits akzeptiert.",
+  "@worldJoinInviteAlreadyAcceptedError": {
+    "description": "Fehlernachricht wenn Einladung bereits akzeptiert",
+    "context": "worldJoin"
+  },
+  "worldJoinInviteNotForYourEmail": "Diese Einladung ist nicht für deine E-Mail-Adresse bestimmt.",
+  "@worldJoinInviteNotForYourEmail": {
+    "description": "Fehlernachricht wenn Einladung nicht für E-Mail bestimmt",
+    "context": "worldJoin"
+  },
+  "worldJoinInviteExpiredError": "Diese Einladung ist abgelaufen.",
+  "@worldJoinInviteExpiredError": {
+    "description": "Fehlernachricht wenn Einladung abgelaufen",
+    "context": "worldJoin"
+  },
+  "worldJoinPreRegistrationError": "Fehler bei der Vorregistrierung",
+  "@worldJoinPreRegistrationError": {
+    "description": "Fehlernachricht bei Vorregistrierungs-Fehler",
+    "context": "worldJoin"
+  },
+  "worldJoinCancelPreRegistrationError": "Fehler beim Zurückziehen der Vorregistrierung",
+  "@worldJoinCancelPreRegistrationError": {
+    "description": "Fehlernachricht beim Zurückziehen der Vorregistrierung",
+    "context": "worldJoin"
+  },
+  "worldJoinLeaveDialogTitle": "Welt verlassen?",
+  "@worldJoinLeaveDialogTitle": {
+    "description": "Titel des Verlassen-Dialogs",
+    "context": "worldJoin"
+  },
+  "worldJoinLeaveDialogContent": "Möchtest du die Welt \"{worldName}\" wirklich verlassen?",
+  "@worldJoinLeaveDialogContent": {
+    "description": "Inhalt des Verlassen-Dialogs",
+    "context": "worldJoin",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "worldJoinUnknownWorld": "Unbekannt",
+  "@worldJoinUnknownWorld": {
+    "description": "Text für unbekannte Welt",
+    "context": "worldJoin"
+  },
+  "worldJoinBackToWorldsButton": "Zurück zu den Welten",
+  "@worldJoinBackToWorldsButton": {
+    "description": "Button-Text zurück zu Welten-Liste",
+    "context": "worldJoin"
+  },
+  "worldJoinCancelPreRegistrationButton": "Vorregistrierung zurückziehen",
+  "@worldJoinCancelPreRegistrationButton": {
+    "description": "Button-Text zum Zurückziehen der Vorregistrierung",
+    "context": "worldJoin"
+  },
+  "worldJoinCancelPreRegistrationInProgress": "Wird zurückgezogen...",
+  "@worldJoinCancelPreRegistrationInProgress": {
+    "description": "Button-Text während Zurückziehen der Vorregistrierung",
+    "context": "worldJoin"
+  },
+
+  "worldJoinGenericError": "Ein Fehler ist aufgetreten: {error}",
+  "@worldJoinGenericError": {
+    "description": "Allgemeine Fehlernachricht",
+    "context": "worldJoin",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Fehlermeldung"
+      }
+    }
+  },
+  "worldJoinUnknownError": "Unbekannter Fehler",
+  "@worldJoinUnknownError": {
+    "description": "Text für unbekannte Fehler",
+    "context": "worldJoin"
+  },
+  "worldJoinNoInformationAvailable": "Keine Information verfügbar",
+  "@worldJoinNoInformationAvailable": {
+    "description": "Text wenn keine Information verfügbar",
+    "context": "worldJoin"
+  },
+  "worldJoinUnknownWorldName": "Unbekannte Welt",
+  "@worldJoinUnknownWorldName": {
+    "description": "Text für unbekannte Welt",
+    "context": "worldJoin"
+  },
+  "worldJoinUnknownUser": "Unbekannt",
+  "@worldJoinUnknownUser": {
+    "description": "Text für unbekannten Benutzer",
+    "context": "worldJoin"
+  },
+
+  "worldJoinPreRegisterButton": "Vorregistrieren",
+  "@worldJoinPreRegisterButton": {
+    "description": "Button-Text für Vorregistrierung",
+    "context": "worldJoin"
+  },
+  "worldJoinPreRegisterInProgress": "Wird registriert...",
+  "@worldJoinPreRegisterInProgress": {
+    "description": "Button-Text während Vorregistrierung",
+    "context": "worldJoin"
+  },
+  "worldJoinLeaveInProgress": "Wird verlassen...",
+  "@worldJoinLeaveInProgress": {
+    "description": "Button-Text während Verlassen",
+    "context": "worldJoin"
+  },
+  "worldJoinNowButton": "Jetzt beitreten",
+  "@worldJoinNowButton": {
+    "description": "Button-Text für sofortigen Beitritt",
+    "context": "worldJoin"
+  },
+  "worldJoinInProgress": "Wird beigetreten...",
+  "@worldJoinInProgress": {
+    "description": "Button-Text während Beitritt",
+    "context": "worldJoin"
+  },
+
+  "worldJoinWorldClosedStatus": "Diese Welt ist derzeit geschlossen",
+  "@worldJoinWorldClosedStatus": {
+    "description": "Status-Text für geschlossene Welt",
+    "context": "worldJoin"
+  },
+  "worldJoinWorldArchivedStatus": "Diese Welt ist archiviert",
+  "@worldJoinWorldArchivedStatus": {
+    "description": "Status-Text für archivierte Welt",
+    "context": "worldJoin"
+  },
+
+  "worldJoinErrorLoadingWorldData": "Fehler beim Laden der Welt-Daten: {error}",
+  "@worldJoinErrorLoadingWorldData": {
+    "description": "Fehlernachricht beim Laden der Welt-Daten",
+    "context": "worldJoin",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Fehlermeldung"
+      }
+    }
+  },
+  "worldJoinNoWorldIdFound": "Keine Welt-ID gefunden",
+  "@worldJoinNoWorldIdFound": {
+    "description": "Fehlernachricht wenn keine Welt-ID gefunden",
+    "context": "worldJoin"
+  },
+  "worldJoinNoInviteTokenFound": "Kein Einladungstoken gefunden",
+  "@worldJoinNoInviteTokenFound": {
+    "description": "Fehlernachricht wenn kein Einladungstoken gefunden",
+    "context": "worldJoin"
+  },
+  "worldJoinInvalidOrExpiredInviteLink": "Ungültiger oder abgelaufener Einladungslink",
+  "@worldJoinInvalidOrExpiredInviteLink": {
+    "description": "Fehlernachricht für ungültigen Einladungslink",
+    "context": "worldJoin"
+  },
+
+  "worldJoinLogoutForInvite": "Bitte melde dich ab und registriere dich mit der richtigen E-Mail-Adresse.",
+  "@worldJoinLogoutForInvite": {
+    "description": "Anweisung zum Abmelden für Einladung",
+    "context": "worldJoin"
   }
 } 

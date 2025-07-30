@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 
 class WorldListLoadingState extends StatelessWidget {
   const WorldListLoadingState({super.key});
@@ -15,7 +16,7 @@ class WorldListLoadingState extends StatelessWidget {
           ),
           SizedBox(height: 16),
           Text(
-            'Welten werden geladen...',
+            AppLocalizations.of(context)!.loadingText,
             style: TextStyle(
               color: Colors.grey,
               fontSize: 16,
@@ -76,7 +77,7 @@ class WorldListEmptyState extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: onRefresh,
               icon: const Icon(Icons.refresh, size: 18),
-              label: const Text('Erneut versuchen'),
+              label: Text(AppLocalizations.of(context)!.buttonRetry),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
                 foregroundColor: Colors.white,
@@ -128,7 +129,7 @@ class WorldListErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Fehler beim Laden',
+              AppLocalizations.of(context)!.worldLoadingError,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -150,7 +151,7 @@ class WorldListErrorState extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh, size: 18),
-                label: const Text('Erneut versuchen'),
+                label: Text(AppLocalizations.of(context)!.buttonRetry),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryColor,
                   foregroundColor: Colors.white,

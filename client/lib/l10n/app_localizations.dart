@@ -469,19 +469,19 @@ abstract class AppLocalizations {
   /// **'Game Worlds'**
   String get worldsTitle;
 
-  /// Button text to join a world
+  /// Button to join a world
   ///
   /// In en, this message translates to:
-  /// **'Join World'**
+  /// **'Join'**
   String get worldJoinButton;
 
-  /// Button text to leave a world
+  /// Button to leave a world
   ///
   /// In en, this message translates to:
-  /// **'Leave World'**
+  /// **'Leave'**
   String get worldLeaveButton;
 
-  /// Button text to pre-register for upcoming world
+  /// Button to pre-register for a world
   ///
   /// In en, this message translates to:
   /// **'Pre-Register'**
@@ -493,25 +493,25 @@ abstract class AppLocalizations {
   /// **'Cancel Pre-Registration'**
   String get worldCancelPreRegisterButton;
 
-  /// Status text for upcoming worlds
+  /// World Status: Upcoming/Planned
   ///
   /// In en, this message translates to:
   /// **'Upcoming'**
   String get worldStatusUpcoming;
 
-  /// Status text for open worlds
+  /// World Status: Open for joining
   ///
   /// In en, this message translates to:
   /// **'Open'**
   String get worldStatusOpen;
 
-  /// Status text for running worlds
+  /// World Status: Currently running
   ///
   /// In en, this message translates to:
   /// **'Running'**
   String get worldStatusRunning;
 
-  /// Status text for closed worlds
+  /// World Status: Closed
   ///
   /// In en, this message translates to:
   /// **'Closed'**
@@ -804,6 +804,697 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Support'**
   String get footerSupport;
+
+  /// Main title on world list page
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your world'**
+  String get worldListTitle;
+
+  /// Subtitle on world list page
+  ///
+  /// In en, this message translates to:
+  /// **'Select your world'**
+  String get worldListSubtitle;
+
+  /// Error message when loading worlds
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading worlds: {error}'**
+  String worldListLoadingError(String error);
+
+  /// Title for error when loading worlds
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading worlds'**
+  String get worldListErrorTitle;
+
+  /// Unknown error when loading worlds
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error'**
+  String get worldListErrorUnknown;
+
+  /// Title when no worlds are available
+  ///
+  /// In en, this message translates to:
+  /// **'No worlds found'**
+  String get worldListEmptyTitle;
+
+  /// Message when no worlds were found
+  ///
+  /// In en, this message translates to:
+  /// **'Try different filter settings.'**
+  String get worldListEmptyMessage;
+
+  /// Button to refresh world list
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get worldListRefreshButton;
+
+  /// Button to create a new world
+  ///
+  /// In en, this message translates to:
+  /// **'New World'**
+  String get worldListCreateButton;
+
+  /// Loading text for world list
+  ///
+  /// In en, this message translates to:
+  /// **'Loading worlds...'**
+  String get worldListLoadingText;
+
+  /// Success message after joining a world
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully joined {worldName}!'**
+  String worldJoinSuccessful(String worldName);
+
+  /// Detailed success message after joining a world
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully joined world \"{worldName}\"!'**
+  String worldJoinSuccessfulDetailed(String worldName);
+
+  /// Message when user is already member of a world
+  ///
+  /// In en, this message translates to:
+  /// **'You are already a member of world \"{worldName}\"!'**
+  String worldAlreadyMember(String worldName);
+
+  /// Success message after pre-registration
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully pre-registered for {worldName}!'**
+  String worldPreRegisterSuccessful(String worldName);
+
+  /// Message after cancelling pre-registration
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-registration for {worldName} cancelled.'**
+  String worldPreRegisterCancelled(String worldName);
+
+  /// Title of dialog for leaving a world
+  ///
+  /// In en, this message translates to:
+  /// **'Leave world?'**
+  String get worldLeaveDialogTitle;
+
+  /// Message in dialog for leaving a world
+  ///
+  /// In en, this message translates to:
+  /// **'Do you really want to leave world \"{worldName}\"?'**
+  String worldLeaveDialogMessage(String worldName);
+
+  /// Confirmation button for leaving a world
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get worldLeaveConfirm;
+
+  /// Success message after leaving a world
+  ///
+  /// In en, this message translates to:
+  /// **'You have left {worldName}.'**
+  String worldLeaveSuccessful(String worldName);
+
+  /// Success message after sending an invitation
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent successfully!'**
+  String get worldInviteSent;
+
+  /// Button to play in a world
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get worldPlayButton;
+
+  /// Error message when logging out
+  ///
+  /// In en, this message translates to:
+  /// **'Error logging out'**
+  String get worldLogoutError;
+
+  /// Button for new registration
+  ///
+  /// In en, this message translates to:
+  /// **'Register now'**
+  String get worldRegisterNow;
+
+  /// Link for already registered users
+  ///
+  /// In en, this message translates to:
+  /// **'Already registered? Sign in'**
+  String get worldAlreadyRegistered;
+
+  /// Button to sign out and register again
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out & register again'**
+  String get worldLogoutAndRegister;
+
+  /// Button back to homepage
+  ///
+  /// In en, this message translates to:
+  /// **'Back to homepage'**
+  String get worldBackToHome;
+
+  /// Button back to world list
+  ///
+  /// In en, this message translates to:
+  /// **'Back to worlds'**
+  String get worldBackToWorlds;
+
+  /// Button for login in world context
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get worldLoginButton;
+
+  /// Button for registration in world context
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get worldRegisterButton;
+
+  /// Button to accept an invitation
+  ///
+  /// In en, this message translates to:
+  /// **'Accept invitation'**
+  String get worldAcceptInviteButton;
+
+  /// Button to sign out in world context
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get worldLogoutButton;
+
+  /// Title when world was not found
+  ///
+  /// In en, this message translates to:
+  /// **'World not found'**
+  String get worldNotFoundTitle;
+
+  /// Message when world was not found
+  ///
+  /// In en, this message translates to:
+  /// **'The requested world does not exist or is not available.'**
+  String get worldNotFoundMessage;
+
+  /// Error when loading a world
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading'**
+  String get worldLoadingError;
+
+  /// Title for information about a world
+  ///
+  /// In en, this message translates to:
+  /// **'Information'**
+  String get worldInformationTitle;
+
+  /// Start date of a world
+  ///
+  /// In en, this message translates to:
+  /// **'Start: {date}'**
+  String worldStartDate(String date);
+
+  /// End date of a world
+  ///
+  /// In en, this message translates to:
+  /// **'End: {date}'**
+  String worldEndDate(String date);
+
+  /// Unknown date
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get worldDateUnknown;
+
+  /// Title for 'About this world' section
+  ///
+  /// In en, this message translates to:
+  /// **'About this world'**
+  String get worldAboutTitle;
+
+  /// Default description for a world
+  ///
+  /// In en, this message translates to:
+  /// **'This is an exciting world full of adventures and challenges. Explore unknown territories, form alliances and become a legend!'**
+  String get worldAboutDescription;
+
+  /// Title for game rules section
+  ///
+  /// In en, this message translates to:
+  /// **'Game rules'**
+  String get worldRulesTitle;
+
+  /// Title for world statistics
+  ///
+  /// In en, this message translates to:
+  /// **'World statistics'**
+  String get worldStatsTitle;
+
+  /// Number of active players
+  ///
+  /// In en, this message translates to:
+  /// **'{count} players active'**
+  String worldPlayersActive(int count);
+
+  /// Default description for world cards
+  ///
+  /// In en, this message translates to:
+  /// **'An exciting world full of adventures'**
+  String get worldDefaultDescription;
+
+  /// Category label for Classic worlds
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get worldCategoryClassic;
+
+  /// Category label for PvP worlds
+  ///
+  /// In en, this message translates to:
+  /// **'Player vs Player'**
+  String get worldCategoryPvP;
+
+  /// Category label for Event worlds
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get worldCategoryEvent;
+
+  /// Category label for Experimental worlds
+  ///
+  /// In en, this message translates to:
+  /// **'Experimental'**
+  String get worldCategoryExperimental;
+
+  /// Label for status filter
+  ///
+  /// In en, this message translates to:
+  /// **'Status: '**
+  String get worldFiltersStatus;
+
+  /// Label for category filter
+  ///
+  /// In en, this message translates to:
+  /// **'Category: '**
+  String get worldFiltersCategory;
+
+  /// Label for sort options
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by: '**
+  String get worldFiltersSortBy;
+
+  /// Sort by start date
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get worldFiltersSortStartDate;
+
+  /// Sort by name
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get worldFiltersSortName;
+
+  /// Sort by status
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get worldFiltersSortStatus;
+
+  /// Sort by player count
+  ///
+  /// In en, this message translates to:
+  /// **'Player Count'**
+  String get worldFiltersSortPlayerCount;
+
+  /// Label for active filters
+  ///
+  /// In en, this message translates to:
+  /// **'Active filters: '**
+  String get worldFiltersActiveFilters;
+
+  /// Button to reset all filters
+  ///
+  /// In en, this message translates to:
+  /// **'Reset all'**
+  String get worldFiltersResetAll;
+
+  /// World Status: Archived
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get worldStatusArchived;
+
+  /// Button to invite players
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get worldInviteButton;
+
+  /// Hint text for user info details
+  ///
+  /// In en, this message translates to:
+  /// **'Click for details'**
+  String get userInfoClickForDetails;
+
+  /// Label for roles display
+  ///
+  /// In en, this message translates to:
+  /// **'Roles:'**
+  String get userInfoRoles;
+
+  /// Message when joining the world is required
+  ///
+  /// In en, this message translates to:
+  /// **'You must join the world first to see the dashboard'**
+  String get navigationJoinRequiredMessage;
+
+  /// Back button in navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get navigationBack;
+
+  /// Navigation item for world overview
+  ///
+  /// In en, this message translates to:
+  /// **'World Overview'**
+  String get navigationWorldOverview;
+
+  /// Navigation item for world details
+  ///
+  /// In en, this message translates to:
+  /// **'World Details'**
+  String get navigationWorldDetails;
+
+  /// Navigation item for dashboard
+  ///
+  /// In en, this message translates to:
+  /// **'To Dashboard'**
+  String get navigationDashboard;
+
+  /// Dashboard link when join is required
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard (Join required)'**
+  String get navigationDashboardRequiresJoin;
+
+  /// Title of the navigation widget
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation'**
+  String get navigationTitle;
+
+  /// Subtitle to open the navigation menu
+  ///
+  /// In en, this message translates to:
+  /// **'Open menu'**
+  String get navigationOpenMenu;
+
+  /// Tooltip text for locked dashboard feature
+  ///
+  /// In en, this message translates to:
+  /// **'You must join the world to see the dashboard'**
+  String get navigationTooltipJoinRequired;
+
+  /// Text for pre-registration in invitation
+  ///
+  /// In en, this message translates to:
+  /// **'to pre-register for'**
+  String get worldJoinPreRegisterFor;
+
+  /// Text for joining in invitation
+  ///
+  /// In en, this message translates to:
+  /// **'to join'**
+  String get worldJoinToJoin;
+
+  /// Base text for invitation
+  ///
+  /// In en, this message translates to:
+  /// **'You have been invited by {inviter} {action} the world \"{worldName}\".{validity}'**
+  String worldJoinInvitedBy(
+      String inviter, String worldName, String action, String validity);
+
+  /// Validity date of the invitation
+  ///
+  /// In en, this message translates to:
+  /// **'\n\n⏰ Valid until: {date}'**
+  String worldJoinValidUntil(String date);
+
+  /// Message when invitation already accepted
+  ///
+  /// In en, this message translates to:
+  /// **'\n\n✅ This invitation has already been accepted.'**
+  String get worldJoinAlreadyAccepted;
+
+  /// Message when invitation expired
+  ///
+  /// In en, this message translates to:
+  /// **'\n\n❌ This invitation expired on {date}.'**
+  String worldJoinExpired(String date);
+
+  /// Message for registration with specific email
+  ///
+  /// In en, this message translates to:
+  /// **'You must register with the email address {email}.'**
+  String worldJoinMustRegisterWith(String email);
+
+  /// Message when account exists
+  ///
+  /// In en, this message translates to:
+  /// **'Your account with {email} is already registered. Please log in.'**
+  String worldJoinAccountExistsLogin(String email);
+
+  /// Message when wrong email is logged in
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation is intended for {inviteEmail}, but you are logged in as {currentEmail}.'**
+  String worldJoinWrongEmail(String inviteEmail, String currentEmail);
+
+  /// Message when correct email is logged in
+  ///
+  /// In en, this message translates to:
+  /// **'You are logged in with the correct email address and can now accept the invitation.'**
+  String get worldJoinCorrectEmailCanAccept;
+
+  /// Message for unknown status
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown status: {status}'**
+  String worldJoinUnknownStatus(String status);
+
+  /// Welcome message after automatic invite acceptance
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to the world \"{worldName}\"! The invite was automatically accepted.'**
+  String worldJoinWelcome(String worldName);
+
+  /// Message when already a member
+  ///
+  /// In en, this message translates to:
+  /// **'You are already a member of this world \"{worldName}\"!'**
+  String worldJoinAlreadyMember(String worldName);
+
+  /// Message that joining is possible
+  ///
+  /// In en, this message translates to:
+  /// **'You can now join the world.'**
+  String get worldJoinCanJoinNow;
+
+  /// Success message after invite acceptance
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation accepted! Welcome to the world \"{worldName}\"!'**
+  String worldJoinInviteAcceptedSuccess(String worldName);
+
+  /// Success message after world join
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully joined the world \"{worldName}\"!'**
+  String worldJoinSuccess(String worldName);
+
+  /// Error message on join failure
+  ///
+  /// In en, this message translates to:
+  /// **'Join failed. Please try again.'**
+  String get worldJoinFailed;
+
+  /// Error message when invitation already accepted
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation has already been accepted.'**
+  String get worldJoinInviteAlreadyAcceptedError;
+
+  /// Error message when invitation not for email
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation is not intended for your email address.'**
+  String get worldJoinInviteNotForYourEmail;
+
+  /// Error message when invitation expired
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation has expired.'**
+  String get worldJoinInviteExpiredError;
+
+  /// Error message on pre-registration failure
+  ///
+  /// In en, this message translates to:
+  /// **'Error during pre-registration'**
+  String get worldJoinPreRegistrationError;
+
+  /// Error message when canceling pre-registration
+  ///
+  /// In en, this message translates to:
+  /// **'Error canceling pre-registration'**
+  String get worldJoinCancelPreRegistrationError;
+
+  /// Title of leave dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Leave world?'**
+  String get worldJoinLeaveDialogTitle;
+
+  /// Content of leave dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Do you really want to leave the world \"{worldName}\"?'**
+  String worldJoinLeaveDialogContent(String worldName);
+
+  /// Text for unknown world
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get worldJoinUnknownWorld;
+
+  /// Button text back to world list
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Worlds'**
+  String get worldJoinBackToWorldsButton;
+
+  /// Button text to cancel pre-registration
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Pre-registration'**
+  String get worldJoinCancelPreRegistrationButton;
+
+  /// Button text while canceling pre-registration
+  ///
+  /// In en, this message translates to:
+  /// **'Canceling...'**
+  String get worldJoinCancelPreRegistrationInProgress;
+
+  /// Generic error message
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred: {error}'**
+  String worldJoinGenericError(String error);
+
+  /// Text for unknown errors
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error'**
+  String get worldJoinUnknownError;
+
+  /// Text when no information is available
+  ///
+  /// In en, this message translates to:
+  /// **'No information available'**
+  String get worldJoinNoInformationAvailable;
+
+  /// Text for unknown world
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown World'**
+  String get worldJoinUnknownWorldName;
+
+  /// Text for unknown user
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get worldJoinUnknownUser;
+
+  /// Button text for pre-registration
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-register'**
+  String get worldJoinPreRegisterButton;
+
+  /// Button text during pre-registration
+  ///
+  /// In en, this message translates to:
+  /// **'Registering...'**
+  String get worldJoinPreRegisterInProgress;
+
+  /// Button text during leaving
+  ///
+  /// In en, this message translates to:
+  /// **'Leaving...'**
+  String get worldJoinLeaveInProgress;
+
+  /// Button text for immediate join
+  ///
+  /// In en, this message translates to:
+  /// **'Join Now'**
+  String get worldJoinNowButton;
+
+  /// Button text during join
+  ///
+  /// In en, this message translates to:
+  /// **'Joining...'**
+  String get worldJoinInProgress;
+
+  /// Status text for closed world
+  ///
+  /// In en, this message translates to:
+  /// **'This world is currently closed'**
+  String get worldJoinWorldClosedStatus;
+
+  /// Status text for archived world
+  ///
+  /// In en, this message translates to:
+  /// **'This world is archived'**
+  String get worldJoinWorldArchivedStatus;
+
+  /// Error message when loading world data
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading world data: {error}'**
+  String worldJoinErrorLoadingWorldData(String error);
+
+  /// Error message when no world ID found
+  ///
+  /// In en, this message translates to:
+  /// **'No world ID found'**
+  String get worldJoinNoWorldIdFound;
+
+  /// Error message when no invitation token found
+  ///
+  /// In en, this message translates to:
+  /// **'No invitation token found'**
+  String get worldJoinNoInviteTokenFound;
+
+  /// Error message for invalid invitation link
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid or expired invitation link'**
+  String get worldJoinInvalidOrExpiredInviteLink;
+
+  /// Instruction to log out for invitation
+  ///
+  /// In en, this message translates to:
+  /// **'Please log out and register with the correct email address.'**
+  String get worldJoinLogoutForInvite;
 }
 
 class _AppLocalizationsDelegate

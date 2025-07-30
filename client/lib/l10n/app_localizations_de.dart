@@ -210,10 +210,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get worldsTitle => 'Spielwelten';
 
   @override
-  String get worldJoinButton => 'Welt beitreten';
+  String get worldJoinButton => 'Beitreten';
 
   @override
-  String get worldLeaveButton => 'Welt verlassen';
+  String get worldLeaveButton => 'Verlassen';
 
   @override
   String get worldPreRegisterButton => 'Vorregistrieren';
@@ -222,13 +222,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get worldCancelPreRegisterButton => 'Vorregistrierung zurückziehen';
 
   @override
-  String get worldStatusUpcoming => 'Kommend';
+  String get worldStatusUpcoming => 'Geplant';
 
   @override
   String get worldStatusOpen => 'Offen';
 
   @override
-  String get worldStatusRunning => 'Laufend';
+  String get worldStatusRunning => 'Läuft';
 
   @override
   String get worldStatusClosed => 'Geschlossen';
@@ -390,4 +390,414 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get footerSupport => 'Support';
+
+  @override
+  String get worldListTitle => 'Wähle deine Welt';
+
+  @override
+  String get worldListSubtitle => 'Wähle deine Welt aus';
+
+  @override
+  String worldListLoadingError(String error) {
+    return 'Fehler beim Laden der Welten: $error';
+  }
+
+  @override
+  String get worldListErrorTitle => 'Fehler beim Laden der Welten';
+
+  @override
+  String get worldListErrorUnknown => 'Unbekannter Fehler';
+
+  @override
+  String get worldListEmptyTitle => 'Keine Welten gefunden';
+
+  @override
+  String get worldListEmptyMessage => 'Versuche andere Filter-Einstellungen.';
+
+  @override
+  String get worldListRefreshButton => 'Aktualisieren';
+
+  @override
+  String get worldListCreateButton => 'Neue Welt';
+
+  @override
+  String get worldListLoadingText => 'Welten werden geladen...';
+
+  @override
+  String worldJoinSuccessful(String worldName) {
+    return 'Erfolgreich zu $worldName beigetreten!';
+  }
+
+  @override
+  String worldJoinSuccessfulDetailed(String worldName) {
+    return 'Erfolgreich der Welt \"$worldName\" beigetreten!';
+  }
+
+  @override
+  String worldAlreadyMember(String worldName) {
+    return 'Du bist bereits Mitglied der Welt \"$worldName\"!';
+  }
+
+  @override
+  String worldPreRegisterSuccessful(String worldName) {
+    return 'Erfolgreich für $worldName vorregistriert!';
+  }
+
+  @override
+  String worldPreRegisterCancelled(String worldName) {
+    return 'Vorregistrierung für $worldName zurückgezogen.';
+  }
+
+  @override
+  String get worldLeaveDialogTitle => 'Welt verlassen?';
+
+  @override
+  String worldLeaveDialogMessage(String worldName) {
+    return 'Möchtest du die Welt \"$worldName\" wirklich verlassen?';
+  }
+
+  @override
+  String get worldLeaveConfirm => 'Verlassen';
+
+  @override
+  String worldLeaveSuccessful(String worldName) {
+    return 'Du hast $worldName verlassen.';
+  }
+
+  @override
+  String get worldInviteSent => 'Einladung erfolgreich versendet!';
+
+  @override
+  String get worldPlayButton => 'Spielen';
+
+  @override
+  String get worldLogoutError => 'Fehler beim Abmelden';
+
+  @override
+  String get worldRegisterNow => 'Jetzt registrieren';
+
+  @override
+  String get worldAlreadyRegistered => 'Bereits registriert? Anmelden';
+
+  @override
+  String get worldLogoutAndRegister => 'Abmelden & neu registrieren';
+
+  @override
+  String get worldBackToHome => 'Zurück zur Startseite';
+
+  @override
+  String get worldBackToWorlds => 'Zurück zu den Welten';
+
+  @override
+  String get worldLoginButton => 'Anmelden';
+
+  @override
+  String get worldRegisterButton => 'Registrieren';
+
+  @override
+  String get worldAcceptInviteButton => 'Einladung annehmen';
+
+  @override
+  String get worldLogoutButton => 'Abmelden';
+
+  @override
+  String get worldNotFoundTitle => 'Welt nicht gefunden';
+
+  @override
+  String get worldNotFoundMessage =>
+      'Die angeforderte Welt existiert nicht oder ist nicht verfügbar.';
+
+  @override
+  String get worldLoadingError => 'Fehler beim Laden';
+
+  @override
+  String get worldInformationTitle => 'Information';
+
+  @override
+  String worldStartDate(String date) {
+    return 'Start: $date';
+  }
+
+  @override
+  String worldEndDate(String date) {
+    return 'Ende: $date';
+  }
+
+  @override
+  String get worldDateUnknown => 'Unbekannt';
+
+  @override
+  String get worldAboutTitle => 'Über diese Welt';
+
+  @override
+  String get worldAboutDescription =>
+      'Dies ist eine spannende Welt voller Abenteuer und Herausforderungen. Erkunde unbekannte Gebiete, schließe Allianzen und werde zur Legende!';
+
+  @override
+  String get worldRulesTitle => 'Spielregeln';
+
+  @override
+  String get worldStatsTitle => 'Welt-Statistiken';
+
+  @override
+  String worldPlayersActive(int count) {
+    return '$count Spieler aktiv';
+  }
+
+  @override
+  String get worldDefaultDescription => 'Eine spannende Welt voller Abenteuer';
+
+  @override
+  String get worldCategoryClassic => 'Klassisch';
+
+  @override
+  String get worldCategoryPvP => 'Spieler vs Spieler';
+
+  @override
+  String get worldCategoryEvent => 'Event';
+
+  @override
+  String get worldCategoryExperimental => 'Experimentell';
+
+  @override
+  String get worldFiltersStatus => 'Status: ';
+
+  @override
+  String get worldFiltersCategory => 'Kategorie: ';
+
+  @override
+  String get worldFiltersSortBy => 'Sortieren nach: ';
+
+  @override
+  String get worldFiltersSortStartDate => 'Startdatum';
+
+  @override
+  String get worldFiltersSortName => 'Name';
+
+  @override
+  String get worldFiltersSortStatus => 'Status';
+
+  @override
+  String get worldFiltersSortPlayerCount => 'Spieleranzahl';
+
+  @override
+  String get worldFiltersActiveFilters => 'Aktive Filter: ';
+
+  @override
+  String get worldFiltersResetAll => 'Alle zurücksetzen';
+
+  @override
+  String get worldStatusArchived => 'Archiviert';
+
+  @override
+  String get worldInviteButton => 'Einladen';
+
+  @override
+  String get userInfoClickForDetails => 'Klicken für Details';
+
+  @override
+  String get userInfoRoles => 'Rollen:';
+
+  @override
+  String get navigationJoinRequiredMessage =>
+      'Sie müssen erst der Welt beitreten, um das Dashboard zu sehen';
+
+  @override
+  String get navigationBack => 'Zurück';
+
+  @override
+  String get navigationWorldOverview => 'Welten-Übersicht';
+
+  @override
+  String get navigationWorldDetails => 'Welt-Details';
+
+  @override
+  String get navigationDashboard => 'Zum Dashboard';
+
+  @override
+  String get navigationDashboardRequiresJoin =>
+      'Dashboard (Beitreten erforderlich)';
+
+  @override
+  String get navigationTitle => 'Navigation';
+
+  @override
+  String get navigationOpenMenu => 'Menü öffnen';
+
+  @override
+  String get navigationTooltipJoinRequired =>
+      'Sie müssen der Welt beitreten, um das Dashboard zu sehen';
+
+  @override
+  String get worldJoinPreRegisterFor => 'dich vorab zu registrieren für';
+
+  @override
+  String get worldJoinToJoin => 'beizutreten';
+
+  @override
+  String worldJoinInvitedBy(
+      String inviter, String worldName, String action, String validity) {
+    return 'Du wurdest von $inviter eingeladen, der Welt \"$worldName\" $action.$validity';
+  }
+
+  @override
+  String worldJoinValidUntil(String date) {
+    return '\n\n⏰ Gültig bis: $date';
+  }
+
+  @override
+  String get worldJoinAlreadyAccepted =>
+      '\n\n✅ Diese Einladung wurde bereits akzeptiert.';
+
+  @override
+  String worldJoinExpired(String date) {
+    return '\n\n❌ Diese Einladung ist am $date abgelaufen.';
+  }
+
+  @override
+  String worldJoinMustRegisterWith(String email) {
+    return 'Du musst dich mit der E-Mail-Adresse $email registrieren.';
+  }
+
+  @override
+  String worldJoinAccountExistsLogin(String email) {
+    return 'Dein Account mit $email ist bereits registriert. Bitte melde dich an.';
+  }
+
+  @override
+  String worldJoinWrongEmail(String inviteEmail, String currentEmail) {
+    return 'Diese Einladung ist für $inviteEmail bestimmt, aber du bist als $currentEmail angemeldet.';
+  }
+
+  @override
+  String get worldJoinCorrectEmailCanAccept =>
+      'Du bist mit der richtigen E-Mail-Adresse angemeldet und kannst die Einladung jetzt annehmen.';
+
+  @override
+  String worldJoinUnknownStatus(String status) {
+    return 'Unbekannter Status: $status';
+  }
+
+  @override
+  String worldJoinWelcome(String worldName) {
+    return 'Willkommen in der Welt \"$worldName\"! Das Invite wurde automatisch akzeptiert.';
+  }
+
+  @override
+  String worldJoinAlreadyMember(String worldName) {
+    return 'Du bist bereits Mitglied dieser Welt \"$worldName\"!';
+  }
+
+  @override
+  String get worldJoinCanJoinNow => 'Du kannst nun der Welt beitreten.';
+
+  @override
+  String worldJoinInviteAcceptedSuccess(String worldName) {
+    return 'Einladung akzeptiert! Willkommen in der Welt \"$worldName\"!';
+  }
+
+  @override
+  String worldJoinSuccess(String worldName) {
+    return 'Erfolgreich der Welt \"$worldName\" beigetreten!';
+  }
+
+  @override
+  String get worldJoinFailed => 'Beitritt fehlgeschlagen. Versuche es erneut.';
+
+  @override
+  String get worldJoinInviteAlreadyAcceptedError =>
+      'Diese Einladung wurde bereits akzeptiert.';
+
+  @override
+  String get worldJoinInviteNotForYourEmail =>
+      'Diese Einladung ist nicht für deine E-Mail-Adresse bestimmt.';
+
+  @override
+  String get worldJoinInviteExpiredError => 'Diese Einladung ist abgelaufen.';
+
+  @override
+  String get worldJoinPreRegistrationError => 'Fehler bei der Vorregistrierung';
+
+  @override
+  String get worldJoinCancelPreRegistrationError =>
+      'Fehler beim Zurückziehen der Vorregistrierung';
+
+  @override
+  String get worldJoinLeaveDialogTitle => 'Welt verlassen?';
+
+  @override
+  String worldJoinLeaveDialogContent(String worldName) {
+    return 'Möchtest du die Welt \"$worldName\" wirklich verlassen?';
+  }
+
+  @override
+  String get worldJoinUnknownWorld => 'Unbekannt';
+
+  @override
+  String get worldJoinBackToWorldsButton => 'Zurück zu den Welten';
+
+  @override
+  String get worldJoinCancelPreRegistrationButton =>
+      'Vorregistrierung zurückziehen';
+
+  @override
+  String get worldJoinCancelPreRegistrationInProgress =>
+      'Wird zurückgezogen...';
+
+  @override
+  String worldJoinGenericError(String error) {
+    return 'Ein Fehler ist aufgetreten: $error';
+  }
+
+  @override
+  String get worldJoinUnknownError => 'Unbekannter Fehler';
+
+  @override
+  String get worldJoinNoInformationAvailable => 'Keine Information verfügbar';
+
+  @override
+  String get worldJoinUnknownWorldName => 'Unbekannte Welt';
+
+  @override
+  String get worldJoinUnknownUser => 'Unbekannt';
+
+  @override
+  String get worldJoinPreRegisterButton => 'Vorregistrieren';
+
+  @override
+  String get worldJoinPreRegisterInProgress => 'Wird registriert...';
+
+  @override
+  String get worldJoinLeaveInProgress => 'Wird verlassen...';
+
+  @override
+  String get worldJoinNowButton => 'Jetzt beitreten';
+
+  @override
+  String get worldJoinInProgress => 'Wird beigetreten...';
+
+  @override
+  String get worldJoinWorldClosedStatus => 'Diese Welt ist derzeit geschlossen';
+
+  @override
+  String get worldJoinWorldArchivedStatus => 'Diese Welt ist archiviert';
+
+  @override
+  String worldJoinErrorLoadingWorldData(String error) {
+    return 'Fehler beim Laden der Welt-Daten: $error';
+  }
+
+  @override
+  String get worldJoinNoWorldIdFound => 'Keine Welt-ID gefunden';
+
+  @override
+  String get worldJoinNoInviteTokenFound => 'Kein Einladungstoken gefunden';
+
+  @override
+  String get worldJoinInvalidOrExpiredInviteLink =>
+      'Ungültiger oder abgelaufener Einladungslink';
+
+  @override
+  String get worldJoinLogoutForInvite =>
+      'Bitte melde dich ab und registriere dich mit der richtigen E-Mail-Adresse.';
 }

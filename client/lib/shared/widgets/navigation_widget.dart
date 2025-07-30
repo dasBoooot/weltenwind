@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class NavigationWidget extends StatefulWidget {
   final String? currentRoute;
@@ -58,7 +59,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
   void _showJoinRequiredMessage() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Sie müssen erst der Welt beitreten, um das Dashboard zu sehen'),
+        content: Text(AppLocalizations.of(context)!.navigationJoinRequiredMessage),
         backgroundColor: Colors.orange[700],
         duration: const Duration(seconds: 3),
       ),
@@ -72,7 +73,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
     if (widget.currentRoute != 'world-list') {
       items.add(NavigationItem(
         icon: Icons.arrow_back,
-        label: 'Zurück',
+        label: AppLocalizations.of(context)!.navigationBack,
         onTap: () => Navigator.of(context).canPop() 
           ? Navigator.of(context).pop()
           : context.goNamed('world-list'),
@@ -89,7 +90,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
     // Immer zur Welten-Liste
     items.add(NavigationItem(
       icon: Icons.public,
-      label: 'Welten-Übersicht',
+              label: AppLocalizations.of(context)!.navigationWorldOverview,
       onTap: () => context.goNamed('world-list'),
       isActive: widget.currentRoute == 'world-list',
     ));
@@ -101,7 +102,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
       if (worldIdParam != null) {
         items.add(NavigationItem(
           icon: Icons.info_outline,
-          label: 'Welt-Details',
+          label: AppLocalizations.of(context)!.navigationWorldDetails,
           onTap: () => context.goNamed('world-join', 
             pathParameters: {'id': worldIdParam.toString()}
           ),
@@ -120,7 +121,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
         
         items.add(NavigationItem(
           icon: Icons.dashboard,
-          label: isJoined ? 'Zum Dashboard' : 'Dashboard (Beitreten erforderlich)',
+          label: isJoined ? AppLocalizations.of(context)!.navigationDashboard : AppLocalizations.of(context)!.navigationDashboardRequiresJoin,
           onTap: isJoined 
             ? () => context.goNamed('world-dashboard', pathParameters: {'id': worldId})
             : () => _showJoinRequiredMessage(),
@@ -198,16 +199,16 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Navigation',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.navigationTitle,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
-                  'Menü öffnen',
+                  AppLocalizations.of(context)!.navigationOpenMenu,
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 12,
@@ -258,9 +259,9 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Text(
-                  'Navigation',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.navigationTitle,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -356,7 +357,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
     // Tooltip hinzufügen wenn disabled
     if (isDisabled && item.label.contains('Dashboard')) {
       return Tooltip(
-        message: 'Sie müssen der Welt beitreten, um das Dashboard zu sehen',
+        message: AppLocalizations.of(context)!.navigationTooltipJoinRequired,
         child: widget,
       );
     }
