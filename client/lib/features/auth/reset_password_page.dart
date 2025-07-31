@@ -247,7 +247,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context).authNewPasswordLabel,
                 helperText: AppLocalizations.of(context).authPasswordHelperText,
-                prefixIcon: Icon(Icons.lock_outline, color: AppColors.secondary),
+                prefixIcon: const Icon(Icons.lock_outline, color: AppColors.secondary),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -292,7 +292,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
               },
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context).authConfirmPasswordLabel,
-                prefixIcon: Icon(Icons.lock, color: AppColors.secondary),
+                prefixIcon: const Icon(Icons.lock, color: AppColors.secondary),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
@@ -370,7 +370,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.error_outline,
                       color: AppColors.error,
                       size: 20,
@@ -444,7 +444,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                   width: 2,
                 ),
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.check_circle_rounded,
                 size: 48,
                 color: AppColors.success,

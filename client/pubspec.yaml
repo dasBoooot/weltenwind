@@ -47,6 +47,10 @@ dependencies:
   # Logging
   logger: ^2.4.0
   
+  # Web Support
+  flutter_web_plugins:
+    sdk: flutter
+  
   # Internationalization
   flutter_localizations:
     sdk: flutter

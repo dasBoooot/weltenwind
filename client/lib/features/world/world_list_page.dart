@@ -135,23 +135,21 @@ class _WorldListPageState extends State<WorldListPage> {
   }
 
   void _generateMockPlayerCounts() {
-    final random = DateTime.now().millisecondsSinceEpoch;
     for (final world in _worlds) {
       // Generate realistic player counts based on world status
-      int baseCount = 0;
       switch (world.status) {
         case WorldStatus.upcoming:
-          baseCount = 5 + (random % 15); // 5-20 players
+          // Mock player count generation: 5-20 players
           break;
         case WorldStatus.open:
-          baseCount = 20 + (random % 30); // 20-50 players
+          // Mock player count generation: 20-50 players
           break;
         case WorldStatus.running:
-          baseCount = 50 + (random % 100); // 50-150 players
+          // Mock player count generation: 50-150 players
           break;
         case WorldStatus.closed:
         case WorldStatus.archived:
-          baseCount = 0 + (random % 10); // 0-10 players
+          // Mock player count generation: 0-10 players
           break;
       }
     }
@@ -195,22 +193,7 @@ class _WorldListPageState extends State<WorldListPage> {
     });
   }
 
-  WorldCategory _getWorldCategory(World world) {
-    // Mock categorization based on world ID
-    final categoryHash = world.id % 4;
-    switch (categoryHash) {
-      case 0:
-        return WorldCategory.classic;
-      case 1:
-        return WorldCategory.pvp;
-      case 2:
-        return WorldCategory.event;
-      case 3:
-        return WorldCategory.experimental;
-      default:
-        return WorldCategory.classic;
-    }
-  }
+  // Removed unused _getWorldCategory method
 
   // Unused methods removed - now handled in WorldCard widget
 
@@ -268,8 +251,7 @@ class _WorldListPageState extends State<WorldListPage> {
   }
 
   Future<void> _inviteToWorld(World world) async {
-    AppLogger.app.i('🔧 DEBUG: _inviteToWorld aufgerufen für Welt: ${world.name}');
-    print('🔧 CONSOLE DEBUG: _inviteToWorld aufgerufen für Welt: ${world.name}'); // Console Log
+    // Invite-Funktion aufgerufen (relevante Aktion)
     
     try {
       await showInviteDialog(
@@ -278,12 +260,11 @@ class _WorldListPageState extends State<WorldListPage> {
         worldName: world.name,
         onInviteSent: () {
           // Optional: Refresh oder andere Aktion nach erfolgreichem Invite
-          AppLogger.app.i('Invite erfolgreich gesendet für Welt: ${world.name}');
+          AppLogger.app.i('✅ Invite sent for world: ${world.name}');
         },
       );
     } catch (e) {
-      AppLogger.app.e('❌ Fehler beim Öffnen des Invite-Dialogs: $e');
-      print('❌ CONSOLE ERROR: Fehler beim Öffnen des Invite-Dialogs: $e'); // Console Error
+      AppLogger.error.e('❌ Invite dialog error: $e');
       AppLogger.logError('Fehler beim Öffnen des Invite-Dialogs', e, context: {'worldId': world.id});
       
       if (mounted) {
@@ -507,7 +488,7 @@ class _WorldListPageState extends State<WorldListPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                         side: BorderSide(
-                          color: AppTheme.primaryColor.withOpacity(0.3),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -533,10 +514,10 @@ class _WorldListPageState extends State<WorldListPage> {
                                 width: 80,
                                 height: 80,
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primaryColor.withOpacity(0.2),
+                                  color: AppTheme.primaryColor.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: AppTheme.primaryColor.withOpacity(0.5),
+                                    color: AppTheme.primaryColor.withValues(alpha: 0.5),
                                     width: 2,
                                   ),
                                 ),
@@ -623,10 +604,10 @@ class _WorldListPageState extends State<WorldListPage> {
                                 Container(
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                    color: (Colors.red[900] ?? Colors.red).withOpacity(0.3),
+                                    color: (Colors.red[900] ?? Colors.red).withValues(alpha: 0.3),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: (Colors.red[400] ?? Colors.red).withOpacity(0.5),
+                                      color: (Colors.red[400] ?? Colors.red).withValues(alpha: 0.5),
                                     ),
                                   ),
                                   child: Column(
@@ -648,7 +629,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       Text(
                                         _error ?? AppLocalizations.of(context).worldListErrorUnknown,
                                         style: TextStyle(
-                                          color: (Colors.red[200] ?? Colors.red).withOpacity(0.8),
+                                          color: (Colors.red[200] ?? Colors.red).withValues(alpha: 0.8),
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
@@ -662,7 +643,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                     color: const Color(0xFF2D2D2D),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: AppTheme.primaryColor.withOpacity(0.3),
+                                      color: AppTheme.primaryColor.withValues(alpha: 0.3),
                                     ),
                                   ),
                                   child: Column(
@@ -670,7 +651,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       Icon(
                                         Icons.filter_list,
                                         size: 48,
-                                        color: AppTheme.primaryColor.withOpacity(0.7),
+                                        color: AppTheme.primaryColor.withValues(alpha: 0.7),
                                       ),
                                       const SizedBox(height: 16),
                                       Text(

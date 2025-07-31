@@ -149,15 +149,15 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1A1A).withOpacity(0.95),
+            color: const Color(0xFF1A1A1A).withValues(alpha: 0.95),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: AppTheme.primaryColor.withOpacity(0.3),
+              color: AppTheme.primaryColor.withValues(alpha: 0.3),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -185,7 +185,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.2),
+                color: AppTheme.primaryColor.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -249,7 +249,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.2),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -306,7 +306,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
         width: 220,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isActive ? AppTheme.primaryColor.withOpacity(0.1) : Colors.transparent,
+          color: isActive ? AppTheme.primaryColor.withValues(alpha: 0.1) : Colors.transparent,
           border: Border(
             left: BorderSide(
               color: isActive ? AppTheme.primaryColor : Colors.transparent,

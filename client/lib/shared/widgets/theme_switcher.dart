@@ -140,7 +140,7 @@ class _ThemeSwitcherState extends State<ThemeSwitcher>
           // Header
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.palette_rounded,
                 color: AppColors.primaryAccent,
                 size: 20,
@@ -317,7 +317,7 @@ class _ThemeSwitcherState extends State<ThemeSwitcher>
 
   /// 🔄 Theme Mode durchschalten
   void _cycleThemeMode() {
-    final modes = ThemeMode.values;
+    const modes = ThemeMode.values;
     final currentIndex = modes.indexOf(widget.currentThemeMode);
     final nextIndex = (currentIndex + 1) % modes.length;
     widget.onThemeModeChanged(modes[nextIndex]);
@@ -325,7 +325,7 @@ class _ThemeSwitcherState extends State<ThemeSwitcher>
 
   /// 🔄 Style Preset durchschalten
   void _cycleStylePreset() {
-    final presets = FantasyStylePreset.values;
+    const presets = FantasyStylePreset.values;
     final currentIndex = presets.indexOf(widget.currentStylePreset);
     final nextIndex = (currentIndex + 1) % presets.length;
     widget.onStylePresetChanged(presets[nextIndex]);

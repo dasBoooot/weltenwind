@@ -52,14 +52,14 @@ class WorldCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: world.isActive
-                ? world.category.color.withOpacity(0.5)
-                : Colors.grey.withOpacity(0.3),
+                ? world.category.color.withValues(alpha: 0.5)
+                : Colors.grey.withValues(alpha: 0.3),
             width: world.isActive ? 2 : 1,
           ),
           boxShadow: world.isActive
               ? [
                   BoxShadow(
-                    color: world.category.color.withOpacity(0.3),
+                    color: world.category.color.withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -87,8 +87,8 @@ class WorldCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            world.category.color.withOpacity(0.2),
-            world.category.color.withOpacity(0.1),
+            world.category.color.withValues(alpha: 0.2),
+            world.category.color.withValues(alpha: 0.1),
           ],
         ),
       ),
@@ -147,10 +147,10 @@ class WorldCard extends StatelessWidget {
       width: 48,
       height: 48,
       decoration: BoxDecoration(
-        color: world.category.color.withOpacity(0.2),
+        color: world.category.color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: world.category.color.withOpacity(0.5),
+          color: world.category.color.withValues(alpha: 0.5),
         ),
       ),
       child: Icon(
@@ -165,10 +165,10 @@ class WorldCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: world.category.color.withOpacity(0.3),
+        color: world.category.color.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: world.category.color.withOpacity(0.5),
+          color: world.category.color.withValues(alpha: 0.5),
         ),
       ),
       child: Row(
@@ -223,10 +223,10 @@ class WorldCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: statusColor.withOpacity(0.2),
+        color: statusColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: statusColor.withOpacity(0.5),
+          color: statusColor.withValues(alpha: 0.5),
         ),
       ),
       child: Row(

@@ -54,8 +54,8 @@ class _InviteWidgetState extends State<InviteWidget> {
   @override
   void initState() {
     super.initState();
-    AppLogger.app.i('🔧 DEBUG: InviteWidget State initialisiert');
-    print('🔧 CONSOLE DEBUG: InviteWidget State initialisiert'); // Console Log
+    // Debug-Log entfernt für saubere Logs
+    // Console debug entfernt
   }
   
   // E-Mail-Validierung Regex
@@ -68,39 +68,39 @@ class _InviteWidgetState extends State<InviteWidget> {
   }
 
   Future<void> _sendInvite() async {
-    AppLogger.app.i('🔧 DEBUG: _sendInvite() aufgerufen');
-    print('🔧 CONSOLE DEBUG: _sendInvite() aufgerufen - isLoading: $_isLoading'); // Console Log
+    // Debug-Log entfernt für saubere Logs
+    // Console debug entfernt
     
     // Prevent multiple simultaneous calls
     if (_isLoading) {
       AppLogger.app.w('⚠️ _sendInvite bereits aktiv - Aufruf ignoriert');
-      print('🔧 CONSOLE DEBUG: _sendInvite bereits aktiv - IGNORIERT!'); // Console Log
+      // Console debug entfernt
       return;
     }
     
-    print('🔧 CONSOLE DEBUG: Form-Validierung startet...'); // Console Log
+    // Console debug entfernt
     if (!_formKey.currentState!.validate()) {
-      print('🔧 CONSOLE DEBUG: Form-Validierung FEHLGESCHLAGEN!'); // Console Log
+      // Console debug entfernt
       return;
     }
-    print('🔧 CONSOLE DEBUG: Form-Validierung ERFOLGREICH!'); // Console Log
+    // Console debug entfernt
 
-    print('🔧 CONSOLE DEBUG: setState() aufgerufen - Loading wird gesetzt...'); // Console Log
+    // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: setState() aufgerufen - Loading wird gesetzt...'); // Console Log
     setState(() {
       _isLoading = true;
       _error = null;
       _inviteLink = null;
     });
-    print('🔧 CONSOLE DEBUG: setState() ERFOLGREICH abgeschlossen!'); // Console Log
+    // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: setState() ERFOLGREICH abgeschlossen!'); // Console Log
 
     try {
-      print('🔧 CONSOLE DEBUG: Try-Block gestartet...'); // Console Log
-      print('🔧 CONSOLE DEBUG: ApiService wird geholt...'); // Console Log
+      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Try-Block gestartet...'); // Console Log
+      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: ApiService wird geholt...'); // Console Log
       final apiService = widget.apiService ?? ServiceLocator.get<ApiService>();
-      print('🔧 CONSOLE DEBUG: ApiService erhalten: ${apiService.runtimeType}'); // Console Log
+      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: ApiService erhalten: ${apiService.runtimeType}'); // Console Log
       
       final email = _emailController.text.trim().toLowerCase();
-      print('🔧 CONSOLE DEBUG: Email vorbereitet: $email'); // Console Log
+      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Email vorbereitet: $email'); // Console Log
       
       AppLogger.app.i('📧 Sende Invite', error: {
         'worldId': widget.worldId,
@@ -111,9 +111,9 @@ class _InviteWidgetState extends State<InviteWidget> {
 
       // API-Endpoint für Invite-Erstellung (ohne /api - wird von ApiService hinzugefügt)
       // Immer authentifizierten Endpoint verwenden um invitedBy zu setzen
-      final endpoint = '/invites';
-      print('🔧 CONSOLE DEBUG: API-Call startet - Endpoint: $endpoint'); // Console Log
-      print('🔧 CONSOLE DEBUG: Request Data: worldId=${widget.worldId}, email=$email'); // Console Log
+      const endpoint = '/invites';
+      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: API-Call startet - Endpoint: $endpoint'); // Console Log
+      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Request Data: worldId=${widget.worldId}, email=$email'); // Console Log
       
       final response = await apiService.post(endpoint, {
         'worldId': widget.worldId,
@@ -121,13 +121,13 @@ class _InviteWidgetState extends State<InviteWidget> {
         'sendEmail': _sendEmail, // Flag für E-Mail-Versand
       });
       
-      print('🔧 CONSOLE DEBUG: API-Response erhalten - Status: ${response.statusCode}'); // Console Log
+      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: API-Response erhalten - Status: ${response.statusCode}'); // Console Log
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
-        print('🔧 CONSOLE DEBUG: Response Data: $responseData'); // Console Log
+        // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Response Data: $responseData'); // Console Log
         final invitesArray = responseData['data']['invites'] as List;
-        print('🔧 CONSOLE DEBUG: Invites Array: $invitesArray'); // Console Log
+        // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Invites Array: $invitesArray'); // Console Log
         final inviteData = invitesArray.first; // Erstes (und einziges) Invite
         final token = inviteData['token'];
         
@@ -143,15 +143,15 @@ class _InviteWidgetState extends State<InviteWidget> {
           // Link aus Response holen oder aus Token generieren
           final serverLink = inviteData['link'];
           final token = inviteData['token'];
-          final generatedLink = serverLink ?? '${Uri.base.origin ?? 'http://192.168.2.168:8080/game'}/go/invite/$token';
+          final generatedLink = serverLink ?? '${Uri.base.origin}/go/invite/$token';
           
           setState(() {
             _inviteLink = generatedLink;
           });
-          print('🔧 CONSOLE DEBUG: Server-Link: $serverLink'); // Console Log
-          print('🔧 CONSOLE DEBUG: Token: $token'); // Console Log
-          print('🔧 CONSOLE DEBUG: Final Link gesetzt: $_inviteLink'); // Console Log
-          final l10n = AppLocalizations.of(context)!;
+          // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Server-Link: $serverLink'); // Console Log
+          // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Token: $token'); // Console Log
+          // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Final Link gesetzt: $_inviteLink'); // Console Log
+          final l10n = AppLocalizations.of(context);
           
           // Erfolgsmeldung anzeigen
           ScaffoldMessenger.of(context).showSnackBar(
@@ -190,20 +190,20 @@ class _InviteWidgetState extends State<InviteWidget> {
         });
       }
     } catch (e) {
-      print('🔧 CONSOLE DEBUG: EXCEPTION gefangen: $e'); // Console Log
+      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: EXCEPTION gefangen: $e'); // Console Log
       AppLogger.app.e('❌ Fehler beim Senden der Einladung', error: e);
       
       setState(() {
         _error = e.toString().replaceAll('Exception: ', '');
       });
-      print('🔧 CONSOLE DEBUG: Error-State gesetzt: $_error'); // Console Log
+      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Error-State gesetzt: $_error'); // Console Log
     } finally {
-      print('🔧 CONSOLE DEBUG: Finally-Block erreicht - mounted: $mounted'); // Console Log
+      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Finally-Block erreicht - mounted: $mounted'); // Console Log
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        print('🔧 CONSOLE DEBUG: Loading auf false gesetzt'); // Console Log
+        // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Loading auf false gesetzt'); // Console Log
       }
     }
   }
@@ -213,14 +213,14 @@ class _InviteWidgetState extends State<InviteWidget> {
       // Wenn es bereits ein vollständiger Link ist, direkt verwenden
       final link = linkOrToken.startsWith('http') 
           ? linkOrToken 
-          : '${Uri.base.origin ?? 'http://192.168.2.168:8080/game'}/go/invite/$linkOrToken';
+          : '${Uri.base.origin}/go/invite/$linkOrToken';
       
       await Clipboard.setData(ClipboardData(text: link));
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.inviteWidgetCopyLink),
+            content: Text(AppLocalizations.of(context).inviteWidgetCopyLink),
             duration: const Duration(seconds: 1),
           ),
         );
@@ -230,10 +230,10 @@ class _InviteWidgetState extends State<InviteWidget> {
       AppLogger.app.e('❌ Fehler beim Kopieren des Links', error: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Fehler beim Kopieren des Links'),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 2),
+            duration: Duration(seconds: 2),
           ),
         );
       }
@@ -241,7 +241,7 @@ class _InviteWidgetState extends State<InviteWidget> {
   }
 
   String? _validateEmail(String? value) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     
     if (value == null || value.trim().isEmpty) {
       return l10n.inviteWidgetEmailRequired;
@@ -256,7 +256,7 @@ class _InviteWidgetState extends State<InviteWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     
     return Container(
@@ -395,7 +395,7 @@ class _InviteWidgetState extends State<InviteWidget> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                  color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: theme.colorScheme.outline.withOpacity(0.3)),
                 ),
@@ -432,7 +432,7 @@ Future<T?> showInviteDialog<T extends Object?>(
   required String worldName,
   VoidCallback? onInviteSent,
 }) {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
   
   // ApiService direkt aus ServiceLocator holen - funktioniert überall!
   final apiService = ServiceLocator.get<ApiService>();
@@ -441,8 +441,8 @@ Future<T?> showInviteDialog<T extends Object?>(
     context: context,
     builder: (dialogContext) {
       // Debug-Log um zu sehen ob Dialog geladen wird
-      AppLogger.app.i('🔧 DEBUG: Invite-Dialog wird erstellt');
-      print('🔧 CONSOLE DEBUG: Invite-Dialog wird erstellt'); // Console Log
+      // Debug-Log entfernt für saubere Logs
+      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Invite-Dialog wird erstellt'); // Console Log
       
       // Theme direkt vom ursprünglichen Context holen
       final theme = Theme.of(context);

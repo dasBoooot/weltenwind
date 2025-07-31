@@ -140,7 +140,7 @@ class AppColors {
   
   /// Erstellt eine Farbe mit angepasster Opacity
   static Color withOpacity(Color color, double opacity) {
-    return color.withOpacity(opacity);
+    return color.withValues(alpha: opacity);
   }
   
   /// Mischt zwei Farben

@@ -27,8 +27,8 @@ class BackgroundWidget extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AppTheme.backgroundColor.withOpacity(0.8),
-                    AppTheme.surfaceColor.withOpacity(0.9),
+                            AppTheme.backgroundColor.withValues(alpha: 0.8),
+        AppTheme.surfaceColor.withValues(alpha: 0.9),
                   ],
                 ),
               ),

@@ -154,7 +154,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -188,7 +188,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                 width: 200,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: FractionallySizedBox(
@@ -240,9 +240,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.2),
+                  color: Colors.orange.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                  border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
                 ),
                 child: const Text(
                   'Initialisierung dauert länger als erwartet...',

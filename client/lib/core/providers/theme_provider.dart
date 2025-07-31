@@ -55,7 +55,7 @@ class ThemeProvider extends ChangeNotifier {
   
   /// Theme Mode durchschalten (system -> light -> dark -> system)
   Future<void> cycleThemeMode() async {
-    final modes = ThemeMode.values;
+    const modes = ThemeMode.values;
     final currentIndex = modes.indexOf(_themeMode);
     final nextIndex = (currentIndex + 1) % modes.length;
     await setThemeMode(modes[nextIndex]);
@@ -63,7 +63,7 @@ class ThemeProvider extends ChangeNotifier {
   
   /// Style Preset durchschalten
   Future<void> cycleStylePreset() async {
-    final presets = FantasyStylePreset.values;
+    const presets = FantasyStylePreset.values;
     final currentIndex = presets.indexOf(_stylePreset);
     final nextIndex = (currentIndex + 1) % presets.length;
     await setStylePreset(presets[nextIndex]);

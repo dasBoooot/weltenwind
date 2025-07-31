@@ -96,15 +96,15 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
             duration: const Duration(milliseconds: 300),
             width: _isExpanded ? 320 : 180,
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A).withOpacity(0.95),
+              color: const Color(0xFF1A1A1A).withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: AppTheme.primaryColor.withOpacity(0.3),
+                color: AppTheme.primaryColor.withValues(alpha: 0.3),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -129,10 +129,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withOpacity(0.2),
+                              color: AppTheme.primaryColor.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: AppTheme.primaryColor.withOpacity(0.5),
+                                color: AppTheme.primaryColor.withValues(alpha: 0.5),
                                 width: 2,
                               ),
                             ),
@@ -253,10 +253,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: _getRoleColor(roleName).withOpacity(0.2),
+                                  color: _getRoleColor(roleName).withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: _getRoleColor(roleName).withOpacity(0.5),
+                                    color: _getRoleColor(roleName).withValues(alpha: 0.5),
                                     width: 1,
                                   ),
                                 ),

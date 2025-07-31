@@ -70,7 +70,7 @@ class _PreRegisterDialogState extends State<PreRegisterDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: AppTheme.primaryColor.withOpacity(0.3),
+          color: AppTheme.primaryColor.withValues(alpha: 0.3),
           width: 1,
         ),
       ),

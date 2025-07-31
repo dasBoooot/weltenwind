@@ -7,17 +7,17 @@ class WorldListLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
+          const CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context).loadingText,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.grey,
               fontSize: 16,
             ),
@@ -115,10 +115,10 @@ class WorldListErrorState extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.red[900]!.withOpacity(0.2),
+                color: Colors.red[900]!.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.red[700]!.withOpacity(0.5),
+                  color: Colors.red[700]!.withValues(alpha: 0.5),
                 ),
               ),
               child: Icon(

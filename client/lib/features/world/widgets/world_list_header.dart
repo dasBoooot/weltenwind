@@ -23,10 +23,10 @@ class WorldListHeader extends StatelessWidget {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.2),
+            color: AppTheme.primaryColor.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: AppTheme.primaryColor.withOpacity(0.5),
+              color: AppTheme.primaryColor.withValues(alpha: 0.5),
               width: 2,
             ),
           ),
@@ -61,12 +61,12 @@ class WorldListHeader extends StatelessWidget {
         const SizedBox(height: 24),
         
         // Action Buttons
-        _buildActionButtons(),
+        _buildActionButtons(context),
       ],
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(BuildContext context) {
     final buttons = <Widget>[];
 
     if (onRefresh != null) {

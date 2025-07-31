@@ -27,7 +27,7 @@ class DashboardPage extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                       side: BorderSide(
-                        color: AppTheme.primaryColor.withOpacity(0.3),
+                        color: AppTheme.primaryColor.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -53,10 +53,10 @@ class DashboardPage extends StatelessWidget {
                               width: 80,
                               height: 80,
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryColor.withOpacity(0.2),
+                                color: AppTheme.primaryColor.withValues(alpha: 0.2),
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: AppTheme.primaryColor.withOpacity(0.5),
+                                  color: AppTheme.primaryColor.withValues(alpha: 0.5),
                                   width: 2,
                                 ),
                               ),
@@ -91,10 +91,10 @@ class DashboardPage extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryColor.withOpacity(0.1),
+                                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: AppTheme.primaryColor.withOpacity(0.3),
+                                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
                                 ),
                               ),
                               child: Row(

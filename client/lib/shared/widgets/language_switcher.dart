@@ -58,10 +58,10 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
   Widget _buildCompactSwitcher(String currentLanguage) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.black.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppTheme.primaryColor.withOpacity(0.3),
+          color: AppTheme.primaryColor.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -79,10 +79,10 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.4),
+        color: Colors.black.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppTheme.primaryColor.withOpacity(0.3),
+          color: AppTheme.primaryColor.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -149,7 +149,7 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
           border: isSelected 
             ? null 
             : Border.all(
-                color: Colors.grey[600]!.withOpacity(0.5),
+                color: Colors.grey[600]!.withValues(alpha: 0.5),
                 width: 1,
               ),
         ),

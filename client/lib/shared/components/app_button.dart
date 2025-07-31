@@ -252,7 +252,7 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
 
     return ScaleTransition(
       scale: _scaleAnimation,
-      child: Container(
+      child: SizedBox(
         width: widget.isExpanded ? double.infinity : widget.width,
         height: widget.height ?? _getButtonHeight(),
         child: AnimatedContainer(
@@ -267,8 +267,8 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
               onTapUp: (_) => _setPressed(false),
               onTapCancel: () => _setPressed(false),
               borderRadius: BorderRadius.circular(_getBorderRadius()),
-              splashColor: _getSplashColor(isDark).withOpacity(0.2),
-              highlightColor: _getSplashColor(isDark).withOpacity(0.1),
+              splashColor: _getSplashColor(isDark).withValues(alpha: 0.2),
+              highlightColor: _getSplashColor(isDark).withValues(alpha: 0.1),
               child: Container(
                 padding: widget.padding ?? _getPadding(),
                 child: _buildContent(theme, isDark, isEnabled),
@@ -382,7 +382,7 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
 
   Color _getBackgroundColor(bool isDark, bool isEnabled) {
     if (!isEnabled) {
-      return isDark ? AppColors.surfaceLight.withOpacity(0.3) : AppColors.surfaceGray.withOpacity(0.5);
+      return isDark ? AppColors.surfaceLight.withValues(alpha: 0.3) : AppColors.surfaceGray.withValues(alpha: 0.5);
     }
 
     switch (widget.variant) {
@@ -403,7 +403,7 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
       case AppButtonVariant.danger:
         return AppColors.error;
       case AppButtonVariant.ghost:
-        return isDark ? AppColors.surfaceMedium.withOpacity(0.5) : AppColors.surfaceGray.withOpacity(0.3);
+        return isDark ? AppColors.surfaceMedium.withValues(alpha: 0.5) : AppColors.surfaceGray.withValues(alpha: 0.3);
     }
   }
 

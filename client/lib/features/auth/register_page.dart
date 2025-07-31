@@ -37,10 +37,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   bool _obscurePassword = true;
   String? _registerError;
   
-  // Invite-Parameter
-  String? _inviteToken;
-  String? _prefilledEmail;
-  Map<String, dynamic>? _inviteData;
+  // Invite-Parameter (entfernt da unbenutzt)
 
   // E-Mail-Validierung Regex
   static final RegExp _emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -117,7 +114,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       final user = await _authService.register(username, email, password);
 
       if (user != null) {
-        AppLogger.app.i('✅ Registrierung erfolgreich für User: ${user.username}');
+        AppLogger.app.i('✅ Registration successful: ${user.username}');
         
         if (mounted) {
           // Nach erfolgreicher Registrierung zur Login-Seite oder direkt einloggen
@@ -129,7 +126,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         });
       }
     } catch (e) {
-      AppLogger.app.e('❌ Registrierung Fehler', error: e);
+      AppLogger.error.e('❌ Registration failed', error: e);
       setState(() {
         _registerError = AppLocalizations.of(context).errorGeneral;
       });
@@ -185,7 +182,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authUsernameLabel,
-                                  prefixIcon: Icon(Icons.person, color: AppColors.secondary),
+                                  prefixIcon: const Icon(Icons.person, color: AppColors.secondary),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
@@ -214,7 +211,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authEmailLabel,
-                                  prefixIcon: Icon(Icons.email, color: AppColors.secondary),
+                                  prefixIcon: const Icon(Icons.email, color: AppColors.secondary),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
@@ -244,7 +241,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authPasswordLabel,
-                                  prefixIcon: Icon(Icons.lock, color: AppColors.secondary),
+                                  prefixIcon: const Icon(Icons.lock, color: AppColors.secondary),
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -283,7 +280,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.error_outline,
                                         color: AppColors.error,
                                         size: 20,

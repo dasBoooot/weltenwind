@@ -50,20 +50,20 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
           });
         } else {
           setState(() {
-            _error = responseData['error'] ?? AppLocalizations.of(context)!.inviteErrorInvalidOrExpired;
+            _error = responseData['error'] ?? AppLocalizations.of(context).inviteErrorInvalidOrExpired;
             _isLoading = false;
           });
         }
       } else {
         final responseData = jsonDecode(response.body);
         setState(() {
-          _error = responseData['error'] ?? AppLocalizations.of(context)!.inviteErrorInvalidOrExpired;
+          _error = responseData['error'] ?? AppLocalizations.of(context).inviteErrorInvalidOrExpired;
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = AppLocalizations.of(context)!.inviteErrorLoadingData(e.toString());
+        _error = AppLocalizations.of(context).inviteErrorLoadingData(e.toString());
         _isLoading = false;
       });
     }
@@ -83,7 +83,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(AppLocalizations.of(context)!.worldJoinSuccess(worldName ?? AppLocalizations.of(context)!.worldJoinUnknownWorld)),
+                content: Text(AppLocalizations.of(context).worldJoinSuccess(worldName ?? AppLocalizations.of(context).worldJoinUnknownWorld)),
                 backgroundColor: Colors.green,
               ),
             );
@@ -97,18 +97,18 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
         } else {
           final responseData = jsonDecode(response.body);
           setState(() {
-            _error = responseData['error'] ?? AppLocalizations.of(context)!.inviteErrorAcceptFailed;
+            _error = responseData['error'] ?? AppLocalizations.of(context).inviteErrorAcceptFailed;
           });
         }
       } else {
         final responseData = jsonDecode(response.body);
         setState(() {
-          _error = responseData['error'] ?? AppLocalizations.of(context)!.inviteErrorAcceptFailed;
+          _error = responseData['error'] ?? AppLocalizations.of(context).inviteErrorAcceptFailed;
         });
       }
     } catch (e) {
       setState(() {
-        _error = AppLocalizations.of(context)!.inviteErrorAcceptException(e.toString());
+        _error = AppLocalizations.of(context).inviteErrorAcceptException(e.toString());
       });
     }
   }
@@ -122,7 +122,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.inviteDeclineSuccess),
+              content: Text(AppLocalizations.of(context).inviteDeclineSuccess),
               backgroundColor: Colors.orange,
             ),
           );
@@ -131,12 +131,12 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
       } else {
         final responseData = jsonDecode(response.body);
         setState(() {
-          _error = responseData['error'] ?? AppLocalizations.of(context)!.inviteErrorDeclineFailed;
+          _error = responseData['error'] ?? AppLocalizations.of(context).inviteErrorDeclineFailed;
         });
       }
     } catch (e) {
       setState(() {
-        _error = AppLocalizations.of(context)!.inviteErrorDeclineException(e.toString());
+        _error = AppLocalizations.of(context).inviteErrorDeclineException(e.toString());
       });
     }
   }
@@ -149,10 +149,10 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
       appBar: AppBar(
         title: Text(l10n.invitePageTitle),
         centerTitle: true,
-        actions: [
+        actions: const [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: const LanguageSwitcher(
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: LanguageSwitcher(
               isCompact: true,
               showLabel: false,
             ),
@@ -255,8 +255,8 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.8),
-                  Theme.of(context).primaryColor.withOpacity(0.6),
+                  Theme.of(context).primaryColor.withValues(alpha: 0.8),
+                  Theme.of(context).primaryColor.withValues(alpha: 0.6),
                 ],
               ),
               borderRadius: BorderRadius.circular(20),
@@ -268,10 +268,10 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.gamepad,
                     size: 48,
                     color: Colors.white,
@@ -294,7 +294,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: Text(
@@ -312,7 +312,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.person, color: Colors.white70, size: 20),
+                    const Icon(Icons.person, color: Colors.white70, size: 20),
                     const SizedBox(width: 8),
                     Text(
                       l10n.inviteFromUser(inviter?['username'] ?? l10n.worldJoinUnknownWorld),
@@ -339,7 +339,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Theme.of(context).dividerColor),
               ),
@@ -371,7 +371,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.check_circle_outline, size: 16, color: Colors.green),
+                        const Icon(Icons.check_circle_outline, size: 16, color: Colors.green),
                         const SizedBox(width: 4),
                         Text(
                           'Extracted: $userStatus',
@@ -477,8 +477,8 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Theme.of(context).primaryColor.withOpacity(0.3),
-            Theme.of(context).primaryColor.withOpacity(0.1),
+            Theme.of(context).primaryColor.withValues(alpha: 0.3),
+            Theme.of(context).primaryColor.withValues(alpha: 0.1),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -490,13 +490,13 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
             Icon(
               Icons.landscape,
               size: 48,
-              color: Theme.of(context).primaryColor.withOpacity(0.7),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
             ),
             const SizedBox(height: 8),
             Text(
               'Welt-Banner',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).primaryColor.withOpacity(0.7),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -604,7 +604,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                 Text(
                   'Status: "$userStatus"',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer.withOpacity(0.8),
+                    color: Theme.of(context).colorScheme.onErrorContainer.withValues(alpha: 0.8),
                     fontFamily: 'monospace',
                   ),
                   textAlign: TextAlign.center,
@@ -670,7 +670,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -714,13 +714,13 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
               gradient: LinearGradient(
                 colors: [
                   Theme.of(context).primaryColor,
-                  Theme.of(context).primaryColor.withOpacity(0.8),
+                  Theme.of(context).primaryColor.withValues(alpha: 0.8),
                 ],
               ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -768,7 +768,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -810,7 +810,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.green.withOpacity(0.3),
+                        color: Colors.green.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -841,11 +841,11 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
               
               // ❌ DECLINE Button  
               Expanded(
-                child: Container(
+                child: SizedBox(
                   height: 56,
                   child: OutlinedButton.icon(
                     onPressed: _declineInvite,
-                    icon: Icon(Icons.cancel_outlined, size: 24),
+                    icon: const Icon(Icons.cancel_outlined, size: 24),
                     label: Text(
                       l10n.inviteActionDecline,
                       style: const TextStyle(
@@ -881,7 +881,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
         color: Theme.of(context).colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).colorScheme.error.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -949,10 +949,10 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     return Container(
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -962,7 +962,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withOpacity(0.1),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -979,7 +979,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.appTitle,
+                  AppLocalizations.of(context).appTitle,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).primaryColor,
@@ -987,7 +987,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  AppLocalizations.of(context)!.landingSubtitle,
+                  AppLocalizations.of(context).landingSubtitle,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -1056,7 +1056,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                   context.goNamed('world-list');
                 },
                 icon: const Icon(Icons.explore),
-                label: Text('Zu den Welten'),
+                label: const Text('Zu den Welten'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -1088,7 +1088,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
             ),
             const SizedBox(width: 8),
             Text(
-              AppLocalizations.of(context)!.marketingDiscoverMoreWorlds,
+              AppLocalizations.of(context).marketingDiscoverMoreWorlds,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.primary,
@@ -1106,13 +1106,13 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-                Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.3),
+                Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
               ],
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
               width: 1,
             ),
           ),
@@ -1129,7 +1129,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      AppLocalizations.of(context)!.marketingCallToAction,
+                      AppLocalizations.of(context).marketingCallToAction,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -1146,8 +1146,8 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                     child: _buildFeatureItem(
                       context,
                       Icons.groups,
-                      AppLocalizations.of(context)!.marketingFeatureCommunityTitle,
-                      AppLocalizations.of(context)!.marketingFeatureCommunityDesc,
+                      AppLocalizations.of(context).marketingFeatureCommunityTitle,
+                      AppLocalizations.of(context).marketingFeatureCommunityDesc,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -1155,8 +1155,8 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                     child: _buildFeatureItem(
                       context,
                       Icons.create,
-                      AppLocalizations.of(context)!.marketingFeatureCreateTitle,
-                      AppLocalizations.of(context)!.marketingFeatureCreateDesc,
+                      AppLocalizations.of(context).marketingFeatureCreateTitle,
+                      AppLocalizations.of(context).marketingFeatureCreateDesc,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -1164,8 +1164,8 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                     child: _buildFeatureItem(
                       context,
                       Icons.explore,
-                      AppLocalizations.of(context)!.marketingFeatureExploreTitle,
-                      AppLocalizations.of(context)!.marketingFeatureExploreDesc,
+                      AppLocalizations.of(context).marketingFeatureExploreTitle,
+                      AppLocalizations.of(context).marketingFeatureExploreDesc,
                     ),
                   ),
                 ],
@@ -1180,7 +1180,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                     context.goNamed('world-list');
                   },
                   icon: const Icon(Icons.explore_outlined),
-                  label: Text(AppLocalizations.of(context)!.marketingBrowseAllWorlds),
+                  label: Text(AppLocalizations.of(context).marketingBrowseAllWorlds),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
                       color: Theme.of(context).colorScheme.primary,
@@ -1208,7 +1208,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(

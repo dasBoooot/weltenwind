@@ -45,13 +45,11 @@ class FantasyTheme {
         secondary: AppColors.secondary,
         secondaryContainer: AppColors.secondaryLight,
         tertiary: AppColors.tertiary,
-        surface: AppColors.surfaceWhite,
-        background: AppColors.surfaceGrayLight,
+        surface: AppColors.surfaceGrayLight,
         error: AppColors.error,
         onPrimary: Colors.white,
         onSecondary: AppColors.surfaceDark,
         onSurface: AppColors.textPrimaryLight,
-        onBackground: AppColors.textPrimaryLight,
         outline: AppColors.surfaceGray,
       ),
       
@@ -98,12 +96,12 @@ class FantasyTheme {
           ),
           textStyle: AppTypography.labelLarge(isDark: isDark),
         ).copyWith(
-          overlayColor: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.pressed)) {
-              return AppColors.primaryDark.withOpacity(0.2);
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return AppColors.primaryDark.withValues(alpha: 0.2);
             }
-            if (states.contains(MaterialState.hovered)) {
-              return AppColors.primaryLight.withOpacity(0.1);
+            if (states.contains(WidgetState.hovered)) {
+              return AppColors.primaryLight.withValues(alpha: 0.1);
             }
             return null;
           }),
@@ -244,13 +242,11 @@ class FantasyTheme {
         secondary: AppColors.secondary,
         secondaryContainer: AppColors.secondaryDark,
         tertiary: AppColors.aqua,
-        surface: AppColors.surfaceMedium,
-        background: AppColors.surfaceDark,
+        surface: AppColors.surfaceDark,
         error: AppColors.error,
         onPrimary: AppColors.surfaceDark,
         onSecondary: AppColors.surfaceDark,
         onSurface: AppColors.textPrimary,
-        onBackground: AppColors.textPrimary,
         outline: AppColors.surfaceLight,
       ),
       
@@ -277,7 +273,7 @@ class FantasyTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
           side: BorderSide(
-            color: AppColors.surfaceLight.withOpacity(0.2),
+            color: AppColors.surfaceLight.withValues(alpha: 0.2),
             width: 1.0,
           ),
         ),
@@ -304,12 +300,12 @@ class FantasyTheme {
             isDark: isDark,
           ),
         ).copyWith(
-          overlayColor: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.pressed)) {
-              return AppColors.primary.withOpacity(0.3);
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return AppColors.primary.withValues(alpha: 0.3);
             }
-            if (states.contains(MaterialState.hovered)) {
-              return AppColors.primaryLight.withOpacity(0.2);
+            if (states.contains(WidgetState.hovered)) {
+              return AppColors.primaryLight.withValues(alpha: 0.2);
             }
             return null;
           }),
@@ -411,7 +407,7 @@ class FantasyTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
           side: BorderSide(
-            color: AppColors.primaryAccent.withOpacity(0.3),
+            color: AppColors.primaryAccent.withValues(alpha: 0.3),
             width: 1.0,
           ),
         ),
@@ -420,10 +416,10 @@ class FantasyTheme {
       ),
       
       // === BOTTOM SHEET ===
-      bottomSheetTheme: BottomSheetThemeData(
+      bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: AppColors.surfaceMedium,
         elevation: 24.0,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(20.0),
           ),
@@ -487,14 +483,14 @@ class FantasyTheme {
   static FantasyThemeExtension _getExtensionForPreset(FantasyStylePreset preset) {
     switch (preset) {
       case FantasyStylePreset.mystical:
-        return FantasyThemeExtension(
+        return const FantasyThemeExtension(
           magicGradient: AppColors.magicGradient,
           portalGradient: AppColors.portalGradient,
           glowColor: AppColors.glow,
           shimmerColor: AppColors.shimmer,
         );
       case FantasyStylePreset.ancient:
-        return FantasyThemeExtension(
+        return const FantasyThemeExtension(
           magicGradient: LinearGradient(
             colors: [AppColors.secondary, AppColors.amber],
             begin: Alignment.topLeft,
@@ -509,7 +505,7 @@ class FantasyTheme {
           shimmerColor: AppColors.secondary,
         );
       case FantasyStylePreset.portal:
-        return FantasyThemeExtension(
+        return const FantasyThemeExtension(
           magicGradient: LinearGradient(
             colors: [AppColors.aqua, AppColors.primary],
             begin: Alignment.topLeft,

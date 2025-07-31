@@ -189,7 +189,7 @@ class AppTypography {
       Shadow(
         offset: const Offset(0, 2),
         blurRadius: 8.0,
-        color: AppColors.glow.withOpacity(0.3),
+                  color: AppColors.glow.withValues(alpha: 0.3),
       ),
     ],
   );

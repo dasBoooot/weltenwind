@@ -87,7 +87,7 @@ class WorldFilters extends StatelessWidget {
                   onStatusChanged(selected ? status : null);
                 },
                 backgroundColor: const Color(0xFF2D2D2D),
-                selectedColor: _getStatusColor(status).withOpacity(0.3),
+                selectedColor: _getStatusColor(status).withValues(alpha: 0.3),
                 checkmarkColor: Colors.white,
                 side: BorderSide(
                   color: isSelected ? _getStatusColor(status) : Colors.grey[600]!,
@@ -143,7 +143,7 @@ class WorldFilters extends StatelessWidget {
                   onCategoryChanged(selected ? category : null);
                 },
                 backgroundColor: const Color(0xFF2D2D2D),
-                selectedColor: _getCategoryColor(category).withOpacity(0.3),
+                selectedColor: _getCategoryColor(category).withValues(alpha: 0.3),
                 checkmarkColor: Colors.white,
                 side: BorderSide(
                   color: isSelected ? _getCategoryColor(category) : Colors.grey[600]!,
@@ -255,11 +255,11 @@ class WorldFilters extends StatelessWidget {
                       _getStatusLabel(filter, context),
                       style: const TextStyle(fontSize: 12),
                     ),
-                    backgroundColor: _getStatusColor(filter).withOpacity(0.2),
+                    backgroundColor: _getStatusColor(filter).withValues(alpha: 0.2),
                     deleteIcon: const Icon(Icons.close, size: 16),
                     onDeleted: () => onStatusChanged(null),
                     side: BorderSide(
-                      color: _getStatusColor(filter).withOpacity(0.5),
+                      color: _getStatusColor(filter).withValues(alpha: 0.5),
                     ),
                   ),
                 );
@@ -276,11 +276,11 @@ class WorldFilters extends StatelessWidget {
                       _getCategoryLabel(filter, context),
                       style: const TextStyle(fontSize: 12),
                     ),
-                    backgroundColor: _getCategoryColor(filter).withOpacity(0.2),
+                    backgroundColor: _getCategoryColor(filter).withValues(alpha: 0.2),
                     deleteIcon: const Icon(Icons.close, size: 16),
                     onDeleted: () => onCategoryChanged(null),
                     side: BorderSide(
-                      color: _getCategoryColor(filter).withOpacity(0.5),
+                      color: _getCategoryColor(filter).withValues(alpha: 0.5),
                     ),
                   ),
                 );

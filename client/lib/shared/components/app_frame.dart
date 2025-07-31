@@ -285,8 +285,8 @@ class AppFrame extends StatelessWidget {
     if (style == AppFrameStyle.outlined) return Colors.transparent;
     if (style == AppFrameStyle.glass) {
       return isDark 
-        ? AppColors.surfaceMedium.withOpacity(0.3)
-        : AppColors.surfaceWhite.withOpacity(0.7);
+        ? AppColors.surfaceMedium.withValues(alpha: 0.3)
+        : AppColors.surfaceWhite.withValues(alpha: 0.7);
     }
 
     if (customColor != null) return customColor;
@@ -385,7 +385,7 @@ class AppFrame extends StatelessWidget {
           colors: [
             AppColors.glass,
             AppColors.glassDark,
-            AppColors.shimmer.withOpacity(0.1),
+            AppColors.shimmer.withValues(alpha: 0.1),
           ],
         );
       case AppFrameVariant.ancient:
@@ -409,23 +409,23 @@ class AppFrame extends StatelessWidget {
 
     switch (variant) {
       case AppFrameVariant.magic:
-        titleBgColor = AppColors.glow.withOpacity(0.1);
+        titleBgColor = AppColors.glow.withValues(alpha: 0.1);
         break;
       case AppFrameVariant.portal:
-        titleBgColor = AppColors.aqua.withOpacity(0.1);
+        titleBgColor = AppColors.aqua.withValues(alpha: 0.1);
         break;
       case AppFrameVariant.artifact:
-        titleBgColor = AppColors.secondary.withOpacity(0.1);
+        titleBgColor = AppColors.secondary.withValues(alpha: 0.1);
         break;
       case AppFrameVariant.ancient:
         titleBgColor = isDark 
-          ? AppColors.surfaceDarker.withOpacity(0.8)
-          : AppColors.surfaceGray.withOpacity(0.5);
+          ? AppColors.surfaceDarker.withValues(alpha: 0.8)
+          : AppColors.surfaceGray.withValues(alpha: 0.5);
         break;
       default:
         titleBgColor = isDark 
-          ? AppColors.surfaceLight.withOpacity(0.3)
-          : AppColors.surfaceGray.withOpacity(0.3);
+          ? AppColors.surfaceLight.withValues(alpha: 0.3)
+          : AppColors.surfaceGray.withValues(alpha: 0.3);
     }
 
     titleBorderRadius = BorderRadius.only(

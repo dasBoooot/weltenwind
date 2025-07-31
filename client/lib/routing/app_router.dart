@@ -36,10 +36,9 @@ class AppNavigationObserver extends NavigatorObserver {
   }
 
   void _logNavigation(String? from, String? to, String action) {
-    if (from != null && to != null) {
-      AppLogger.logNavigation(from, to, params: {'action': action});
-    } else if (to != null) {
-      AppLogger.navigation.i('🧭 Navigation: → $to ($action)');
+    // Nur wichtige Navigation-Events loggen (Fehler werden separat gehandelt)
+    if (to != null && (to.contains('error') || to.contains('invite'))) {
+      AppLogger.navigation.i('🧭 Navigation: → $to');
     }
   }
 }
@@ -76,15 +75,12 @@ class AppRouter {
   }
   
   static GoRouter get router {
-    AppLogger.navigation.d('🔍 Router-Instanz angefragt', error: {'initialized': _routerInstance != null});
-    
     if (_routerInstance != null) {
       return _routerInstance!;
     }
     
     // Router nur einmal initialisieren
     if (!_isInitialized) {
-      AppLogger.navigation.i('🚀 Router wird initialisiert...');
       try {
         _routerInstance = GoRouter(
           navigatorKey: _rootNavigatorKey,
@@ -99,7 +95,7 @@ class AppRouter {
         try {
           final uriPath = state.uri.path;
           
-          AppLogger.navigation.d('🎯 HYBRID ROUTER (${kIsWeb ? 'WEB' : 'MOBILE'}): $uriPath');
+          // Navigation handling...
           
           // 🌐 WEB-SPEZIFISCHE DEEP-LINK-FIXES
           if (kIsWeb) {
@@ -120,8 +116,7 @@ class AppRouter {
           
           // ✅ INVITE-ROUTES: Immer direkt erlauben (Cross-Platform)
           if (uriPath.startsWith('/go/invite/')) {
-            AppLogger.navigation.i('✅ Invite-Route erkannt – direkter Zugriff');
-            return null;
+            return null; // Invite-Routes immer erlauben
           }
           
           // 🔄 STANDARD AUTH & PROTECTION LOGIC
@@ -137,13 +132,12 @@ class AppRouter {
                                   uriPath.startsWith('/go/dashboard'));
 
           if (!isLoggedIn && isProtectedRoute) {
-            AppLogger.navigation.i('🔒 Login erforderlich für: $uriPath');
+            AppLogger.navigation.i('🔒 Auth required for: $uriPath');
             return '/go/auth/login';
           }
 
           if (isLoggedIn && isAuthRoute) {
-            AppLogger.navigation.i('🏠 Bereits eingeloggt – zu Worlds');
-            return '/go/worlds';
+            return '/go/worlds'; // Redirect authenticated users
           }
           
           // 📍 ROOT FALLBACK
@@ -393,7 +387,6 @@ class AppRouter {
   // Cache beim App-Start invalidieren
   static void invalidateCacheOnStart() {
     // Caching entfernt, daher keine Cache-Invalidierung mehr nötig
-    AppLogger.navigation.i('🔄 Auth-Cache beim App-Start invalidiert');
   }
 }
 
@@ -410,7 +403,7 @@ class ErrorPage extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppTheme.primaryColor.withOpacity(0.1),
+              AppTheme.primaryColor.withValues(alpha: 0.1),
               AppTheme.surfaceColor,
             ],
           ),
@@ -493,7 +486,7 @@ class AuthErrorPage extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppTheme.errorColor.withOpacity(0.1),
+              AppTheme.errorColor.withValues(alpha: 0.1),
               AppTheme.surfaceColor,
             ],
           ),
@@ -566,7 +559,7 @@ class WorldNotFoundPage extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppTheme.primaryColor.withOpacity(0.1),
+              AppTheme.primaryColor.withValues(alpha: 0.1),
               AppTheme.surfaceColor,
             ],
           ),
@@ -585,7 +578,7 @@ class WorldNotFoundPage extends StatelessWidget {
                   Icon(
                     Icons.public_off,
                     size: 64,
-                    color: AppTheme.primaryColor.withOpacity(0.7),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.7),
                   ),
                   const SizedBox(height: 24),
                   Text(

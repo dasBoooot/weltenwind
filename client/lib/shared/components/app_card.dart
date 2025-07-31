@@ -141,13 +141,13 @@ class AppCard extends StatelessWidget {
   Color _getSplashColor(bool isDark) {
     switch (variant) {
       case AppCardVariant.magic:
-        return AppColors.glow.withOpacity(0.2);
+        return AppColors.glow.withValues(alpha: 0.2);
       case AppCardVariant.portal:
-        return AppColors.aqua.withOpacity(0.2);
+        return AppColors.aqua.withValues(alpha: 0.2);
       case AppCardVariant.artifact:
-        return AppColors.secondary.withOpacity(0.2);
+        return AppColors.secondary.withValues(alpha: 0.2);
       default:
-        return isDark ? AppColors.primaryAccent.withOpacity(0.1) : AppColors.primary.withOpacity(0.1);
+        return isDark ? AppColors.primaryAccent.withValues(alpha: 0.1) : AppColors.primary.withValues(alpha: 0.1);
     }
   }
 
@@ -155,13 +155,13 @@ class AppCard extends StatelessWidget {
   Color _getHighlightColor(bool isDark) {
     switch (variant) {
       case AppCardVariant.magic:
-        return AppColors.glow.withOpacity(0.1);
+        return AppColors.glow.withValues(alpha: 0.1);
       case AppCardVariant.portal:
-        return AppColors.aqua.withOpacity(0.1);
+        return AppColors.aqua.withValues(alpha: 0.1);
       case AppCardVariant.artifact:
-        return AppColors.secondary.withOpacity(0.1);
+        return AppColors.secondary.withValues(alpha: 0.1);
       default:
-        return isDark ? AppColors.primaryAccent.withOpacity(0.05) : AppColors.primary.withOpacity(0.05);
+        return isDark ? AppColors.primaryAccent.withValues(alpha: 0.05) : AppColors.primary.withValues(alpha: 0.05);
     }
   }
 
@@ -185,8 +185,8 @@ class AppCard extends StatelessWidget {
     switch (variant) {
       case AppCardVariant.glass:
         return isDark 
-          ? AppColors.surfaceMedium.withOpacity(0.3)
-          : AppColors.surfaceWhite.withOpacity(0.7);
+                  ? AppColors.surfaceMedium.withValues(alpha: 0.3)
+        : AppColors.surfaceWhite.withValues(alpha: 0.7);
       case AppCardVariant.outlined:
         return Colors.transparent;
       default:
@@ -213,7 +213,7 @@ class AppCard extends StatelessWidget {
       case AppCardVariant.outlined:
         return isDark ? AppColors.surfaceLight : AppColors.surfaceGray;
       case AppCardVariant.glass:
-        return isDark ? AppColors.surfaceLight.withOpacity(0.3) : AppColors.surfaceGray.withOpacity(0.5);
+        return isDark ? AppColors.surfaceLight.withValues(alpha: 0.3) : AppColors.surfaceGray.withValues(alpha: 0.5);
       default:
         return null;
     }
@@ -252,7 +252,7 @@ class AppCard extends StatelessWidget {
   /// Bestimmt optionale Verläufe
   Gradient? _getGradient() {
     if (variant == AppCardVariant.glass) {
-      return LinearGradient(
+      return const LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [

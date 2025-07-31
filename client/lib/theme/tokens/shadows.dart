@@ -297,13 +297,13 @@ class AppShadows {
         offset: offset,
         blurRadius: blurRadius,
         spreadRadius: spreadRadius,
-        color: color.withOpacity(intensity),
+        color: color.withValues(alpha: intensity),
       ),
-      BoxShadow(
-        offset: const Offset(0, 4),
+      const BoxShadow(
+        offset: Offset(0, 4),
         blurRadius: 8.0,
         spreadRadius: 0,
-        color: const Color(0x1F000000),
+        color: Color(0x1F000000),
       ),
     ];
   }

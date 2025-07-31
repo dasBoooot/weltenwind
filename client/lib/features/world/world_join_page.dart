@@ -185,7 +185,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
         worldName: _world!.name,
         onInviteSent: () {
           // Optional: Refresh oder andere Aktion nach erfolgreichem Invite
-          AppLogger.app.i('Invite erfolgreich gesendet für Welt: ${_world!.name}');
+          AppLogger.app.i('✅ Invite sent for world: ${_world!.name}');
         },
       );
     } catch (e) {
@@ -211,7 +211,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     });
 
     try {
-      AppLogger.app.i('🌍 Versuche normalen World-Join');
+      // World-Join wird versucht
       final success = await _worldService.joinWorld(_world!.id);
       
       if (success) {
@@ -487,7 +487,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
-                  color: AppTheme.primaryColor.withOpacity(0.3),
+                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -585,7 +585,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
-                  color: AppTheme.primaryColor.withOpacity(0.3),
+                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -665,7 +665,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
             side: BorderSide(
-              color: AppTheme.primaryColor.withOpacity(0.3),
+              color: AppTheme.primaryColor.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -683,8 +683,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      AppTheme.primaryColor.withOpacity(0.1),
-                      AppTheme.primaryColor.withOpacity(0.05),
+                      AppTheme.primaryColor.withValues(alpha: 0.1),
+                      AppTheme.primaryColor.withValues(alpha: 0.05),
                     ],
                   ),
                 ),
@@ -732,9 +732,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
-                            color: _getWorldStatusColor().withOpacity(0.2),
+                            color: _getWorldStatusColor().withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: _getWorldStatusColor().withOpacity(0.5)),
+                            border: Border.all(color: _getWorldStatusColor().withValues(alpha: 0.5)),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -761,9 +761,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
-                            color: _world!.category.color.withOpacity(0.2),
+                            color: _world!.category.color.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: _world!.category.color.withOpacity(0.5)),
+                            border: Border.all(color: _world!.category.color.withValues(alpha: 0.5)),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -811,9 +811,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
+                          color: Colors.red.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red.withOpacity(0.3)),
+                          border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                         ),
                         child: Row(
                           children: [
@@ -999,9 +999,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
             margin: const EdgeInsets.only(bottom: 12.0),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.withOpacity(0.3)),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
             ),
             child: Column(
               children: [

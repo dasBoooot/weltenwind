@@ -207,7 +207,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
               onFieldSubmitted: (_) => _isLoading ? null : _requestPasswordReset(),
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context).authEmailLabel,
-                prefixIcon: Icon(Icons.email_outlined, color: AppColors.aqua),
+                prefixIcon: const Icon(Icons.email_outlined, color: AppColors.aqua),
 
               ),
               validator: (value) {
@@ -237,7 +237,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.error_outline,
                       color: AppColors.error,
                       size: 20,
@@ -306,7 +306,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                 width: 2,
               ),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.mark_email_read_rounded,
               size: 48,
               color: AppColors.success,

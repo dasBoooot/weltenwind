@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       final user = await _authService.login(username, password);
 
       if (user != null) {
-        AppLogger.app.i('✅ Login erfolgreich für User: ${user.username}');
+        AppLogger.app.i('✅ Login successful: ${user.username}');
         
         if (mounted) {
           await _handleInviteAccept();
@@ -120,7 +120,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         });
       }
     } catch (e) {
-      AppLogger.app.e('❌ Login Fehler', error: e);
+      AppLogger.error.e('❌ Login failed', error: e);
       setState(() {
         _loginError = AppLocalizations.of(context).errorGeneral;
       });
@@ -140,7 +140,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     }
 
     try {
-      AppLogger.app.i('🎫 Auto-Accept Invite nach Login');
+              // Auto-accept invite after login
       // Implement invite acceptance logic here
       context.goNamed('world-list');
     } catch (e) {
@@ -192,7 +192,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authUsernameLabel,
-                                  prefixIcon: Icon(Icons.person, color: AppColors.primaryAccent),
+                                  prefixIcon: const Icon(Icons.person, color: AppColors.primaryAccent),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
@@ -222,7 +222,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authPasswordLabel,
-                                  prefixIcon: Icon(Icons.lock, color: AppColors.primaryAccent),
+                                  prefixIcon: const Icon(Icons.lock, color: AppColors.primaryAccent),
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -297,7 +297,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.error_outline,
                                         color: AppColors.error,
                                         size: 20,
