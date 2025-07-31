@@ -8,6 +8,8 @@ import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
+import '../../shared/widgets/language_switcher.dart';
+import '../../theme/tokens/spacing.dart';
 import '../invite/widgets/invite_widget.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -460,6 +462,16 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
             // User info widget (only show when authenticated)
             if (_isAuthenticated)
               const UserInfoWidget(),
+            
+            // Language switcher (only show when authenticated, left of NavigationWidget)
+            if (_isAuthenticated)
+              const Positioned(
+                top: AppSpacing.md,
+                right: 96, // 20px Abstand vom NavigationWidget (76 + 20)
+                child: SafeArea(
+                  child: LanguageSwitcher(),
+                ),
+              ),
             
             // Navigation widget (only show when authenticated)
             if (_isAuthenticated)

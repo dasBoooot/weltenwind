@@ -215,17 +215,17 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         
         // Fallback: Bei Fehler zur Invite-Seite leiten
         AppLogger.app.w('⚠️ Auto-accept failed, redirecting to invite page');
-        context.go('/go/invite/$_inviteToken');
+        if (mounted) context.go('/go/invite/$_inviteToken');
         
       } catch (e) {
         AppLogger.error.e('❌ Fehler beim Auto-Accept von Invite', error: e);
         // Fallback: Bei Fehler zur Invite-Seite leiten
-        context.go('/go/invite/$_inviteToken');
+        if (mounted) context.go('/go/invite/$_inviteToken');
       }
     } else {
       // Normale Registrierung ohne Auto-Accept -> zu Login
       AppLogger.app.i('🏠 Normal registration, going to login');
-      context.goNamed('login');
+      if (mounted) context.goNamed('login');
     }
   }
 
@@ -458,10 +458,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             top: 40.0,
             left: 20.0,
             child: SafeArea(
-              child: LanguageSwitcher(
-                showLabel: false,
-                isCompact: true,
-              ),
+              child: LanguageSwitcher(),
             ),
           ),
           

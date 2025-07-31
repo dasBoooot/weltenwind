@@ -210,17 +210,17 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         
         // Fallback: Bei Fehler zur Invite-Seite leiten
         AppLogger.app.w('⚠️ Auto-accept failed, redirecting to invite page');
-        context.go('/go/invite/$_inviteToken');
+        if (mounted) context.go('/go/invite/$_inviteToken');
         
       } catch (e) {
         AppLogger.error.e('❌ Fehler beim Auto-Accept von Invite', error: e);
         // Fallback: Bei Fehler zur Invite-Seite leiten
-        context.go('/go/invite/$_inviteToken');
+        if (mounted) context.go('/go/invite/$_inviteToken');
       }
     } else {
       // Normales Login ohne Auto-Accept -> zu World-List
       AppLogger.app.i('🏠 Normal login, going to world-list');
-      context.goNamed('world-list');
+      if (mounted) context.goNamed('world-list');
     }
   }
 
@@ -460,10 +460,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             top: 40.0,
             left: 20.0,
             child: SafeArea(
-              child: LanguageSwitcher(
-                showLabel: false,
-                isCompact: true,
-              ),
+              child: LanguageSwitcher(),
             ),
           ),
           

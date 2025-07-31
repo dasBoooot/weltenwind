@@ -9,6 +9,8 @@ import '../../theme/background_widget.dart';
 import '../../routing/app_router.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
+import '../../shared/widgets/language_switcher.dart';
+import '../../theme/tokens/spacing.dart';
 import './widgets/world_card.dart';
 import './widgets/world_filters.dart';
 import '../invite/widgets/invite_widget.dart';
@@ -740,6 +742,14 @@ class _WorldListPageState extends State<WorldListPage> {
             ),
             // User info widget in top-left corner
             const UserInfoWidget(),
+            // Language switcher in top-right corner (NavigationWidget is hidden on world-list)
+            const Positioned(
+              top: AppSpacing.md,
+              right: 96, // 20px Abstand vom NavigationWidget (76 + 20)
+              child: SafeArea(
+                child: LanguageSwitcher(),
+              ),
+            ),
             // Navigation widget in top-right corner
             const NavigationWidget(currentRoute: 'world-list'),        
           ],

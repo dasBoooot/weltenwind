@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../config/logger.dart';
+
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
 import '../../l10n/app_localizations.dart';
@@ -153,10 +153,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
         actions: const [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: LanguageSwitcher(
-              isCompact: true,
-              showLabel: false,
-            ),
+            child: LanguageSwitcher(),
           ),
         ],
       ),

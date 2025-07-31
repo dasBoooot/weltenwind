@@ -159,10 +159,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
             top: 40.0,
             left: 20.0,
             child: SafeArea(
-              child: LanguageSwitcher(
-                showLabel: false,
-                isCompact: true,
-              ),
+              child: LanguageSwitcher(),
             ),
           ),
           

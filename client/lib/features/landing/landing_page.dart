@@ -691,10 +691,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
             top: 40.0,
             left: 20.0,
             child: SafeArea(
-              child: LanguageSwitcher(
-                showLabel: false,
-                isCompact: true,
-              ),
+              child: LanguageSwitcher(),
             ),
           ),
         ],

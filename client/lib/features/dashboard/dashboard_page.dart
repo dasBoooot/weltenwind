@@ -3,6 +3,8 @@ import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
+import '../../shared/widgets/language_switcher.dart';
+import '../../theme/tokens/spacing.dart';
 
 class DashboardPage extends StatelessWidget {
   final String worldId;
@@ -128,6 +130,15 @@ class DashboardPage extends StatelessWidget {
             
             // User info widget in top-left corner
             const UserInfoWidget(),
+            
+            // Language switcher (left of NavigationWidget)
+            const Positioned(
+              top: AppSpacing.md,
+              right: 96, // 20px Abstand vom NavigationWidget (76 + 20)
+              child: SafeArea(
+                child: LanguageSwitcher(),
+              ),
+            ),
             
             // Navigation widget in top-right corner
             NavigationWidget(

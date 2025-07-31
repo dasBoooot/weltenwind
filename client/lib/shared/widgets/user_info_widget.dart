@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/services/auth_service.dart';
-import '../../theme/app_theme.dart';
+import '../../theme/tokens/colors.dart';
+import '../../theme/tokens/spacing.dart';
+import '../../theme/tokens/typography.dart';
+import '../components/index.dart';
+import '../utils/dynamic_components.dart';
 import '../../main.dart';
 import '../../l10n/app_localizations.dart';
-import 'language_switcher.dart';
 
+/// 👤 Fantasy User Info Widget
+/// 
+/// Magisches User-Info Widget mit DynamicComponents und Theme-Integration
 class UserInfoWidget extends StatefulWidget {
   const UserInfoWidget({super.key});
 
@@ -62,21 +68,22 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
     });
   }
   
+  /// 🛡️ Bestimmt die Rolle-Farbe basierend auf Theme-System
   Color _getRoleColor(String roleName) {
     switch (roleName.toLowerCase()) {
       case 'admin':
-        return Colors.red[400] ?? Colors.red;
+        return AppColors.error; // 🔴 Admin = Rot
       case 'developer':
-        return Colors.purple[400] ?? Colors.purple;
+        return AppColors.glow; // 🔮 Developer = Magisches Lila
       case 'support':
-        return Colors.blue[400] ?? Colors.blue;
+        return AppColors.info; // 🔵 Support = Blau
       case 'mod':
-        return Colors.orange[400] ?? Colors.orange;
+        return AppColors.warning; // 🟠 Mod = Orange
       case 'world-admin':
-        return Colors.indigo[400] ?? Colors.indigo;
+        return AppColors.primary; // 🟣 World-Admin = Primary
       case 'user':
       default:
-        return Colors.green[400] ?? Colors.green;
+        return AppColors.success; // 🟢 User = Grün
     }
   }
   
@@ -85,246 +92,242 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
     final user = _authService.currentUser;
     if (user == null) return const SizedBox.shrink();
     
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Positioned(
-      top: 16,
-      left: 16,
+      top: AppSpacing.md,
+      left: AppSpacing.md,
       child: FadeTransition(
         opacity: _fadeAnimation,
-        child: GestureDetector(
-          onTap: _toggleExpanded,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            width: _isExpanded ? 320 : 180,
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A).withValues(alpha: 0.95),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: _toggleExpanded,
-                borderRadius: BorderRadius.circular(16),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header mit Avatar und Name
-                      Row(
-                        children: [
-                          // Avatar
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: AppTheme.primaryColor.withValues(alpha: 0.5),
-                                width: 2,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                user.username.substring(0, 1).toUpperCase(),
-                                style: const TextStyle(
-                                  color: AppTheme.primaryColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          // Name und Status
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        user.username,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    if (user.isLocked ?? false) ...[
-                                      const SizedBox(width: 8),
-                                      Icon(
-                                        Icons.lock,
-                                        color: Colors.red[400],
-                                        size: 16,
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                                if (!_isExpanded)
-                                  Text(
-                                    AppLocalizations.of(context).userInfoClickForDetails,
-                                    style: TextStyle(
-                                      color: Colors.grey[400],
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          // Expand/Collapse Icon
-                          Icon(
-                            _isExpanded ? Icons.expand_less : Icons.expand_more,
-                            color: Colors.grey[400],
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                      
-                      // Erweiterte Details
-                      if (_isExpanded) ...[
-                        const SizedBox(height: 12),
-                        const Divider(color: Colors.grey, height: 1),
-                        const SizedBox(height: 12),
-                        
-                        // Email
-                        Row(
-                          children: [
-                            Icon(Icons.email_outlined, size: 16, color: Colors.grey[400]),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                user.email,
-                                style: TextStyle(
-                                  color: Colors.grey[300],
-                                  fontSize: 14,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        
-                        const SizedBox(height: 8),
-                        
-                                            // Rollen
-                    if (user.roles != null && user.roles!.isNotEmpty) ...[
-                      Row(
-                        children: [
-                          Icon(Icons.security, size: 16, color: Colors.grey[400]),
-                          const SizedBox(width: 8),
-                          Text(
-                            AppLocalizations.of(context).userInfoRoles,
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: (user.roles ?? []).map((userRole) {
-                              final roleName = userRole.role.name;
-                              final scopeInfo = userRole.scopeType == 'global' 
-                                  ? '' 
-                                  : ' (${userRole.scopeType})';
-                              
-                              return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: _getRoleColor(roleName).withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: _getRoleColor(roleName).withValues(alpha: 0.5),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.badge,
-                                      size: 12,
-                                      color: _getRoleColor(roleName),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '$roleName$scopeInfo',
-                                      style: TextStyle(
-                                        color: _getRoleColor(roleName),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                        
-                        const SizedBox(height: 12),
-                        const Divider(color: Colors.grey, height: 1),
-                        const SizedBox(height: 12),
-                        
-                        // Language Switcher
-                        const LanguageSwitcher(
-                          showLabel: true,
-                          isCompact: false,
-                        ),
-                        
-                        const SizedBox(height: 12),
-                        const Divider(color: Colors.grey, height: 1),
-                        const SizedBox(height: 8),
-                        
-                        // Logout Button
-                        SizedBox(
-                          width: double.infinity,
-                          child: TextButton.icon(
-                            onPressed: () async {
-                              await _authService.logout();
-                              if (context.mounted) {
-                                context.goNamed('login');
-                              }
-                            },
-                            icon: const Icon(Icons.logout, size: 16),
-                            label: Text(AppLocalizations.of(context).authLogoutButton),
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.red[400],
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          constraints: BoxConstraints(
+            minWidth: _isExpanded ? 280 : 200,
+            maxWidth: _isExpanded ? 320 : 220,
+          ),
+          child: DynamicComponents.frame(
+            title: user.username,
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            child: GestureDetector(
+              onTap: _toggleExpanded,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 👤 Compact Header
+                  _buildUserHeader(user, isDark),
+                  
+                  // 📋 Erweiterte Details
+                  if (_isExpanded) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Divider(
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                      height: 1,
+                      thickness: 1,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    _buildExpandedDetails(user, isDark),
+                  ],
+                ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+  
+  /// 👤 User Header (Avatar + Name + Status)
+  Widget _buildUserHeader(dynamic user, bool isDark) {
+    return Row(
+      children: [
+        // 🎭 Avatar Circle
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+              width: 2,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              user.username.substring(0, 1).toUpperCase(),
+              style: AppTypography.h4(isDark: isDark).copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        // 📝 Name und Status
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      user.username,
+                      style: AppTypography.labelLarge(isDark: isDark),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (user.isLocked ?? false) ...[
+                    const SizedBox(width: AppSpacing.xs),
+                    const Icon(
+                      Icons.lock,
+                      color: AppColors.error,
+                      size: 16,
+                    ),
+                  ],
+                ],
+              ),
+              if (!_isExpanded)
+                Text(
+                  AppLocalizations.of(context).userInfoClickForDetails,
+                  style: AppTypography.bodySmall(isDark: isDark).copyWith(
+                    color: isDark ? AppColors.textSecondary : AppColors.textSecondaryLight,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        // 🔽 Expand/Collapse Icon
+        Icon(
+          _isExpanded ? Icons.expand_less : Icons.expand_more,
+          color: isDark ? AppColors.textSecondary : AppColors.textSecondaryLight,
+          size: 20,
+        ),
+      ],
+    );
+  }
+  
+  /// 📋 Erweiterte User-Details
+  Widget _buildExpandedDetails(dynamic user, bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ✉️ Email
+        Row(
+          children: [
+            Icon(
+              Icons.email_outlined, 
+              size: 16, 
+              color: isDark ? AppColors.textSecondary : AppColors.textSecondaryLight,
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            Expanded(
+              child: Text(
+                user.email,
+                style: AppTypography.bodyMedium(isDark: isDark),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        
+        const SizedBox(height: AppSpacing.sm),
+        
+        // 🛡️ Rollen
+        if (user.roles != null && user.roles!.isNotEmpty) ...[
+          Row(
+            children: [
+              Icon(
+                Icons.security, 
+                size: 16, 
+                color: isDark ? AppColors.textSecondary : AppColors.textSecondaryLight,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                AppLocalizations.of(context).userInfoRoles,
+                style: AppTypography.bodyMedium(isDark: isDark).copyWith(
+                  color: isDark ? AppColors.textSecondary : AppColors.textSecondaryLight,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          _buildRoleBadges(user.roles!),
+          const SizedBox(height: AppSpacing.sm),
+        ],
+        
+        // 🌟 Divider
+        Divider(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+          height: 1,
+          thickness: 1,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        
+        // 🚪 Logout Button mit DynamicComponents
+        SizedBox(
+          width: double.infinity,
+          child: DynamicComponents.secondaryButton(
+            text: AppLocalizations.of(context).authLogoutButton,
+            onPressed: () async {
+              await _authService.logout();
+              if (mounted) {
+                context.goNamed('login');
+              }
+            },
+            icon: Icons.logout,
+            size: AppButtonSize.medium,
+          ),
+        ),
+      ],
+    );
+  }
+  
+  /// 🛡️ Rolle-Badges mit Fantasy-Theme-Colors
+  Widget _buildRoleBadges(List<dynamic> userRoles) {
+    return Wrap(
+      spacing: AppSpacing.xs,
+      runSpacing: AppSpacing.xs,
+      children: userRoles.map((userRole) {
+        final roleName = userRole.role.name;
+        final scopeInfo = userRole.scopeType == 'global' 
+            ? '' 
+            : ' (${userRole.scopeType})';
+        final roleColor = _getRoleColor(roleName);
+        
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xs,
+            vertical: 4,
+          ),
+          decoration: BoxDecoration(
+            color: roleColor.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: roleColor.withValues(alpha: 0.5),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.badge,
+                size: 12,
+                color: roleColor,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '$roleName$scopeInfo',
+                style: AppTypography.bodySmall(isDark: true).copyWith(
+                  color: roleColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 } 

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../core/providers/locale_provider.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_theme.dart';
+import '../../theme/tokens/spacing.dart';
+import '../../theme/tokens/typography.dart';
+import '../components/index.dart';
+import '../utils/dynamic_components.dart';
 
+/// Language switcher widget that displays as an expandable icon.
+/// Shows a language globe icon when collapsed, expands to show language options when tapped.
 class LanguageSwitcher extends StatefulWidget {
-  final bool showLabel;
-  final bool isCompact;
-  
-  const LanguageSwitcher({
-    super.key,
-    this.showLabel = true,
-    this.isCompact = false,
-  });
+  const LanguageSwitcher({super.key});
 
   @override
   State<LanguageSwitcher> createState() => _LanguageSwitcherState();
@@ -19,6 +17,7 @@ class LanguageSwitcher extends StatefulWidget {
 
 class _LanguageSwitcherState extends State<LanguageSwitcher> {
   late final LocaleProvider _localeProvider;
+  bool _isExpanded = false;
   
   @override
   void initState() {
@@ -39,129 +38,142 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
     }
   }
   
+  void _toggleExpanded() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+    });
+  }
+  
   Future<void> _switchLanguage(String languageCode) async {
     final newLocale = Locale(languageCode);
     await _localeProvider.setLocale(newLocale);
   }
   
+  /// Liste der verfügbaren Sprachen - hier können neue Sprachen hinzugefügt werden
+  List<Map<String, String>> get _availableLanguages => [
+    {'code': 'de', 'name': 'Deutsch'},
+    {'code': 'en', 'name': 'English'},
+    // Hier können weitere Sprachen hinzugefügt werden:
+    // {'code': 'fr', 'name': 'Français'},
+    // {'code': 'es', 'name': 'Español'},
+  ];
+  
   @override
   Widget build(BuildContext context) {
-    final currentLanguage = _localeProvider.currentLocale.languageCode;
+    // Dynamische Größenberechnung basierend auf verfügbaren Sprachen
+    final dynamicHeight = _isExpanded 
+        ? 90.0 + (_availableLanguages.length * 50.0) // Header + Buttons
+        : 48.0;
     
-    if (widget.isCompact) {
-      return _buildCompactSwitcher(currentLanguage);
-    } else {
-      return _buildFullSwitcher(context, currentLanguage);
-    }
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      constraints: BoxConstraints(
+        maxWidth: _isExpanded ? 200 : 48,  // Sichere feste Maximalbreite
+        maxHeight: dynamicHeight,
+      ),
+      child: _isExpanded ? _buildExpandedView(context) : _buildCompactView(),
+    );
   }
   
-  Widget _buildCompactSwitcher(String currentLanguage) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AppTheme.primaryColor.withValues(alpha: 0.3),
-          width: 1,
+  Widget _buildCompactView() {
+    return GestureDetector(
+      onTap: _toggleExpanded,
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildLanguageButton('DE', 'de', currentLanguage, isFirst: true),
-          _buildLanguageButton('EN', 'en', currentLanguage, isLast: true),
-        ],
+        child: Icon(
+          Icons.language,
+          color: Theme.of(context).colorScheme.primary,
+          size: 28, // Exakt gleiche Größe wie NavigationWidget
+        ),
       ),
     );
   }
   
-  Widget _buildFullSwitcher(BuildContext context, String currentLanguage) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppTheme.primaryColor.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
+  Widget _buildExpandedView(BuildContext context) {
+    final currentLanguage = _localeProvider.currentLocale.languageCode;
+    
+    return DynamicComponents.frame(
+      title: AppLocalizations.of(context).commonLanguage,
+      padding: const EdgeInsets.all(AppSpacing.sm),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (widget.showLabel) ...[
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with close button
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(
-                  Icons.language,
-                  color: AppTheme.primaryColor,
-                  size: 16,
+                Row(
+                  children: [
+                    Icon(
+                      Icons.language,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 16,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(
+                      AppLocalizations.of(context).commonLanguage,
+                      style: AppTypography.bodySmall(
+                        isDark: Theme.of(context).brightness == Brightness.dark,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  AppLocalizations.of(context).commonLanguage,
-                  style: TextStyle(
-                    color: Colors.grey[300],
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                GestureDetector(
+                  onTap: _toggleExpanded,
+                  child: Icon(
+                    Icons.close,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
+            // Language buttons - dynamisch generiert
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: _availableLanguages.map((language) {
+                final isSelected = currentLanguage == language['code'];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                  child: SizedBox(
+                    width: double.infinity, // Feste Breite für Row-Kompatibilität
+                    child: isSelected
+                        ? DynamicComponents.primaryButton(
+                            text: language['name']!,
+                            onPressed: () => _switchLanguage(language['code']!),
+                            size: AppButtonSize.small,
+                            isLoading: false,
+                            icon: Icons.check,
+                          )
+                        : DynamicComponents.secondaryButton(
+                            text: language['name']!,
+                            onPressed: () => _switchLanguage(language['code']!),
+                            size: AppButtonSize.small,
+                          ),
+                  ),
+                );
+              }).toList(),
+            ),
           ],
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildLanguageButton('Deutsch', 'de', currentLanguage, isFirst: true),
-              const SizedBox(width: 8),
-              _buildLanguageButton('English', 'en', currentLanguage, isLast: true),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildLanguageButton(
-    String label, 
-    String languageCode, 
-    String currentLanguage, {
-    bool isFirst = false,
-    bool isLast = false,
-  }) {
-    final isSelected = currentLanguage == languageCode;
-    
-    return GestureDetector(
-      onTap: () => _switchLanguage(languageCode),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.symmetric(
-          horizontal: widget.isCompact ? 12 : 16,
-          vertical: widget.isCompact ? 6 : 8,
         ),
-        decoration: BoxDecoration(
-          color: isSelected 
-            ? AppTheme.primaryColor 
-            : Colors.transparent,
-          borderRadius: BorderRadius.circular(widget.isCompact ? 16 : 8),
-          border: isSelected 
-            ? null 
-            : Border.all(
-                color: Colors.grey[600]!.withValues(alpha: 0.5),
-                width: 1,
-              ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey[300],
-            fontSize: widget.isCompact ? 12 : 14,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-          ),
-        ),
-      ),
     );
   }
 }
