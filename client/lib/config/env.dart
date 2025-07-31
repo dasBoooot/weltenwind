@@ -2,6 +2,9 @@ class Env {
   static const String apiUrl = 'http://192.168.2.168:3000';
   static const String apiBasePath = '/api';
   
+  // Client/Frontend URL (für Invite-Links und Web-Routing)
+  static const String clientUrl = 'http://192.168.2.168:3000/game';
+  
   // API Endpoints
   static const String authEndpoint = '$apiBasePath/auth';
   static const String worldsEndpoint = '$apiBasePath/worlds';

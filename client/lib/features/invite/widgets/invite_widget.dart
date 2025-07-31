@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import '../../../config/logger.dart';
+import '../../../config/env.dart';
 import '../../../core/services/api_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/app_theme.dart';
@@ -144,7 +145,7 @@ class _InviteWidgetState extends State<InviteWidget> {
           // Link aus Response holen oder aus Token generieren
           final serverLink = inviteData['link'];
           final token = inviteData['token'];
-          final generatedLink = serverLink ?? '${kIsWeb ? Uri.base.origin : 'http://192.168.2.168:8080/game'}/go/invite/$token';
+          final generatedLink = serverLink ?? '${kIsWeb ? Uri.base.origin : Env.clientUrl}/go/invite/$token';
           
           setState(() {
             _inviteLink = generatedLink;
@@ -214,7 +215,7 @@ class _InviteWidgetState extends State<InviteWidget> {
       // Wenn es bereits ein vollständiger Link ist, direkt verwenden
       final link = linkOrToken.startsWith('http') 
           ? linkOrToken 
-          : '${kIsWeb ? Uri.base.origin : 'http://192.168.2.168:8080/game'}/go/invite/$linkOrToken';
+          : '${kIsWeb ? Uri.base.origin : Env.clientUrl}/go/invite/$linkOrToken';
       
       await Clipboard.setData(ClipboardData(text: link));
       
