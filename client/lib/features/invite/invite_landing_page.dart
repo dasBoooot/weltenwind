@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
 import '../../l10n/app_localizations.dart';
@@ -235,6 +236,8 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     final userStatus = userStatusRaw is Map<String, dynamic> 
         ? userStatusRaw['status'] as String?
         : userStatusRaw as String?;
+    
+
 
     return SingleChildScrollView(
       key: key,
@@ -636,6 +639,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                 context.goNamed('register', extra: {
                   'invite_token': widget.token,
                   'email': inviteEmail,
+                  'auto_accept_invite': true,  // Flag für Auto-Accept nach Registrierung
                   'redirect_to_invite': '/go/invite/${widget.token}',
                 });
               },
@@ -731,6 +735,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                 // 🎯 CLEAN NAVIGATION: Direkt zur Login-Seite mit invite_token im State
                 context.goNamed('login', extra: {
                   'invite_token': widget.token,
+                  'auto_accept_invite': true,  // Flag für Auto-Accept nach Login
                   'redirect_to_invite': '/go/invite/${widget.token}',
                 });
               },

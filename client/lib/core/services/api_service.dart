@@ -36,7 +36,7 @@ class ApiService {
           _token = accessToken;
         }
       } catch (e) {
-        // Error loading token
+        // Error loading token - continue without token
       }
       _initialized = true;
     }

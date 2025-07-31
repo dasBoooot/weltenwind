@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
+import '../../core/services/api_service.dart';
 import '../../theme/tokens/colors.dart';
 import '../../theme/tokens/spacing.dart';
 import '../../theme/tokens/typography.dart';
@@ -39,6 +41,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   
   // Invite-Parameter
   String? _inviteToken;
+  bool _autoAcceptInvite = false;
   
   // Für bessere Validierung
   bool _hasInteractedWithUsername = false;
@@ -48,7 +51,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
     _initializeServices();
-    _loadQueryParameters();
     
     // Animation Setup
     _animationController = AnimationController(
@@ -87,20 +89,42 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     }
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadQueryParameters();
+  }
+
   void _loadQueryParameters() {
     // Load invite token from route extra data
-    final routeState = GoRouterState.of(context);
-    final extra = routeState.extra;
-    
-    if (extra is Map<String, dynamic>) {
-      _inviteToken = extra['invite_token'] as String?;
-      if (_inviteToken != null) {
-        AppLogger.app.i('🎫 Invite token loaded from route: $_inviteToken');
+    try {
+      final routeState = GoRouterState.of(context);
+      final extra = routeState.extra;
+      
+      if (extra is Map<String, dynamic>) {
+        final newInviteToken = extra['invite_token'] as String?;
+        final autoAccept = extra['auto_accept_invite'] as bool? ?? false;
+        
+        if (newInviteToken != null && newInviteToken != _inviteToken) {
+          _inviteToken = newInviteToken;
+          _autoAcceptInvite = autoAccept;
+          AppLogger.app.i('🎫 Invite token loaded from route: $_inviteToken (auto-accept: $autoAccept)');
+        }
       }
+    } catch (e) {
+      AppLogger.app.w('⚠️ Could not load route parameters: $e');
     }
   }
 
   Future<void> _login() async {
+    // Edge Case: User ist bereits angemeldet, aber kam von Invite-Page
+    final isAlreadyLoggedIn = await _authService.isLoggedIn();
+    if (isAlreadyLoggedIn && _inviteToken != null) {
+      AppLogger.app.i('🔍 User already logged in, checking auto-accept for invite');
+      await _handleInviteAccept();
+      return;
+    }
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -142,17 +166,60 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   }
 
   Future<void> _handleInviteAccept() async {
+    AppLogger.app.i('🔄 _handleInviteAccept called with token: $_inviteToken (auto-accept: $_autoAcceptInvite)');
+    
     if (_inviteToken == null) {
+      AppLogger.app.i('❌ No invite token found, going to world-list');
       context.goNamed('world-list');
       return;
     }
 
-    try {
-      // Zurück zum Invite-Link nach erfolgreichem Login
-      AppLogger.app.i('🎫 Redirecting to invite after login: $_inviteToken');
-      context.go('/go/invite/$_inviteToken');
-    } catch (e) {
-      AppLogger.error.e('❌ Fehler beim Invite-Redirect nach Login', error: e);
+    // Auto-akzeptieren wenn das Flag gesetzt ist ODER User bereits angemeldet war (Edge Case)
+    if (_autoAcceptInvite || await _authService.isLoggedIn()) {
+      try {
+        // Invite direkt akzeptieren statt nur zur Invite-Seite zurück
+        AppLogger.app.i('🎫 Auto-accepting invite after login: $_inviteToken');
+        final apiService = ServiceLocator.get<ApiService>();
+        final response = await apiService.post('/invites/accept/$_inviteToken', {});
+        
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body);
+          if (responseData['success'] == true) {
+            final worldId = responseData['data']?['world']?['id'];
+            final worldName = responseData['data']?['world']?['name'];
+            
+            AppLogger.app.i('✅ Invite auto-accepted successfully: $worldName');
+            
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Erfolgreich der Welt "$worldName" beigetreten!'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              
+              if (worldId != null) {
+                context.go('/go/worlds/$worldId/join');
+              } else {
+                context.goNamed('world-list');
+              }
+            }
+            return;
+          }
+        }
+        
+        // Fallback: Bei Fehler zur Invite-Seite leiten
+        AppLogger.app.w('⚠️ Auto-accept failed, redirecting to invite page');
+        context.go('/go/invite/$_inviteToken');
+        
+      } catch (e) {
+        AppLogger.error.e('❌ Fehler beim Auto-Accept von Invite', error: e);
+        // Fallback: Bei Fehler zur Invite-Seite leiten
+        context.go('/go/invite/$_inviteToken');
+      }
+    } else {
+      // Normales Login ohne Auto-Accept -> zu World-List
+      AppLogger.app.i('🏠 Normal login, going to world-list');
       context.goNamed('world-list');
     }
   }
