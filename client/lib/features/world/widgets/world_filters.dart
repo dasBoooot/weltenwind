@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/world.dart';
-import './world_card.dart';
 import '../../../l10n/app_localizations.dart';
 
 class WorldFilters extends StatelessWidget {

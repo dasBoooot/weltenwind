@@ -1266,6 +1266,342 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error loading world data: {error}'**
   String worldJoinErrorLoadingWorldData(String error);
+
+  /// Title of the invitation page
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation'**
+  String get invitePageTitle;
+
+  /// Welcome title on the invitation page
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve been invited!'**
+  String get inviteWelcomeTitle;
+
+  /// Welcome subtitle with world name
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve been invited to the world \"{worldName}\"'**
+  String inviteWelcomeSubtitle(String worldName);
+
+  /// Shows who sent the invitation
+  ///
+  /// In en, this message translates to:
+  /// **'Invited by {username}'**
+  String inviteFromUser(String username);
+
+  /// Title for invitation details section
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation Details'**
+  String get inviteDetailsTitle;
+
+  /// Label for email in invitation details
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get inviteDetailsEmail;
+
+  /// Label for world in invitation details
+  ///
+  /// In en, this message translates to:
+  /// **'World'**
+  String get inviteDetailsWorld;
+
+  /// Label for status in invitation details
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inviteDetailsStatus;
+
+  /// Label for expiration time in invitation details
+  ///
+  /// In en, this message translates to:
+  /// **'Expires'**
+  String get inviteDetailsExpires;
+
+  /// Hint text for registration
+  ///
+  /// In en, this message translates to:
+  /// **'You need an account to join the world.'**
+  String get inviteActionRegisterHint;
+
+  /// Button text for registration and joining
+  ///
+  /// In en, this message translates to:
+  /// **'Register & Join'**
+  String get inviteActionRegisterAndJoin;
+
+  /// Link text for already registered users
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign in'**
+  String get inviteActionAlreadyHaveAccount;
+
+  /// Hint text for login
+  ///
+  /// In en, this message translates to:
+  /// **'You already have an account. Sign in to join the world.'**
+  String get inviteActionLoginHint;
+
+  /// Button text for login
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get inviteActionLogin;
+
+  /// Hint text for accepting/declining invitation
+  ///
+  /// In en, this message translates to:
+  /// **'Hello {username}! You can now accept or decline the invitation.'**
+  String inviteActionAcceptHint(String username);
+
+  /// Button text for accepting the invitation
+  ///
+  /// In en, this message translates to:
+  /// **'Accept Invitation'**
+  String get inviteActionAccept;
+
+  /// Button text for declining the invitation
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get inviteActionDecline;
+
+  /// Hint text for wrong email
+  ///
+  /// In en, this message translates to:
+  /// **'You are signed in as {currentEmail}, but the invitation is for {inviteEmail}. You need to sign out and register with the correct email.'**
+  String inviteActionWrongEmailHint(String currentEmail, String inviteEmail);
+
+  /// Button text for logout and registration
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out & Register'**
+  String get inviteActionLogoutAndRegister;
+
+  /// Error message for unknown user status
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown status. Please try again later.'**
+  String get inviteActionUnknownStatus;
+
+  /// Error message when no invitation data could be loaded
+  ///
+  /// In en, this message translates to:
+  /// **'No invitation data available.'**
+  String get inviteErrorNoData;
+
+  /// Error message when invitation is invalid or expired
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation invalid or expired'**
+  String get inviteErrorInvalidOrExpired;
+
+  /// Error message when loading invitation data fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading invitation data: {error}'**
+  String inviteErrorLoadingData(String error);
+
+  /// Error message when accepting invitation fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error accepting invitation'**
+  String get inviteErrorAcceptFailed;
+
+  /// Error message with exception when accepting invitation
+  ///
+  /// In en, this message translates to:
+  /// **'Error accepting invitation: {error}'**
+  String inviteErrorAcceptException(String error);
+
+  /// Error message when declining invitation fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error declining invitation'**
+  String get inviteErrorDeclineFailed;
+
+  /// Error message with exception when declining invitation
+  ///
+  /// In en, this message translates to:
+  /// **'Error declining invitation: {error}'**
+  String inviteErrorDeclineException(String error);
+
+  /// Success message when declining invitation
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation declined'**
+  String get inviteDeclineSuccess;
+
+  /// Header for more worlds in marketing section
+  ///
+  /// In en, this message translates to:
+  /// **'Discover more exciting worlds'**
+  String get marketingDiscoverMoreWorlds;
+
+  /// Marketing call-to-action text
+  ///
+  /// In en, this message translates to:
+  /// **'Discover hundreds of worlds, create your own, or join existing communities!'**
+  String get marketingCallToAction;
+
+  /// Title for Community feature in marketing
+  ///
+  /// In en, this message translates to:
+  /// **'Community'**
+  String get marketingFeatureCommunityTitle;
+
+  /// Description for Community feature in marketing
+  ///
+  /// In en, this message translates to:
+  /// **'Play with friends'**
+  String get marketingFeatureCommunityDesc;
+
+  /// Title for Create feature in marketing
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get marketingFeatureCreateTitle;
+
+  /// Description for Create feature in marketing
+  ///
+  /// In en, this message translates to:
+  /// **'Build your world'**
+  String get marketingFeatureCreateDesc;
+
+  /// Title for Explore feature in marketing
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get marketingFeatureExploreTitle;
+
+  /// Description for Explore feature in marketing
+  ///
+  /// In en, this message translates to:
+  /// **'New adventures'**
+  String get marketingFeatureExploreDesc;
+
+  /// Button text for browsing all worlds
+  ///
+  /// In en, this message translates to:
+  /// **'Browse all worlds'**
+  String get marketingBrowseAllWorlds;
+
+  /// Label for invitation creation date
+  ///
+  /// In en, this message translates to:
+  /// **'Created on'**
+  String get inviteDetailsCreated;
+
+  /// No description provided for @inviteWidgetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send invitation for {worldName}'**
+  String inviteWidgetTitle(String worldName);
+
+  /// No description provided for @inviteWidgetEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get inviteWidgetEmailLabel;
+
+  /// No description provided for @inviteWidgetEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'friend@example.com'**
+  String get inviteWidgetEmailHint;
+
+  /// No description provided for @inviteWidgetEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address is required'**
+  String get inviteWidgetEmailRequired;
+
+  /// No description provided for @inviteWidgetEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email address'**
+  String get inviteWidgetEmailInvalid;
+
+  /// No description provided for @inviteWidgetSendEmailOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Send email automatically'**
+  String get inviteWidgetSendEmailOption;
+
+  /// No description provided for @inviteWidgetSendEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable to create invitation link only'**
+  String get inviteWidgetSendEmailHint;
+
+  /// No description provided for @inviteWidgetSendButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Send invitation'**
+  String get inviteWidgetSendButton;
+
+  /// No description provided for @inviteWidgetCreateLinkButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create link'**
+  String get inviteWidgetCreateLinkButton;
+
+  /// No description provided for @inviteWidgetSuccessWithEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation successfully sent to {email}!'**
+  String inviteWidgetSuccessWithEmail(String email);
+
+  /// No description provided for @inviteWidgetSuccessLinkOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation link successfully created!'**
+  String get inviteWidgetSuccessLinkOnly;
+
+  /// No description provided for @inviteWidgetCopyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get inviteWidgetCopyLink;
+
+  /// No description provided for @inviteWidgetDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite player'**
+  String get inviteWidgetDialogTitle;
+
+  /// No description provided for @inviteWidgetCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get inviteWidgetCancel;
+
+  /// No description provided for @inviteWidgetLinkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Link:'**
+  String get inviteWidgetLinkTitle;
+
+  /// No description provided for @worldInviteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get worldInviteButton;
+
+  /// No description provided for @authLoginSuccessButInviteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login successful, but invitation could not be accepted.'**
+  String get authLoginSuccessButInviteFailed;
+
+  /// No description provided for @authRegisterSuccessButInviteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration successful, but invitation could not be accepted.'**
+  String get authRegisterSuccessButInviteFailed;
 }
 
 class _AppLocalizationsDelegate

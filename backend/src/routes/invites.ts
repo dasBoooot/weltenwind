@@ -3,8 +3,19 @@ import prisma from '../libs/prisma';
 import { loggers } from '../config/logger.config';
 import { AuthenticatedRequest } from '../middleware/authenticate';
 import { authenticate } from '../middleware/authenticate';
+import { hasPermission } from '../services/access-control.service';
+import { jwtConfig } from '../config/jwt.config';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 const router = express.Router();
+
+// Sichere User-Guard Funktion
+function requireUser(req: AuthenticatedRequest): asserts req is Required<AuthenticatedRequest> {
+  if (!req.user) {
+    throw new Error('Fehlender Benutzerkontext');
+  }
+}
 
 /**
  * GET /api/invites/validate/:token
@@ -424,6 +435,410 @@ router.post('/accept/:token', authenticate, async (req: AuthenticatedRequest, re
     res.status(500).json({
       error: 'Interner Serverfehler',
       details: 'Fehler bei der Invite-Akzeptierung'
+    });
+  }
+});
+
+/**
+ * POST /api/invites
+ * Einladungen erstellen (authentifiziert)
+ * Body: { worldId: number, email?: string, emails?: string[] }
+ * Permission: invite.create (world scope)
+ */
+router.post('/', authenticate, async (req: AuthenticatedRequest, res) => {
+  const { worldId, email, emails, sendEmail = true } = req.body;
+  
+  if (!worldId || isNaN(parseInt(worldId))) {
+    return res.status(400).json({ error: 'Gültige Welt-ID erforderlich' });
+  }
+
+  requireUser(req);
+  
+  // Permission prüfen: invite.create
+  const allowed = await hasPermission(req.user.id, 'invite.create', {
+    type: 'world',
+    objectId: worldId.toString()
+  });
+
+  if (!allowed) {
+    return res.status(403).json({ error: 'Keine Berechtigung zum Erstellen von Einladungen' });
+  }
+
+  const emailList = [];
+  if (email) emailList.push(email);
+  if (Array.isArray(emails)) emailList.push(...emails);
+  if (emailList.length === 0) {
+    return res.status(400).json({ error: 'Mindestens eine E-Mail erforderlich' });
+  }
+
+  // E-Mail-Deduplizierung
+  const emailSet = new Set(emailList.map(e => e.toLowerCase().trim()));
+  if (emailSet.size === 0) {
+    return res.status(400).json({ error: 'Mindestens eine gültige E-Mail erforderlich' });
+  }
+
+  try {
+    const invites = [];
+    for (const mail of emailSet) {
+      // Prüfe ob bereits eine Einladung für diese E-Mail existiert
+      const existingInvite = await prisma.invite.findFirst({
+        where: {
+          worldId: parseInt(worldId),
+          email: mail.toLowerCase().trim()
+        }
+      });
+
+      if (existingInvite) {
+        // Überspringe bereits existierende Einladungen
+        continue;
+      }
+
+      const token = crypto.randomBytes(32).toString('hex');
+      const invite = await prisma.invite.create({
+        data: {
+          worldId: parseInt(worldId),
+          email: mail,
+          token,
+          invitedById: req.user.id,
+          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 Tage gültig
+        }
+      });
+      
+      invites.push(invite);
+      
+      loggers.system.info('✅ Invite erstellt', {
+        inviteId: invite.id,
+        worldId: parseInt(worldId),
+        email: mail,
+        inviterId: req.user.id
+      });
+    }
+    
+    if (invites.length === 0) {
+      return res.status(400).json({ error: 'Alle E-Mail-Adressen haben bereits eine Einladung erhalten' });
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: 'Einladung(en) erfolgreich erstellt',
+      data: { 
+        invites: invites.map(i => ({ 
+          id: i.id,
+          email: i.email, 
+          token: i.token,
+          link: `${process.env.CLIENT_URL || 'http://192.168.2.168:8080/game'}/go/invite/${i.token}`,
+          worldId: i.worldId,
+          expiresAt: i.expiresAt
+        })) 
+      }
+    });
+    
+  } catch (error) {
+    loggers.system.error('❌ Fehler beim Erstellen von Invites', error, {
+      worldId,
+      userId: req.user.id
+    });
+    
+    res.status(500).json({
+      error: 'Interner Serverfehler',
+      details: 'Fehler beim Erstellen der Einladungen'
+    });
+  }
+});
+
+/**
+ * POST /api/invites/public
+ * Öffentliche Einladungen erstellen (keine Authentifizierung erforderlich)
+ * Body: { worldId: number, email?: string, emails?: string[] }
+ * Für Einladungen an nicht-registrierte Benutzer
+ */
+router.post('/public', async (req, res) => {
+  const { worldId, email, emails } = req.body;
+  
+  if (!worldId || isNaN(parseInt(worldId))) {
+    return res.status(400).json({ error: 'Gültige Welt-ID erforderlich' });
+  }
+
+  try {
+    // Prüfe ob Welt existiert und öffentlich ist
+    const world = await prisma.world.findUnique({ where: { id: parseInt(worldId) } });
+    if (!world) {
+      return res.status(404).json({ error: 'Welt nicht gefunden' });
+    }
+
+    // Nur für offene Welten erlauben
+    if (world.status !== 'open' && world.status !== 'upcoming') {
+      return res.status(403).json({ error: 'Welt ist nicht für öffentliche Einladungen geöffnet' });
+    }
+
+    const emailList = [];
+    if (email) emailList.push(email);
+    if (Array.isArray(emails)) emailList.push(...emails);
+    if (emailList.length === 0) {
+      return res.status(400).json({ error: 'Mindestens eine E-Mail erforderlich' });
+    }
+
+    // E-Mail-Deduplizierung
+    const emailSet = new Set(emailList.map(e => e.toLowerCase().trim()));
+    if (emailSet.size === 0) {
+      return res.status(400).json({ error: 'Mindestens eine gültige E-Mail erforderlich' });
+    }
+
+    const invites = [];
+    for (const mail of emailSet) {
+      const token = crypto.randomBytes(32).toString('hex');
+      const invite = await prisma.invite.create({
+        data: {
+          worldId: parseInt(worldId),
+          email: mail,
+          token,
+          invitedById: null, // Kein authentifizierter Benutzer
+          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 Tage gültig
+        }
+      });
+      
+      invites.push(invite);
+      
+      loggers.system.info('✅ Öffentlicher Invite erstellt', {
+        inviteId: invite.id,
+        worldId: parseInt(worldId),
+        email: mail
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: 'Öffentliche Einladung(en) erfolgreich erstellt',
+      data: { 
+        invites: invites.map(i => ({ 
+          id: i.id,
+          email: i.email, 
+          token: i.token,
+          worldId: i.worldId,
+          expiresAt: i.expiresAt
+        })) 
+      }
+    });
+    
+  } catch (error) {
+    loggers.system.error('❌ Fehler beim Erstellen öffentlicher Invites', error, {
+      worldId
+    });
+    
+    res.status(500).json({
+      error: 'Interner Serverfehler',
+      details: 'Fehler beim Erstellen der öffentlichen Einladungen'
+    });
+  }
+});
+
+/**
+ * GET /api/invites/world/:worldId
+ * Alle Einladungen einer Welt anzeigen 
+ */
+router.get('/world/:worldId', async (req, res) => {
+  const worldId = parseInt(req.params.worldId);
+  
+  if (isNaN(worldId)) {
+    return res.status(400).json({ error: 'Ungültige Welt-ID' });
+  }
+
+  try {
+    const invites = await prisma.invite.findMany({
+      where: { worldId },
+      select: {
+        id: true,
+        email: true,
+        token: true,
+        createdAt: true,
+        expiresAt: true,
+        acceptedAt: true,
+        invitedBy: {
+          select: {
+            username: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    loggers.system.info('📋 Invites abgerufen', {
+      worldId,
+      count: invites.length
+    });
+
+    res.json({
+      success: true,
+      data: invites
+    });
+    
+  } catch (error) {
+    loggers.system.error('❌ Fehler beim Abrufen von Invites', error, {
+      worldId
+    });
+    
+    res.status(500).json({
+      error: 'Interner Serverfehler',
+      details: 'Fehler beim Abrufen der Einladungen'
+    });
+  }
+});
+
+/**
+ * DELETE /api/invites/:id
+ * Einladung löschen (authentifiziert)
+ * Permission: invite.delete (world scope)
+ */
+router.delete('/:id', authenticate, async (req: AuthenticatedRequest, res) => {
+  const inviteId = parseInt(req.params.id);
+  
+  if (isNaN(inviteId)) {
+    return res.status(400).json({ error: 'Ungültige Invite-ID' });
+  }
+
+  requireUser(req);
+
+  try {
+    // Prüfe ob Invite existiert
+    const invite = await prisma.invite.findFirst({
+      where: { id: inviteId },
+      include: {
+        invitedBy: {
+          select: {
+            id: true,
+            username: true
+          }
+        }
+      }
+    });
+
+    if (!invite) {
+      return res.status(404).json({ error: 'Einladung nicht gefunden' });
+    }
+
+    // Permission prüfen: invite.delete
+    const allowed = await hasPermission(req.user.id, 'invite.delete', {
+      type: 'world',
+      objectId: invite.worldId.toString()
+    });
+
+    if (!allowed) {
+      return res.status(403).json({ error: 'Keine Berechtigung zum Löschen von Einladungen' });
+    }
+
+    await prisma.invite.delete({ where: { id: inviteId } });
+
+    loggers.system.info('✅ Invite gelöscht', {
+      inviteId,
+      worldId: invite.worldId,
+      deletedBy: req.user.id
+    });
+
+    res.json({
+      success: true,
+      message: 'Einladung erfolgreich gelöscht'
+    });
+    
+  } catch (error) {
+    loggers.system.error('❌ Fehler beim Löschen von Invite', error, {
+      inviteId,
+      userId: req.user.id
+    });
+    
+    res.status(500).json({
+      error: 'Interner Serverfehler',
+      details: 'Fehler beim Löschen der Einladung'
+    });
+  }
+});
+
+/**
+ * POST /api/invites/decline/:token
+ * Einladung ablehnen (markiert als declined, löscht nicht)
+ */
+router.post('/decline/:token', async (req, res) => {
+  const { token } = req.params;
+
+  if (!token) {
+    return res.status(400).json({
+      error: 'Token erforderlich'
+    });
+  }
+
+  try {
+    // Finde und validiere Invite
+    const invite = await prisma.invite.findUnique({
+      where: { token },
+      include: {
+        world: {
+          select: { 
+            id: true, 
+            name: true, 
+            status: true
+          }
+        },
+        invitedBy: {
+          select: { 
+            username: true
+          }
+        }
+      }
+    });
+
+    if (!invite) {
+      loggers.system.warn('⚠️ Ungültiger Invite-Token bei Decline', {
+        token: token.substring(0, 8) + '...'
+      });
+      return res.status(404).json({
+        error: 'Ungültiger Invite-Token'
+      });
+    }
+
+    // Prüfe ob bereits akzeptiert oder abgelaufen
+    if (invite.acceptedAt) {
+      return res.status(409).json({
+        error: 'Invite bereits akzeptiert - kann nicht mehr abgelehnt werden'
+      });
+    }
+
+    if (invite.expiresAt && invite.expiresAt < new Date()) {
+      return res.status(410).json({
+        error: 'Invite-Token ist abgelaufen'
+      });
+    }
+
+    // Lösche den Invite (Decline = Löschen)
+    await prisma.invite.delete({
+      where: { id: invite.id }
+    });
+
+    loggers.system.info('✅ Invite abgelehnt (gelöscht)', {
+      inviteId: invite.id,
+      worldId: invite.worldId,
+      worldName: invite.world?.name,
+      email: invite.email
+    });
+
+    res.json({
+      success: true,
+      message: 'Einladung erfolgreich abgelehnt',
+      data: {
+        world: {
+          id: invite.world?.id,
+          name: invite.world?.name
+        },
+        invitedBy: invite.invitedBy?.username
+      }
+    });
+    
+  } catch (error) {
+    loggers.system.error('❌ Fehler beim Ablehnen von Invite', error, {
+      token: token.substring(0, 8) + '...'
+    });
+
+    res.status(500).json({
+      error: 'Interner Serverfehler',
+      details: 'Fehler beim Ablehnen der Einladung'
     });
   }
 });

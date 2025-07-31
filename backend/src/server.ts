@@ -151,15 +151,35 @@ app.use('/game', (req, res, next) => {
   next();
 });
 
-app.use('/game', express.static(flutterWebPath));
-
-// 2. Fallback für alle anderen /game Routen auf index.html
-app.get('/game', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../../client/build/web/index.html'));
+// DEBUG: Alle /game Requests loggen
+app.use('/game', (req, res, next) => {
+  console.log(`📁 GAME REQUEST: ${req.method} ${req.path}`);
+  next();
 });
 
-app.get('/game/:path', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../../client/build/web/index.html'));
+app.use('/game', express.static(flutterWebPath));
+
+// SPA Fallback für alle /game Sub-Routen (z.B. /game/go/invite/token)  
+app.get(/^\/game\/.*/, (req, res) => {
+  const file = path.resolve(__dirname, '../../client/build/web/index.html');
+  console.log(`📦 FALLBACK TRIGGERED: ${req.path}`);
+  console.log(`📦 ORIGINAL URL: ${req.originalUrl}`);
+  console.log(`📦 FULL URL: ${req.protocol}://${req.get('host')}${req.originalUrl}`);
+  console.log(`📦 QUERY: ${JSON.stringify(req.query)}`);
+  console.log(`📦 SENDING FILE: ${file}`);
+  
+  // Prüfe ob Datei existiert
+  if (!fs.existsSync(file)) {
+    console.log('❌ INDEX.HTML NICHT GEFUNDEN!');
+    return res.status(404).send('index.html not found');
+  }
+  
+  res.set({
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
+  });
+  res.sendFile(file);
 });
 
 // === Info- und Status-Endpunkte ===

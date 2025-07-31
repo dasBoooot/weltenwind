@@ -8,6 +8,7 @@ import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
+import '../invite/widgets/invite_widget.dart';
 import '../../l10n/app_localizations.dart';
 
 
@@ -173,6 +174,33 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
   }
 
 
+
+  Future<void> _inviteToWorld() async {
+    if (_world == null) return;
+    
+    try {
+      await showInviteDialog(
+        context,
+        worldId: _world!.id.toString(),
+        worldName: _world!.name,
+        onInviteSent: () {
+          // Optional: Refresh oder andere Aktion nach erfolgreichem Invite
+          AppLogger.app.i('Invite erfolgreich gesendet für Welt: ${_world!.name}');
+        },
+      );
+    } catch (e) {
+      AppLogger.logError('Fehler beim Öffnen des Invite-Dialogs', e, context: {'worldId': _world!.id});
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fehler beim Öffnen des Einladungs-Dialogs: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   Future<void> _joinWorld() async {
     if (_world == null) return;
@@ -852,6 +880,23 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 ),
               ),
           );
+          
+          // Invite Button als LETZTER Button für pre-registered upcoming worlds
+          buttons.add(
+            ElevatedButton.icon(
+                onPressed: _inviteToWorld,
+                icon: const Icon(Icons.person_add),
+                label: Text(AppLocalizations.of(context).worldInviteButton),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue[600],
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+          );
         } else {
           buttons.add(
             ElevatedButton.icon(
@@ -875,9 +920,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
       case WorldStatus.running:
         // Beitreten, Spielen oder Verlassen
         if (_isJoined) {
-          // Spielen Button
+                    // Spielen Button
           buttons.add(
-            ElevatedButton.icon(
+              ElevatedButton.icon(
                 onPressed: _playWorld,
                 icon: const Icon(Icons.play_circle_filled),
                 label: Text(AppLocalizations.of(context).worldPlayButton),
@@ -891,7 +936,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 ),
               ),
           );
-          
+
           // Verlassen Button
           buttons.add(
             ElevatedButton.icon(
@@ -900,6 +945,23 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 label: Text(_isJoining ? AppLocalizations.of(context).worldJoinLeaveInProgress : AppLocalizations.of(context).worldLeaveButton),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red[600],
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+          );
+          
+          // Invite Button als LETZTER Button
+          buttons.add(
+            ElevatedButton.icon(
+                onPressed: _inviteToWorld,
+                icon: const Icon(Icons.person_add),
+                label: Text(AppLocalizations.of(context).worldInviteButton),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue[600],
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(

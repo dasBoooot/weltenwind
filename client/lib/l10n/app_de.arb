@@ -1,13 +1,9 @@
 {
-  "@@locale": "de",
-  "@@context": "weltenwind-game",
-  
-  "appTitle": "Weltenwind",
+  "appTitle": "⚡Weltenwind⚡",
   "@appTitle": {
     "description": "Der Titel der Anwendung",
     "context": "app"
   },
-  
   "authLoginTitle": "Anmelden",
   "@authLoginTitle": {
     "description": "Titel für die Anmelde-Seite",
@@ -30,7 +26,7 @@
   },
   "authLogoutButton": "Abmelden",
   "@authLogoutButton": {
-    "description": "Button-Text für Abmeldung",
+    "description": "Button zum Abmelden",
     "context": "authentication"
   },
   "authEmailLabel": "E-Mail",
@@ -283,11 +279,6 @@
     "description": "Button-Text zurück zur Anmeldung",
     "context": "authentication"
   },
-  "authLogoutButton": "Abmelden",
-  "@authLogoutButton": {
-    "description": "Button zum Abmelden",
-    "context": "authentication"
-  },
   "navDashboard": "Dashboard",
   "@navDashboard": {
     "description": "Navigations-Element für Dashboard",
@@ -308,40 +299,40 @@
     "description": "Titel für die Welten-Seite",
     "context": "worlds"
   },
-  "worldLeaveButton": "Welt verlassen",
+  "worldLeaveButton": "Verlassen",
   "@worldLeaveButton": {
-    "description": "Button-Text um eine Welt zu verlassen",
-    "context": "worlds"
+    "description": "Button zum Verlassen einer Welt",
+    "context": "worldActions"
   },
   "worldPreRegisterButton": "Vorregistrieren",
   "@worldPreRegisterButton": {
-    "description": "Button-Text für Vorregistrierung bei kommender Welt",
-    "context": "worlds"
+    "description": "Button zur Vorregistrierung für eine Welt",
+    "context": "worldActions"
   },
   "worldCancelPreRegisterButton": "Vorregistrierung zurückziehen",
   "@worldCancelPreRegisterButton": {
     "description": "Button-Text um Vorregistrierung zu stornieren",
     "context": "worlds"
   },
-  "worldStatusUpcoming": "Kommend",
+  "worldStatusUpcoming": "Geplant",
   "@worldStatusUpcoming": {
-    "description": "Status-Text für kommende Welten",
-    "context": "worlds"
+    "description": "Welt Status: Geplant/Bevorstehend",
+    "context": "worldStatus"
   },
   "worldStatusOpen": "Offen",
   "@worldStatusOpen": {
-    "description": "Status-Text für offene Welten",  
-    "context": "worlds"
+    "description": "Welt Status: Offen für Beitritt",
+    "context": "worldStatus"
   },
-  "worldStatusRunning": "Laufend",
+  "worldStatusRunning": "Aktiv",
   "@worldStatusRunning": {
-    "description": "Status-Text für laufende Welten",
-    "context": "worlds"
+    "description": "Welt Status: Läuft bereits",
+    "context": "worldStatus"
   },
   "worldStatusClosed": "Geschlossen",
   "@worldStatusClosed": {
-    "description": "Status-Text für geschlossene Welten",
-    "context": "worlds"
+    "description": "Welt Status: Geschlossen",
+    "context": "worldStatus"
   },
   "errorGeneral": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
   "@errorGeneral": {
@@ -550,13 +541,13 @@
   },
   "worldListTitle": "Wähle deine Welt",
   "@worldListTitle": {
-    "description": "Haupttitel auf der Weltenliste-Seite", 
+    "description": "Haupttitel auf der Weltenliste-Seite",
     "context": "worlds"
   },
   "worldListSubtitle": "Wähle deine Welt aus",
   "@worldListSubtitle": {
     "description": "Untertitel auf der Weltenliste-Seite",
-    "context": "worlds"  
+    "context": "worlds"
   },
   "worldListLoadingError": "Fehler beim Laden der Welten: {error}",
   "@worldListLoadingError": {
@@ -606,7 +597,7 @@
   },
   "worldAlreadyMember": "Du bist bereits Mitglied der Welt \"{worldName}\"!",
   "@worldAlreadyMember": {
-  "description": "Nachricht wenn User bereits Mitglied einer Welt ist",
+    "description": "Nachricht wenn User bereits Mitglied einer Welt ist",
     "context": "worldActions",
     "placeholders": {
       "worldName": {
@@ -671,7 +662,7 @@
   },
   "worldPlayButton": "Spielen",
   "@worldPlayButton": {
-    "description": "Button zum Spielen einer Welt",
+    "description": "Button zum Spielen in einer Welt",
     "context": "worldActions"
   },
   "worldLogoutError": "Fehler beim Abmelden",
@@ -802,7 +793,6 @@
     "description": "Standard-Beschreibung für World-Cards",
     "context": "worldInfo"
   },
-
   "worldCategoryClassic": "Klassisch",
   "@worldCategoryClassic": {
     "description": "Kategorie-Label für Classic-Welten",
@@ -840,66 +830,6 @@
   },
   "worldFiltersSortStartDate": "Startdatum",
   "@worldFiltersSortStartDate": {
-    "description": "Sortier-Option: Startdatum",
-    "context": "worldFilters"
-  },
-  "worldFiltersSortName": "Name",
-  "@worldFiltersSortName": {
-    "description": "Sortier-Option: Name",
-    "context": "worldFilters"
-  },
-  "worldFiltersSortStatus": "Status",
-  "@worldFiltersSortStatus": {
-    "description": "Sortier-Option: Status",
-    "context": "worldFilters"
-  },
-  "worldFiltersSortPlayerCount": "Spieleranzahl",
-  "@worldFiltersSortPlayerCount": {
-    "description": "Sortier-Option: Spieleranzahl",
-    "context": "worldFilters"
-  },
-  "worldFiltersActiveFilters": "Aktive Filter: ",
-  "@worldFiltersActiveFilters": {
-    "description": "Label für aktive Filter",
-    "context": "worldFilters"
-  },
-  "worldFiltersResetAll": "Alle zurücksetzen",
-  "@worldFiltersResetAll": {
-    "description": "Button zum Zurücksetzen aller Filter",
-    "context": "worldFilters"
-  },
-  "worldStatusUpcoming": "Geplant",
-  "@worldStatusUpcoming": {
-    "description": "Welt Status: Geplant/Bevorstehend",
-    "context": "worldStatus"
-  },
-  "worldStatusOpen": "Offen",
-  "@worldStatusOpen": {
-    "description": "Welt Status: Offen für Beitritt",
-    "context": "worldStatus"
-  },
-  "worldStatusRunning": "Läuft",
-  "@worldStatusRunning": {
-    "description": "Welt Status: Läuft bereits",
-    "context": "worldStatus"
-  },
-  "worldStatusClosed": "Geschlossen",
-  "@worldStatusClosed": {
-    "description": "Welt Status: Geschlossen",
-    "context": "worldStatus"
-  },
-  "worldStatusArchived": "Archiviert",
-  "@worldStatusArchived": {
-    "description": "Welt Status: Archiviert",
-    "context": "worldStatus"
-  },
-  "worldLeaveButton": "Verlassen",
-  "@worldLeaveButton": {
-    "description": "Button zum Verlassen einer Welt",
-    "context": "worldActions"
-  },
-  "worldFiltersSortStartDate": "Startdatum",
-  "@worldFiltersSortStartDate": {
     "description": "Sortieren nach Startdatum",
     "context": "worldFilters"
   },
@@ -918,15 +848,20 @@
     "description": "Sortieren nach Spieleranzahl",
     "context": "worldFilters"
   },
-  "worldPreRegisterButton": "Vorregistrieren",
-  "@worldPreRegisterButton": {
-    "description": "Button zur Vorregistrierung für eine Welt",
-    "context": "worldActions"
+  "worldFiltersActiveFilters": "Aktive Filter: ",
+  "@worldFiltersActiveFilters": {
+    "description": "Label für aktive Filter",
+    "context": "worldFilters"
   },
-  "worldPlayButton": "Spielen",
-  "@worldPlayButton": {
-    "description": "Button zum Spielen in einer Welt",
-    "context": "worldActions"
+  "worldFiltersResetAll": "Alle zurücksetzen",
+  "@worldFiltersResetAll": {
+    "description": "Button zum Zurücksetzen aller Filter",
+    "context": "worldFilters"
+  },
+  "worldStatusArchived": "Archiviert",
+  "@worldStatusArchived": {
+    "description": "Welt Status: Archiviert",
+    "context": "worldStatus"
   },
   "userInfoClickForDetails": "Klicken für Details",
   "@userInfoClickForDetails": {
@@ -1111,5 +1046,323 @@
         "description": "Fehlermeldung"
       }
     }
+  },
+  "invitePageTitle": "Einladung",
+  "@invitePageTitle": {
+    "description": "Titel der Einladungs-Seite",
+    "context": "invite"
+  },
+  "inviteWelcomeTitle": "Du wurdest eingeladen!",
+  "@inviteWelcomeTitle": {
+    "description": "Willkommens-Titel auf der Einladungs-Seite",
+    "context": "invite"
+  },
+  "inviteWelcomeSubtitle": "Du wurdest zur Welt \"{worldName}\" eingeladen",
+  "@inviteWelcomeSubtitle": {
+    "description": "Willkommens-Untertitel mit Welt-Name",
+    "context": "invite",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name der Welt"
+      }
+    }
+  },
+  "inviteFromUser": "Eingeladen von {username}",
+  "@inviteFromUser": {
+    "description": "Zeigt an wer die Einladung gesendet hat",
+    "context": "invite",
+    "placeholders": {
+      "username": {
+        "type": "String",
+        "description": "Benutzername des Einladenden"
+      }
+    }
+  },
+  "inviteDetailsTitle": "Einladungs-Details",
+  "@inviteDetailsTitle": {
+    "description": "Titel für Einladungs-Details Sektion",
+    "context": "invite"
+  },
+  "inviteDetailsEmail": "E-Mail",
+  "@inviteDetailsEmail": {
+    "description": "Label für E-Mail in Einladungs-Details",
+    "context": "invite"
+  },
+  "inviteDetailsWorld": "Welt",
+  "@inviteDetailsWorld": {
+    "description": "Label für Welt in Einladungs-Details",
+    "context": "invite"
+  },
+  "inviteDetailsStatus": "Status",
+  "@inviteDetailsStatus": {
+    "description": "Label für Status in Einladungs-Details",
+    "context": "invite"
+  },
+  "inviteDetailsExpires": "Läuft ab",
+  "@inviteDetailsExpires": {
+    "description": "Label für Ablaufzeit in Einladungs-Details",
+    "context": "invite"
+  },
+  "inviteActionRegisterHint": "Du benötigst ein Konto um der Welt beizutreten.",
+  "@inviteActionRegisterHint": {
+    "description": "Hinweis-Text für Registrierung",
+    "context": "invite"
+  },
+  "inviteActionRegisterAndJoin": "Registrieren & Beitreten",
+  "@inviteActionRegisterAndJoin": {
+    "description": "Button-Text für Registrierung und Beitritt",
+    "context": "invite"
+  },
+  "inviteActionAlreadyHaveAccount": "Bereits ein Konto? Anmelden",
+  "@inviteActionAlreadyHaveAccount": {
+    "description": "Link-Text für bereits registrierte User",
+    "context": "invite"
+  },
+  "inviteActionLoginHint": "Du hast bereits ein Konto. Melde dich an um der Welt beizutreten.",
+  "@inviteActionLoginHint": {
+    "description": "Hinweis-Text für Anmeldung",
+    "context": "invite"
+  },
+  "inviteActionLogin": "Anmelden",
+  "@inviteActionLogin": {
+    "description": "Button-Text für Anmeldung",
+    "context": "invite"
+  },
+  "inviteActionAcceptHint": "Hallo {username}! Du kannst die Einladung jetzt annehmen oder ablehnen.",
+  "@inviteActionAcceptHint": {
+    "description": "Hinweis-Text für Annahme/Ablehnung der Einladung",
+    "context": "invite",
+    "placeholders": {
+      "username": {
+        "type": "String",
+        "description": "Benutzername des angemeldeten Users"
+      }
+    }
+  },
+  "inviteActionAccept": "Einladung annehmen",
+  "@inviteActionAccept": {
+    "description": "Button-Text für Annahme der Einladung",
+    "context": "invite"
+  },
+  "inviteActionDecline": "Ablehnen",
+  "@inviteActionDecline": {
+    "description": "Button-Text für Ablehnung der Einladung",
+    "context": "invite"
+  },
+  "inviteActionWrongEmailHint": "Du bist als {currentEmail} angemeldet, aber die Einladung ist für {inviteEmail}. Du musst dich abmelden und mit der richtigen E-Mail registrieren.",
+  "@inviteActionWrongEmailHint": {
+    "description": "Hinweis-Text bei falscher E-Mail",
+    "context": "invite",
+    "placeholders": {
+      "currentEmail": {
+        "type": "String",
+        "description": "Aktuelle E-Mail des Users"
+      },
+      "inviteEmail": {
+        "type": "String",
+        "description": "E-Mail für die die Einladung bestimmt ist"
+      }
+    }
+  },
+  "inviteActionLogoutAndRegister": "Abmelden & Neu registrieren",
+  "@inviteActionLogoutAndRegister": {
+    "description": "Button-Text für Abmeldung und Neuregistrierung",
+    "context": "invite"
+  },
+  "inviteActionUnknownStatus": "Unbekannter Status. Bitte versuche es später erneut.",
+  "@inviteActionUnknownStatus": {
+    "description": "Fehlermeldung bei unbekanntem User-Status",
+    "context": "invite"
+  },
+  "inviteErrorNoData": "Keine Einladungs-Daten verfügbar.",
+  "@inviteErrorNoData": {
+    "description": "Fehlermeldung wenn keine Einladungs-Daten geladen werden konnten",
+    "context": "invite"
+  },
+  "inviteErrorInvalidOrExpired": "Einladung ungültig oder abgelaufen",
+  "@inviteErrorInvalidOrExpired": {
+    "description": "Fehlermeldung wenn Einladung ungültig oder abgelaufen ist",
+    "context": "invite"
+  },
+  "inviteErrorLoadingData": "Fehler beim Laden der Einladungsdaten: {error}",
+  "@inviteErrorLoadingData": {
+    "description": "Fehlermeldung beim Laden der Einladungsdaten",
+    "context": "invite",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Die Fehlermeldung"
+      }
+    }
+  },
+  "inviteErrorAcceptFailed": "Fehler beim Annehmen der Einladung",
+  "@inviteErrorAcceptFailed": {
+    "description": "Fehlermeldung beim Annehmen der Einladung",
+    "context": "invite"
+  },
+  "inviteErrorAcceptException": "Fehler beim Annehmen der Einladung: {error}",
+  "@inviteErrorAcceptException": {
+    "description": "Fehlermeldung mit Exception beim Annehmen der Einladung",
+    "context": "invite",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Die Fehlermeldung"
+      }
+    }
+  },
+  "inviteErrorDeclineFailed": "Fehler beim Ablehnen der Einladung",
+  "@inviteErrorDeclineFailed": {
+    "description": "Fehlermeldung beim Ablehnen der Einladung",
+    "context": "invite"
+  },
+  "inviteErrorDeclineException": "Fehler beim Ablehnen der Einladung: {error}",
+  "@inviteErrorDeclineException": {
+    "description": "Fehlermeldung mit Exception beim Ablehnen der Einladung",
+    "context": "invite",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Die Fehlermeldung"
+      }
+    }
+  },
+  "inviteDeclineSuccess": "Einladung abgelehnt",
+  "@inviteDeclineSuccess": {
+    "description": "Erfolgsmeldung beim Ablehnen der Einladung",
+    "context": "invite"
+  },
+  "marketingDiscoverMoreWorlds": "Weitere spannende Welten entdecken",
+  "@marketingDiscoverMoreWorlds": {
+    "description": "Header für weitere Welten im Marketing-Bereich",
+    "context": "marketing"
+  },
+  "marketingCallToAction": "Entdecke hunderte von Welten, erstelle deine eigene oder tritt bestehenden Communities bei!",
+  "@marketingCallToAction": {
+    "description": "Marketing Call-to-Action Text",
+    "context": "marketing"
+  },
+  "marketingFeatureCommunityTitle": "Community",
+  "@marketingFeatureCommunityTitle": {
+    "description": "Titel für Community Feature im Marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureCommunityDesc": "Spiele mit Freunden",
+  "@marketingFeatureCommunityDesc": {
+    "description": "Beschreibung für Community Feature im Marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureCreateTitle": "Erstellen",
+  "@marketingFeatureCreateTitle": {
+    "description": "Titel für Erstellen Feature im Marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureCreateDesc": "Baue deine Welt",
+  "@marketingFeatureCreateDesc": {
+    "description": "Beschreibung für Erstellen Feature im Marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureExploreTitle": "Entdecken",
+  "@marketingFeatureExploreTitle": {
+    "description": "Titel für Entdecken Feature im Marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureExploreDesc": "Neue Abenteuer",
+  "@marketingFeatureExploreDesc": {
+    "description": "Beschreibung für Entdecken Feature im Marketing",
+    "context": "marketing"
+  },
+  "marketingBrowseAllWorlds": "Alle Welten durchstöbern",
+  "@marketingBrowseAllWorlds": {
+    "description": "Button Text für alle Welten durchstöbern",
+    "context": "marketing"
+  },
+  "inviteDetailsCreated": "Erstellt am",
+  "@inviteDetailsCreated": {
+    "description": "Label für das Erstellungsdatum der Einladung",
+    "context": "invite"
+  },
+  "inviteWidgetTitle": "Einladung für {worldName} senden",
+  "@inviteWidgetTitle": {
+    "context": "invite",
+    "placeholders": {
+      "worldName": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteWidgetEmailLabel": "E-Mail-Adresse",
+  "@inviteWidgetEmailLabel": {
+    "context": "invite"
+  },
+  "inviteWidgetEmailHint": "freund@example.com",
+  "@inviteWidgetEmailHint": {
+    "context": "invite"
+  },
+  "inviteWidgetEmailRequired": "E-Mail-Adresse ist erforderlich",
+  "@inviteWidgetEmailRequired": {
+    "context": "invite"
+  },
+  "inviteWidgetEmailInvalid": "Ungültige E-Mail-Adresse",
+  "@inviteWidgetEmailInvalid": {
+    "context": "invite"
+  },
+  "inviteWidgetSendEmailOption": "E-Mail automatisch versenden",
+  "@inviteWidgetSendEmailOption": {
+    "context": "invite"
+  },
+  "inviteWidgetSendEmailHint": "Deaktivieren um nur den Einladungslink zu erstellen",
+  "@inviteWidgetSendEmailHint": {
+    "context": "invite"
+  },
+  "inviteWidgetSendButton": "Einladung senden",
+  "@inviteWidgetSendButton": {
+    "context": "invite"
+  },
+  "inviteWidgetCreateLinkButton": "Link erstellen",
+  "@inviteWidgetCreateLinkButton": {
+    "context": "invite"
+  },
+  "inviteWidgetSuccessWithEmail": "Einladung erfolgreich an {email} gesendet!",
+  "@inviteWidgetSuccessWithEmail": {
+    "context": "invite",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteWidgetSuccessLinkOnly": "Einladungslink erfolgreich erstellt!",
+  "@inviteWidgetSuccessLinkOnly": {
+    "context": "invite"
+  },
+  "inviteWidgetCopyLink": "Kopieren",
+  "@inviteWidgetCopyLink": {
+    "context": "invite"
+  },
+  "inviteWidgetDialogTitle": "Spieler einladen",
+  "@inviteWidgetDialogTitle": {
+    "context": "invite"
+  },
+  "inviteWidgetCancel": "Abbrechen",
+  "@inviteWidgetCancel": {
+    "context": "invite"
+  },
+  "inviteWidgetLinkTitle": "Einladungslink:",
+  "@inviteWidgetLinkTitle": {
+    "context": "invite"
+  },
+  "worldInviteButton": "Einladen",
+  "@worldInviteButton": {
+    "context": "worldActions"
+  },
+  "authLoginSuccessButInviteFailed": "Anmeldung erfolgreich, aber Einladung konnte nicht angenommen werden.",
+  "@authLoginSuccessButInviteFailed": {
+    "context": "auth"
+  },
+  "authRegisterSuccessButInviteFailed": "Registrierung erfolgreich, aber Einladung konnte nicht angenommen werden.",
+  "@authRegisterSuccessButInviteFailed": {
+    "context": "auth"
   }
-} 
+}

@@ -5,7 +5,7 @@ const yaml = require('js-yaml');
 const baseFile = path.join(__dirname, 'openapi.yaml');
 const authFile = path.join(__dirname, 'auth.yaml');
 const worldsFile = path.join(__dirname, 'worlds.yaml');
-const invitesFile = path.join(__dirname, 'invites.yaml');
+const invitesFile = path.join(__dirname, 'invite.yaml');
 const arbFile = path.join(__dirname, 'arb.yaml');
 const combinedPath = path.join(__dirname, 'api-combined.yaml');
 
@@ -58,4 +58,4 @@ if (arb.components) deepMerge(combined.components, arb.components);
 // In YAML schreiben
 fs.writeFileSync(combinedPath, yaml.dump(combined, { lineWidth: 120 }));
 console.log('✅ api-combined.yaml erfolgreich generiert.');
-console.log('📦 Einbezogene API-Module: auth.yaml, worlds.yaml, invites.yaml, arb.yaml');
+console.log('📦 Einbezogene API-Module: auth.yaml, worlds.yaml, invite.yaml, arb.yaml');

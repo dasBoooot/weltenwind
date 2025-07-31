@@ -4,6 +4,7 @@ import 'config/env.dart';
 import 'config/logger.dart';
 import 'routing/app_router.dart';
 import 'shared/widgets/splash_screen.dart';
+import 'theme/app_theme.dart';
 import 'main.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/api_service.dart';
@@ -59,10 +60,9 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
       appName: Env.appName,
       child: MaterialApp.router(
         title: Env.appName,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
-        ),
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system, // Automatisch Dark/Light basierend auf System
         routerConfig: AppRouter.router,
         debugShowCheckedModeBanner: false,
         

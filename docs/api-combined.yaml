@@ -8,7 +8,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: JWT Token für authentifizierte Anfragen
   schemas:
     User:
       type: object
@@ -122,27 +121,119 @@ components:
         state:
           type: string
           nullable: true
-  responses:
-    Unauthorized:
-      description: Nicht authentifiziert
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-                example: Unauthorized
-    InternalError:
-      description: Interner Serverfehler
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-                example: Internal server error
+    WorldInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+            - upcoming
+            - open
+            - running
+            - closed
+            - archived
+        createdAt:
+          type: string
+          format: date-time
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+    InviteInfo:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        acceptedAt:
+          type: string
+          format: date-time
+          nullable: true
+        invitedBy:
+          type: object
+          nullable: true
+          properties:
+            username:
+              type: string
+    UserStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - not_logged_in
+            - user_exists_not_logged_in
+            - correct_email
+            - wrong_email
+        requiresAction:
+          type: string
+          enum:
+            - register
+            - login
+            - join_world
+            - logout_and_register
+        currentUser:
+          type: object
+          nullable: true
+          properties:
+            username:
+              type: string
+            email:
+              type: string
+              format: email
+    CreatedInvite:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        token:
+          type: string
+        worldId:
+          type: integer
+        expiresAt:
+          type: string
+          format: date-time
+    InviteDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        token:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        acceptedAt:
+          type: string
+          format: date-time
+          nullable: true
+        invitedBy:
+          type: object
+          nullable: true
+          properties:
+            username:
+              type: string
 paths:
   /api/auth/login:
     post:
@@ -1178,316 +1269,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/worlds/{id}/invites:
-    get:
-      summary: Alle Einladungen einer Welt anzeigen
-      description: |
-        **Permission:** Keine (öffentlich)
-
-        Zeigt alle Einladungen einer Welt an.
-        Keine Authentifizierung oder Permission erforderlich.
-        **Öffentlicher Endpoint für alle Benutzer.**
-      tags:
-        - Worlds
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Liste der Einladungen
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    email:
-                      type: string
-                      format: email
-                    token:
-                      type: string
-                    createdAt:
-                      type: string
-                      format: date-time
-                    expiresAt:
-                      type: string
-                      format: date-time
-                    invitedBy:
-                      type: object
-                      properties:
-                        username:
-                          type: string
-        '400':
-          description: Ungültige Welt-ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Welt nicht gefunden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      summary: Spieler zu einer Welt einladen
-      description: |
-        **Permission:** `invite.create` (world scope)
-
-        Erstellt Einladungen für eine Welt.
-        Erfordert die `invite.create` Permission für die spezifische Welt.
-        Nur Admins, Mods und World-Admins haben diese Permission.
-        **Für authentifizierte Benutzer.**
-      tags:
-        - Worlds
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - type: object
-                  required:
-                    - email
-                  properties:
-                    email:
-                      type: string
-                      format: email
-                      example: user@example.com
-                - type: object
-                  required:
-                    - emails
-                  properties:
-                    emails:
-                      type: array
-                      items:
-                        type: string
-                        format: email
-                        example: user@example.com
-      responses:
-        '200':
-          description: Einladung(en) verschickt
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  code:
-                    type: string
-                    enum:
-                      - success
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      invites:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            email:
-                              type: string
-                              format: email
-                            token:
-                              type: string
-                example:
-                  success: true
-                  code: success
-                  message: Einladung(en) verschickt
-                  data:
-                    invites:
-                      - email: user@example.com
-                        token: abc123def456
-        '403':
-          description: Keine Berechtigung zum Erstellen von Einladungen
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Welt nicht gefunden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/worlds/{id}/invites/{inviteId}:
-    delete:
-      summary: Einladung löschen
-      description: |
-        **Hybrid-Ansatz:**
-
-        **Für authentifizierte Benutzer:** JWT-basiert mit `invite.delete` Permission
-        **Für nicht-authentifizierte Benutzer:** Token-basiert (nur eigene Einladungen)
-
-        - **JWT + Permission:** Privilegierte Benutzer (Admin, Mod, World-Admin) können alle Einladungen löschen
-        - **Token:** Nicht-authentifizierte Benutzer können nur ihre eigenen Einladungen löschen
-      tags:
-        - Worlds
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: inviteId
-          in: path
-          required: true
-          description: ID der zu löschenden Einladung
-          schema:
-            type: integer
-        - name: token
-          in: query
-          required: false
-          description: Token der Einladung (nur für nicht-authentifizierte Benutzer)
-          schema:
-            type: string
-            example: abc123def456
-      responses:
-        '200':
-          description: Einladung erfolgreich gelöscht
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                example:
-                  message: Einladung erfolgreich gelöscht
-        '400':
-          description: Token erforderlich oder ungültige Parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Ungültiger JWT Token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: Keine Berechtigung zum Löschen von Einladungen oder ungültiger Token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Einladung nicht gefunden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/worlds/{id}/invites/public:
-    post:
-      summary: Öffentliche Einladungen für eine Welt erstellen
-      description: |
-        **Permission:** Keine (öffentlich)
-
-        Erstellt öffentliche Einladungen für eine Welt.
-        Keine Authentifizierung erforderlich.
-        **Für Einladungen an nicht-registrierte Benutzer.**
-        Nur für Welten mit Status 'open' oder 'upcoming' verfügbar.
-      tags:
-        - Worlds
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - type: object
-                  required:
-                    - email
-                  properties:
-                    email:
-                      type: string
-                      format: email
-                      example: newuser@example.com
-                - type: object
-                  required:
-                    - emails
-                  properties:
-                    emails:
-                      type: array
-                      items:
-                        type: string
-                        format: email
-                        example: newuser@example.com
-      responses:
-        '200':
-          description: Öffentliche Einladung(en) verschickt
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  code:
-                    type: string
-                    enum:
-                      - success
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      invites:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            email:
-                              type: string
-                              format: email
-                            token:
-                              type: string
-                example:
-                  success: true
-                  code: success
-                  message: Öffentliche Einladung(en) verschickt
-                  data:
-                    invites:
-                      - email: newuser@example.com
-                        token: abc123def456
-        '403':
-          description: Welt ist nicht für Einladungen geöffnet
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Welt nicht gefunden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /api/worlds/{id}/pre-register:
     get:
       summary: Eigenen Pre-Register-Status abrufen
@@ -1687,34 +1468,25 @@ paths:
                 $ref: '#/components/schemas/Error'
   /api/invites/validate/{token}:
     get:
-      summary: Invite-Token validieren und Benutzer-Status prüfen
-      description: |
-        **Permission:** Keine (öffentlich)
-
-        Validiert einen Invite-Token und gibt detaillierte Informationen über die Einladung,
-        die Welt und den aktuellen Benutzer-Status zurück. Dieser Endpunkt erkennt automatisch,
-        ob der Benutzer angemeldet ist, und gibt entsprechende Handlungsempfehlungen zurück.
-
-        ### Benutzer-Status-Types:
-        - `not_logged_in`: Benutzer nicht angemeldet, E-Mail unbekannt → Registrierung erforderlich
-        - `user_exists_not_logged_in`: Benutzer existiert, ist aber nicht angemeldet → Login erforderlich  
-        - `correct_email`: Benutzer angemeldet mit korrekter E-Mail → Kann Einladung annehmen
-        - `wrong_email`: Benutzer angemeldet mit falscher E-Mail → Logout und Neuregistrierung erforderlich
-
-        ### Required Actions:
-        - `register`: Neue Registrierung erforderlich
-        - `login`: Login mit existierendem Account erforderlich
-        - `join_world`: Benutzer kann Einladung direkt annehmen
-        - `logout_and_register`: Logout und Neuregistrierung mit korrekter E-Mail erforderlich
       tags:
         - Invites
+      summary: Token validieren und Welt-Informationen abrufen
+      description: |
+        Validiert einen Invite-Token und gibt die Welt-Informationen zurück.
+        Prüft auch E-Mail-Berechtigung basierend auf Login-Status.
       parameters:
-        - in: path
-          name: token
+        - name: token
+          in: path
           required: true
           schema:
             type: string
           description: Der Invite-Token
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Optional - Bearer Token für angemeldete User
       responses:
         '200':
           description: Token erfolgreich validiert
@@ -1725,153 +1497,34 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   data:
                     type: object
                     properties:
                       world:
-                        type: object
-                        properties:
-                          id:
-                            type: integer
-                            example: 1
-                          name:
-                            type: string
-                            example: Meine Welt
-                          status:
-                            type: string
-                            enum:
-                              - upcoming
-                              - open
-                              - running
-                              - closed
-                              - archived
-                            example: open
-                          createdAt:
-                            type: string
-                            format: date-time
-                          startsAt:
-                            type: string
-                            format: date-time
-                          endsAt:
-                            type: string
-                            format: date-time
-                            nullable: true
+                        $ref: '#/components/schemas/WorldInfo'
                       invite:
-                        type: object
-                        properties:
-                          email:
-                            type: string
-                            example: user@example.com
-                          createdAt:
-                            type: string
-                            format: date-time
-                          expiresAt:
-                            type: string
-                            format: date-time
-                          acceptedAt:
-                            type: string
-                            format: date-time
-                            nullable: true
-                          invitedBy:
-                            type: object
-                            nullable: true
-                            properties:
-                              username:
-                                type: string
-                                example: admin
+                        $ref: '#/components/schemas/InviteInfo'
                       userStatus:
-                        type: object
-                        properties:
-                          status:
-                            type: string
-                            enum:
-                              - not_logged_in
-                              - user_exists_not_logged_in
-                              - correct_email
-                              - wrong_email
-                            example: user_exists_not_logged_in
-                          requiresAction:
-                            type: string
-                            enum:
-                              - register
-                              - login
-                              - join_world
-                              - logout_and_register
-                            example: login
-                          currentUser:
-                            type: object
-                            nullable: true
-                            properties:
-                              username:
-                                type: string
-                              email:
-                                type: string
+                        $ref: '#/components/schemas/UserStatus'
         '400':
-          description: Welt nicht verfügbar
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Welt nicht verfügbar
-                  details:
-                    type: string
-                    example: Die eingeladene Welt ist bereits beendet.
+          description: Token fehlt
         '404':
-          description: Token nicht gefunden oder abgelaufen
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Einladung nicht gefunden oder abgelaufen
-                  details:
-                    type: string
-                    example: Der Einladungslink ist ungültig oder bereits abgelaufen.
-        '500':
-          $ref: '#/components/responses/InternalError'
+          description: Token ungültig oder abgelaufen
   /api/invites/accept/{token}:
     post:
-      summary: Invite-Token akzeptieren und Welt beitreten
-      description: |
-        **Permission:** Authentifiziert (Bearer Token erforderlich)
-
-        Akzeptiert eine Einladung und fügt den Benutzer zur entsprechenden Welt hinzu.
-        Der Benutzer muss mit der E-Mail-Adresse angemeldet sein, für die die Einladung erstellt wurde.
-
-        ### Verhalten je nach Welt-Status:
-        - **upcoming**: Benutzer wird vorregistriert
-        - **open/running**: Benutzer wird direkt zur Welt hinzugefügt
-
-        ### Fehlerbehandlung:
-        - `409 Conflict`: Einladung bereits akzeptiert
-        - `403 Forbidden`: E-Mail-Adresse stimmt nicht überein
-        - `410 Gone`: Token abgelaufen
-        - `400 Bad Request`: Welt nicht verfügbar
       tags:
         - Invites
+      summary: Einladung akzeptieren
+      description: Akzeptiert eine Einladung und fügt den User zur Welt hinzu
       security:
         - bearerAuth: []
       parameters:
-        - in: path
-          name: token
+        - name: token
+          in: path
           required: true
           schema:
             type: string
           description: Der Invite-Token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties: {}
-              description: Leerer Request-Body
       responses:
         '200':
           description: Einladung erfolgreich akzeptiert
@@ -1882,89 +1535,228 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
-                  code:
-                    type: string
-                    example: success
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                      world:
+                        $ref: '#/components/schemas/WorldInfo'
+                      invitedBy:
+                        type: string
+                      acceptedAt:
+                        type: string
+                        format: date-time
+        '403':
+          description: E-Mail-Mismatch oder fehlende Berechtigung
+        '404':
+          description: Ungültiger Token
+        '409':
+          description: Invite bereits akzeptiert
+        '410':
+          description: Token abgelaufen
+  /api/invites/decline/{token}:
+    post:
+      tags:
+        - Invites
+      summary: Einladung ablehnen
+      description: Lehnt eine Einladung ab (löscht sie)
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Der Invite-Token
+      responses:
+        '200':
+          description: Einladung erfolgreich abgelehnt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
                   message:
                     type: string
-                    example: Invite successfully accepted
                   data:
                     type: object
                     properties:
                       world:
-                        type: object
-                        properties:
-                          id:
-                            type: integer
-                            example: 1
-                          name:
-                            type: string
-                            example: Meine Welt
-                          status:
-                            type: string
-                            example: open
-                      action:
+                        $ref: '#/components/schemas/WorldInfo'
+                      invitedBy:
                         type: string
-                        enum:
-                          - joined
-                          - pre_registered
-                        example: joined
-                        description: joined = direkt beigetreten, pre_registered = vorregistriert
-        '400':
-          description: Token fehlt oder Welt nicht verfügbar
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Token erforderlich
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          description: E-Mail-Adresse stimmt nicht überein
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Diese Einladung ist nicht für deine E-Mail-Adresse bestimmt
         '404':
-          description: Token nicht gefunden
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Ungültiger Invite-Token
+          description: Ungültiger Token
         '409':
-          description: Einladung bereits akzeptiert
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Invite bereits akzeptiert
+          description: Invite bereits akzeptiert
         '410':
           description: Token abgelaufen
+  /api/invites:
+    post:
+      tags:
+        - Invites
+      summary: Einladungen erstellen
+      description: Erstellt neue Einladungen für eine Welt (authentifiziert)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                worldId:
+                  type: integer
+                  description: ID der Welt
+                email:
+                  type: string
+                  format: email
+                  description: Einzelne E-Mail-Adresse
+                emails:
+                  type: array
+                  items:
+                    type: string
+                    format: email
+                  description: Array von E-Mail-Adressen
+              required:
+                - worldId
+      responses:
+        '200':
+          description: Einladungen erfolgreich erstellt
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  success:
+                    type: boolean
+                  message:
                     type: string
-                    example: Invite-Token ist abgelaufen
-        '500':
-          $ref: '#/components/responses/InternalError'
+                  data:
+                    type: object
+                    properties:
+                      invites:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CreatedInvite'
+        '400':
+          description: Ungültige Eingabe oder alle E-Mails haben bereits Einladungen
+        '403':
+          description: Keine Berechtigung (invite.create Permission erforderlich)
+  /api/invites/public:
+    post:
+      tags:
+        - Invites
+      summary: Öffentliche Einladungen erstellen
+      description: Erstellt öffentliche Einladungen (keine Authentifizierung erforderlich)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                worldId:
+                  type: integer
+                  description: ID der Welt
+                email:
+                  type: string
+                  format: email
+                  description: Einzelne E-Mail-Adresse
+                emails:
+                  type: array
+                  items:
+                    type: string
+                    format: email
+                  description: Array von E-Mail-Adressen
+              required:
+                - worldId
+      responses:
+        '200':
+          description: Öffentliche Einladungen erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      invites:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CreatedInvite'
+        '403':
+          description: Welt ist nicht für öffentliche Einladungen geöffnet
+        '404':
+          description: Welt nicht gefunden
+  /api/invites/world/{worldId}:
+    get:
+      tags:
+        - Invites
+      summary: Einladungen einer Welt anzeigen
+      description: Gibt alle Einladungen einer Welt zurück
+      parameters:
+        - name: worldId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID der Welt
+      responses:
+        '200':
+          description: Einladungen erfolgreich abgerufen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InviteDetails'
+        '400':
+          description: Ungültige Welt-ID
+  /api/invites/{id}:
+    delete:
+      tags:
+        - Invites
+      summary: Einladung löschen
+      description: Löscht eine Einladung (authentifiziert)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID der Einladung
+      responses:
+        '200':
+          description: Einladung erfolgreich gelöscht
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '403':
+          description: Keine Berechtigung (invite.delete Permission erforderlich)
+        '404':
+          description: Einladung nicht gefunden
   /api/arb/languages:
     get:
       summary: Get available languages

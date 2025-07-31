@@ -11,8 +11,8 @@ import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
 import './widgets/world_card.dart';
 import './widgets/world_filters.dart';
+import '../invite/widgets/invite_widget.dart';
 import '../../l10n/app_localizations.dart';
-import '../../shared/widgets/language_switcher.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -263,6 +263,36 @@ class _WorldListPageState extends State<WorldListPage> {
             AppLogger.logError('Pre-Registration Status Check fehlgeschlagen', e, context: {'worldId': world.id});
           }
         }
+      }
+    }
+  }
+
+  Future<void> _inviteToWorld(World world) async {
+    AppLogger.app.i('🔧 DEBUG: _inviteToWorld aufgerufen für Welt: ${world.name}');
+    print('🔧 CONSOLE DEBUG: _inviteToWorld aufgerufen für Welt: ${world.name}'); // Console Log
+    
+    try {
+      await showInviteDialog(
+        context,
+        worldId: world.id.toString(),
+        worldName: world.name,
+        onInviteSent: () {
+          // Optional: Refresh oder andere Aktion nach erfolgreichem Invite
+          AppLogger.app.i('Invite erfolgreich gesendet für Welt: ${world.name}');
+        },
+      );
+    } catch (e) {
+      AppLogger.app.e('❌ Fehler beim Öffnen des Invite-Dialogs: $e');
+      print('❌ CONSOLE ERROR: Fehler beim Öffnen des Invite-Dialogs: $e'); // Console Error
+      AppLogger.logError('Fehler beim Öffnen des Invite-Dialogs', e, context: {'worldId': world.id});
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fehler beim Öffnen des Einladungs-Dialogs: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
@@ -683,6 +713,10 @@ class _WorldListPageState extends State<WorldListPage> {
                                     onCancelPreRegistration: (_preRegisteredWorlds[world.id] ?? false)
                                       ? () => _cancelPreRegistration(world)
                                       : null,
+                                    onInvite: ((_joinedWorlds[world.id] ?? false) || (_preRegisteredWorlds[world.id] ?? false)) &&
+                                             (world.status != WorldStatus.closed && world.status != WorldStatus.archived)
+                                        ? () => _inviteToWorld(world)
+                                        : null,
                                     onTap: () => _navigateToWorldJoin(world),
                                   )).toList(),
                                 ),

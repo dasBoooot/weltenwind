@@ -182,12 +182,18 @@ router.put('/:language', authenticate, async (req: AuthenticatedRequest, res) =>
       }
     }
 
-    // Backup der alten Datei
+    // Backup der alten Datei (nur einmaliges Initial-Backup)
     const arbFile = path.join(ARB_PATH, `app_${language}.arb`);
-    const backupFile = path.join(ARB_PATH, `app_${language}.arb.backup.${Date.now()}`);
+    const backupFile = path.join(ARB_PATH, `app_${language}.arb.backup`);
     
-    if (fs.existsSync(arbFile)) {
+    // Erstelle Backup nur wenn noch keins existiert
+    if (fs.existsSync(arbFile) && !fs.existsSync(backupFile)) {
       fs.copyFileSync(arbFile, backupFile);
+      arbLogger.info('Initial ARB backup created', { 
+        userId: req.user!.id, 
+        language, 
+        backupFile 
+      });
     }
 
     // Schreibe neue ARB-Datei
@@ -197,7 +203,7 @@ router.put('/:language', authenticate, async (req: AuthenticatedRequest, res) =>
       userId: req.user!.id, 
       language, 
       entryCount: entries.length,
-      backupFile 
+      backupExists: fs.existsSync(backupFile)
     });
 
     res.json({

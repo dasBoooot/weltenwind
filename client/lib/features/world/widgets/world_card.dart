@@ -3,6 +3,7 @@ import '../../../core/models/world.dart';
 import '../../../theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
 
+
 class WorldCard extends StatelessWidget {
   final World world;
   final bool isPreRegistered;
@@ -12,6 +13,7 @@ class WorldCard extends StatelessWidget {
   final VoidCallback? onPlay;
   final VoidCallback? onPreRegister;
   final VoidCallback? onCancelPreRegistration;
+  final VoidCallback? onInvite;
   final VoidCallback? onTap;
 
   const WorldCard({
@@ -24,6 +26,7 @@ class WorldCard extends StatelessWidget {
     this.onPlay,
     this.onPreRegister,
     this.onCancelPreRegistration,
+    this.onInvite,
     this.onTap,
   });
 
@@ -353,6 +356,15 @@ class WorldCard extends StatelessWidget {
               color: Colors.red[600],
             ));
           }
+          // Invite Button als LETZTER Button für pre-registered users
+          if (onInvite != null) {
+            buttons.add(_buildButton(
+              onPressed: onInvite,
+              icon: Icons.person_add,
+              label: AppLocalizations.of(context).worldInviteButton,
+              color: Colors.blue[600],
+            ));
+          }
         } else {
           if (onPreRegister != null) {
             buttons.add(_buildButton(
@@ -385,6 +397,15 @@ class WorldCard extends StatelessWidget {
               icon: Icons.exit_to_app,
               label: AppLocalizations.of(context).worldLeaveButton,
               color: Colors.red[600],
+            ));
+          }
+          // Invite Button als LETZTER Button
+          if (onInvite != null) {
+            buttons.add(_buildButton(
+              onPressed: onInvite,
+              icon: Icons.person_add,
+              label: AppLocalizations.of(context).worldInviteButton,
+              color: Colors.blue[600],
             ));
           }
         } else {

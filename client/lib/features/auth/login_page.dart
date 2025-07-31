@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
+import '../../core/services/api_service.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
@@ -82,13 +85,21 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   }
 
   void _loadQueryParameters() {
-    // Query-Parameter aus der URL lesen
+    // 🎯 CLEAN PARAMETER LOADING: Aus GoRouter 'extra' statt Query-Parameter
     final routeData = GoRouterState.of(context);
-    _inviteToken = routeData.uri.queryParameters['invite_token'];
+    final extraData = routeData.extra as Map<String, dynamic>?;
     
-    AppLogger.app.i('🎫 Login Query-Parameter geladen', error: {
+    if (extraData != null) {
+      _inviteToken = extraData['invite_token'] as String?;
+    } else {
+      // Fallback für alte Query-Parameter (Kompatibilität)
+      _inviteToken = routeData.uri.queryParameters['invite_token'];
+    }
+    
+    AppLogger.app.i('🎫 Login Parameter geladen', error: {
       'hasInviteToken': _inviteToken != null,
-      'inviteToken': _inviteToken?.substring(0, 8)
+      'inviteToken': _inviteToken?.substring(0, 8),
+      'source': extraData != null ? 'extra' : 'query'
     });
   }
 
@@ -107,11 +118,20 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       );
 
       if (user != null) {
-        AppLogger.app.i('✅ Login erfolgreich', error: {'userId': user.id, 'username': user.username});
+        AppLogger.app.i('✅ Login erfolgreich', error: {
+          'userId': user.id, 
+          'username': user.username,
+          'hasInviteToken': _inviteToken != null
+        });
         
         if (mounted) {
-          // Standard-Redirect zu Welten-Liste
-          context.goNamed('world-list');
+          // Wenn Invite-Token vorhanden, versuche Auto-Accept
+          if (_inviteToken != null) {
+            await _handleInviteAccept();
+          } else {
+            // Standard-Redirect zu Welten-Liste
+            context.goNamed('world-list');
+          }
         }
       }
     } catch (e) {
@@ -124,6 +144,102 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         setState(() {
           _isLoading = false;
         });
+      }
+    }
+  }
+
+  Future<void> _handleInviteAccept() async {
+    if (_inviteToken == null) {
+      context.goNamed('world-list');
+      return;
+    }
+
+    try {
+      AppLogger.app.i('🎫 Auto-Accept Invite nach Login', error: {
+        'token': '${_inviteToken!.substring(0, 8)}...'
+      });
+
+      final apiService = ServiceLocator.get<ApiService>();
+      final response = await apiService.post('/invites/accept/$_inviteToken', {});
+      
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['success'] == true) {
+          final worldId = responseData['data']?['world']?['id'];
+          final worldName = responseData['data']?['world']?['name'];
+        
+        AppLogger.app.i('✅ Invite automatisch akzeptiert nach Login', error: {
+          'worldId': worldId,
+          'worldName': worldName
+        });
+
+        if (mounted) {
+          // Erfolgsmeldung für Invite
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.worldJoinSuccess(worldName ?? AppLocalizations.of(context)!.worldJoinUnknownWorld)),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          // Zur Welt-Join-Seite navigieren wenn möglich, sonst zur Weltenliste
+          if (worldId != null) {
+            context.go('/go/worlds/$worldId/join');
+          } else {
+            context.goNamed('world-list');
+          }
+          }
+        } else {
+          final responseData = jsonDecode(response.body);
+          // Invite-Accept fehlgeschlagen - trotzdem erfolgreich eingeloggt
+          AppLogger.app.w('⚠️ Invite-Accept nach Login fehlgeschlagen', error: {
+            'error': responseData['error'],
+            'token': '${_inviteToken!.substring(0, 8)}...'
+          });
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.authLoginSuccessButInviteFailed),
+                backgroundColor: Colors.orange,
+                duration: Duration(seconds: 3),
+              ),
+            );
+            context.goNamed('world-list');
+          }
+        }
+      } else {
+        final responseData = jsonDecode(response.body);
+        // Invite-Accept fehlgeschlagen - trotzdem erfolgreich eingeloggt
+        AppLogger.app.w('⚠️ Invite-Accept nach Login fehlgeschlagen', error: {
+          'error': responseData['error'],
+          'token': '${_inviteToken!.substring(0, 8)}...'
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.authLoginSuccessButInviteFailed),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          context.goNamed('world-list');
+        }
+      }
+    } catch (e) {
+      AppLogger.app.e('❌ Fehler beim Auto-Accept von Invite nach Login', error: e);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.authLoginSuccessButInviteFailed),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        context.goNamed('world-list');
       }
     }
   }

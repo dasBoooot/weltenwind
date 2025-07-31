@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import '../config/logger.dart';
 import '../features/auth/login_page.dart';
@@ -7,6 +8,7 @@ import '../features/auth/forgot_password_page.dart';
 import '../features/auth/reset_password_page.dart';
 import '../features/world/world_list_page.dart';
 import '../features/world/world_join_page.dart';
+import '../features/invite/invite_landing_page.dart';
 import '../features/dashboard/dashboard_page.dart';
 import '../features/landing/landing_page.dart';
 import '../core/services/auth_service.dart';
@@ -85,7 +87,6 @@ class AppRouter {
       AppLogger.navigation.i('🚀 Router wird initialisiert...');
       try {
         _routerInstance = GoRouter(
-          initialLocation: '/go',
           navigatorKey: _rootNavigatorKey,
           
           // Navigation Observer für User Journey Tracking
@@ -93,36 +94,67 @@ class AppRouter {
             AppNavigationObserver(),
           ],
           
-          // Redirect aktiviert - Services werden jetzt korrekt initialisiert
+          // 🎯 HYBRID ROUTER - Cross-Platform Deep-Link Fix
           redirect: (context, state) async {
         try {
+          final uriPath = state.uri.path;
+          
+          AppLogger.navigation.d('🎯 HYBRID ROUTER (${kIsWeb ? 'WEB' : 'MOBILE'}): $uriPath');
+          
+          // 🌐 WEB-SPEZIFISCHE DEEP-LINK-FIXES
+          if (kIsWeb) {
+            // 🔧 Deep-Link-Fix: Wenn GoRouter "/go" zeigt, aber Browser mehr hat
+            if (uriPath == '/go') {
+              final browserPath = Uri.base.path;
+              if (browserPath.contains('/invite/')) {
+                // Extrahiere echte Route aus Browser-URL
+                String realPath = browserPath;
+                if (realPath.startsWith('/game/')) {
+                  realPath = realPath.substring(5); // Entferne "/game" Prefix
+                }
+                AppLogger.navigation.i('🔧 Web Deep-Link-Fix: $uriPath → $realPath');
+                return realPath;
+              }
+            }
+          }
+          
+          // ✅ INVITE-ROUTES: Immer direkt erlauben (Cross-Platform)
+          if (uriPath.startsWith('/go/invite/')) {
+            AppLogger.navigation.i('✅ Invite-Route erkannt – direkter Zugriff');
+            return null;
+          }
+          
+          // 🔄 STANDARD AUTH & PROTECTION LOGIC
           final authService = _getAuthService();
           if (authService == null) {
-            // Services noch nicht verfügbar, zur Landing Page
-            return '/go';
+            AppLogger.navigation.w('❌ AuthService nicht verfügbar');
+            return uriPath == '/' || uriPath.isEmpty ? '/go' : null;
           }
           
           final isLoggedIn = await authService.isLoggedIn();
-
-          final isAuthRoute = state.matchedLocation.startsWith('/go/auth');
-          final isProtectedRoute = (state.matchedLocation.startsWith('/go/worlds') ||
-                                  state.matchedLocation.startsWith('/go/dashboard'));
+          final isAuthRoute = uriPath.startsWith('/go/auth');
+          final isProtectedRoute = (uriPath.startsWith('/go/worlds') ||
+                                  uriPath.startsWith('/go/dashboard'));
 
           if (!isLoggedIn && isProtectedRoute) {
-            AppLogger.navigation.i('🔒 Redirect zu Login', error: {'from': state.matchedLocation});
+            AppLogger.navigation.i('🔒 Login erforderlich für: $uriPath');
             return '/go/auth/login';
           }
 
           if (isLoggedIn && isAuthRoute) {
-            AppLogger.navigation.i('🏠 Redirect zu Worlds', error: {'from': state.matchedLocation});
+            AppLogger.navigation.i('🏠 Bereits eingeloggt – zu Worlds');
             return '/go/worlds';
+          }
+          
+          // 📍 ROOT FALLBACK
+          if (uriPath == '/' || uriPath.isEmpty) {
+            return '/go';
           }
           
           return null;
         } catch (e) {
-          AppLogger.navigation.e('❌ Router Redirect Fehler', error: e, stackTrace: StackTrace.current);
-          // Bei Fehlern zur Login-Seite weiterleiten
-          return '/go/auth/login';
+          AppLogger.navigation.e('❌ Router Redirect Fehler', error: e);
+          return null; // Bei Fehlern KEINEN Redirect
         }
       },
     
@@ -184,6 +216,35 @@ class AppRouter {
             child: ResetPasswordPage(token: token),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               FadeTransition(opacity: animation, child: child),
+          );
+        },
+      ),
+
+      // 🎟️ INVITE ROUTES - Cross-Platform Deep-Links
+      GoRoute(
+        path: '/go/invite/:token',
+        pageBuilder: (context, state) {
+          final token = state.pathParameters['token'];
+          if (token == null || token.isEmpty) {
+            return CustomTransitionPage(
+              child: const ErrorPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+                FadeTransition(opacity: animation, child: child),
+            );
+          }
+          return CustomTransitionPage(
+            child: InviteLandingPage(token: token),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0.0, 1.0),
+                  end: Offset.zero,
+                ).animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeInOut,
+                )),
+                child: child,
+              ),
           );
         },
       ),
@@ -307,7 +368,6 @@ class AppRouter {
         AppLogger.navigation.e('❌ Router Initialisierungs-Fehler', error: e);
         // Fallback: Minimaler Router nur mit Error Page
         _routerInstance = GoRouter(
-          initialLocation: '/go',
           routes: [
             GoRoute(
               path: '/go',

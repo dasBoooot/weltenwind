@@ -12,7 +12,7 @@ class ApiService {
   ApiService._internal();
 
   String? _token;
-  late final AuthService _authService;
+  AuthService? _authService;
   String? _deviceFingerprint;
   bool _initialized = false;
   bool _isValidatingToken = false; // Verhindert rekursive Token-Validierung
@@ -21,14 +21,17 @@ class ApiService {
   final Map<String, Map<String, dynamic>> _requestBodies = {};
 
   // Dependency Injection für bessere Testbarkeit
-  ApiService.withAuth(AuthService authService) : _authService = authService;
+  ApiService.withAuth(AuthService authService) {
+    _authService = authService;
+    _initialized = true; // Als initialisiert markieren wenn explizit gesetzt
+  }
 
   // Initialisierung beim ersten Zugriff
   Future<void> _ensureInitialized() async {
     if (!_initialized) {
-      _authService = AuthService(); // Fallback für Singleton-Pattern
+      _authService ??= AuthService(); // Fallback nur wenn nicht bereits gesetzt
       try {
-        final accessToken = await _authService.getCurrentAccessToken();
+        final accessToken = await _authService!.getCurrentAccessToken();
         if (accessToken != null) {
           _token = accessToken;
         }
@@ -93,9 +96,9 @@ class ApiService {
             // Log Token-Refresh
             AppLogger.api.i('🔄 Token läuft ab in ${exp - now}s - erneuere proaktiv');
             
-            final refreshed = await _authService.refreshTokenIfNeeded();
+            final refreshed = await _authService!.refreshTokenIfNeeded();
             if (refreshed) {
-              final newToken = await _authService.getCurrentAccessToken();
+              final newToken = await _authService!.getCurrentAccessToken();
               if (newToken != null) {
                 setToken(newToken);
                 AppLogger.api.i('✅ Token erfolgreich erneuert');
@@ -106,7 +109,7 @@ class ApiService {
       } catch (e) {
         // Token validation error
         AppLogger.api.w('⚠️ Token-Validierung fehlgeschlagen', error: e);
-        await _authService.refreshTokenIfNeeded();
+                  await _authService!.refreshTokenIfNeeded();
       } finally {
         _isValidatingToken = false;
       }
@@ -122,9 +125,9 @@ class ApiService {
         try {
           AppLogger.api.i('🔄 Proaktive Token-Erneuerung - läuft ab in ${expiresIn}s');
           
-          final refreshed = await _authService.refreshTokenIfNeeded();
-          if (refreshed) {
-            final newToken = await _authService.getCurrentAccessToken();
+                      final refreshed = await _authService!.refreshTokenIfNeeded();
+            if (refreshed) {
+              final newToken = await _authService!.getCurrentAccessToken();
             if (newToken != null) {
               setToken(newToken);
               
@@ -143,9 +146,9 @@ class ApiService {
       try {
         AppLogger.api.i('🔄 Reactive Token-Refresh wegen 401');
         
-        final refreshed = await _authService.refreshTokenIfNeeded();
-        if (refreshed) {
-          final newToken = await _authService.getCurrentAccessToken();
+                    final refreshed = await _authService!.refreshTokenIfNeeded();
+            if (refreshed) {
+              final newToken = await _authService!.getCurrentAccessToken();
           if (newToken != null) {
             setToken(newToken);
             
@@ -156,7 +159,7 @@ class ApiService {
       } catch (e) {
         AppLogger.api.e('❌ Token-Refresh fehlgeschlagen', error: e);
         // Bei Token-Refresh-Fehlern automatisch ausloggen
-        await _authService.logout();
+                  await _authService!.logout();
         // Cache invalidieren nach Logout
         AppRouter.invalidateAuthCache();
       }

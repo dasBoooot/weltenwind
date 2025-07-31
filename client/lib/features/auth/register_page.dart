@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
+import '../../core/services/api_service.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
@@ -33,6 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
   // Invite-Parameter
   String? _inviteToken;
   String? _prefilledEmail;
+  Map<String, dynamic>? _inviteData;
 
   // E-Mail-Validierung Regex
   static final RegExp _emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -60,22 +64,65 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _loadQueryParameters() {
-    // Query-Parameter aus der URL lesen
+    // 🎯 CLEAN PARAMETER LOADING: Aus GoRouter 'extra' statt Query-Parameter
     final routeData = GoRouterState.of(context);
-    _inviteToken = routeData.uri.queryParameters['invite_token'];
-    _prefilledEmail = routeData.uri.queryParameters['email'];
+    final extraData = routeData.extra as Map<String, dynamic>?;
     
-    AppLogger.app.i('📧 Registration Query-Parameter geladen', error: {
+    if (extraData != null) {
+      _inviteToken = extraData['invite_token'] as String?;
+      _prefilledEmail = extraData['email'] as String?;
+    } else {
+      // Fallback für alte Query-Parameter (Kompatibilität)
+      _inviteToken = routeData.uri.queryParameters['invite_token'];
+      _prefilledEmail = routeData.uri.queryParameters['email'];
+    }
+    
+    AppLogger.app.i('📧 Registration Parameter geladen', error: {
       'hasInviteToken': _inviteToken != null,
       'hasPrefilledEmail': _prefilledEmail != null,
       'inviteToken': _inviteToken?.substring(0, 8),
-      'email': _prefilledEmail
+      'email': _prefilledEmail,
+      'source': extraData != null ? 'extra' : 'query'
     });
     
     // E-Mail vorbefüllen wenn vorhanden
     if (_prefilledEmail != null && _prefilledEmail!.isNotEmpty) {
       _emailController.text = _prefilledEmail!;
       AppLogger.app.i('📧 E-Mail vorbefüllt', error: {'email': _prefilledEmail});
+    } else if (_inviteToken != null) {
+      // Wenn kein Email-Parameter aber Invite-Token, dann E-Mail aus Invite laden
+      _loadInviteData();
+    }
+  }
+
+  Future<void> _loadInviteData() async {
+    if (_inviteToken == null) return;
+    
+    try {
+          final apiService = ServiceLocator.get<ApiService>();
+    final response = await apiService.get('/invites/validate/$_inviteToken');
+      
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['success'] == true && responseData['data'] != null) {
+          _inviteData = responseData['data'];
+          final inviteEmail = _inviteData?['invite']?['email'];
+        
+        if (inviteEmail != null && _emailController.text.isEmpty) {
+          setState(() {
+            _emailController.text = inviteEmail;
+          });
+          
+          AppLogger.app.i('📧 E-Mail aus Invite-Token geladen', error: {
+            'email': inviteEmail,
+            'worldName': _inviteData?['world']?['name']
+          });
+        }
+        }
+      }
+    } catch (e) {
+      AppLogger.app.w('⚠️ Fehler beim Laden der Invite-Daten', error: e);
+      // Fehler nicht anzeigen - User kann trotzdem registrieren
     }
   }
 
@@ -110,10 +157,11 @@ class _RegisterPageState extends State<RegisterPage> {
           'userId': user.id,
           'username': user.username,
           'email': user.email,
+          'hasInviteToken': _inviteToken != null
         });
         
         if (mounted) {
-          // Standard-Redirect zu Welten-Liste  
+          // Erfolgsmeldung zeigen
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).authRegisterSuccessWelcome),
@@ -121,8 +169,14 @@ class _RegisterPageState extends State<RegisterPage> {
               duration: const Duration(seconds: 2),
             ),
           );
-            
-          context.goNamed('world-list');
+          
+          // Wenn Invite-Token vorhanden, versuche Auto-Accept
+          if (_inviteToken != null) {
+            await _handleInviteAccept();
+          } else {
+            // Standard-Redirect zu Welten-Liste
+            context.goNamed('world-list');
+          }
         }
       }
     } catch (e) {
@@ -139,6 +193,102 @@ class _RegisterPageState extends State<RegisterPage> {
         setState(() {
           _isLoading = false;
         });
+      }
+    }
+  }
+
+  Future<void> _handleInviteAccept() async {
+    if (_inviteToken == null) {
+      context.goNamed('world-list');
+      return;
+    }
+
+    try {
+      AppLogger.app.i('🎫 Auto-Accept Invite nach Registrierung', error: {
+        'token': '${_inviteToken!.substring(0, 8)}...'
+      });
+
+      final apiService = ServiceLocator.get<ApiService>();
+      final response = await apiService.post('/invites/accept/$_inviteToken', {});
+      
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['success'] == true) {
+          final worldId = responseData['data']?['world']?['id'];
+          final worldName = responseData['data']?['world']?['name'];
+        
+        AppLogger.app.i('✅ Invite automatisch akzeptiert', error: {
+          'worldId': worldId,
+          'worldName': worldName
+        });
+
+        if (mounted) {
+          // Zusätzliche Erfolgsmeldung für Invite
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.worldJoinSuccess(worldName ?? AppLocalizations.of(context)!.worldJoinUnknownWorld)),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          // Zur Welt-Join-Seite navigieren wenn möglich, sonst zur Weltenliste
+          if (worldId != null) {
+            context.go('/go/worlds/$worldId/join');
+          } else {
+            context.goNamed('world-list');
+          }
+          }
+        } else {
+          final responseData = jsonDecode(response.body);
+          // Invite-Accept fehlgeschlagen - trotzdem erfolgreich registriert
+          AppLogger.app.w('⚠️ Invite-Accept nach Registrierung fehlgeschlagen', error: {
+            'error': responseData['error'],
+            'token': '${_inviteToken!.substring(0, 8)}...'
+          });
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.authRegisterSuccessButInviteFailed),
+                backgroundColor: Colors.orange,
+                duration: Duration(seconds: 3),
+              ),
+            );
+            context.goNamed('world-list');
+          }
+        }
+      } else {
+        final responseData = jsonDecode(response.body);
+        // Invite-Accept fehlgeschlagen - trotzdem erfolgreich registriert
+        AppLogger.app.w('⚠️ Invite-Accept nach Registrierung fehlgeschlagen', error: {
+          'error': responseData['error'],
+          'token': '${_inviteToken!.substring(0, 8)}...'
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.authRegisterSuccessButInviteFailed),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          context.goNamed('world-list');
+        }
+      }
+    } catch (e) {
+      AppLogger.app.e('❌ Fehler beim Auto-Accept von Invite', error: e);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.authRegisterSuccessButInviteFailed),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        context.goNamed('world-list');
       }
     }
   }

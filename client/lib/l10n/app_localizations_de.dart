@@ -14,7 +14,7 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get appTitle => 'Weltenwind';
+  String get appTitle => '⚡Weltenwind⚡';
 
   @override
   String get authLoginTitle => 'Anmelden';
@@ -221,7 +221,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get worldStatusOpen => 'Offen';
 
   @override
-  String get worldStatusRunning => 'Läuft';
+  String get worldStatusRunning => 'Aktiv';
 
   @override
   String get worldStatusClosed => 'Geschlossen';
@@ -651,4 +651,200 @@ class AppLocalizationsDe extends AppLocalizations {
   String worldJoinErrorLoadingWorldData(String error) {
     return 'Fehler beim Laden der Welt-Daten: $error';
   }
+
+  @override
+  String get invitePageTitle => 'Einladung';
+
+  @override
+  String get inviteWelcomeTitle => 'Du wurdest eingeladen!';
+
+  @override
+  String inviteWelcomeSubtitle(String worldName) {
+    return 'Du wurdest zur Welt \"$worldName\" eingeladen';
+  }
+
+  @override
+  String inviteFromUser(String username) {
+    return 'Eingeladen von $username';
+  }
+
+  @override
+  String get inviteDetailsTitle => 'Einladungs-Details';
+
+  @override
+  String get inviteDetailsEmail => 'E-Mail';
+
+  @override
+  String get inviteDetailsWorld => 'Welt';
+
+  @override
+  String get inviteDetailsStatus => 'Status';
+
+  @override
+  String get inviteDetailsExpires => 'Läuft ab';
+
+  @override
+  String get inviteActionRegisterHint =>
+      'Du benötigst ein Konto um der Welt beizutreten.';
+
+  @override
+  String get inviteActionRegisterAndJoin => 'Registrieren & Beitreten';
+
+  @override
+  String get inviteActionAlreadyHaveAccount => 'Bereits ein Konto? Anmelden';
+
+  @override
+  String get inviteActionLoginHint =>
+      'Du hast bereits ein Konto. Melde dich an um der Welt beizutreten.';
+
+  @override
+  String get inviteActionLogin => 'Anmelden';
+
+  @override
+  String inviteActionAcceptHint(String username) {
+    return 'Hallo $username! Du kannst die Einladung jetzt annehmen oder ablehnen.';
+  }
+
+  @override
+  String get inviteActionAccept => 'Einladung annehmen';
+
+  @override
+  String get inviteActionDecline => 'Ablehnen';
+
+  @override
+  String inviteActionWrongEmailHint(String currentEmail, String inviteEmail) {
+    return 'Du bist als $currentEmail angemeldet, aber die Einladung ist für $inviteEmail. Du musst dich abmelden und mit der richtigen E-Mail registrieren.';
+  }
+
+  @override
+  String get inviteActionLogoutAndRegister => 'Abmelden & Neu registrieren';
+
+  @override
+  String get inviteActionUnknownStatus =>
+      'Unbekannter Status. Bitte versuche es später erneut.';
+
+  @override
+  String get inviteErrorNoData => 'Keine Einladungs-Daten verfügbar.';
+
+  @override
+  String get inviteErrorInvalidOrExpired =>
+      'Einladung ungültig oder abgelaufen';
+
+  @override
+  String inviteErrorLoadingData(String error) {
+    return 'Fehler beim Laden der Einladungsdaten: $error';
+  }
+
+  @override
+  String get inviteErrorAcceptFailed => 'Fehler beim Annehmen der Einladung';
+
+  @override
+  String inviteErrorAcceptException(String error) {
+    return 'Fehler beim Annehmen der Einladung: $error';
+  }
+
+  @override
+  String get inviteErrorDeclineFailed => 'Fehler beim Ablehnen der Einladung';
+
+  @override
+  String inviteErrorDeclineException(String error) {
+    return 'Fehler beim Ablehnen der Einladung: $error';
+  }
+
+  @override
+  String get inviteDeclineSuccess => 'Einladung abgelehnt';
+
+  @override
+  String get marketingDiscoverMoreWorlds =>
+      'Weitere spannende Welten entdecken';
+
+  @override
+  String get marketingCallToAction =>
+      'Entdecke hunderte von Welten, erstelle deine eigene oder tritt bestehenden Communities bei!';
+
+  @override
+  String get marketingFeatureCommunityTitle => 'Community';
+
+  @override
+  String get marketingFeatureCommunityDesc => 'Spiele mit Freunden';
+
+  @override
+  String get marketingFeatureCreateTitle => 'Erstellen';
+
+  @override
+  String get marketingFeatureCreateDesc => 'Baue deine Welt';
+
+  @override
+  String get marketingFeatureExploreTitle => 'Entdecken';
+
+  @override
+  String get marketingFeatureExploreDesc => 'Neue Abenteuer';
+
+  @override
+  String get marketingBrowseAllWorlds => 'Alle Welten durchstöbern';
+
+  @override
+  String get inviteDetailsCreated => 'Erstellt am';
+
+  @override
+  String inviteWidgetTitle(String worldName) {
+    return 'Einladung für $worldName senden';
+  }
+
+  @override
+  String get inviteWidgetEmailLabel => 'E-Mail-Adresse';
+
+  @override
+  String get inviteWidgetEmailHint => 'freund@example.com';
+
+  @override
+  String get inviteWidgetEmailRequired => 'E-Mail-Adresse ist erforderlich';
+
+  @override
+  String get inviteWidgetEmailInvalid => 'Ungültige E-Mail-Adresse';
+
+  @override
+  String get inviteWidgetSendEmailOption => 'E-Mail automatisch versenden';
+
+  @override
+  String get inviteWidgetSendEmailHint =>
+      'Deaktivieren um nur den Einladungslink zu erstellen';
+
+  @override
+  String get inviteWidgetSendButton => 'Einladung senden';
+
+  @override
+  String get inviteWidgetCreateLinkButton => 'Link erstellen';
+
+  @override
+  String inviteWidgetSuccessWithEmail(String email) {
+    return 'Einladung erfolgreich an $email gesendet!';
+  }
+
+  @override
+  String get inviteWidgetSuccessLinkOnly =>
+      'Einladungslink erfolgreich erstellt!';
+
+  @override
+  String get inviteWidgetCopyLink => 'Kopieren';
+
+  @override
+  String get inviteWidgetDialogTitle => 'Spieler einladen';
+
+  @override
+  String get inviteWidgetCancel => 'Abbrechen';
+
+  @override
+  String get inviteWidgetLinkTitle => 'Einladungslink:';
+
+  @override
+  String get worldInviteButton => 'Einladen';
+
+  @override
+  String get authLoginSuccessButInviteFailed =>
+      'Anmeldung erfolgreich, aber Einladung konnte nicht angenommen werden.';
+
+  @override
+  String get authRegisterSuccessButInviteFailed =>
+      'Registrierung erfolgreich, aber Einladung konnte nicht angenommen werden.';
 }

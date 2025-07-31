@@ -641,4 +641,199 @@ class AppLocalizationsEn extends AppLocalizations {
   String worldJoinErrorLoadingWorldData(String error) {
     return 'Error loading world data: $error';
   }
+
+  @override
+  String get invitePageTitle => 'Invitation';
+
+  @override
+  String get inviteWelcomeTitle => 'You\'ve been invited!';
+
+  @override
+  String inviteWelcomeSubtitle(String worldName) {
+    return 'You\'ve been invited to the world \"$worldName\"';
+  }
+
+  @override
+  String inviteFromUser(String username) {
+    return 'Invited by $username';
+  }
+
+  @override
+  String get inviteDetailsTitle => 'Invitation Details';
+
+  @override
+  String get inviteDetailsEmail => 'Email';
+
+  @override
+  String get inviteDetailsWorld => 'World';
+
+  @override
+  String get inviteDetailsStatus => 'Status';
+
+  @override
+  String get inviteDetailsExpires => 'Expires';
+
+  @override
+  String get inviteActionRegisterHint =>
+      'You need an account to join the world.';
+
+  @override
+  String get inviteActionRegisterAndJoin => 'Register & Join';
+
+  @override
+  String get inviteActionAlreadyHaveAccount =>
+      'Already have an account? Sign in';
+
+  @override
+  String get inviteActionLoginHint =>
+      'You already have an account. Sign in to join the world.';
+
+  @override
+  String get inviteActionLogin => 'Sign In';
+
+  @override
+  String inviteActionAcceptHint(String username) {
+    return 'Hello $username! You can now accept or decline the invitation.';
+  }
+
+  @override
+  String get inviteActionAccept => 'Accept Invitation';
+
+  @override
+  String get inviteActionDecline => 'Decline';
+
+  @override
+  String inviteActionWrongEmailHint(String currentEmail, String inviteEmail) {
+    return 'You are signed in as $currentEmail, but the invitation is for $inviteEmail. You need to sign out and register with the correct email.';
+  }
+
+  @override
+  String get inviteActionLogoutAndRegister => 'Sign Out & Register';
+
+  @override
+  String get inviteActionUnknownStatus =>
+      'Unknown status. Please try again later.';
+
+  @override
+  String get inviteErrorNoData => 'No invitation data available.';
+
+  @override
+  String get inviteErrorInvalidOrExpired => 'Invitation invalid or expired';
+
+  @override
+  String inviteErrorLoadingData(String error) {
+    return 'Error loading invitation data: $error';
+  }
+
+  @override
+  String get inviteErrorAcceptFailed => 'Error accepting invitation';
+
+  @override
+  String inviteErrorAcceptException(String error) {
+    return 'Error accepting invitation: $error';
+  }
+
+  @override
+  String get inviteErrorDeclineFailed => 'Error declining invitation';
+
+  @override
+  String inviteErrorDeclineException(String error) {
+    return 'Error declining invitation: $error';
+  }
+
+  @override
+  String get inviteDeclineSuccess => 'Invitation declined';
+
+  @override
+  String get marketingDiscoverMoreWorlds => 'Discover more exciting worlds';
+
+  @override
+  String get marketingCallToAction =>
+      'Discover hundreds of worlds, create your own, or join existing communities!';
+
+  @override
+  String get marketingFeatureCommunityTitle => 'Community';
+
+  @override
+  String get marketingFeatureCommunityDesc => 'Play with friends';
+
+  @override
+  String get marketingFeatureCreateTitle => 'Create';
+
+  @override
+  String get marketingFeatureCreateDesc => 'Build your world';
+
+  @override
+  String get marketingFeatureExploreTitle => 'Explore';
+
+  @override
+  String get marketingFeatureExploreDesc => 'New adventures';
+
+  @override
+  String get marketingBrowseAllWorlds => 'Browse all worlds';
+
+  @override
+  String get inviteDetailsCreated => 'Created on';
+
+  @override
+  String inviteWidgetTitle(String worldName) {
+    return 'Send invitation for $worldName';
+  }
+
+  @override
+  String get inviteWidgetEmailLabel => 'Email address';
+
+  @override
+  String get inviteWidgetEmailHint => 'friend@example.com';
+
+  @override
+  String get inviteWidgetEmailRequired => 'Email address is required';
+
+  @override
+  String get inviteWidgetEmailInvalid => 'Invalid email address';
+
+  @override
+  String get inviteWidgetSendEmailOption => 'Send email automatically';
+
+  @override
+  String get inviteWidgetSendEmailHint =>
+      'Disable to create invitation link only';
+
+  @override
+  String get inviteWidgetSendButton => 'Send invitation';
+
+  @override
+  String get inviteWidgetCreateLinkButton => 'Create link';
+
+  @override
+  String inviteWidgetSuccessWithEmail(String email) {
+    return 'Invitation successfully sent to $email!';
+  }
+
+  @override
+  String get inviteWidgetSuccessLinkOnly =>
+      'Invitation link successfully created!';
+
+  @override
+  String get inviteWidgetCopyLink => 'Copy';
+
+  @override
+  String get inviteWidgetDialogTitle => 'Invite player';
+
+  @override
+  String get inviteWidgetCancel => 'Cancel';
+
+  @override
+  String get inviteWidgetLinkTitle => 'Invite Link:';
+
+  @override
+  String get worldInviteButton => 'Invite';
+
+  @override
+  String get authLoginSuccessButInviteFailed =>
+      'Login successful, but invitation could not be accepted.';
+
+  @override
+  String get authRegisterSuccessButInviteFailed =>
+      'Registration successful, but invitation could not be accepted.';
 }

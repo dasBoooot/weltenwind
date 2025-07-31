@@ -1110,5 +1110,323 @@
         "description": "Error message"
       }
     }
+  },
+  "invitePageTitle": "Invitation",
+  "@invitePageTitle": {
+    "description": "Title of the invitation page",
+    "context": "invite"
+  },
+  "inviteWelcomeTitle": "You've been invited!",
+  "@inviteWelcomeTitle": {
+    "description": "Welcome title on the invitation page",
+    "context": "invite"
+  },
+  "inviteWelcomeSubtitle": "You've been invited to the world \"{worldName}\"",
+  "@inviteWelcomeSubtitle": {
+    "description": "Welcome subtitle with world name",
+    "context": "invite",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "Name of the world"
+      }
+    }
+  },
+  "inviteFromUser": "Invited by {username}",
+  "@inviteFromUser": {
+    "description": "Shows who sent the invitation",
+    "context": "invite",
+    "placeholders": {
+      "username": {
+        "type": "String",
+        "description": "Username of the inviter"
+      }
+    }
+  },
+  "inviteDetailsTitle": "Invitation Details",
+  "@inviteDetailsTitle": {
+    "description": "Title for invitation details section",
+    "context": "invite"
+  },
+  "inviteDetailsEmail": "Email",
+  "@inviteDetailsEmail": {
+    "description": "Label for email in invitation details",
+    "context": "invite"
+  },
+  "inviteDetailsWorld": "World",
+  "@inviteDetailsWorld": {
+    "description": "Label for world in invitation details",
+    "context": "invite"
+  },
+  "inviteDetailsStatus": "Status",
+  "@inviteDetailsStatus": {
+    "description": "Label for status in invitation details",
+    "context": "invite"
+  },
+  "inviteDetailsExpires": "Expires",
+  "@inviteDetailsExpires": {
+    "description": "Label for expiration time in invitation details",
+    "context": "invite"
+  },
+  "inviteActionRegisterHint": "You need an account to join the world.",
+  "@inviteActionRegisterHint": {
+    "description": "Hint text for registration",
+    "context": "invite"
+  },
+  "inviteActionRegisterAndJoin": "Register & Join",
+  "@inviteActionRegisterAndJoin": {
+    "description": "Button text for registration and joining",
+    "context": "invite"
+  },
+  "inviteActionAlreadyHaveAccount": "Already have an account? Sign in",
+  "@inviteActionAlreadyHaveAccount": {
+    "description": "Link text for already registered users",
+    "context": "invite"
+  },
+  "inviteActionLoginHint": "You already have an account. Sign in to join the world.",
+  "@inviteActionLoginHint": {
+    "description": "Hint text for login",
+    "context": "invite"
+  },
+  "inviteActionLogin": "Sign In",
+  "@inviteActionLogin": {
+    "description": "Button text for login",
+    "context": "invite"
+  },
+  "inviteActionAcceptHint": "Hello {username}! You can now accept or decline the invitation.",
+  "@inviteActionAcceptHint": {
+    "description": "Hint text for accepting/declining invitation",
+    "context": "invite",
+    "placeholders": {
+      "username": {
+        "type": "String",
+        "description": "Username of the logged in user"
+      }
+    }
+  },
+  "inviteActionAccept": "Accept Invitation",
+  "@inviteActionAccept": {
+    "description": "Button text for accepting the invitation",
+    "context": "invite"
+  },
+  "inviteActionDecline": "Decline",
+  "@inviteActionDecline": {
+    "description": "Button text for declining the invitation",
+    "context": "invite"
+  },
+  "inviteActionWrongEmailHint": "You are signed in as {currentEmail}, but the invitation is for {inviteEmail}. You need to sign out and register with the correct email.",
+  "@inviteActionWrongEmailHint": {
+    "description": "Hint text for wrong email",
+    "context": "invite",
+    "placeholders": {
+      "currentEmail": {
+        "type": "String",
+        "description": "Current user's email"
+      },
+      "inviteEmail": {
+        "type": "String",
+        "description": "Email the invitation is intended for"
+      }
+    }
+  },
+  "inviteActionLogoutAndRegister": "Sign Out & Register",
+  "@inviteActionLogoutAndRegister": {
+    "description": "Button text for logout and registration",
+    "context": "invite"
+  },
+  "inviteActionUnknownStatus": "Unknown status. Please try again later.",
+  "@inviteActionUnknownStatus": {
+    "description": "Error message for unknown user status",
+    "context": "invite"
+  },
+  "inviteErrorNoData": "No invitation data available.",
+  "@inviteErrorNoData": {
+    "description": "Error message when no invitation data could be loaded",
+    "context": "invite"
+  },
+  "inviteErrorInvalidOrExpired": "Invitation invalid or expired",
+  "@inviteErrorInvalidOrExpired": {
+    "description": "Error message when invitation is invalid or expired",
+    "context": "invite"
+  },
+  "inviteErrorLoadingData": "Error loading invitation data: {error}",
+  "@inviteErrorLoadingData": {
+    "description": "Error message when loading invitation data fails",
+    "context": "invite",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "inviteErrorAcceptFailed": "Error accepting invitation",
+  "@inviteErrorAcceptFailed": {
+    "description": "Error message when accepting invitation fails",
+    "context": "invite"
+  },
+  "inviteErrorAcceptException": "Error accepting invitation: {error}",
+  "@inviteErrorAcceptException": {
+    "description": "Error message with exception when accepting invitation",
+    "context": "invite",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "inviteErrorDeclineFailed": "Error declining invitation",
+  "@inviteErrorDeclineFailed": {
+    "description": "Error message when declining invitation fails",
+    "context": "invite"
+  },
+  "inviteErrorDeclineException": "Error declining invitation: {error}",
+  "@inviteErrorDeclineException": {
+    "description": "Error message with exception when declining invitation",
+    "context": "invite",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "inviteDeclineSuccess": "Invitation declined",
+  "@inviteDeclineSuccess": {
+    "description": "Success message when declining invitation",
+    "context": "invite"
+  },
+  "marketingDiscoverMoreWorlds": "Discover more exciting worlds",
+  "@marketingDiscoverMoreWorlds": {
+    "description": "Header for more worlds in marketing section",
+    "context": "marketing"
+  },
+  "marketingCallToAction": "Discover hundreds of worlds, create your own, or join existing communities!",
+  "@marketingCallToAction": {
+    "description": "Marketing call-to-action text",
+    "context": "marketing"
+  },
+  "marketingFeatureCommunityTitle": "Community",
+  "@marketingFeatureCommunityTitle": {
+    "description": "Title for Community feature in marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureCommunityDesc": "Play with friends",
+  "@marketingFeatureCommunityDesc": {
+    "description": "Description for Community feature in marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureCreateTitle": "Create",
+  "@marketingFeatureCreateTitle": {
+    "description": "Title for Create feature in marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureCreateDesc": "Build your world",
+  "@marketingFeatureCreateDesc": {
+    "description": "Description for Create feature in marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureExploreTitle": "Explore",
+  "@marketingFeatureExploreTitle": {
+    "description": "Title for Explore feature in marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureExploreDesc": "New adventures",
+  "@marketingFeatureExploreDesc": {
+    "description": "Description for Explore feature in marketing",
+    "context": "marketing"
+  },
+  "marketingBrowseAllWorlds": "Browse all worlds",
+  "@marketingBrowseAllWorlds": {
+    "description": "Button text for browsing all worlds",
+    "context": "marketing"
+  },
+  "inviteDetailsCreated": "Created on",
+  "@inviteDetailsCreated": {
+    "description": "Label for invitation creation date",
+    "context": "invite"
+  },
+  "inviteWidgetTitle": "Send invitation for {worldName}",
+  "@inviteWidgetTitle": {
+    "context": "invite",
+    "placeholders": {
+      "worldName": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteWidgetEmailLabel": "Email address",
+  "@inviteWidgetEmailLabel": {
+    "context": "invite"
+  },
+  "inviteWidgetEmailHint": "friend@example.com",
+  "@inviteWidgetEmailHint": {
+    "context": "invite"
+  },
+  "inviteWidgetEmailRequired": "Email address is required",
+  "@inviteWidgetEmailRequired": {
+    "context": "invite"
+  },
+  "inviteWidgetEmailInvalid": "Invalid email address",
+  "@inviteWidgetEmailInvalid": {
+    "context": "invite"
+  },
+  "inviteWidgetSendEmailOption": "Send email automatically",
+  "@inviteWidgetSendEmailOption": {
+    "context": "invite"
+  },
+  "inviteWidgetSendEmailHint": "Disable to create invitation link only",
+  "@inviteWidgetSendEmailHint": {
+    "context": "invite"
+  },
+  "inviteWidgetSendButton": "Send invitation",
+  "@inviteWidgetSendButton": {
+    "context": "invite"
+  },
+  "inviteWidgetCreateLinkButton": "Create link",
+  "@inviteWidgetCreateLinkButton": {
+    "context": "invite"
+  },
+  "inviteWidgetSuccessWithEmail": "Invitation successfully sent to {email}!",
+  "@inviteWidgetSuccessWithEmail": {
+    "context": "invite",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteWidgetSuccessLinkOnly": "Invitation link successfully created!",
+  "@inviteWidgetSuccessLinkOnly": {
+    "context": "invite"
+  },
+  "inviteWidgetCopyLink": "Copy",
+  "@inviteWidgetCopyLink": {
+    "context": "invite"
+  },
+  "inviteWidgetDialogTitle": "Invite player",
+  "@inviteWidgetDialogTitle": {
+    "context": "invite"
+  },
+  "inviteWidgetCancel": "Cancel",
+  "@inviteWidgetCancel": {
+    "context": "invite"
+  },
+  "inviteWidgetLinkTitle": "Invite Link:",
+  "@inviteWidgetLinkTitle": {
+    "context": "invite"
+  },
+  "worldInviteButton": "Invite",
+  "@worldInviteButton": {
+    "context": "worldActions"
+  },
+  "authLoginSuccessButInviteFailed": "Login successful, but invitation could not be accepted.",
+  "@authLoginSuccessButInviteFailed": {
+    "context": "auth"
+  },
+  "authRegisterSuccessButInviteFailed": "Registration successful, but invitation could not be accepted.",
+  "@authRegisterSuccessButInviteFailed": {
+    "context": "auth"
   }
 } 
