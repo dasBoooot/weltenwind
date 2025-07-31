@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
-import '../../theme/app_theme.dart';
+import '../../theme/tokens/colors.dart';
+import '../../theme/tokens/spacing.dart';
+import '../../theme/tokens/typography.dart';
+import '../../shared/components/index.dart';
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
+import '../../shared/widgets/theme_switcher.dart';
+import '../../shared/utils/dynamic_components.dart';
+import '../../core/providers/theme_provider.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   final String token;
@@ -73,7 +80,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
     setState(() {
       _isLoading = true;
       _errorMessage = null;
-      _isSuccess = false;
     });
 
     try {
@@ -86,24 +92,30 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
         setState(() {
           _isSuccess = true;
         });
+        AppLogger.app.i('✅ Password Reset erfolgreich');
         
-        // Erfolgsmeldung zeigen und nach 3 Sekunden zum Login
-        await Future.delayed(const Duration(seconds: 3));
-        if (mounted) {
-          context.goNamed('login');
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          final error = e.toString().replaceAll('Exception: ', '');
-          if (error.contains('expired') || error.contains('invalid')) {
-            _errorMessage = AppLocalizations.of(context).authResetPasswordInvalidToken;
-          } else {
-            _errorMessage = error;
+        // Nach 3 Sekunden zur Login-Seite weiterleiten
+        Future.delayed(const Duration(seconds: 3), () {
+          if (mounted) {
+            context.goNamed('login');
           }
         });
+      } else {
+        setState(() {
+          _errorMessage = AppLocalizations.of(context).errorGeneral;
+        });
       }
+    } catch (e) {
+      AppLogger.app.e('❌ Password Reset Fehler', error: e);
+      final error = e.toString().replaceAll('Exception: ', '');
+      
+      setState(() {
+        if (error.contains('expired') || error.contains('invalid')) {
+          _errorMessage = AppLocalizations.of(context).authResetPasswordInvalidToken;
+        } else {
+          _errorMessage = AppLocalizations.of(context).errorGeneral;
+        }
+      });
     } finally {
       if (mounted) {
         setState(() {
@@ -113,371 +125,34 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
     }
   }
 
+  bool get _passwordsMatch => 
+      _passwordController.text.isNotEmpty && 
+      _passwordController.text == _confirmPasswordController.text;
+
+  bool get _passwordLengthValid => _passwordController.text.length >= 6;
+
+  bool get _passwordHasNoSpaces => !_passwordController.text.contains(' ');
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Scaffold(
       body: Stack(
         children: [
           BackgroundWidget(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 400),
-                      child: Card(
-                        elevation: 12,
-                        color: const Color(0xFF1A1A1A),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(
-                            color: AppTheme.primaryColor.withOpacity(0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Color(0xFF1A1A1A),
-                                Color(0xFF2A2A2A),
-                              ],
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(32.0),
-                            child: Form(
-                              key: _formKey,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // Icon with Animation
-                                  TweenAnimationBuilder<double>(
-                                    tween: Tween(begin: 0.8, end: 1.0),
-                                    duration: const Duration(milliseconds: 600),
-                                    curve: Curves.elasticOut,
-                                    builder: (context, value, child) {
-                                      return Transform.scale(
-                                        scale: value,
-                                        child: child,
-                                      );
-                                    },
-                                    child: Container(
-                                      width: 80,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        color: _isSuccess 
-                                          ? Colors.green.withOpacity(0.2)
-                                          : AppTheme.primaryColor.withOpacity(0.2),
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(
-                                          color: _isSuccess
-                                            ? Colors.green.withOpacity(0.5)
-                                            : AppTheme.primaryColor.withOpacity(0.5),
-                                          width: 2,
-                                        ),
-                                      ),
-                                      child: Icon(
-                                        _isSuccess ? Icons.check_circle : Icons.lock_reset,
-                                        size: 40,
-                                        color: _isSuccess ? Colors.green : AppTheme.primaryColor,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  
-                                  Text(
-                                    _isSuccess ? AppLocalizations.of(context).authResetPasswordSuccessTitle : AppLocalizations.of(context).authResetPasswordTitle,
-                                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 24,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  
-                                  Text(
-                                    _isSuccess ? AppLocalizations.of(context).authResetPasswordSuccessMessage : AppLocalizations.of(context).authResetPasswordDescription,
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: Colors.grey[300],
-                                      fontSize: 14,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 32),
-                                  
-                                  // Success Animation
-                                  if (_isSuccess)
-                                    TweenAnimationBuilder<double>(
-                                      tween: Tween(begin: 0.0, end: 1.0),
-                                      duration: const Duration(milliseconds: 500),
-                                      builder: (context, value, child) {
-                                        return Transform.scale(
-                                          scale: value,
-                                          child: child,
-                                        );
-                                      },
-                                      child: const Icon(
-                                        Icons.check_circle,
-                                        size: 64,
-                                        color: Colors.green,
-                                      ),
-                                    ),
-                                  
-                                  // Password fields
-                                  if (!_isSuccess) ...[
-                                    // New Password field
-                                    TextFormField(
-                                      controller: _passwordController,
-                                      obscureText: _obscurePassword,
-                                      style: const TextStyle(color: Colors.white),
-                                      autofillHints: const [AutofillHints.newPassword],
-                                      textInputAction: TextInputAction.next,
-                                      onChanged: (_) {
-                                        if (!_hasInteractedWithPassword) {
-                                          setState(() {
-                                            _hasInteractedWithPassword = true;
-                                          });
-                                        }
-                                      },
-                                      decoration: InputDecoration(
-                                        labelText: AppLocalizations.of(context).authNewPasswordLabel,
-                                        labelStyle: TextStyle(color: Colors.grey[400]),
-                                        prefixIcon: const Icon(Icons.lock, color: AppTheme.primaryColor),
-                                        suffixIcon: IconButton(
-                                          icon: Icon(
-                                            _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                                            color: Colors.grey[400],
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              _obscurePassword = !_obscurePassword;
-                                            });
-                                          },
-                                        ),
-                                        filled: true,
-                                        fillColor: const Color(0xFF2D2D2D),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: Colors.grey[600]!),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: Colors.grey[600]!),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
-                                        ),
-                                        errorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: Colors.red[400]!),
-                                        ),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: Colors.red[400]!, width: 2),
-                                        ),
-                                        helperText: AppLocalizations.of(context).authPasswordHelperText,
-                                        helperStyle: TextStyle(color: Colors.grey[500], fontSize: 12),
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return AppLocalizations.of(context).authNewPasswordRequired;
-                                        }
-                                        if (value.length < 6) {
-                                          return AppLocalizations.of(context).authPasswordMinLength;
-                                        }
-                                        if (value.contains(' ')) {
-                                          return AppLocalizations.of(context).authPasswordNoSpaces;
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 16),
-                                    
-                                    // Confirm Password field
-                                    TextFormField(
-                                      controller: _confirmPasswordController,
-                                      obscureText: _obscureConfirmPassword,
-                                      style: const TextStyle(color: Colors.white),
-                                      textInputAction: TextInputAction.done,
-                                      onFieldSubmitted: (_) => _isLoading ? null : _resetPassword(),
-                                      onChanged: (_) {
-                                        if (!_hasInteractedWithConfirmPassword) {
-                                          setState(() {
-                                            _hasInteractedWithConfirmPassword = true;
-                                          });
-                                        }
-                                      },
-                                      decoration: InputDecoration(
-                                        labelText: AppLocalizations.of(context).authConfirmPasswordLabel,
-                                        labelStyle: TextStyle(color: Colors.grey[400]),
-                                        prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.primaryColor),
-                                        suffixIcon: IconButton(
-                                          icon: Icon(
-                                            _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
-                                            color: Colors.grey[400],
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              _obscureConfirmPassword = !_obscureConfirmPassword;
-                                            });
-                                          },
-                                        ),
-                                        filled: true,
-                                        fillColor: const Color(0xFF2D2D2D),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: Colors.grey[600]!),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: Colors.grey[600]!),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
-                                        ),
-                                        errorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: Colors.red[400]!),
-                                        ),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: Colors.red[400]!, width: 2),
-                                        ),
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return AppLocalizations.of(context).authConfirmPasswordRequired;
-                                        }
-                                        if (value != _passwordController.text) {
-                                          return AppLocalizations.of(context).authPasswordsDoNotMatch;
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 24),
-                                    
-                                    // Password Requirements Info
-                                    Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.primaryColor.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            AppLocalizations.of(context).authPasswordRequirementsTitle,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          _buildRequirement(AppLocalizations.of(context).authRequirementMinLength, 
-                                            _passwordController.text.length >= 6),
-                                          _buildRequirement(AppLocalizations.of(context).authRequirementNoSpaces, 
-                                            !_passwordController.text.contains(' ')),
-                                          _buildRequirement(AppLocalizations.of(context).authRequirementPasswordsMatch, 
-                                            _passwordController.text.isNotEmpty && 
-                                            _passwordController.text == _confirmPasswordController.text),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                  ],
-                                  
-                                  // Error message
-                                  if (_errorMessage != null)
-                                    Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(12),
-                                      margin: const EdgeInsets.only(bottom: 16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.red[900]!.withOpacity(0.3),
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(color: Colors.red[400]!.withOpacity(0.5)),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.error_outline, color: Colors.red[400], size: 20),
-                                          const SizedBox(width: 8),
-                                          Expanded(
-                                            child: Text(
-                                              _errorMessage!,
-                                              style: TextStyle(color: Colors.red[200], fontSize: 14),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  
-                                  // Submit button
-                                  if (!_isSuccess)
-                                    SizedBox(
-                                      width: double.infinity,
-                                      height: 56,
-                                      child: ElevatedButton(
-                                        onPressed: _isLoading ? null : _resetPassword,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: AppTheme.primaryColor,
-                                          foregroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          elevation: 8,
-                                          shadowColor: AppTheme.primaryColor.withOpacity(0.5),
-                                        ),
-                                        child: _isLoading
-                                            ? const SizedBox(
-                                                height: 20,
-                                                width: 20,
-                                                child: CircularProgressIndicator(
-                                                  strokeWidth: 2,
-                                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                                ),
-                                              )
-                                            : Text(
-                                                AppLocalizations.of(context).authResetPasswordButton,
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                      ),
-                                    ),
-                                  
-                                  const SizedBox(height: 20),
-                                  
-                                  // Back to login link
-                                  if (!_isSuccess)
-                                    TextButton(
-                                      onPressed: () => context.goNamed('login'),
-                                      child: Text(
-                                        AppLocalizations.of(context).authBackToLogin,
-                                        style: const TextStyle(
-                                          color: AppTheme.primaryColor,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: _isSuccess
+                          ? _buildSuccessView(isDark)
+                          : _buildFormView(isDark),
                     ),
                   ),
                 ),
@@ -485,7 +160,32 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
             ),
           ),
           
-          // Language Switcher (oben links)
+          // Loading Overlay
+          if (_isLoading)
+            Container(
+              color: Colors.black.withValues(alpha: 0.7),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary),
+                      strokeWidth: 3,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      AppLocalizations.of(context).authLoginLoading,
+                      style: AppTypography.bodyLarge(
+                        color: Colors.white,
+                        isDark: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          
+          // Language Switcher
           const Positioned(
             top: 40.0,
             left: 20.0,
@@ -496,27 +196,313 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
               ),
             ),
           ),
+          
+          // Theme Switcher
+          Positioned(
+            top: 40.0,
+            right: 20.0,
+            child: SafeArea(
+              child: ThemeSwitcher(
+                currentThemeMode: ThemeProvider().themeMode,
+                onThemeModeChanged: (mode) => ThemeProvider().setThemeMode(mode),
+                currentStylePreset: ThemeProvider().stylePreset,
+                onStylePresetChanged: (preset) => ThemeProvider().setStylePreset(preset),
+                isCompact: true,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
-  
-  Widget _buildRequirement(String text, bool isMet) {
+
+  Widget _buildFormView(bool isDark) {
+    return DynamicComponents.authFrame(
+      welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
+      pageTitle: AppLocalizations.of(context).authResetPasswordTitle,
+      subtitle: AppLocalizations.of(context).authResetPasswordDescription,
+      padding: const EdgeInsets.all(AppSpacing.sectionMedium),
+      context: context,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            
+            // 🔒 New Password field
+            TextFormField(
+              controller: _passwordController,
+              obscureText: _obscurePassword,
+              autofillHints: const [AutofillHints.newPassword],
+              textInputAction: TextInputAction.next,
+              onChanged: (_) {
+                if (!_hasInteractedWithPassword) {
+                  setState(() {
+                    _hasInteractedWithPassword = true;
+                  });
+                } else {
+                  setState(() {}); // Rebuild for real-time validation
+                }
+              },
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).authNewPasswordLabel,
+                helperText: AppLocalizations.of(context).authPasswordHelperText,
+                prefixIcon: Icon(Icons.lock_outline, color: AppColors.secondary),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return AppLocalizations.of(context).authNewPasswordRequired;
+                }
+                if (value.length < 6) {
+                  return AppLocalizations.of(context).authPasswordMinLength;
+                }
+                if (value.contains(' ')) {
+                  return AppLocalizations.of(context).authPasswordNoSpaces;
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: AppSpacing.md),
+            
+            // 🔒 Confirm Password field
+            TextFormField(
+              controller: _confirmPasswordController,
+              obscureText: _obscureConfirmPassword,
+              autofillHints: const [AutofillHints.newPassword],
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted: (_) => _isLoading ? null : _resetPassword(),
+              onChanged: (_) {
+                if (!_hasInteractedWithConfirmPassword) {
+                  setState(() {
+                    _hasInteractedWithConfirmPassword = true;
+                  });
+                } else {
+                  setState(() {}); // Rebuild for real-time validation
+                }
+              },
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).authConfirmPasswordLabel,
+                prefixIcon: Icon(Icons.lock, color: AppColors.secondary),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                    });
+                  },
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return AppLocalizations.of(context).authConfirmPasswordRequired;
+                }
+                if (value != _passwordController.text) {
+                  return AppLocalizations.of(context).authPasswordsDoNotMatch;
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: AppSpacing.md),
+            
+            // 📋 Password Requirements
+            if (_hasInteractedWithPassword)
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryAccent.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.primaryAccent.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context).authPasswordRequirementsTitle,
+                      style: AppTypography.labelLarge(isDark: isDark),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    _buildRequirement(
+                      AppLocalizations.of(context).authRequirementMinLength,
+                      _passwordLengthValid,
+                      isDark,
+                    ),
+                    _buildRequirement(
+                      AppLocalizations.of(context).authRequirementNoSpaces,
+                      _passwordHasNoSpaces,
+                      isDark,
+                    ),
+                    _buildRequirement(
+                      AppLocalizations.of(context).authRequirementPasswordsMatch,
+                      _passwordsMatch,
+                      isDark,
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: AppSpacing.lg),
+            
+            // Error message
+            if (_errorMessage != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.error.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: AppColors.error,
+                      size: 20,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Expanded(
+                      child: Text(
+                        _errorMessage!,
+                        style: AppTypography.bodySmall(
+                          color: AppColors.error,
+                          isDark: isDark,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            
+            // 🎯 Reset Password Button
+            SizedBox(
+              width: double.infinity,
+              child: DynamicComponents.primaryButton(
+                text: AppLocalizations.of(context).authResetPasswordButton,
+                onPressed: _isLoading ? null : _resetPassword,
+                isLoading: _isLoading,
+                icon: Icons.lock_reset_rounded,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            
+            // Back to Login
+            DynamicComponents.tertiaryButton(
+              text: AppLocalizations.of(context).authBackToLogin,
+              onPressed: () => context.goNamed('login'),
+              size: AppButtonSize.small,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuccessView(bool isDark) {
+    return DynamicComponents.authFrame(
+      welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
+      pageTitle: AppLocalizations.of(context).authResetPasswordTitle,
+      subtitle: AppLocalizations.of(context).authBackToLogin,
+      padding: const EdgeInsets.all(AppSpacing.sectionMedium),
+      context: context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Success Icon
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.elasticOut,
+            builder: (context, value, child) {
+              return Transform.scale(
+                scale: value,
+                child: child,
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.success.withValues(alpha: 0.1),
+                border: Border.all(
+                  color: AppColors.success.withValues(alpha: 0.3),
+                  width: 2,
+                ),
+              ),
+              child: Icon(
+                Icons.check_circle_rounded,
+                size: 48,
+                color: AppColors.success,
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          
+          // Success Message
+          Text(
+            AppLocalizations.of(context).authResetPasswordSuccessTitle,
+            style: AppTypography.h4(isDark: isDark),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            AppLocalizations.of(context).authResetPasswordSuccessMessage,
+            style: AppTypography.bodyMedium(isDark: isDark),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.sectionSmall),
+          
+
+          const SizedBox(height: AppSpacing.lg),
+          
+          // Manual redirect button
+          SizedBox(
+            width: double.infinity,
+            child: DynamicComponents.secondaryButton(
+              text: AppLocalizations.of(context).authBackToLogin,
+              onPressed: () => context.goNamed('login'),
+              size: AppButtonSize.medium,
+              icon: Icons.arrow_forward_rounded,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRequirement(String text, bool isMet, bool isDark) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
           Icon(
             isMet ? Icons.check_circle : Icons.circle_outlined,
             size: 16,
-            color: isMet ? Colors.green : Colors.grey[400],
+            color: isMet ? AppColors.success : AppColors.textSecondary,
           ),
-          const SizedBox(width: 8),
-          Text(
-            text,
-            style: TextStyle(
-              color: isMet ? Colors.green[300] : Colors.grey[400],
-              fontSize: 12,
+          const SizedBox(width: AppSpacing.xs),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTypography.bodySmall(
+                color: isMet ? AppColors.success : AppColors.textSecondary,
+                isDark: isDark,
+              ),
             ),
           ),
         ],

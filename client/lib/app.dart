@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 import 'config/env.dart';
 import 'config/logger.dart';
 import 'routing/app_router.dart';
 import 'shared/widgets/splash_screen.dart';
-import 'theme/app_theme.dart';
+import 'theme/fantasy_theme.dart';
 import 'main.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/api_service.dart';
 import 'core/services/world_service.dart';
 import 'core/services/invite_service.dart';
 import 'core/providers/locale_provider.dart';
+import 'core/providers/theme_provider.dart';
 import 'l10n/app_localizations.dart';
 
 class WeltenwindApp extends StatefulWidget {
@@ -22,21 +24,31 @@ class WeltenwindApp extends StatefulWidget {
 
 class _WeltenwindAppState extends State<WeltenwindApp> {
   late final LocaleProvider _localeProvider;
+  late final ThemeProvider _themeProvider;
 
   @override
   void initState() {
     super.initState();
     _localeProvider = LocaleProvider();
     _localeProvider.addListener(_onLocaleChanged);
+    _themeProvider = ThemeProvider();
+    _themeProvider.addListener(_onThemeChanged);
   }
 
   @override
   void dispose() {
     _localeProvider.removeListener(_onLocaleChanged);
+    _themeProvider.removeListener(_onThemeChanged);
     super.dispose();
   }
 
   void _onLocaleChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _onThemeChanged() {
     if (mounted) {
       setState(() {});
     }
@@ -60,9 +72,15 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
       appName: Env.appName,
       child: MaterialApp.router(
         title: Env.appName,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system, // Automatisch Dark/Light basierend auf System
+        theme: FantasyTheme.getThemeForPreset(
+          brightness: Brightness.light,
+          preset: _themeProvider.stylePreset,
+        ),
+        darkTheme: FantasyTheme.getThemeForPreset(
+          brightness: Brightness.dark,
+          preset: _themeProvider.stylePreset,
+        ),
+        themeMode: _themeProvider.themeMode, // Dynamisch basierend auf ThemeProvider
         routerConfig: AppRouter.router,
         debugShowCheckedModeBanner: false,
         
@@ -91,12 +109,22 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
     
     AppLogger.app.i('🌍 Environment initialisiert');
     
-    // 2. LocaleProvider initialisieren
+    // 2. Fantasy Theme Assets preloaden
+    await FantasyTheme.preloadAssets();
+    
+    AppLogger.app.i('🎨 Fantasy Theme Assets geladen');
+    
+    // 3. LocaleProvider initialisieren
     await LocaleProvider.initialize();
     
     AppLogger.app.i('🌐 LocaleProvider initialisiert');
     
-    // 3. Services initialisieren (jetzt sicher, da App bereits läuft)
+    // 4. ThemeProvider initialisieren
+    await ThemeProvider.initialize();
+    
+    AppLogger.app.i('🎨 ThemeProvider initialisiert');
+    
+    // 5. Services initialisieren (jetzt sicher, da App bereits läuft)
     try {
       final authService = AuthService();
       final apiService = ApiService.withAuth(authService);
@@ -110,7 +138,7 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
       
       AppLogger.app.i('⚙️ Services registriert');
       
-      // 4. Token-Validierung beim App-Start (VOR loadStoredUser)
+      // 5. Token-Validierung beim App-Start (VOR loadStoredUser)
       bool isValid = false;
       try {
         isValid = await authService.validateTokensOnStart();
@@ -126,7 +154,7 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
         await authService.logout();
       }
       
-      // 5. Gespeicherte User-Daten laden (nur wenn Tokens gültig)
+      // 7. Gespeicherte User-Daten laden (nur wenn Tokens gültig)
       if (isValid) {
         try {
           final user = await authService.loadStoredUser();

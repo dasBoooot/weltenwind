@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
-import '../../theme/app_theme.dart';
+import '../../theme/tokens/colors.dart';
+import '../../theme/tokens/spacing.dart';
+import '../../theme/tokens/typography.dart';
+import '../../shared/components/index.dart';
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
+import '../../shared/widgets/theme_switcher.dart';
+import '../../shared/utils/dynamic_components.dart';
+import '../../core/providers/theme_provider.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -13,10 +20,13 @@ class ForgotPasswordPage extends StatefulWidget {
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final AuthService _authService = AuthService();
+  
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
   
   bool _isLoading = false;
   bool _isSuccess = false;
@@ -26,7 +36,28 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   static final RegExp _emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
 
   @override
+  void initState() {
+    super.initState();
+    
+    // Animation Setup
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeIn,
+    ));
+    
+    _animationController.forward();
+  }
+
+  @override
   void dispose() {
+    _animationController.dispose();
     _emailController.dispose();
     super.dispose();
   }
@@ -51,20 +82,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         setState(() {
           _isSuccess = true;
         });
-        
-        // Nach 3 Sekunden zurück zum Login
-        Future.delayed(const Duration(seconds: 3), () {
-          if (mounted) {
-            context.goNamed('login');
-          }
+        AppLogger.app.i('✅ Password Reset Request erfolgreich');
+      } else {
+        setState(() {
+          _errorMessage = AppLocalizations.of(context).errorGeneral;
         });
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = e.toString().replaceAll('Exception: ', '');
-        });
-      }
+      AppLogger.app.e('❌ Password Reset Request Fehler', error: e);
+      setState(() {
+        _errorMessage = AppLocalizations.of(context).errorNetwork;
+      });
     } finally {
       if (mounted) {
         setState(() {
@@ -76,255 +104,57 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Scaffold(
       body: Stack(
         children: [
           BackgroundWidget(
             child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 400),
-                  child: Card(
-                    elevation: 12,
-                    color: const Color(0xFF1A1A1A),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        color: AppTheme.primaryColor.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF1A1A1A),
-                            Color(0xFF2A2A2A),
-                          ],
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(32.0),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Back Button
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: IconButton(
-                                  onPressed: () => context.goNamed('login'),
-                                  icon: const Icon(Icons.arrow_back),
-                                  color: Colors.grey[400],
-                                ),
-                              ),
-                              
-                              // Icon
-                              Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  color: AppTheme.primaryColor.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: AppTheme.primaryColor.withOpacity(0.5),
-                                    width: 2,
-                                  ),
-                                ),
-                                child: const Icon(
-                                  Icons.lock_reset,
-                                  size: 40,
-                                  color: AppTheme.primaryColor,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              
-                              Text(
-                                AppLocalizations.of(context).authForgotPasswordTitle,
-                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 24,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              
-                              Text(
-                                AppLocalizations.of(context).authForgotPasswordDescription,
-                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  color: Colors.grey[300],
-                                  fontSize: 14,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 32),
-                              
-                              // Success Message
-                              if (_isSuccess)
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(12),
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green[900]!.withOpacity(0.3),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.green[400]!.withOpacity(0.5)),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.check_circle_outline, color: Colors.green[400], size: 20),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          AppLocalizations.of(context).authForgotPasswordSuccess,
-                                          style: TextStyle(color: Colors.green[200], fontSize: 14),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              
-                              // Email field
-                              if (!_isSuccess)
-                                TextFormField(
-                                  controller: _emailController,
-                                  style: const TextStyle(color: Colors.white),
-                                  keyboardType: TextInputType.emailAddress,
-                                  autofillHints: const [AutofillHints.email],
-                                  textInputAction: TextInputAction.done,
-                                  onFieldSubmitted: (_) => _isLoading ? null : _requestPasswordReset(),
-                                  decoration: InputDecoration(
-                                    labelText: AppLocalizations.of(context).authForgotPasswordEmailLabel,
-                                    labelStyle: TextStyle(color: Colors.grey[400]),
-                                    prefixIcon: const Icon(Icons.email, color: AppTheme.primaryColor),
-                                    filled: true,
-                                    fillColor: const Color(0xFF2D2D2D),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(color: Colors.grey[600]!),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(color: Colors.grey[600]!),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(color: Colors.red[400]!),
-                                    ),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(color: Colors.red[400]!, width: 2),
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.trim().isEmpty) {
-                                      return AppLocalizations.of(context).authForgotPasswordEmailRequired;
-                                    }
-                                    if (!_emailRegex.hasMatch(value.trim())) {
-                                      return AppLocalizations.of(context).errorValidationEmail;
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              
-                              if (!_isSuccess) const SizedBox(height: 16),
-                              
-                              // Error message
-                              if (_errorMessage != null && !_isSuccess)
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(12),
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red[900]!.withOpacity(0.3),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.red[400]!.withOpacity(0.5)),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.error_outline, color: Colors.red[400], size: 20),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          _errorMessage!,
-                                          style: TextStyle(color: Colors.red[200], fontSize: 14),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              
-                              // Submit button
-                              if (!_isSuccess)
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 56,
-                                  child: ElevatedButton(
-                                    onPressed: _isLoading ? null : _requestPasswordReset,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppTheme.primaryColor,
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      elevation: 8,
-                                      shadowColor: AppTheme.primaryColor.withOpacity(0.5),
-                                    ),
-                                    child: _isLoading
-                                        ? const SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                            ),
-                                          )
-                                        : Text(
-                                            AppLocalizations.of(context).authForgotPasswordSendButton,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                  ),
-                                ),
-                              
-                              const SizedBox(height: 20),
-                              
-                              // Back to login link
-                              TextButton(
-                                onPressed: () => context.goNamed('login'),
-                                child: Text(
-                                  _isSuccess ? AppLocalizations.of(context).authForgotPasswordBackToLogin : AppLocalizations.of(context).authForgotPasswordCancel,
-                                  style: const TextStyle(
-                                    color: AppTheme.primaryColor,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: _isSuccess
+                          ? _buildSuccessView(isDark)
+                          : _buildFormView(isDark),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-          ),
           
-          // Language Switcher (oben links)
+          // Loading Overlay
+          if (_isLoading)
+            Container(
+              color: Colors.black.withValues(alpha: 0.7),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.aqua),
+                      strokeWidth: 3,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      AppLocalizations.of(context).authLoginLoading,
+                      style: AppTypography.bodyLarge(
+                        color: Colors.white,
+                        isDark: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          
+          // Language Switcher
           const Positioned(
             top: 40.0,
             left: 20.0,
@@ -335,8 +165,196 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
             ),
           ),
+          
+          // Theme Switcher
+          Positioned(
+            top: 40.0,
+            right: 20.0,
+            child: SafeArea(
+              child: ThemeSwitcher(
+                currentThemeMode: ThemeProvider().themeMode,
+                onThemeModeChanged: (mode) => ThemeProvider().setThemeMode(mode),
+                currentStylePreset: ThemeProvider().stylePreset,
+                onStylePresetChanged: (preset) => ThemeProvider().setStylePreset(preset),
+                isCompact: true,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
-} 
+
+  Widget _buildFormView(bool isDark) {
+    return DynamicComponents.authFrame(
+      welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
+      pageTitle: AppLocalizations.of(context).authForgotPasswordTitle,
+      subtitle: AppLocalizations.of(context).authForgotPasswordDescription,
+      padding: const EdgeInsets.all(AppSpacing.sectionMedium),
+      context: context,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            
+            // 📧 Email field
+            TextFormField(
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted: (_) => _isLoading ? null : _requestPasswordReset(),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).authEmailLabel,
+                prefixIcon: Icon(Icons.email_outlined, color: AppColors.aqua),
+
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return AppLocalizations.of(context).authEmailRequired;
+                }
+                if (!_emailRegex.hasMatch(value.trim())) {
+                  return AppLocalizations.of(context).errorValidationEmail;
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            
+            // Error message
+            if (_errorMessage != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.error.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: AppColors.error,
+                      size: 20,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Expanded(
+                      child: Text(
+                        _errorMessage!,
+                        style: AppTypography.bodySmall(
+                          color: AppColors.error,
+                          isDark: isDark,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            
+            // 🎯 Magischer Reset-Button
+            SizedBox(
+              width: double.infinity,
+              child: DynamicComponents.primaryButton(
+                text: AppLocalizations.of(context).authForgotPasswordSendButton,
+                onPressed: _isLoading ? null : _requestPasswordReset,
+                isLoading: _isLoading,
+                icon: Icons.send_rounded,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            
+              // Back to Login
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  DynamicComponents.secondaryButton(
+                    text: AppLocalizations.of(context).authBackToLogin,
+                    onPressed: () => context.goNamed('login'),
+                    size: AppButtonSize.small,
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuccessView(bool isDark) {
+    return DynamicComponents.authFrame(
+      welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
+      pageTitle: AppLocalizations.of(context).authForgotPasswordSuccess,
+      subtitle: AppLocalizations.of(context).authForgotPasswordDescription,
+      padding: const EdgeInsets.all(AppSpacing.sectionMedium),
+      context: context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Success Icon
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.success.withValues(alpha: 0.1),
+              border: Border.all(
+                color: AppColors.success.withValues(alpha: 0.3),
+                width: 2,
+              ),
+            ),
+            child: Icon(
+              Icons.mark_email_read_rounded,
+              size: 48,
+              color: AppColors.success,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          
+          // Success Message
+          Text(
+            AppLocalizations.of(context).authForgotPasswordTitle,
+            style: AppTypography.h4(isDark: isDark),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            AppLocalizations.of(context).authForgotPasswordSuccess,
+            style: AppTypography.bodyMedium(isDark: isDark),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.sectionSmall),
+          
+          // Actions
+          Column(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: DynamicComponents.secondaryButton(
+                  text: AppLocalizations.of(context).authForgotPasswordBackToLogin,
+                  onPressed: () => context.goNamed('login'),
+                  size: AppButtonSize.medium,
+                  icon: Icons.arrow_back_rounded,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              DynamicComponents.secondaryButton(
+                text: AppLocalizations.of(context).authForgotPasswordSendButton,
+                onPressed: () {
+                  setState(() {
+                    _isSuccess = false;
+                    _errorMessage = null;
+                  });
+                },
+                size: AppButtonSize.small,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

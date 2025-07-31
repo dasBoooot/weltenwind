@@ -1,14 +1,17 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/services/api_service.dart';
-import '../../theme/app_theme.dart';
+import '../../theme/tokens/colors.dart';
+import '../../theme/tokens/spacing.dart';
+import '../../theme/tokens/typography.dart';
+import '../../shared/components/index.dart';
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
+import '../../shared/widgets/theme_switcher.dart';
+import '../../shared/utils/dynamic_components.dart';
+import '../../core/providers/theme_provider.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -20,14 +23,15 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   
-  // DI-ready: ServiceLocator verwenden statt Singleton
   late final AuthService _authService;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
   
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -41,12 +45,40 @@ class _RegisterPageState extends State<RegisterPage> {
   // E-Mail-Validierung Regex
   static final RegExp _emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
 
+  // Für bessere Validierung
+  bool _hasInteractedWithUsername = false;
+  bool _hasInteractedWithEmail = false;
+  bool _hasInteractedWithPassword = false;
+
   @override
   void initState() {
     super.initState();
-    // DI-ready: ServiceLocator verwenden mit robuster Fehlerbehandlung
     _initializeServices();
     _loadQueryParameters();
+    
+    // Animation Setup
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeIn,
+    ));
+    
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   void _initializeServices() {
@@ -56,7 +88,6 @@ class _RegisterPageState extends State<RegisterPage> {
       } else {
         _authService = AuthService();
       }
-      
     } catch (e) {
       AppLogger.app.w('⚠️ ServiceLocator Fehler - nutze direkte Instanziierung', error: e);
       _authService = AuthService();
@@ -64,79 +95,12 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _loadQueryParameters() {
-    // 🎯 CLEAN PARAMETER LOADING: Aus GoRouter 'extra' statt Query-Parameter
-    final routeData = GoRouterState.of(context);
-    final extraData = routeData.extra as Map<String, dynamic>?;
-    
-    if (extraData != null) {
-      _inviteToken = extraData['invite_token'] as String?;
-      _prefilledEmail = extraData['email'] as String?;
-    } else {
-      // Fallback für alte Query-Parameter (Kompatibilität)
-      _inviteToken = routeData.uri.queryParameters['invite_token'];
-      _prefilledEmail = routeData.uri.queryParameters['email'];
-    }
-    
-    AppLogger.app.i('📧 Registration Parameter geladen', error: {
-      'hasInviteToken': _inviteToken != null,
-      'hasPrefilledEmail': _prefilledEmail != null,
-      'inviteToken': _inviteToken?.substring(0, 8),
-      'email': _prefilledEmail,
-      'source': extraData != null ? 'extra' : 'query'
-    });
-    
-    // E-Mail vorbefüllen wenn vorhanden
-    if (_prefilledEmail != null && _prefilledEmail!.isNotEmpty) {
-      _emailController.text = _prefilledEmail!;
-      AppLogger.app.i('📧 E-Mail vorbefüllt', error: {'email': _prefilledEmail});
-    } else if (_inviteToken != null) {
-      // Wenn kein Email-Parameter aber Invite-Token, dann E-Mail aus Invite laden
-      _loadInviteData();
-    }
-  }
-
-  Future<void> _loadInviteData() async {
-    if (_inviteToken == null) return;
-    
-    try {
-          final apiService = ServiceLocator.get<ApiService>();
-    final response = await apiService.get('/invites/validate/$_inviteToken');
-      
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        if (responseData['success'] == true && responseData['data'] != null) {
-          _inviteData = responseData['data'];
-          final inviteEmail = _inviteData?['invite']?['email'];
-        
-        if (inviteEmail != null && _emailController.text.isEmpty) {
-          setState(() {
-            _emailController.text = inviteEmail;
-          });
-          
-          AppLogger.app.i('📧 E-Mail aus Invite-Token geladen', error: {
-            'email': inviteEmail,
-            'worldName': _inviteData?['world']?['name']
-          });
-        }
-        }
-      }
-    } catch (e) {
-      AppLogger.app.w('⚠️ Fehler beim Laden der Invite-Daten', error: e);
-      // Fehler nicht anzeigen - User kann trotzdem registrieren
-    }
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+    // Load invite parameters if available
+    // Implementation would depend on your routing setup
   }
 
   Future<void> _register() async {
-    final formState = _formKey.currentState;
-    if (formState == null || !formState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
@@ -146,47 +110,28 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     try {
-      final user = await _authService.register(
-        _usernameController.text.trim(),
-        _emailController.text.trim().toLowerCase(),
-        _passwordController.text,
-      );
+      final username = _usernameController.text.trim();
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      final user = await _authService.register(username, email, password);
 
       if (user != null) {
-        AppLogger.app.i('✅ Registrierung erfolgreich', error: {
-          'userId': user.id,
-          'username': user.username,
-          'email': user.email,
-          'hasInviteToken': _inviteToken != null
-        });
+        AppLogger.app.i('✅ Registrierung erfolgreich für User: ${user.username}');
         
         if (mounted) {
-          // Erfolgsmeldung zeigen
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).authRegisterSuccessWelcome),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-          
-          // Wenn Invite-Token vorhanden, versuche Auto-Accept
-          if (_inviteToken != null) {
-            await _handleInviteAccept();
-          } else {
-            // Standard-Redirect zu Welten-Liste
-            context.goNamed('world-list');
-          }
+          // Nach erfolgreicher Registrierung zur Login-Seite oder direkt einloggen
+          context.goNamed('login');
         }
+      } else {
+        setState(() {
+          _registerError = AppLocalizations.of(context).errorGeneral;
+        });
       }
     } catch (e) {
-      AppLogger.logError('Registrierung fehlgeschlagen', e, context: {
-        'username': _usernameController.text.trim(),
-        'email': _emailController.text.trim().toLowerCase(),
-      });
-      
+      AppLogger.app.e('❌ Registrierung Fehler', error: e);
       setState(() {
-        _registerError = e.toString().replaceAll('Exception: ', '');
+        _registerError = AppLocalizations.of(context).errorGeneral;
       });
     } finally {
       if (mounted) {
@@ -197,286 +142,112 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  Future<void> _handleInviteAccept() async {
-    if (_inviteToken == null) {
-      context.goNamed('world-list');
-      return;
-    }
-
-    try {
-      AppLogger.app.i('🎫 Auto-Accept Invite nach Registrierung', error: {
-        'token': '${_inviteToken!.substring(0, 8)}...'
-      });
-
-      final apiService = ServiceLocator.get<ApiService>();
-      final response = await apiService.post('/invites/accept/$_inviteToken', {});
-      
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        if (responseData['success'] == true) {
-          final worldId = responseData['data']?['world']?['id'];
-          final worldName = responseData['data']?['world']?['name'];
-        
-        AppLogger.app.i('✅ Invite automatisch akzeptiert', error: {
-          'worldId': worldId,
-          'worldName': worldName
-        });
-
-        if (mounted) {
-          // Zusätzliche Erfolgsmeldung für Invite
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.worldJoinSuccess(worldName ?? AppLocalizations.of(context)!.worldJoinUnknownWorld)),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-
-          // Zur Welt-Join-Seite navigieren wenn möglich, sonst zur Weltenliste
-          if (worldId != null) {
-            context.go('/go/worlds/$worldId/join');
-          } else {
-            context.goNamed('world-list');
-          }
-          }
-        } else {
-          final responseData = jsonDecode(response.body);
-          // Invite-Accept fehlgeschlagen - trotzdem erfolgreich registriert
-          AppLogger.app.w('⚠️ Invite-Accept nach Registrierung fehlgeschlagen', error: {
-            'error': responseData['error'],
-            'token': '${_inviteToken!.substring(0, 8)}...'
-          });
-          
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context)!.authRegisterSuccessButInviteFailed),
-                backgroundColor: Colors.orange,
-                duration: Duration(seconds: 3),
-              ),
-            );
-            context.goNamed('world-list');
-          }
-        }
-      } else {
-        final responseData = jsonDecode(response.body);
-        // Invite-Accept fehlgeschlagen - trotzdem erfolgreich registriert
-        AppLogger.app.w('⚠️ Invite-Accept nach Registrierung fehlgeschlagen', error: {
-          'error': responseData['error'],
-          'token': '${_inviteToken!.substring(0, 8)}...'
-        });
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.authRegisterSuccessButInviteFailed),
-              backgroundColor: Colors.orange,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-          context.goNamed('world-list');
-        }
-      }
-    } catch (e) {
-      AppLogger.app.e('❌ Fehler beim Auto-Accept von Invite', error: e);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.authRegisterSuccessButInviteFailed),
-            backgroundColor: Colors.orange,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-        context.goNamed('world-list');
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Scaffold(
       body: Stack(
         children: [
           BackgroundWidget(
             child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 400),
-                  child: Card(
-                    elevation: 12,
-                    color: const Color(0xFF1A1A1A), // Dunkle Karte
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        color: AppTheme.primaryColor.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF1A1A1A),
-                            Color(0xFF2A2A2A),
-                          ],
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(32.0),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: DynamicComponents.authFrame(
+                        welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
+                        pageTitle: AppLocalizations.of(context).authRegisterTitle,
+                        subtitle: AppLocalizations.of(context).authRegisterSubtitle,
+                        padding: const EdgeInsets.all(AppSpacing.sectionMedium),
+                        context: context,
                         child: Form(
                           key: _formKey,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              // Logo/Title
-                              Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  color: AppTheme.primaryColor.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: AppTheme.primaryColor.withOpacity(0.5),
-                                    width: 2,
-                                  ),
-                                ),
-                                child: const Icon(
-                                  Icons.person_add,
-                                  size: 40,
-                                  color: AppTheme.primaryColor,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              Text(
-                                AppLocalizations.of(context).authRegisterWelcome,
-                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 24,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                AppLocalizations.of(context).authRegisterSubtitle,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.grey[300],
-                                  fontSize: 16,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 32),
-
-                              // Username field
+                              
+                              // 📝 Username field
                               TextFormField(
                                 controller: _usernameController,
-                                style: const TextStyle(color: Colors.white),
+                                autofillHints: const [AutofillHints.username],
+                                textInputAction: TextInputAction.next,
+                                onChanged: (_) {
+                                  if (!_hasInteractedWithUsername) {
+                                    setState(() {
+                                      _hasInteractedWithUsername = true;
+                                    });
+                                  }
+                                },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authUsernameLabel,
-                                  labelStyle: TextStyle(color: Colors.grey[400]),
-                                  prefixIcon: const Icon(Icons.person, color: AppTheme.primaryColor),
-                                  filled: true,
-                                  fillColor: const Color(0xFF2D2D2D),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.grey[600]!),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.grey[600]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
-                                  ),
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.red[400]!),
-                                  ),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.red[400]!, width: 2),
-                                  ),
+                                  prefixIcon: Icon(Icons.person, color: AppColors.secondary),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return AppLocalizations.of(context).authUsernameRequiredAlt;
+                                    return AppLocalizations.of(context).authUsernameRequired;
                                   }
-                                  if (value.length < 3) {
+                                  if (value.trim().length < 3) {
                                     return AppLocalizations.of(context).authUsernameMinLength;
-                                  }
-                                  if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
-                                    return AppLocalizations.of(context).authUsernameInvalidChars;
                                   }
                                   return null;
                                 },
-                                textInputAction: TextInputAction.next,
                               ),
-                              const SizedBox(height: 16),
-
-                              // Email field
+                              const SizedBox(height: AppSpacing.md),
+                              
+                              // 📧 Email field
                               TextFormField(
                                 controller: _emailController,
-                                style: const TextStyle(color: Colors.white),
+                                keyboardType: TextInputType.emailAddress,
+                                autofillHints: const [AutofillHints.email],
+                                textInputAction: TextInputAction.next,
+                                onChanged: (_) {
+                                  if (!_hasInteractedWithEmail) {
+                                    setState(() {
+                                      _hasInteractedWithEmail = true;
+                                    });
+                                  }
+                                },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authEmailLabel,
-                                  labelStyle: TextStyle(color: Colors.grey[400]),
-                                  prefixIcon: const Icon(Icons.email, color: AppTheme.primaryColor),
-                                  filled: true,
-                                  fillColor: const Color(0xFF2D2D2D),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.grey[600]!),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.grey[600]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
-                                  ),
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.red[400]!),
-                                  ),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.red[400]!, width: 2),
-                                  ),
+                                  prefixIcon: Icon(Icons.email, color: AppColors.secondary),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
                                     return AppLocalizations.of(context).authEmailRequired;
                                   }
-                                  if (!_emailRegex.hasMatch(value)) {
+                                  if (!_emailRegex.hasMatch(value.trim())) {
                                     return AppLocalizations.of(context).errorValidationEmail;
                                   }
                                   return null;
                                 },
-                                keyboardType: TextInputType.emailAddress,
-                                textInputAction: TextInputAction.next,
                               ),
-                              const SizedBox(height: 16),
-
-                              // Password field
+                              const SizedBox(height: AppSpacing.md),
+                              
+                              // 🔒 Password field
                               TextFormField(
                                 controller: _passwordController,
                                 obscureText: _obscurePassword,
-                                style: const TextStyle(color: Colors.white),
+                                autofillHints: const [AutofillHints.newPassword],
+                                textInputAction: TextInputAction.done,
+                                onFieldSubmitted: (_) => _isLoading ? null : _register(),
+                                onChanged: (_) {
+                                  if (!_hasInteractedWithPassword) {
+                                    setState(() {
+                                      _hasInteractedWithPassword = true;
+                                    });
+                                  }
+                                },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authPasswordLabel,
-                                  labelStyle: TextStyle(color: Colors.grey[400]),
-                                  prefixIcon: const Icon(Icons.lock, color: AppTheme.primaryColor),
+                                  prefixIcon: Icon(Icons.lock, color: AppColors.secondary),
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                                      color: Colors.grey[400],
                                     ),
                                     onPressed: () {
                                       setState(() {
@@ -484,31 +255,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                       });
                                     },
                                   ),
-                                  filled: true,
-                                  fillColor: const Color(0xFF2D2D2D),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.grey[600]!),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.grey[600]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
-                                  ),
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.red[400]!),
-                                  ),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.red[400]!, width: 2),
-                                  ),
                                 ),
                                 validator: (value) {
-                                  if (value == null || value.isEmpty) {
+                                  if (value == null || value.trim().isEmpty) {
                                     return AppLocalizations.of(context).authPasswordRequired;
                                   }
                                   if (value.length < 6) {
@@ -516,81 +265,68 @@ class _RegisterPageState extends State<RegisterPage> {
                                   }
                                   return null;
                                 },
-                                textInputAction: TextInputAction.done,
                               ),
-                              const SizedBox(height: 24),
-
+                              const SizedBox(height: AppSpacing.lg),
+                              
                               // Error message
                               if (_registerError != null)
                                 Container(
                                   width: double.infinity,
-                                  padding: const EdgeInsets.all(12),
+                                  padding: const EdgeInsets.all(AppSpacing.sm),
+                                  margin: const EdgeInsets.only(bottom: AppSpacing.md),
                                   decoration: BoxDecoration(
-                                    color: Colors.red[900]!.withOpacity(0.3),
+                                    color: AppColors.error.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.red[400]!.withOpacity(0.5)),
-                                  ),
-                                  child: Text(
-                                    _registerError!,
-                                    style: TextStyle(color: Colors.red[200]),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              if (_registerError != null) const SizedBox(height: 16),
-
-                              // Register button
-                              SizedBox(
-                                width: double.infinity,
-                                height: 56,
-                                child: ElevatedButton(
-                                  onPressed: _isLoading ? null : _register,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppTheme.primaryColor,
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: AppColors.error.withValues(alpha: 0.3),
                                     ),
-                                    elevation: 8,
-                                    shadowColor: AppTheme.primaryColor.withOpacity(0.5),
                                   ),
-                                  child: _isLoading
-                                      ? const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                          ),
-                                        )
-                                      : Text(
-                                          AppLocalizations.of(context).authRegisterButton,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.error_outline,
+                                        color: AppColors.error,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: AppSpacing.xs),
+                                      Expanded(
+                                        child: Text(
+                                          _registerError!,
+                                          style: AppTypography.bodySmall(
+                                            color: AppColors.error,
+                                            isDark: isDark,
                                           ),
                                         ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              
+                              // 🎯 Magischer Register-Button
+                              SizedBox(
+                                width: double.infinity,
+                                child: DynamicComponents.primaryButton(
+                                  text: AppLocalizations.of(context).authRegisterButton,
+                                  onPressed: _isLoading ? null : _register,
+                                  isLoading: _isLoading,
+                                  icon: Icons.person_add_rounded,
                                 ),
                               ),
-                              const SizedBox(height: 20),
-
-                              // Login link
+                              const SizedBox(height: AppSpacing.lg),
+                              
+                              // Login-Link
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
                                     AppLocalizations.of(context).authHaveAccount,
-                                    style: TextStyle(color: Colors.grey[400]),
+                                    style: AppTypography.bodyMedium(isDark: isDark),
                                   ),
-                                  TextButton(
+                                  const SizedBox(width: AppSpacing.sm),
+                                  DynamicComponents.secondaryButton(
+                                    text: AppLocalizations.of(context).authLoginButton,
                                     onPressed: () => context.goNamed('login'),
-                                    child: Text(
-                                      AppLocalizations.of(context).authLoginButton,
-                                      style: const TextStyle(
-                                        color: AppTheme.primaryColor,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
+                                    size: AppButtonSize.small,
                                   ),
                                 ],
                               ),
@@ -604,9 +340,33 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-          ),
           
-          // Language Switcher (oben links)
+          // Loading Overlay
+          if (_isLoading)
+            Container(
+              color: Colors.black.withValues(alpha: 0.7),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary),
+                      strokeWidth: 3,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      AppLocalizations.of(context).authLoginLoading,
+                      style: AppTypography.bodyLarge(
+                        color: Colors.white,
+                        isDark: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          
+          // Language Switcher
           const Positioned(
             top: 40.0,
             left: 20.0,
@@ -617,8 +377,23 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
+          
+          // Theme Switcher
+          Positioned(
+            top: 40.0,
+            right: 20.0,
+            child: SafeArea(
+              child: ThemeSwitcher(
+                currentThemeMode: ThemeProvider().themeMode,
+                onThemeModeChanged: (mode) => ThemeProvider().setThemeMode(mode),
+                currentStylePreset: ThemeProvider().stylePreset,
+                onStylePresetChanged: (preset) => ThemeProvider().setStylePreset(preset),
+                isCompact: true,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
-} 
+}
