@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import '../../../config/logger.dart';
 import '../../../core/services/api_service.dart';
 import '../../../l10n/app_localizations.dart';
@@ -143,7 +144,7 @@ class _InviteWidgetState extends State<InviteWidget> {
           // Link aus Response holen oder aus Token generieren
           final serverLink = inviteData['link'];
           final token = inviteData['token'];
-          final generatedLink = serverLink ?? '${Uri.base.origin}/go/invite/$token';
+          final generatedLink = serverLink ?? '${kIsWeb ? Uri.base.origin : 'http://192.168.2.168:8080/game'}/go/invite/$token';
           
           setState(() {
             _inviteLink = generatedLink;
@@ -213,7 +214,7 @@ class _InviteWidgetState extends State<InviteWidget> {
       // Wenn es bereits ein vollständiger Link ist, direkt verwenden
       final link = linkOrToken.startsWith('http') 
           ? linkOrToken 
-          : '${Uri.base.origin}/go/invite/$linkOrToken';
+          : '${kIsWeb ? Uri.base.origin : 'http://192.168.2.168:8080/game'}/go/invite/$linkOrToken';
       
       await Clipboard.setData(ClipboardData(text: link));
       
@@ -395,9 +396,9 @@ class _InviteWidgetState extends State<InviteWidget> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                  color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: theme.colorScheme.outline.withOpacity(0.3)),
+                  border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [

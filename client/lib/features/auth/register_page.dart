@@ -37,7 +37,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   bool _obscurePassword = true;
   String? _registerError;
   
-  // Invite-Parameter (entfernt da unbenutzt)
+  // Invite-Parameter
+  String? _inviteToken;
 
   // E-Mail-Validierung Regex
   static final RegExp _emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -92,8 +93,22 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   }
 
   void _loadQueryParameters() {
-    // Load invite parameters if available
-    // Implementation would depend on your routing setup
+    // Load invite token from route extra data
+    final routeState = GoRouterState.of(context);
+    final extra = routeState.extra;
+    
+    if (extra is Map<String, dynamic>) {
+      _inviteToken = extra['invite_token'] as String?;
+      final prefilledEmail = extra['email'] as String?;
+      
+      if (_inviteToken != null) {
+        AppLogger.app.i('🎫 Invite token loaded from route: $_inviteToken');
+      }
+      
+      if (prefilledEmail != null && prefilledEmail.isNotEmpty) {
+        _emailController.text = prefilledEmail;
+      }
+    }
   }
 
   Future<void> _register() async {
@@ -118,7 +133,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         
         if (mounted) {
           // Nach erfolgreicher Registrierung zur Login-Seite oder direkt einloggen
-          context.goNamed('login');
+          // Wenn ein Invite-Token vorhanden ist, zurück zum Invite
+          await _handlePostRegistration();
         }
       } else {
         setState(() {
@@ -136,6 +152,22 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           _isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> _handlePostRegistration() async {
+    if (_inviteToken == null) {
+      context.goNamed('login');
+      return;
+    }
+
+    try {
+      // Zurück zum Invite-Link nach erfolgreicher Registrierung
+      AppLogger.app.i('🎫 Redirecting to invite after registration: $_inviteToken');
+      context.go('/go/invite/$_inviteToken');
+    } catch (e) {
+      AppLogger.error.e('❌ Fehler beim Invite-Redirect nach Registration', error: e);
+      context.goNamed('login');
     }
   }
 

@@ -88,8 +88,16 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   }
 
   void _loadQueryParameters() {
-    // Load invite token if available
-    // Implementation would depend on your routing setup
+    // Load invite token from route extra data
+    final routeState = GoRouterState.of(context);
+    final extra = routeState.extra;
+    
+    if (extra is Map<String, dynamic>) {
+      _inviteToken = extra['invite_token'] as String?;
+      if (_inviteToken != null) {
+        AppLogger.app.i('🎫 Invite token loaded from route: $_inviteToken');
+      }
+    }
   }
 
   Future<void> _login() async {
@@ -140,11 +148,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     }
 
     try {
-              // Auto-accept invite after login
-      // Implement invite acceptance logic here
-      context.goNamed('world-list');
+      // Zurück zum Invite-Link nach erfolgreichem Login
+      AppLogger.app.i('🎫 Redirecting to invite after login: $_inviteToken');
+      context.go('/go/invite/$_inviteToken');
     } catch (e) {
-      AppLogger.app.e('❌ Fehler beim Auto-Accept von Invite', error: e);
+      AppLogger.error.e('❌ Fehler beim Invite-Redirect nach Login', error: e);
       context.goNamed('world-list');
     }
   }
