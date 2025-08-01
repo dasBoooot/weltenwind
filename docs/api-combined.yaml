@@ -1797,6 +1797,203 @@ paths:
           description: Insufficient permissions
         '500':
           description: Server error
+  /api/arb/compare:
+    get:
+      summary: Multi-language comparison view
+      description: >-
+        Retrieves all languages and performs a comprehensive comparison analysis, showing missing keys, completion
+        status, and side-by-side comparisons
+      tags:
+        - ARB Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Complete multi-language comparison data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  languages:
+                    type: array
+                    description: List of all available languages
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: de
+                        name:
+                          type: string
+                          example: Deutsch
+                        keyCount:
+                          type: integer
+                          example: 207
+                        lastModified:
+                          type: string
+                          format: date-time
+                        isMaster:
+                          type: boolean
+                          example: true
+                  masterLanguage:
+                    type: string
+                    description: Code of the master language (reference for comparison)
+                    example: de
+                  totalKeys:
+                    type: integer
+                    description: Total number of keys in the master language
+                    example: 207
+                  comparisonMatrix:
+                    type: object
+                    description: Matrix showing which keys are present in which languages
+                    additionalProperties:
+                      type: object
+                      additionalProperties:
+                        type: object
+                        properties:
+                          present:
+                            type: boolean
+                            description: Whether the key is present in this language
+                            example: true
+                          value:
+                            type: string
+                            description: The translated value (null if missing)
+                            example: Willkommen
+                    example:
+                      de:
+                        welcome:
+                          present: true
+                          value: Willkommen
+                        login:
+                          present: true
+                          value: Anmelden
+                      en:
+                        welcome:
+                          present: true
+                          value: Welcome
+                        login:
+                          present: false
+                          value: null
+                  missingKeysReport:
+                    type: object
+                    description: Report of missing and extra keys per language
+                    additionalProperties:
+                      type: object
+                      properties:
+                        missing:
+                          type: array
+                          items:
+                            type: string
+                          description: Keys that are missing in this language
+                          example:
+                            - login
+                            - register
+                        extra:
+                          type: array
+                          items:
+                            type: string
+                          description: Keys that exist in this language but not in master
+                          example: []
+                        missingCount:
+                          type: integer
+                          description: Number of missing keys
+                          example: 2
+                        extraCount:
+                          type: integer
+                          description: Number of extra keys
+                          example: 0
+                        completeness:
+                          type: string
+                          description: Percentage of completeness
+                          example: '90.3'
+                    example:
+                      de:
+                        missing: []
+                        extra: []
+                        missingCount: 0
+                        extraCount: 0
+                        completeness: '100.0'
+                      en:
+                        missing:
+                          - login
+                          - register
+                        extra: []
+                        missingCount: 2
+                        extraCount: 0
+                        completeness: '90.3'
+                  statistics:
+                    type: object
+                    description: Overall comparison statistics
+                    properties:
+                      totalLanguages:
+                        type: integer
+                        description: Total number of languages
+                        example: 2
+                      masterKeyCount:
+                        type: integer
+                        description: Number of keys in master language
+                        example: 207
+                      averageCompleteness:
+                        type: number
+                        description: Average completion percentage across all languages
+                        example: 95.15
+                      languagesWithMissingKeys:
+                        type: integer
+                        description: Number of languages with missing keys
+                        example: 1
+                  entries:
+                    type: object
+                    description: Full entry data for all languages (detailed view)
+                    additionalProperties:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        entries:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              key:
+                                type: string
+                              value:
+                                type: string
+                              metadata:
+                                type: object
+                        keyCount:
+                          type: integer
+                        lastModified:
+                          type: string
+                          format: date-time
+                        isMaster:
+                          type: boolean
+                        keys:
+                          type: array
+                          items:
+                            type: string
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Keine Berechtigung für Lokalisierungs-Management
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Fehler beim Erstellen der Sprachvergleichsansicht
   /api/arb/{language}:
     get:
       summary: Load ARB file
@@ -1932,17 +2129,179 @@ paths:
           description: Insufficient permissions
         '500':
           description: Server error
-  /api/arb/translate:
-    post:
-      summary: Trigger automatic translation
-      description: Triggers the CLI translation process for all non-master languages
+  /api/arb/{language}/export:
+    get:
+      summary: Export ARB file
+      description: Downloads the ARB file in the specified format (.arb or .json)
       tags:
         - ARB Management
       security:
         - bearerAuth: []
+      parameters:
+        - name: language
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - de
+              - en
+          example: de
+        - name: format
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - arb
+              - json
+            default: arb
+          description: Export format - 'arb' for standard Flutter ARB format, 'json' for structured JSON with metadata
+          example: arb
       responses:
         '200':
-          description: Translation request accepted
+          description: ARB file download
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: Standard ARB format (when format=arb)
+                    additionalProperties: true
+                    example:
+                      welcomeMessage: Willkommen bei Weltenwind!
+                      '@welcomeMessage':
+                        description: Welcome message for new users
+                        context: homepage
+                  - type: object
+                    description: Structured JSON format (when format=json)
+                    properties:
+                      metadata:
+                        type: object
+                        properties:
+                          language:
+                            type: string
+                            example: de
+                          exportDate:
+                            type: string
+                            format: date-time
+                          keyCount:
+                            type: integer
+                            example: 207
+                          exportedBy:
+                            type: string
+                            example: Weltenwind ARB Manager
+                          exportedByUser:
+                            type: string
+                            example: admin
+                      entries:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            value:
+                              type: string
+                            metadata:
+                              type: object
+                              nullable: true
+          headers:
+            Content-Disposition:
+              description: Attachment header with filename
+              schema:
+                type: string
+                example: attachment; filename="app_de_export_2025-01-03.arb"
+        '400':
+          description: Invalid language code or format
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: ARB file not found
+        '500':
+          description: Server error
+  /api/arb/{language}/backups:
+    get:
+      summary: List backups for language
+      description: Returns a list of all available backups for the specified language
+      tags:
+        - ARB Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: language
+          required: true
+          schema:
+            type: string
+            example: de
+          description: Language code (e.g., 'de', 'en')
+      responses:
+        '200':
+          description: Backup list retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  language:
+                    type: string
+                    example: de
+                  backups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        filename:
+                          type: string
+                          example: app_de.arb.backup_2024-01-15_143022
+                        timestamp:
+                          type: string
+                          example: 2024-01-15_143022
+                        created:
+                          type: string
+                          format: date-time
+                        size:
+                          type: number
+                          example: 45678
+                        displayName:
+                          type: string
+                          example: 2024.01.15 um 143022
+        '400':
+          description: Invalid language code
+        '403':
+          description: Insufficient permissions
+        '500':
+          description: Server error
+  /api/arb/{language}/restore/{timestamp}:
+    post:
+      summary: Restore from backup
+      description: Restores ARB data from a specific backup version
+      tags:
+        - ARB Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: language
+          required: true
+          schema:
+            type: string
+            example: de
+          description: Language code (e.g., 'de', 'en')
+        - in: path
+          name: timestamp
+          required: true
+          schema:
+            type: string
+            example: 2024-01-15_143022
+          description: Backup timestamp identifier
+      responses:
+        '200':
+          description: Backup restored successfully
           content:
             application/json:
               schema:
@@ -1953,14 +2312,18 @@ paths:
                     example: true
                   message:
                     type: string
-                    example: Übersetzung bereit
-                  instruction:
+                    example: DE-ARB erfolgreich aus Backup wiederhergestellt
+                  restoredFrom:
                     type: string
-                    example: 'Führe im client-Verzeichnis das Script aus: ./translate.ps1'
-                  command:
+                    example: 2024-01-15_143022
+                  nextStep:
                     type: string
-                    example: cd client && ./translate.ps1
+                    example: Lade die Seite neu um die wiederhergestellten Daten zu sehen
+        '400':
+          description: Invalid language code
         '403':
           description: Insufficient permissions
+        '404':
+          description: Backup not found
         '500':
           description: Server error

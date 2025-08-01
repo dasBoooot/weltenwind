@@ -36,7 +36,18 @@ export async function seedPermissions() {
     'system.development',
     'system.view_own',
     
-    // Localization-Management
+    // ARB-Management (Application Resource Bundle)
+    'arb.view',
+    'arb.edit',
+    'arb.save',
+    'arb.backup.view',
+    'arb.backup.restore',
+    'arb.backup.delete',
+    'arb.export',
+    'arb.import', 
+    'arb.compare',
+    
+    // Localization-Management (Deprecated - use arb.* instead)
     'localization.manage',
     'localization.view'
   ];

@@ -977,4 +977,52 @@ router.post('/change-password',
   }
 );
 
+/**
+ * GET /api/auth/permissions
+ * Lädt ARB-spezifische Permissions des aktuellen Users
+ */
+router.get('/permissions', authenticate, async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = req.user!.id;
+    
+    // Liste aller ARB-Permissions die wir prüfen wollen
+    const arbPermissions = [
+      'arb.view',
+      'arb.edit', 
+      'arb.save',
+      'arb.backup.view',
+      'arb.backup.restore',
+      'arb.backup.delete',
+      'arb.export', 
+      'arb.import',
+      'arb.compare'
+    ];
+    
+    // Prüfe alle Permissions
+    const permissions: Record<string, boolean> = {};
+    
+    for (const permission of arbPermissions) {
+      permissions[permission] = await hasPermission(userId, permission, { 
+        type: 'global', 
+        objectId: 'global' 
+      });
+    }
+    
+    res.json({
+      success: true,
+      permissions,
+      user: {
+        id: userId,
+        username: req.user!.username
+      }
+    });
+    
+  } catch (error) {
+    loggers.system.error('Error loading user permissions', error, {
+      userId: req.user?.id
+    });
+    res.status(500).json({ error: 'Fehler beim Laden der Berechtigungen' });
+  }
+});
+
 export default router;

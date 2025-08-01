@@ -34,6 +34,17 @@ export async function seedRolePermissions() {
     { role: 'admin', permission: 'invite.manage', scopeType: 'world', scopeObjectId: '*', accessLevel: 'admin' },
     { role: 'admin', permission: 'invite.delete', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
     { role: 'admin', permission: 'invite.delete', scopeType: 'world', scopeObjectId: '*', accessLevel: 'admin' },
+    // ARB Management - Admin hat Vollzugriff
+    { role: 'admin', permission: 'arb.view', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'admin', permission: 'arb.edit', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'admin', permission: 'arb.save', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'admin', permission: 'arb.backup.view', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'admin', permission: 'arb.backup.restore', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'admin', permission: 'arb.backup.delete', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'admin', permission: 'arb.export', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'admin', permission: 'arb.import', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'admin', permission: 'arb.compare', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    // Backward compatibility
     { role: 'admin', permission: 'localization.manage', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
     { role: 'admin', permission: 'localization.view', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
     { role: 'admin', permission: 'system.view_own', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
@@ -49,6 +60,16 @@ export async function seedRolePermissions() {
     { role: 'developer', permission: 'invite.view', scopeType: 'world', scopeObjectId: '*', accessLevel: 'read' },
     { role: 'developer', permission: 'invite.delete', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'write' },
     { role: 'developer', permission: 'invite.delete', scopeType: 'world', scopeObjectId: '*', accessLevel: 'write' },
+    // ARB Management - Developer kann editieren, aber keine Backups löschen
+    { role: 'developer', permission: 'arb.view', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'developer', permission: 'arb.edit', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'developer', permission: 'arb.save', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'developer', permission: 'arb.backup.view', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'developer', permission: 'arb.backup.restore', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'write' },
+    { role: 'developer', permission: 'arb.export', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    { role: 'developer', permission: 'arb.import', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'write' },
+    { role: 'developer', permission: 'arb.compare', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
+    // Backward compatibility
     { role: 'developer', permission: 'localization.manage', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
     { role: 'developer', permission: 'localization.view', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'admin' },
     { role: 'developer', permission: 'system.view_own', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'read' },
@@ -64,6 +85,11 @@ export async function seedRolePermissions() {
     { role: 'support', permission: 'invite.view', scopeType: 'world', scopeObjectId: '*', accessLevel: 'read' },
     { role: 'support', permission: 'invite.delete', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'moderate' },
     { role: 'support', permission: 'invite.delete', scopeType: 'world', scopeObjectId: '*', accessLevel: 'moderate' },
+    // ARB Management - Support kann nur lesen und vergleichen
+    { role: 'support', permission: 'arb.view', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'read' },
+    { role: 'support', permission: 'arb.backup.view', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'read' },
+    { role: 'support', permission: 'arb.export', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'read' },
+    { role: 'support', permission: 'arb.compare', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'read' },
     { role: 'support', permission: 'system.view_own', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'read' },
 
     // User (global) - Grundlegende Spieler-Funktionen
@@ -98,6 +124,9 @@ export async function seedRolePermissions() {
     { role: 'mod', permission: 'player.mute', scopeType: 'world', scopeObjectId: '*', accessLevel: 'moderate' },
     { role: 'mod', permission: 'invite.create', scopeType: 'world', scopeObjectId: '*', accessLevel: 'moderate' },
     { role: 'mod', permission: 'invite.view', scopeType: 'world', scopeObjectId: '*', accessLevel: 'read' },
+    // ARB Management - Mod kann nur lesen und vergleichen
+    { role: 'mod', permission: 'arb.view', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'read' },
+    { role: 'mod', permission: 'arb.compare', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'read' },
     { role: 'mod', permission: 'system.view_own', scopeType: 'global', scopeObjectId: 'global', accessLevel: 'read' }
   ];
 

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weltenwind ARB Manager</title>
+    <link rel="stylesheet" href="arb.css">
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginContainer" class="login-container">
+        <h1>🌍 Weltenwind ARB Manager</h1>
+        <p>Admin-Login erforderlich</p>
+        <div id="loginError" class="error hidden"></div>
+        <form id="loginForm">
+            <div>
+                <input type="text" id="username" placeholder="Username oder E-Mail" required>
+            </div>
+            <div>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <div>
+                <button type="submit" id="loginButton">🔓 Anmelden</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ARB Manager (hidden initially) -->
+    <div id="arbManager" class="hidden">
+        <h1>🌍 Weltenwind ARB Manager</h1>
+        <div style="float: right;">
+            <span id="userInfo"></span>
+            <button onclick="logout()">🚪 Abmelden</button>
+        </div>
+
+        <div class="language-info">
+            <h3 id="currentLanguageTitle">🌐 ARB-Sprache</h3>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="keyCount">-</div>
+                    <div class="stat-label">Einträge</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="lastModified">-</div>
+                    <div class="stat-label">Zuletzt geändert</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="toolbar">
+                <div class="search-box">
+                    <input type="text" id="searchBox" placeholder="🔍 Suche nach Schlüssel oder Text..." onkeyup="filterEntries()">
+                </div>
+                <div style="margin-right: 15px;">
+                    <select id="contextFilter" onchange="filterEntries()">
+                        <option value="">🏷️ Alle Kontexte</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="languageSelector" onchange="loadSelectedLanguage()">
+                        <option value="">🌐 Sprache wählen...</option>
+                    </select>
+                    <button class="btn-success" onclick="showSaveConfirmDialog()" id="saveButton">💾 Speichern</button>
+                <button class="btn-secondary" onclick="showBackupDialog()" id="backupButton" disabled title="Backup-Versionen verwalten">🗂️ Backups</button>
+                    <button onclick="toggleCompareView()" id="compareButton">📊 Vergleichsansicht</button>
+                    <button class="btn-secondary" onclick="showExportDialog()" id="exportButton">📤 Exportieren</button>
+                    <button class="btn-secondary" onclick="showImportDialog()" id="importButton">📥 Importieren</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="arbContainer" class="arb-container">
+            <div class="loading">
+                <div class="spinner"></div>
+                <div>Lade deutsche ARB-Einträge...</div>
+            </div>
+        </div>
+
+        <div id="arbMessage" class="hidden"></div>
+
+        <!-- Multi-Language Compare View -->
+        <div id="compareContainer" class="compare-container hidden">
+            <!-- Compare Header with Statistics -->
+            <div class="compare-header">
+                <div class="compare-title">
+                    <h3>📊 Multi-Language Vergleichsansicht</h3>
+                    <button class="btn-secondary" onclick="toggleCompareView()">⬅️ Zurück zur Einzelansicht</button>
+                </div>
+                
+                <div class="compare-stats">
+                    <div class="stat-group">
+                        <div class="stat-item">
+                            <span class="stat-value" id="compareLanguageCount">-</span>
+                            <span class="stat-label">Sprachen</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="compareTotalKeys">-</span>
+                            <span class="stat-label">Master-Keys</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="compareAvgCompleteness">-</span>
+                            <span class="stat-label">Ø Vollständigkeit</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="compareMissingLanguages">-</span>
+                            <span class="stat-label">mit fehlenden Keys</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compare Filters -->
+            <div class="compare-filters">
+                <div class="filter-group">
+                    <label>🎯 Vergleiche:</label>
+                    <select id="compareTargetLanguage" onchange="updateCompareView()">
+                        <option value="">Zielsprache wählen...</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>🔍 Filter:</label>
+                    <select id="compareKeyFilter" onchange="filterCompareEntries()">
+                        <option value="all">Alle Keys anzeigen</option>
+                        <option value="missing">Fehlt in Zielsprache</option>
+                        <option value="complete">In beiden vorhanden</option>
+                        <option value="incomplete">Nur in Deutsch vorhanden</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <input type="text" id="compareSearchBox" placeholder="🔍 Suche nach Key oder Text..." onkeyup="filterCompareEntries()">
+                </div>
+            </div>
+
+            <!-- Language Report Cards -->
+            <div class="language-reports">
+                <div id="languageReportCards" class="report-cards">
+                    <!-- Language report cards will be populated here -->
+                </div>
+            </div>
+
+            <!-- Compare Table -->
+            <div class="compare-table-container">
+                <div class="compare-loading">
+                    <div class="spinner"></div>
+                    <div>Lade Multi-Language Vergleich...</div>
+                </div>
+                
+                <table id="compareTable" class="compare-table hidden">
+                    <thead>
+                        <tr id="compareTableHeader">
+                            <!-- Table headers will be populated dynamically -->
+                        </tr>
+                    </thead>
+                    <tbody id="compareTableBody">
+                        <!-- Table rows will be populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Dialog -->
+    <div id="exportDialog" class="hidden">
+        <div class="dialog-overlay">
+            <div class="dialog-content">
+                <h3>📤 ARB-Daten exportieren</h3>
+                <p>Wähle das Format für den Export:</p>
+                
+                <div class="export-options">
+                    <button class="btn-success" onclick="exportARB('arb')">
+                        📄 .arb Format<br>
+                        <small>Flutter ARB-Datei</small>
+                    </button>
+                    <button class="btn-success" onclick="exportARB('json')">
+                        📋 .json Format<br>
+                        <small>Strukturierte JSON-Daten</small>
+                    </button>
+                </div>
+                
+                <div class="export-info">
+                    <strong>Exportiert werden:</strong>
+                    <ul>
+                        <li id="exportKeyCount">- Keys</li>
+                        <li>Alle Übersetzungen und Metadaten</li>
+                        <li>Aktuelle Filterung wird ignoriert</li>
+                    </ul>
+                </div>
+                
+                <div class="dialog-buttons">
+                    <button class="btn-secondary" onclick="closeExportDialog()">❌ Abbrechen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup Management Dialog -->
+    <div id="backupDialog" class="hidden">
+        <div class="dialog-overlay">
+            <div class="dialog-content backup-dialog">
+                <h3>🗂️ Backup-Verwaltung</h3>
+                <p>Verfügbare Backups für <strong id="backupLanguageName">-</strong>:</p>
+                
+                <div id="backupList" class="backup-list">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <div>Lade Backups...</div>
+                    </div>
+                </div>
+                
+                <div class="backup-info">
+                    <small>💡 Nur die letzten 10 Backups werden aufbewahrt. Bei Wiederherstellung wird automatisch ein Backup der aktuellen Version erstellt.</small>
+                </div>
+                
+                <div class="dialog-buttons">
+                    <button class="btn-secondary" onclick="closeBackupDialog()">Abbrechen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Dialog -->
+    <div id="importDialog" class="hidden">
+        <div class="dialog-overlay">
+            <div class="dialog-content">
+                <h3>📥 ARB-Daten importieren</h3>
+                <p>Wähle eine ARB- oder JSON-Datei zum Importieren:</p>
+                
+                <div class="import-upload">
+                    <input type="file" id="importFileInput" accept=".arb,.json" style="display: none;">
+                    <button class="btn-success" onclick="document.getElementById('importFileInput').click()">
+                        📁 Datei auswählen
+                    </button>
+                    <div id="importFileName" class="import-filename"></div>
+                </div>
+                
+                <div id="importInfo" class="import-info hidden">
+                    <strong>Datei-Info:</strong>
+                    <ul>
+                        <li id="importFileSize">-</li>
+                        <li id="importKeyCount">-</li>
+                        <li id="importFormat">-</li>
+                    </ul>
+                </div>
+                
+                <div id="importError" class="error hidden"></div>
+                
+                <div class="dialog-buttons">
+                    <button class="btn-secondary" onclick="closeImportDialog()">❌ Abbrechen</button>
+                    <button class="btn-success" id="importPreviewButton" onclick="showImportPreview()" disabled>🔍 Vorschau</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Preview Dialog -->
+    <div id="importPreviewDialog" class="hidden">
+        <div class="dialog-overlay">
+            <div class="dialog-content import-preview-content">
+                <h3>🔍 Import-Vorschau</h3>
+                <p>Überprüfe die Änderungen vor dem Import:</p>
+                
+                <div class="import-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="previewNewCount">0</div>
+                        <div class="stat-label">Neue Keys</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="previewUpdateCount">0</div>
+                        <div class="stat-label">Aktualisiert</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="previewUnchangedCount">0</div>
+                        <div class="stat-label">Unverändert</div>
+                    </div>
+                </div>
+                
+                <div class="import-changes">
+                    <div id="importPreviewContent" class="preview-content"></div>
+                </div>
+                
+                <div class="dialog-buttons">
+                    <button class="btn-secondary" onclick="closeImportPreview()">⬅️ Zurück</button>
+                    <button class="btn-success" id="confirmImportButton" onclick="confirmImport()">✅ Importieren</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Confirmation Dialog -->
+    <div id="saveConfirmDialog" class="hidden">
+        <div class="dialog-overlay">
+            <div class="dialog-content">
+                <h3>💾 ARB-Daten speichern</h3>
+                <p><strong>📝 Sprache:</strong> <span id="saveLanguageDisplay">-</span></p>
+                <p><strong>⚠️ Wichtiger Hinweis:</strong></p>
+                
+                <div class="save-warning">
+                    <ul>
+                        <li>📝 Die <strong>aktuell geladene ARB-Datei</strong> wird überschrieben</li>
+                        <li>📁 Alle Änderungen werden permanent gespeichert</li>
+                        <li>🔄 Ein Backup mit Zeitstempel wird automatisch erstellt</li>
+                        <li>✅ Alle Eingaben werden vor dem Speichern validiert und bereinigt</li>
+                    </ul>
+                </div>
+                
+                <div class="save-next-steps">
+                    <strong>Nach dem Speichern:</strong>
+                    <ol>
+                        <li>🔄 Lade die Seite neu um die Änderungen zu sehen</li>
+                        <li>📊 Nutze die Vergleichsansicht um andere Sprachen zu überprüfen</li>
+                        <li>✅ Teste die Änderungen in der Flutter-App</li>
+                    </ol>
+                </div>
+                
+                <div class="save-stats">
+                    <strong>Wird gespeichert:</strong>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value" id="saveKeyCount">-</div>
+                            <div class="stat-label">Keys</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="saveChangedCount">-</div>
+                            <div class="stat-label">Geändert</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dialog-buttons">
+                    <button class="btn-secondary" onclick="closeSaveConfirmDialog()">❌ Abbrechen</button>
+                    <button class="btn-success" onclick="confirmSave()">✅ Jetzt speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="arb.js"></script>
+    
+</body>
+</html>
