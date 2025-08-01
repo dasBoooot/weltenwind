@@ -1,0 +1,524 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Weltenwind Theme Bundle Configurations",
+  "description": "Vordefinierte Bundle-Konfigurationen für verschiedene Gaming-Kontexte und Performance-Anforderungen",
+  "version": "1.0.0",
+  "bundles": {
+    "pre-game-minimal": {
+      "name": "Pre-Game Minimal",
+      "description": "Minimales Bundle für Login, Registrierung und Hauptmenü",
+      "context": "pre-game",
+      "priority": "high",
+      "estimatedSize": "15KB",
+      "loadTime": "fast",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing", 
+          "radius"
+        ],
+        "optional": [
+          "effects.animations"
+        ],
+        "excluded": [
+          "gaming.inventory",
+          "gaming.progress", 
+          "gaming.hud",
+          "effects.visual",
+          "gaming.accessibility"
+        ]
+      },
+      "features": {
+        "basicUI": true,
+        "simpleAnimations": true,
+        "responsiveDesign": true,
+        "gamingFeatures": false,
+        "visualEffects": false,
+        "accessibility": "basic"
+      },
+      "performance": {
+        "target": "all-devices",
+        "priority": "fast-loading",
+        "memoryUsage": "low",
+        "batterySaving": true
+      },
+      "dependencies": {
+        "colors": {
+          "sections": ["primary", "secondary", "background", "text", "status"],
+          "excludes": ["effects"]
+        },
+        "typography": {
+          "sections": ["fontFamily.primary", "textStyles.heading", "textStyles.body", "textStyles.button"],
+          "excludes": ["gaming", "fantasy"]
+        },
+        "spacing": {
+          "sections": ["base", "semantic.components"],
+          "excludes": ["gaming"]
+        },
+        "radius": {
+          "sections": ["base", "semantic.components"],
+          "excludes": ["gaming"]
+        }
+      },
+      "overrides": {
+        "animations": {
+          "duration": 200,
+          "complexity": "simple",
+          "disableComplex": true
+        },
+        "effects": {
+          "particles": false,
+          "glow": false,
+          "shimmer": false
+        }
+      }
+    },
+    "world-preview": {
+      "name": "World Preview",
+      "description": "Bundle für World-Selection mit Preview-Features und ersten Gaming-Elementen",
+      "context": "world-preview", 
+      "priority": "medium",
+      "estimatedSize": "35KB",
+      "loadTime": "medium",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing",
+          "radius",
+          "effects.animations",
+          "gaming.progress"
+        ],
+        "optional": [
+          "effects.visual",
+          "gaming.accessibility"
+        ],
+        "excluded": [
+          "gaming.inventory",
+          "gaming.hud"
+        ]
+      },
+      "features": {
+        "basicUI": true,
+        "enhancedAnimations": true,
+        "responsiveDesign": true,
+        "previewEffects": true,
+        "basicGaming": true,
+        "visualEffects": "limited",
+        "accessibility": "enhanced"
+      },
+      "performance": {
+        "target": "medium-high-devices",
+        "priority": "balanced",
+        "memoryUsage": "medium",
+        "batterySaving": false
+      },
+      "dependencies": {
+        "colors": {
+          "sections": ["primary", "secondary", "tertiary", "background", "text", "status", "effects"],
+          "fullLoad": true
+        },
+        "typography": {
+          "sections": ["fontFamily", "textStyles"],
+          "excludes": ["gaming.combat", "gaming.floatingText"]
+        },
+        "gaming.progress": {
+          "sections": ["base", "health", "mana", "experience"],
+          "excludes": ["combat", "stamina"]
+        },
+        "effects.visual": {
+          "sections": ["gradients.magic", "glow.base", "shimmer.base"],
+          "excludes": ["particles", "distortion"]
+        }
+      },
+      "overrides": {
+        "animations": {
+          "duration": 300,
+          "complexity": "medium",
+          "enableHover": true,
+          "enableTransitions": true
+        },
+        "effects": {
+          "particles": false,
+          "glow": true,
+          "shimmer": true,
+          "gradients": true
+        }
+      }
+    },
+    "full-gaming": {
+      "name": "Full Gaming Experience",
+      "description": "Komplettes Gaming Bundle mit allen Features für In-Game Experience",
+      "context": "in-game",
+      "priority": "low",
+      "estimatedSize": "120KB",
+      "loadTime": "slow",
+      "modules": {
+        "required": [
+          "colors",
+          "typography", 
+          "spacing",
+          "radius",
+          "effects.visual",
+          "effects.animations",
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud",
+          "gaming.accessibility"
+        ],
+        "optional": [],
+        "excluded": []
+      },
+      "features": {
+        "basicUI": true,
+        "fullAnimations": true,
+        "responsiveDesign": true,
+        "allGamingFeatures": true,
+        "fullVisualEffects": true,
+        "accessibility": "complete"
+      },
+      "performance": {
+        "target": "high-end-devices",
+        "priority": "feature-complete",
+        "memoryUsage": "high", 
+        "batterySaving": false
+      },
+      "dependencies": {
+        "colors": { "fullLoad": true },
+        "typography": { "fullLoad": true },
+        "spacing": { "fullLoad": true },
+        "radius": { "fullLoad": true },
+        "effects.visual": { "fullLoad": true },
+        "effects.animations": { "fullLoad": true },
+        "gaming.inventory": { "fullLoad": true },
+        "gaming.progress": { "fullLoad": true },
+        "gaming.hud": { "fullLoad": true },
+        "gaming.accessibility": { "fullLoad": true }
+      },
+      "overrides": {
+        "animations": {
+          "duration": 400,
+          "complexity": "high",
+          "enableAll": true
+        },
+        "effects": {
+          "particles": true,
+          "glow": true,
+          "shimmer": true,
+          "gradients": true,
+          "distortion": true
+        },
+        "gaming": {
+          "enableAllFeatures": true,
+          "highQuality": true
+        }
+      }
+    },
+    "performance-optimized": {
+      "name": "Performance Optimized",
+      "description": "Performance-optimiertes Bundle für Low-End Devices mit reduzierten Features",
+      "context": "universal",
+      "priority": "high",
+      "estimatedSize": "25KB",
+      "loadTime": "very-fast",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing",
+          "radius",
+          "gaming.inventory",
+          "gaming.progress"
+        ],
+        "optional": [
+          "gaming.hud"
+        ],
+        "excluded": [
+          "effects.visual",
+          "effects.animations",
+          "gaming.accessibility"
+        ]
+      },
+      "features": {
+        "basicUI": true,
+        "minimalAnimations": true,
+        "responsiveDesign": true,
+        "coreGaming": true,
+        "visualEffects": false,
+        "accessibility": "minimal"
+      },
+      "performance": {
+        "target": "low-end-devices",
+        "priority": "maximum-performance",
+        "memoryUsage": "minimal",
+        "batterySaving": true,
+        "fpsTarget": 60,
+        "reducedQuality": true
+      },
+      "dependencies": {
+        "colors": {
+          "sections": ["primary", "secondary", "background", "text", "status"],
+          "excludes": ["effects", "tertiary"]
+        },
+        "typography": {
+          "sections": ["fontFamily.primary", "textStyles.heading", "textStyles.body"],
+          "excludes": ["fantasy", "gaming", "responsive"]
+        },
+        "gaming.inventory": {
+          "sections": ["slots", "rarity", "layout"],
+          "excludes": ["animations", "accessibility", "interactions.tooltip"]
+        },
+        "gaming.progress": {
+          "sections": ["base", "health", "mana"],
+          "excludes": ["animations", "stamina", "custom"]
+        }
+      },
+      "overrides": {
+        "animations": {
+          "duration": 150,
+          "complexity": "minimal",
+          "disableComplex": true,
+          "enableOnly": ["hover", "click"]
+        },
+        "effects": {
+          "all": false
+        },
+        "gaming": {
+          "reduceComplexity": true,
+          "disableAnimations": true,
+          "simplifyUI": true
+        },
+        "performance": {
+          "enableGPUAcceleration": false,
+          "reduceParallax": true,
+          "disableBlur": true
+        }
+      }
+    },
+    "accessibility-enhanced": {
+      "name": "Accessibility Enhanced",
+      "description": "Accessibility-fokussiertes Bundle mit erweiterten Barrierefreiheits-Features",
+      "context": "universal",
+      "priority": "medium",
+      "estimatedSize": "85KB",
+      "loadTime": "medium",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing",
+          "radius",
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud",
+          "gaming.accessibility"
+        ],
+        "optional": [
+          "effects.animations"
+        ],
+        "excluded": [
+          "effects.visual"
+        ]
+      },
+      "features": {
+        "basicUI": true,
+        "accessibleAnimations": true,
+        "responsiveDesign": true,
+        "gamingFeatures": true,
+        "visualEffects": "accessible-only",
+        "accessibility": "maximum"
+      },
+      "performance": {
+        "target": "all-devices",
+        "priority": "accessibility-first",
+        "memoryUsage": "medium",
+        "batterySaving": true,
+        "prioritizeAccessibility": true
+      },
+      "dependencies": {
+        "colors": {
+          "fullLoad": true,
+          "enhanceContrast": true
+        },
+        "typography": {
+          "fullLoad": true,
+          "includeDyslexiaFonts": true,
+          "largerSizes": true
+        },
+        "gaming.accessibility": {
+          "fullLoad": true,
+          "enableAllFeatures": true
+        },
+        "gaming.inventory": {
+          "sections": ["slots", "rarity", "layout", "interactions", "accessibility"],
+          "enhanceAccessibility": true
+        },
+        "gaming.progress": {
+          "sections": ["base", "health", "mana", "experience"],
+          "enhanceAccessibility": true
+        },
+        "gaming.hud": {
+          "sections": ["minimap", "buffBar", "resourceDisplay", "notifications"],
+          "enhanceAccessibility": true
+        }
+      },
+      "overrides": {
+        "animations": {
+          "respectReducedMotion": true,
+          "highContrast": true,
+          "accessibleTiming": true
+        },
+        "accessibility": {
+          "colorBlind": {
+            "enabled": true,
+            "type": "auto-detect"
+          },
+          "focus": {
+            "enabled": true,
+            "highContrast": true
+          },
+          "motor": {
+            "enabled": true,
+            "largerTargets": true
+          },
+          "cognitive": {
+            "enabled": true,
+            "simplifiedUI": true
+          }
+        },
+        "gaming": {
+          "accessibilityEnhanced": true,
+          "largerTexts": true,
+          "clearerContrasts": true
+        }
+      }
+    },
+    "developer-preview": {
+      "name": "Developer Preview",
+      "description": "Bundle für Theme-Entwicklung mit allen Features und Debug-Tools",
+      "context": "development",
+      "priority": "low",
+      "estimatedSize": "150KB",
+      "loadTime": "slow",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing", 
+          "radius",
+          "effects.visual",
+          "effects.animations",
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud",
+          "gaming.accessibility"
+        ],
+        "optional": [],
+        "excluded": [],
+        "debug": true
+      },
+      "features": {
+        "allFeatures": true,
+        "debugMode": true,
+        "schemaValidation": true,
+        "liveReload": true,
+        "performanceMonitoring": true
+      },
+      "performance": {
+        "target": "development-only",
+        "priority": "feature-completeness",
+        "memoryUsage": "unlimited",
+        "debugging": true
+      },
+      "dependencies": {
+        "all": { "fullLoad": true, "includeDebug": true }
+      },
+      "overrides": {
+        "debug": {
+          "enableAll": true,
+          "schemaValidation": true,
+          "performanceMetrics": true,
+          "bundleAnalysis": true
+        }
+      }
+    }
+  },
+  "bundleResolver": {
+    "loadOrder": [
+      "colors",
+      "typography", 
+      "spacing",
+      "radius",
+      "effects.animations",
+      "effects.visual",
+      "gaming.progress",
+      "gaming.inventory", 
+      "gaming.hud",
+      "gaming.accessibility"
+    ],
+    "dependencies": {
+      "effects.visual": ["colors"],
+      "effects.animations": ["colors"],
+      "gaming.inventory": ["colors", "spacing", "radius"],
+      "gaming.progress": ["colors", "typography"],
+      "gaming.hud": ["colors", "typography", "spacing", "gaming.progress"],
+      "gaming.accessibility": ["colors", "typography", "gaming.inventory", "gaming.progress", "gaming.hud"]
+    },
+    "conditionalLoading": {
+      "deviceTier": {
+        "low": ["performance-optimized"],
+        "medium": ["world-preview", "accessibility-enhanced"],
+        "high": ["full-gaming", "developer-preview"]
+      },
+      "context": {
+        "pre-game": ["pre-game-minimal"],
+        "world-preview": ["world-preview"],
+        "in-game": ["full-gaming"],
+        "development": ["developer-preview"]
+      },
+      "accessibility": {
+        "required": ["accessibility-enhanced"]
+      }
+    }
+  },
+  "optimization": {
+    "caching": {
+      "enabled": true,
+      "strategy": "bundle-based",
+      "ttl": 3600,
+      "versionedUrls": true
+    },
+    "compression": {
+      "enabled": true,
+      "algorithm": "gzip",
+      "level": 6
+    },
+    "lazy-loading": {
+      "enabled": true,
+      "chunkSize": "25KB",
+      "preloadCritical": true
+    },
+    "tree-shaking": {
+      "enabled": true,
+      "aggressiveOptimization": false
+    }
+  },
+  "validation": {
+    "schema": {
+      "validateOnLoad": true,
+      "strictMode": false,
+      "warningsAsErrors": false
+    },
+    "dependencies": {
+      "checkCircular": true,
+      "validateVersions": true,
+      "ensureCompatibility": true
+    },
+    "performance": {
+      "maxBundleSize": "200KB",
+      "maxLoadTime": 5000,
+      "memoryLimitMB": 50
+    }
+  }
+}

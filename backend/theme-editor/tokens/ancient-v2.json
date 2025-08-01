@@ -1,0 +1,208 @@
+{
+  "$schema": "../schemas/main.schema.json",
+  "name": "Ancient Weltenwind", 
+  "version": "2.0.0",
+  "description": "Antikes Fantasy-Theme mit warmen Gold-Tönen und Artefakt-Ästhetik - Modernized for Modular System",
+  "bundle": {
+    "type": "basic",
+    "context": "universal",
+    "modules": ["colors", "typography", "spacing", "radius", "shadows", "extensions"]
+  },
+  "metadata": {
+    "author": "Weltenwind Team",
+    "category": "fantasy",
+    "tags": ["ancient", "gold", "warm", "artifacts", "treasure"],
+    "targetWorlds": ["ancient", "desert", "ruins", "temples"],
+    "compatibility": {
+      "minVersion": "1.0.0",
+      "features": ["basic-ui", "shadows", "effects"]
+    }
+  },
+  "colors": {
+    "primary": {
+      "value": "#D4AF37",
+      "light": "#E1C554",
+      "dark": "#B8941F", 
+      "surface": "#2A1F0A",
+      "accent": "#FFC107"
+    },
+    "secondary": {
+      "value": "#FFC107",
+      "light": "#FFD54F",
+      "dark": "#FF8F00"
+    },
+    "tertiary": {
+      "value": "#D4AF37",
+      "light": "#E1C554", 
+      "dark": "#B8941F"
+    },
+    "background": {
+      "surface_dark": "#1A1208",
+      "surface_darker": "#0F0A04",
+      "surface_medium": "#241A0C",
+      "surface_light": "#332611",
+      "surface_white": "#FFF8F0",
+      "surface_gray": "#F5F0E8",
+      "surface_gray_light": "#FAF5ED"
+    },
+    "text": {
+      "primary": "#F5E6D3",
+      "secondary": "#D4C4A8",
+      "tertiary": "#B8A888",
+      "disabled": "#8A7A68",
+      "primary_light": "#1A1208", 
+      "secondary_light": "#8B4513",
+      "tertiary_light": "#A0522D"
+    },
+    "status": {
+      "success": "#8BC34A",
+      "warning": "#FF9800",
+      "error": "#E91E63", 
+      "info": "#03A9F4"
+    },
+    "effects": {
+      "glow": "#FFC107",
+      "shimmer": "#D4AF37",
+      "overlay": "#80000000",
+      "glass": "#1AFFC107"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": "Inter",
+      "secondary": "Trajan Pro",
+      "body": "Inter",
+      "monospace": "JetBrains Mono"
+    },
+    "heading": {
+      "fontSize": 24,
+      "fontWeight": "bold", 
+      "letterSpacing": -0.3,
+      "lineHeight": 1.2,
+      "fontFamily": "Trajan Pro"
+    },
+    "body": {
+      "fontSize": 16,
+      "fontWeight": "normal",
+      "letterSpacing": 0,
+      "lineHeight": 1.4,
+      "fontFamily": "Inter"
+    },
+    "caption": {
+      "fontSize": 12,
+      "fontWeight": "500",
+      "letterSpacing": 0.5,
+      "lineHeight": 1.3,
+      "fontFamily": "Inter"
+    }
+  },
+  "radius": {
+    "small": 6,
+    "medium": 8,
+    "large": 12,
+    "extraLarge": 20,
+    "circle": 50
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48
+  },
+  "components": {
+    "appBar": {
+      "elevation": 2,
+      "centerTitle": true,
+      "shadowColor": "#40FFC107",
+      "surfaceTintColor": "transparent",
+      "systemOverlayStyle": "dark"
+    },
+    "card": {
+      "elevation": 4,
+      "shadowColor": "#40FFC107",
+      "borderRadius": 8,
+      "clipBehavior": "antiAlias",
+      "margin": 6
+    },
+    "buttons": {
+      "elevation": 2,
+      "shadowColor": "#40D4AF37",
+      "borderRadius": 8,
+      "paddingHorizontal": 20,
+      "paddingVertical": 14,
+      "borderWidth": 2
+    },
+    "inputs": {
+      "filled": true,
+      "borderRadius": 8,
+      "borderWidth": 1.5,
+      "focusedBorderWidth": 2.5,
+      "paddingHorizontal": 14,
+      "paddingVertical": 14
+    }
+  },
+  "responsive": {
+    "breakpoints": {
+      "mobile": 576,
+      "tablet": 768,
+      "desktop": 1024,
+      "wide": 1440
+    },
+    "scaleFactor": {
+      "mobile": 0.88,
+      "tablet": 0.94,
+      "desktop": 1.0,
+      "wide": 1.06
+    },
+    "adaptiveSpacing": true,
+    "adaptiveTypography": true
+  },
+  "shadows": {
+    "small": {
+      "blurRadius": 6,
+      "spreadRadius": 1,
+      "offset": [0, 3],
+      "color": "#40FFC107"
+    },
+    "medium": {
+      "blurRadius": 12,
+      "spreadRadius": 2,
+      "offset": [0, 6], 
+      "color": "#60FFC107"
+    },
+    "large": {
+      "blurRadius": 20,
+      "spreadRadius": 3,
+      "offset": [0, 10],
+      "color": "#80FFC107"
+    }
+  },
+  "conditions": {
+    "enabled": false,
+    "rules": []
+  },
+  "extensions": {
+    "magicGradient": ["#D4AF37", "#FFC107", "#FFD54F"],
+    "portalGradient": ["#B8941F", "#D4AF37"],
+    "parallaxStrength": 0.2,
+    "hoverAuraColor": "#FFC107",
+    "depthBlur": {
+      "enabled": false,
+      "intensity": 1,
+      "focusDistance": 80  
+    },
+    "particles": {
+      "enabled": true,
+      "density": 0.3,
+      "color": "#D4AF37"
+    },
+    "screenEffects": {
+      "vignette": 0.15,
+      "bloom": 0.05,
+      "colorGrading": "warm",
+      "weather": "none"
+    }
+  }
+}

@@ -20,6 +20,7 @@ import worldRoutes from './routes/worlds';
 import inviteRoutes from './routes/invites';
 import logRoutes from './routes/logs';
 import arbRoutes from './routes/arb';
+import themeRoutes from './routes/themes';
 import { cleanupExpiredSessions } from './services/session.service';
 import { cleanupExpiredLockouts } from './services/brute-force-protection.service';
 import prisma from './libs/prisma';
@@ -112,6 +113,7 @@ app.use('/api/worlds', worldRoutes);
 app.use('/api/invites', inviteRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/arb', arbRoutes);
+app.use('/api/themes', themeRoutes);
 
 // === API-Doku (OpenAPI) ===
 // === API-combined.yaml direkt bereitstellen ===
@@ -158,6 +160,24 @@ app.use('/arb-manager', (req, res, next) => {
 });
 
 app.use('/arb-manager', express.static(publicPath));
+
+// === Theme Editor unter /theme-editor ===
+const themeEditorPath = path.resolve(__dirname, '../theme-editor');
+console.log(`🎨 Theme-Editor-Pfad: ${themeEditorPath}`);
+
+// Cache-Busting für Theme Editor
+app.use('/theme-editor', (req, res, next) => {
+  if (req.path.endsWith('.js') || req.path.endsWith('.css') || req.path.endsWith('.html')) {
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+  }
+  next();
+});
+
+app.use('/theme-editor', express.static(themeEditorPath));
 
 // === Flutter-Web-App unter /game ===
 // 1. Statische Dateien zuerst (für Assets)
@@ -211,6 +231,7 @@ app.get(/^\/game\/.*/, (req, res) => {
   });
   res.sendFile(file);
 });
+
 
 // === Info- und Status-Endpunkte ===
 app.get('/', (req, res) => {
@@ -296,6 +317,7 @@ app.listen(PORT, () => {
   console.log(`🚀 Weltenwind-API läuft auf Port ${PORT}`);
   console.log(`🎮 Flutter-Game verfügbar unter: http://localhost:${PORT}/game`);
   console.log(`🌍 ARB Manager verfügbar unter: http://localhost:${PORT}/arb-manager/`);
+  console.log(`🎨 Theme Editor verfügbar unter: http://localhost:${PORT}/theme-editor/`);
   console.log(`📘 Swagger Editor verfügbar unter: http://localhost:${PORT}/docs`);
   console.log(`📄 API-Doku YAML erreichbar unter: http://localhost:${PORT}/api-combined.yaml`);
   console.log(`🔍 Log-Viewer verfügbar unter: http://localhost:${PORT}/api/logs/viewer`);
@@ -315,6 +337,7 @@ app.listen(PORT, () => {
       api: `http://localhost:${PORT}/api`,
       game: `http://localhost:${PORT}/game`,
       arbManager: `http://localhost:${PORT}/arb-manager/`,
+      themeEditor: `http://localhost:${PORT}/theme-editor/`,
       docs: `http://localhost:${PORT}/docs`,
       logs: `http://localhost:${PORT}/api/logs/viewer`,
       openapi: `http://localhost:${PORT}/api-combined.yaml`

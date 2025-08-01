@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/providers/theme_provider.dart';
-import '../../theme/fantasy_theme.dart';
 import '../../theme/tokens/spacing.dart';
 import '../../theme/tokens/typography.dart';
 import '../components/index.dart';
@@ -17,28 +15,12 @@ class DynamicComponents {
     required EdgeInsetsGeometry padding,
     required Widget child,
   }) {
-    final preset = ThemeProvider().stylePreset;
-    
-    switch (preset) {
-      case FantasyStylePreset.mystical:
-        return AppFrame.magic(
-          title: title,
-          padding: padding,
-          child: child,
-        );
-      case FantasyStylePreset.ancient:
-        return AppFrame.artifact(
-          title: title,
-          padding: padding,
-          child: child,
-        );
-      case FantasyStylePreset.portal:
-        return AppFrame.portal(
-          title: title,
-          padding: padding,
-          child: child,
-        );
-    }
+    // Standard Frame für das neue modulare Theme System
+    return AppFrame.magic(
+      title: title,
+      padding: padding,
+      child: child,
+    );
   }
   
   /// Erstellt einen dynamischen Auth-Frame mit Trennlinie und Titel-Struktur
@@ -100,7 +82,7 @@ class DynamicComponents {
     );
   }
   
-  /// Erstellt einen dynamischen Primary-Button basierend auf dem aktuellen Style-Preset
+  /// Erstellt einen dynamischen Primary-Button für das neue modulare Theme System
   static Widget primaryButton({
     required String text,
     required VoidCallback? onPressed,
@@ -108,34 +90,14 @@ class DynamicComponents {
     required IconData icon,
     AppButtonSize size = AppButtonSize.large,
   }) {
-    final preset = ThemeProvider().stylePreset;
-    
-    switch (preset) {
-      case FantasyStylePreset.mystical:
-        return AppButton.magic(
-          text: text,
-          onPressed: onPressed,
-          size: size,
-          isLoading: isLoading,
-          icon: icon,
-        );
-      case FantasyStylePreset.ancient:
-        return AppButton.artifact(
-          text: text,
-          onPressed: onPressed,
-          size: size,
-          isLoading: isLoading,
-          icon: icon,
-        );
-      case FantasyStylePreset.portal:
-        return AppButton.portal(
-          text: text,
-          onPressed: onPressed,
-          size: size,
-          isLoading: isLoading,
-          icon: icon,
-        );
-    }
+    // Standard Button für das neue modulare Theme System
+    return AppButton.magic(
+      text: text,
+      onPressed: onPressed,
+      size: size,
+      isLoading: isLoading,
+      icon: icon,
+    );
   }
   
   /// Erstellt einen dynamischen Secondary-Button (immer Ghost für Konsistenz)

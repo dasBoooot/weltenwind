@@ -29,7 +29,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authRegisterButton => 'Register';
 
   @override
-  String get authLogoutButton => 'Log out';
+  String get authLogoutButton => 'Sign Out';
 
   @override
   String get authEmailLabel => 'Email';
@@ -67,7 +67,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authForgotPassword => 'Forgot password?';
 
   @override
-  String get authNoAccount => 'Don\'t have an account? ';
+  String get authNoAccount => 'Don\'t have an account?';
 
   @override
   String get authLoginLoading => 'Signing in...';
@@ -85,23 +85,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authGithubComingSoon => 'GitHub login will be available soon';
 
   @override
-  String get authRegisterWelcome => 'Registration';
+  String get authRegisterWelcome => 'Join Weltenwind';
 
   @override
-  String get authRegisterSubtitle => 'Create your account for Weltenwind';
+  String get authRegisterSubtitle =>
+      'Create your account and start your adventure';
 
   @override
   String get authUsernameRequiredAlt => 'Username is required';
 
   @override
   String get authUsernameInvalidChars =>
-      'Username may only contain letters, numbers and underscores';
+      'Username can only contain letters, numbers, and underscores';
 
   @override
-  String get authEmailRequired => 'Email is required';
+  String get authEmailRequired => 'Please enter your email';
 
   @override
-  String get authHaveAccount => 'Already have an account? ';
+  String get authHaveAccount => 'Already have an account?';
 
   @override
   String get authRegisterSuccessWelcome =>
@@ -112,7 +113,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authForgotPasswordDescription =>
-      'Enter your email address and we\'ll send you a link to reset your password.';
+      'We\'ll send you a link to reset your password.';
 
   @override
   String get authForgotPasswordEmailLabel => 'Email Address';
@@ -129,7 +130,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authForgotPasswordSendButton => 'Send Link';
 
   @override
-  String get authForgotPasswordBackToLogin => 'Back to Login';
+  String get authForgotPasswordBackToLogin => 'Back to Sign In';
 
   @override
   String get authForgotPasswordCancel => 'Cancel';
@@ -139,14 +140,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'The reset link is invalid or expired. Please request a new link.';
 
   @override
-  String get authResetPasswordSuccessTitle => 'Password successfully changed!';
+  String get authResetPasswordSuccessTitle => 'Password Changed Successfully!';
 
   @override
   String get authResetPasswordTitle => 'Set New Password';
 
   @override
   String get authResetPasswordSuccessMessage =>
-      'You will be automatically redirected to login...';
+      'You will be automatically redirected to sign in...';
 
   @override
   String get authResetPasswordDescription => 'Please enter your new password.';
@@ -161,7 +162,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authNewPasswordRequired => 'Please enter a new password';
 
   @override
-  String get authPasswordNoSpaces => 'Password must not contain spaces';
+  String get authPasswordNoSpaces => 'Password cannot contain spaces';
 
   @override
   String get authConfirmPasswordLabel => 'Confirm Password';
@@ -179,7 +180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authRequirementMinLength => 'At least 6 characters';
 
   @override
-  String get authRequirementNoSpaces => 'No spaces';
+  String get authRequirementNoSpaces => 'No spaces allowed';
 
   @override
   String get authRequirementPasswordsMatch => 'Passwords match';
@@ -188,7 +189,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authResetPasswordButton => 'Reset Password';
 
   @override
-  String get authBackToLogin => 'Back to Login';
+  String get authBackToLogin => 'Back to Sign In';
 
   @override
   String get navDashboard => 'Dashboard';
@@ -218,7 +219,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldStatusOpen => 'Open';
 
   @override
-  String get worldStatusRunning => 'Running';
+  String get worldStatusRunning => 'Active';
 
   @override
   String get worldStatusClosed => 'Closed';
@@ -268,7 +269,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get landingTagline => '🎮 Play • 🌍 Explore • 🤝 Connect';
 
   @override
-  String get landingStartButton => 'Start free now';
+  String get landingStartButton => 'Start Free Now';
 
   @override
   String get landingNoCreditCard => 'No credit card required';
@@ -277,7 +278,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get landingLoginPrompt => 'Already a member? Sign in';
 
   @override
-  String get landingRegisterButton => 'Register for free →';
+  String get landingRegisterButton => 'Register for Free →';
 
   @override
   String get landingStatsPlayers => 'Players';
@@ -286,7 +287,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get landingStatsOnline => 'Online';
 
   @override
-  String get landingDiscoverMore => 'Discover more';
+  String get landingDiscoverMore => 'Discover More';
 
   @override
   String get landingFeaturesTitle => 'What makes Weltenwind special?';
@@ -354,7 +355,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get footerSupport => 'Support';
 
   @override
-  String get worldListTitle => 'Choose your world';
+  String get worldListTitle => 'Choose Your World';
 
   @override
   String get worldListSubtitle => 'Select your world';
@@ -365,13 +366,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get worldListErrorTitle => 'Error loading worlds';
+  String get worldListErrorTitle => 'Error Loading Worlds';
 
   @override
   String get worldListErrorUnknown => 'Unknown error';
 
   @override
-  String get worldListEmptyTitle => 'No worlds found';
+  String get worldListEmptyTitle => 'No Worlds Found';
 
   @override
   String get worldListEmptyMessage => 'Try different filter settings.';
@@ -401,7 +402,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get worldLeaveDialogTitle => 'Leave world?';
+  String get worldLeaveDialogTitle => 'Leave World?';
 
   @override
   String worldLeaveDialogMessage(String worldName) {
@@ -420,10 +421,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldPlayButton => 'Play';
 
   @override
-  String get worldLogoutError => 'Error logging out';
+  String get worldLogoutError => 'Error signing out';
 
   @override
-  String get worldRegisterNow => 'Register now';
+  String get worldRegisterNow => 'Register Now';
 
   @override
   String get worldAlreadyRegistered => 'Already registered? Sign in';
@@ -432,10 +433,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldLogoutAndRegister => 'Sign out & register again';
 
   @override
-  String get worldBackToHome => 'Back to homepage';
+  String get worldBackToHome => 'Back to Home';
 
   @override
-  String get worldBackToWorlds => 'Back to worlds';
+  String get worldBackToWorlds => 'Back to Worlds';
 
   @override
   String get worldLoginButton => 'Sign In';
@@ -447,14 +448,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldLogoutButton => 'Sign Out';
 
   @override
-  String get worldNotFoundTitle => 'World not found';
+  String get worldNotFoundTitle => 'World Not Found';
 
   @override
   String get worldNotFoundMessage =>
       'The requested world does not exist or is not available.';
 
   @override
-  String get worldLoadingError => 'Error loading';
+  String get worldLoadingError => 'Error Loading';
 
   @override
   String get worldInformationTitle => 'Information';
@@ -473,17 +474,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldDateUnknown => 'Unknown';
 
   @override
-  String get worldAboutTitle => 'About this world';
+  String get worldAboutTitle => 'About This World';
 
   @override
   String get worldAboutDescription =>
       'This is an exciting world full of adventures and challenges. Explore unknown territories, form alliances and become a legend!';
 
   @override
-  String get worldRulesTitle => 'Game rules';
+  String get worldRulesTitle => 'Rules';
 
   @override
-  String get worldStatsTitle => 'World statistics';
+  String get worldStatsTitle => 'World Statistics';
 
   @override
   String worldPlayersActive(int count) {
@@ -506,13 +507,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldCategoryExperimental => 'Experimental';
 
   @override
-  String get worldFiltersStatus => 'Status: ';
+  String get worldFiltersStatus => 'Status:';
 
   @override
-  String get worldFiltersCategory => 'Category: ';
+  String get worldFiltersCategory => 'Category:';
 
   @override
-  String get worldFiltersSortBy => 'Sort by: ';
+  String get worldFiltersSortBy => 'Sort by:';
 
   @override
   String get worldFiltersSortStartDate => 'Start Date';
@@ -527,10 +528,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldFiltersSortPlayerCount => 'Player Count';
 
   @override
-  String get worldFiltersActiveFilters => 'Active filters: ';
+  String get worldFiltersActiveFilters => 'Active filters:';
 
   @override
-  String get worldFiltersResetAll => 'Reset all';
+  String get worldFiltersResetAll => 'Reset All';
 
   @override
   String get worldStatusArchived => 'Archived';
@@ -564,7 +565,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navigationTitle => 'Navigation';
 
   @override
-  String get navigationOpenMenu => 'Open menu';
+  String get navigationOpenMenu => 'Open Menu';
 
   @override
   String get navigationTooltipJoinRequired =>
@@ -572,7 +573,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String worldJoinSuccess(String worldName) {
-    return 'Successfully joined the world \"$worldName\"!';
+    return 'Successfully joined world \"$worldName\"!';
   }
 
   @override
@@ -586,11 +587,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Error canceling pre-registration';
 
   @override
-  String get worldJoinLeaveDialogTitle => 'Leave world?';
+  String get worldJoinLeaveDialogTitle => 'Leave World?';
 
   @override
   String worldJoinLeaveDialogContent(String worldName) {
-    return 'Do you really want to leave the world \"$worldName\"?';
+    return 'Do you really want to leave world \"$worldName\"?';
   }
 
   @override
@@ -646,11 +647,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invitePageTitle => 'Invitation';
 
   @override
-  String get inviteWelcomeTitle => 'You\'ve been invited!';
+  String get inviteWelcomeTitle => 'You\'ve Been Invited!';
 
   @override
   String inviteWelcomeSubtitle(String worldName) {
-    return 'You\'ve been invited to the world \"$worldName\"';
+    return 'You\'ve been invited to world \"$worldName\"';
   }
 
   @override
@@ -770,7 +771,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get marketingFeatureExploreDesc => 'New adventures';
 
   @override
-  String get marketingBrowseAllWorlds => 'Browse all worlds';
+  String get marketingBrowseAllWorlds => 'Browse All Worlds';
 
   @override
   String get inviteDetailsCreated => 'Created on';
@@ -781,7 +782,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get inviteWidgetEmailLabel => 'Email address';
+  String get inviteWidgetEmailLabel => 'Email Address';
 
   @override
   String get inviteWidgetEmailHint => 'friend@example.com';
@@ -800,10 +801,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Disable to create invitation link only';
 
   @override
-  String get inviteWidgetSendButton => 'Send invitation';
+  String get inviteWidgetSendButton => 'Send Invitation';
 
   @override
-  String get inviteWidgetCreateLinkButton => 'Create link';
+  String get inviteWidgetCreateLinkButton => 'Create Link';
 
   @override
   String inviteWidgetSuccessWithEmail(String email) {
@@ -818,13 +819,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inviteWidgetCopyLink => 'Copy';
 
   @override
-  String get inviteWidgetDialogTitle => 'Invite player';
+  String get inviteWidgetDialogTitle => 'Invite Player';
 
   @override
   String get inviteWidgetCancel => 'Cancel';
 
   @override
-  String get inviteWidgetLinkTitle => 'Invite Link:';
+  String get inviteWidgetLinkTitle => 'Invitation Link:';
 
   @override
   String get worldInviteButton => 'Invite';

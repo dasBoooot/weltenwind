@@ -1,0 +1,1100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/effects/animations.schema.json",
+  "title": "Weltenwind Animations Schema",
+  "description": "Hover/Click Interactions, Easing Functions, Morphing Transitions und Gaming-Animationen für flüssige User Experience",
+  "type": "object",
+  "required": ["interactions", "transitions", "easing"],
+  "properties": {
+    "interactions": {
+      "type": "object",
+      "description": "User-Interaktions-Animationen",
+      "required": ["hover", "click"],
+      "properties": {
+        "hover": {
+          "type": "object",
+          "description": "Hover-Animations-System",
+          "required": ["enabled", "duration"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Hover-Animationen aktiviert"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 50,
+              "maximum": 1000,
+              "default": 200,
+              "description": "Standard Hover-Animation Dauer (ms)"
+            },
+            "scale": {
+              "type": "object",
+              "description": "Scale-Hover Effekte",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Scale-Hover aktiviert"
+                },
+                "factor": {
+                  "type": "number",
+                  "minimum": 1.0,
+                  "maximum": 1.5,
+                  "default": 1.05,
+                  "description": "Scale-Faktor bei Hover"
+                },
+                "elements": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["buttons", "cards", "inventory", "icons", "avatars"]
+                  },
+                  "default": ["buttons", "cards", "inventory"],
+                  "description": "Elemente mit Scale-Hover"
+                }
+              }
+            },
+            "lift": {
+              "type": "object",
+              "description": "Lift/Elevation Hover-Effekte",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Lift-Hover aktiviert"
+                },
+                "height": {
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 20,
+                  "default": 4,
+                  "description": "Lift-Höhe in Pixeln"
+                },
+                "shadow": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Schatten-Effekt beim Lift"
+                },
+                "elements": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["cards", "buttons", "inventory", "panels"]
+                  },
+                  "default": ["cards", "buttons"],
+                  "description": "Elemente mit Lift-Hover"
+                }
+              }
+            },
+            "glow": {
+              "type": "object",
+              "description": "Glow-Hover Effekte",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Glow-Hover aktiviert"
+                },
+                "intensity": {
+                  "type": "number",
+                  "minimum": 0.1,
+                  "maximum": 2.0,
+                  "default": 0.6,
+                  "description": "Glow-Intensität bei Hover"
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#A594D1",
+                  "description": "Hover-Glow Farbe"
+                },
+                "elements": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["buttons", "inventory", "progress", "icons", "rarity"]
+                  },
+                  "default": ["buttons", "inventory", "rarity"],
+                  "description": "Elemente mit Glow-Hover"
+                }
+              }
+            },
+            "morphing": {
+              "type": "object",
+              "description": "Morphing/Shape-Change Hover",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Morphing-Hover aktiviert"
+                },
+                "borderRadius": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Border-Radius Morphing"
+                },
+                "borderWidth": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Border-Width Morphing"
+                },
+                "elements": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["buttons", "inputs", "cards"]
+                  },
+                  "default": ["buttons"],
+                  "description": "Elemente mit Morphing-Hover"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "click": {
+          "type": "object",
+          "description": "Click/Tap Animations",
+          "required": ["enabled", "duration"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Click-Animationen aktiviert"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 50,
+              "maximum": 500,
+              "default": 150,
+              "description": "Click-Animation Dauer (ms)"
+            },
+            "feedback": {
+              "type": "string",
+              "enum": ["scale", "flash", "ripple", "bounce", "none"],
+              "default": "scale",
+              "description": "Art des Click-Feedbacks"
+            },
+            "scale": {
+              "type": "object",
+              "description": "Scale-Click Effekte",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Scale-Click aktiviert"
+                },
+                "factor": {
+                  "type": "number",
+                  "minimum": 0.8,
+                  "maximum": 1.2,
+                  "default": 0.95,
+                  "description": "Scale-Faktor bei Click (< 1.0 für Shrink)"
+                },
+                "recovery": {
+                  "type": "number",
+                  "minimum": 50,
+                  "maximum": 300,
+                  "default": 100,
+                  "description": "Recovery-Zeit zurück zur Normalgröße (ms)"
+                }
+              }
+            },
+            "flash": {
+              "type": "object",
+              "description": "Flash-Click Effekte",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Flash-Click aktiviert"
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#FFFFFF",
+                  "description": "Flash-Farbe"
+                },
+                "intensity": {
+                  "type": "number",
+                  "minimum": 0.1,
+                  "maximum": 1.0,
+                  "default": 0.3,
+                  "description": "Flash-Intensität"
+                }
+              }
+            },
+            "ripple": {
+              "type": "object",
+              "description": "Material Design Ripple-Effekt",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Ripple-Effekt aktiviert"
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{8}$",
+                  "default": "#FFFFFF40",
+                  "description": "Ripple-Farbe mit Alpha"
+                },
+                "speed": {
+                  "type": "number",
+                  "minimum": 0.5,
+                  "maximum": 3.0,
+                  "default": 1.0,
+                  "description": "Ripple-Ausbreitungsgeschwindigkeit"
+                },
+                "elements": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["buttons", "cards", "inventory", "icons"]
+                  },
+                  "default": ["buttons", "cards"],
+                  "description": "Elemente mit Ripple-Effekt"
+                }
+              }
+            },
+            "bounce": {
+              "type": "object",
+              "description": "Bounce-Click Effekte",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Bounce-Click aktiviert"
+                },
+                "intensity": {
+                  "type": "number",
+                  "minimum": 0.1,
+                  "maximum": 1.0,
+                  "default": 0.3,
+                  "description": "Bounce-Intensität"
+                },
+                "elements": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["buttons", "icons", "notifications"]
+                  },
+                  "default": ["icons"],
+                  "description": "Elemente mit Bounce-Click"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "focus": {
+          "type": "object",
+          "description": "Focus/Keyboard Navigation Animationen",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Focus-Animationen aktiviert"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 100,
+              "maximum": 500,
+              "default": 200,
+              "description": "Focus-Animation Dauer (ms)"
+            },
+            "style": {
+              "type": "string",
+              "enum": ["outline", "glow", "scale", "underline"],
+              "default": "glow",
+              "description": "Focus-Animation Stil"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#A594D1",
+              "description": "Focus-Indikator Farbe"
+            },
+            "accessibility": {
+              "type": "boolean",
+              "default": true,
+              "description": "Accessibility-konforme Focus-Indikatoren"
+            }
+          }
+        },
+        "drag": {
+          "type": "object",
+          "description": "Drag & Drop Animationen",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Drag-Animationen aktiviert"
+            },
+            "ghost": {
+              "type": "object",
+              "properties": {
+                "opacity": {
+                  "type": "number",
+                  "minimum": 0.1,
+                  "maximum": 1.0,
+                  "default": 0.7,
+                  "description": "Drag-Ghost Transparenz"
+                },
+                "scale": {
+                  "type": "number",
+                  "minimum": 0.5,
+                  "maximum": 1.5,
+                  "default": 1.1,
+                  "description": "Drag-Ghost Skalierung"
+                },
+                "rotation": {
+                  "type": "number",
+                  "minimum": -15,
+                  "maximum": 15,
+                  "default": 5,
+                  "description": "Drag-Ghost Rotation in Grad"
+                }
+              }
+            },
+            "dropZone": {
+              "type": "object",
+              "properties": {
+                "highlight": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Drop-Zone Highlight aktiviert"
+                },
+                "animation": {
+                  "type": "string",
+                  "enum": ["pulse", "glow", "border", "none"],
+                  "default": "glow",
+                  "description": "Drop-Zone Animation"
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#4CAF50",
+                  "description": "Drop-Zone Highlight Farbe"
+                }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "transitions": {
+      "type": "object",
+      "description": "UI State Transitions",
+      "required": ["page", "modal"],
+      "properties": {
+        "page": {
+          "type": "object",
+          "description": "Seitenwechsel-Animationen",
+          "required": ["enabled", "type"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Seitenwechsel-Animationen aktiviert"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["slide", "fade", "scale", "flip", "none"],
+              "default": "slide",
+              "description": "Art der Seitenwechsel-Animation"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 200,
+              "maximum": 1000,
+              "default": 300,
+              "description": "Seitenwechsel Dauer (ms)"
+            },
+            "direction": {
+              "type": "string",
+              "enum": ["left", "right", "up", "down", "auto"],
+              "default": "right",
+              "description": "Slide-Animation Richtung"
+            }
+          }
+        },
+        "modal": {
+          "type": "object",
+          "description": "Modal/Dialog Animationen",
+          "required": ["enabled", "enter", "exit"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Modal-Animationen aktiviert"
+            },
+            "enter": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["scale", "fade", "slide", "bounce"],
+                  "default": "scale",
+                  "description": "Modal-Eingangs-Animation"
+                },
+                "duration": {
+                  "type": "number",
+                  "minimum": 100,
+                  "maximum": 800,
+                  "default": 250,
+                  "description": "Eingangs-Animation Dauer (ms)"
+                },
+                "from": {
+                  "type": "number",
+                  "minimum": 0.1,
+                  "maximum": 2.0,
+                  "default": 0.8,
+                  "description": "Start-Scale für Scale-Animation"
+                }
+              }
+            },
+            "exit": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["scale", "fade", "slide"],
+                  "default": "fade",
+                  "description": "Modal-Ausgangs-Animation"
+                },
+                "duration": {
+                  "type": "number",
+                  "minimum": 100,
+                  "maximum": 500,
+                  "default": 200,
+                  "description": "Ausgangs-Animation Dauer (ms)"
+                }
+              }
+            },
+            "backdrop": {
+              "type": "object",
+              "properties": {
+                "fade": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Backdrop Fade-Animation"
+                },
+                "duration": {
+                  "type": "number",
+                  "minimum": 100,
+                  "maximum": 500,
+                  "default": 200,
+                  "description": "Backdrop Animation Dauer (ms)"
+                }
+              }
+            }
+          }
+        },
+        "toast": {
+          "type": "object",
+          "description": "Toast/Notification Animationen",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Toast-Animationen aktiviert"
+            },
+            "enter": {
+              "type": "string",
+              "enum": ["slide-down", "slide-up", "slide-left", "slide-right", "fade", "bounce"],
+              "default": "slide-down",
+              "description": "Toast-Eingangs-Animation"
+            },
+            "exit": {
+              "type": "string",
+              "enum": ["slide-up", "slide-down", "slide-left", "slide-right", "fade"],
+              "default": "slide-up",
+              "description": "Toast-Ausgangs-Animation"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 200,
+              "maximum": 800,
+              "default": 300,
+              "description": "Toast-Animation Dauer (ms)"
+            },
+            "stacking": {
+              "type": "boolean",
+              "default": true,
+              "description": "Animierte Toast-Stapelung"
+            }
+          }
+        },
+        "loading": {
+          "type": "object",
+          "description": "Loading-State Animationen",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Loading-Animationen aktiviert"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["spinner", "dots", "bars", "pulse", "shimmer"],
+              "default": "spinner",
+              "description": "Loading-Animation Typ"
+            },
+            "speed": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 3.0,
+              "default": 1.0,
+              "description": "Loading-Animation Geschwindigkeit"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#A594D1",
+              "description": "Loading-Animation Farbe"
+            },
+            "shimmer": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Shimmer-Loading für Skeleton Screens"
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#7C6BAF",
+                  "description": "Shimmer-Farbe"
+                },
+                "speed": {
+                  "type": "number",
+                  "minimum": 0.5,
+                  "maximum": 2.0,
+                  "default": 1.2,
+                  "description": "Shimmer-Geschwindigkeit"
+                }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "easing": {
+      "type": "object",
+      "description": "Easing Functions für natürliche Animationen",
+      "required": ["default"],
+      "properties": {
+        "default": {
+          "type": "string",
+          "default": "cubic-bezier(0.4, 0, 0.2, 1)",
+          "description": "Standard Easing Function"
+        },
+        "functions": {
+          "type": "object",
+          "properties": {
+            "easeIn": {
+              "type": "string",
+              "default": "cubic-bezier(0.4, 0, 1, 1)",
+              "description": "Langsamer Start, schnelles Ende"
+            },
+            "easeOut": {
+              "type": "string",
+              "default": "cubic-bezier(0, 0, 0.2, 1)",
+              "description": "Schneller Start, langsames Ende"
+            },
+            "easeInOut": {
+              "type": "string",
+              "default": "cubic-bezier(0.4, 0, 0.2, 1)",
+              "description": "Langsamer Start und Ende"
+            },
+            "bounce": {
+              "type": "string",
+              "default": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+              "description": "Bounce-Effekt"
+            },
+            "elastic": {
+              "type": "string",
+              "default": "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+              "description": "Elastischer Effekt"
+            },
+            "back": {
+              "type": "string",
+              "default": "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+              "description": "Back-Effekt (Überschwingen)"
+            },
+            "magic": {
+              "type": "string",
+              "default": "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+              "description": "Magische/Fantasy Easing"
+            }
+          }
+        },
+        "contexts": {
+          "type": "object",
+          "description": "Context-spezifische Easing Functions",
+          "properties": {
+            "hover": {
+              "type": "string",
+              "default": "cubic-bezier(0.4, 0, 0.2, 1)",
+              "description": "Easing für Hover-Animationen"
+            },
+            "click": {
+              "type": "string",
+              "default": "cubic-bezier(0.4, 0, 1, 1)",
+              "description": "Easing für Click-Animationen"
+            },
+            "page": {
+              "type": "string",
+              "default": "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+              "description": "Easing für Seitenwechsel"
+            },
+            "modal": {
+              "type": "string",
+              "default": "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+              "description": "Easing für Modal-Animationen"
+            },
+            "gaming": {
+              "type": "string",
+              "default": "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+              "description": "Easing für Gaming-Animationen"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "gaming": {
+      "type": "object",
+      "description": "Gaming-spezifische Animationen",
+      "properties": {
+        "inventory": {
+          "type": "object",
+          "description": "Inventar-Animationen",
+          "properties": {
+            "itemPickup": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Item-Pickup Animation"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["fly-to-slot", "sparkle", "fade-in", "bounce"],
+                  "default": "fly-to-slot",
+                  "description": "Art der Pickup-Animation"
+                },
+                "duration": {
+                  "type": "number",
+                  "minimum": 300,
+                  "maximum": 1500,
+                  "default": 800,
+                  "description": "Pickup-Animation Dauer (ms)"
+                }
+              }
+            },
+            "itemDrop": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Item-Drop Animation"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["fall", "fade-out", "dissolve"],
+                  "default": "fade-out",
+                  "description": "Art der Drop-Animation"
+                },
+                "duration": {
+                  "type": "number",
+                  "minimum": 200,
+                  "maximum": 800,
+                  "default": 400,
+                  "description": "Drop-Animation Dauer (ms)"
+                }
+              }
+            },
+            "sorting": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Inventar-Sortier-Animation"
+                },
+                "stagger": {
+                  "type": "number",
+                  "minimum": 10,
+                  "maximum": 100,
+                  "default": 50,
+                  "description": "Versatz zwischen Item-Animationen (ms)"
+                },
+                "duration": {
+                  "type": "number",
+                  "minimum": 400,
+                  "maximum": 1200,
+                  "default": 600,
+                  "description": "Sortier-Animation Dauer (ms)"
+                }
+              }
+            }
+          }
+        },
+        "progress": {
+          "type": "object",
+          "description": "Progress Bar Animationen",
+          "properties": {
+            "fill": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Progress Fill-Animation"
+                },
+                "smooth": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Smooth Fill-Übergänge"
+                },
+                "duration": {
+                  "type": "number",
+                  "minimum": 200,
+                  "maximum": 1000,
+                  "default": 400,
+                  "description": "Fill-Animation Dauer (ms)"
+                }
+              }
+            },
+            "levelUp": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Level-Up Animation"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["flash", "glow", "sparkle", "explosion"],
+                  "default": "sparkle",
+                  "description": "Art der Level-Up Animation"
+                },
+                "duration": {
+                  "type": "number",
+                  "minimum": 1000,
+                  "maximum": 3000,
+                  "default": 1500,
+                  "description": "Level-Up Animation Dauer (ms)"
+                }
+              }
+            },
+            "critical": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Critical Health/Mana Animation"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["pulse", "flash", "shake"],
+                  "default": "pulse",
+                  "description": "Art der Critical-Animation"
+                },
+                "speed": {
+                  "type": "number",
+                  "minimum": 0.5,
+                  "maximum": 3.0,
+                  "default": 1.5,
+                  "description": "Critical-Animation Geschwindigkeit"
+                }
+              }
+            }
+          }
+        },
+        "hud": {
+          "type": "object",
+          "description": "HUD-Element Animationen",
+          "properties": {
+            "minimap": {
+              "type": "object",
+              "properties": {
+                "ping": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Minimap-Ping Animationen"
+                },
+                "playerDot": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Player-Dot Pulse-Animation"
+                }
+              }
+            },
+            "notifications": {
+              "type": "object",
+              "properties": {
+                "floatingText": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": true,
+                      "description": "Floating Combat Text Animation"
+                    },
+                    "movement": {
+                      "type": "string",
+                      "enum": ["float-up", "arc", "bounce", "fade"],
+                      "default": "float-up",
+                      "description": "Floating Text Bewegung"
+                    },
+                    "duration": {
+                      "type": "number",
+                      "minimum": 800,
+                      "maximum": 3000,
+                      "default": 1500,
+                      "description": "Floating Text Dauer (ms)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "combat": {
+          "type": "object",
+          "description": "Kampf-Animationen",
+          "properties": {
+            "damageFlash": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Schaden-Flash Animation"
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#FF0000",
+                  "description": "Schaden-Flash Farbe"
+                },
+                "duration": {
+                  "type": "number",
+                  "minimum": 50,
+                  "maximum": 300,
+                  "default": 120,
+                  "description": "Flash Dauer (ms)"
+                }
+              }
+            },
+            "healing": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Heilungs-Animation"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["glow", "sparkle", "wave"],
+                  "default": "glow",
+                  "description": "Art der Heilungs-Animation"
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#00FF00",
+                  "description": "Heilungs-Animation Farbe"
+                }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "performance": {
+      "type": "object",
+      "description": "Performance-Optimierungen für Animationen",
+      "properties": {
+        "quality": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "ultra"],
+          "default": "high",
+          "description": "Animation-Qualitätsstufe"
+        },
+        "fps": {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "number",
+              "minimum": 30,
+              "maximum": 120,
+              "default": 60,
+              "description": "Ziel-FPS für Animationen"
+            },
+            "adaptive": {
+              "type": "boolean",
+              "default": true,
+              "description": "Adaptive Animation-Qualität basierend auf FPS"
+            }
+          }
+        },
+        "deviceTier": {
+          "type": "object",
+          "properties": {
+            "low": {
+              "type": "object",
+              "properties": {
+                "disableComplex": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Komplexe Animationen deaktivieren"
+                },
+                "reduceDuration": {
+                  "type": "number",
+                  "minimum": 0.3,
+                  "maximum": 1.0,
+                  "default": 0.7,
+                  "description": "Animations-Dauern reduzieren (Faktor)"
+                }
+              }
+            },
+            "medium": {
+              "type": "object",
+              "properties": {
+                "reduceDuration": {
+                  "type": "number",
+                  "minimum": 0.7,
+                  "maximum": 1.0,
+                  "default": 0.85,
+                  "description": "Leichte Animations-Reduktion"
+                }
+              }
+            }
+          }
+        },
+        "reducedMotion": {
+          "type": "object",
+          "description": "Reduced Motion Accessibility Support",
+          "properties": {
+            "respect": {
+              "type": "boolean",
+              "default": true,
+              "description": "Prefers-reduced-motion berücksichtigen"
+            },
+            "alternatives": {
+              "type": "object",
+              "properties": {
+                "crossfade": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Crossfade statt komplexer Übergänge"
+                },
+                "instantFeedback": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Sofortiges visuelles Feedback"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "interactions": {
+        "hover": {
+          "enabled": true,
+          "duration": 200,
+          "scale": {
+            "enabled": true,
+            "factor": 1.05,
+            "elements": ["buttons", "cards", "inventory"]
+          },
+          "glow": {
+            "enabled": true,
+            "intensity": 0.6,
+            "color": "#A594D1",
+            "elements": ["buttons", "inventory", "rarity"]
+          }
+        },
+        "click": {
+          "enabled": true,
+          "duration": 150,
+          "feedback": "scale",
+          "scale": {
+            "enabled": true,
+            "factor": 0.95,
+            "recovery": 100
+          },
+          "ripple": {
+            "enabled": true,
+            "color": "#FFFFFF40",
+            "speed": 1.0,
+            "elements": ["buttons", "cards"]
+          }
+        }
+      },
+      "transitions": {
+        "page": {
+          "enabled": true,
+          "type": "slide",
+          "duration": 300,
+          "direction": "right"
+        },
+        "modal": {
+          "enabled": true,
+          "enter": {
+            "type": "scale",
+            "duration": 250,
+            "from": 0.8
+          },
+          "exit": {
+            "type": "fade",
+            "duration": 200
+          }
+        }
+      },
+      "easing": {
+        "default": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "contexts": {
+          "hover": "cubic-bezier(0.4, 0, 0.2, 1)",
+          "click": "cubic-bezier(0.4, 0, 1, 1)",
+          "gaming": "cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+        }
+      },
+      "gaming": {
+        "inventory": {
+          "itemPickup": {
+            "enabled": true,
+            "type": "fly-to-slot",
+            "duration": 800
+          }
+        },
+        "progress": {
+          "levelUp": {
+            "enabled": true,
+            "type": "sparkle",
+            "duration": 1500
+          }
+        }
+      }
+    }
+  ]
+}

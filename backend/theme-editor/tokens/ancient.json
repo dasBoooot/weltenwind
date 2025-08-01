@@ -1,0 +1,105 @@
+{
+  "$schema": "./theme-schema.json",
+  "name": "Ancient Weltenwind", 
+  "version": "1.0.0",
+  "description": "Antikes Fantasy-Theme mit warmen Gold-Tönen und Artefakt-Ästhetik",
+  "colors": {
+    "primary": {
+      "value": "#D4AF37",
+      "light": "#E1C554",
+      "dark": "#B8941F", 
+      "surface": "#2A1F0A",
+      "accent": "#FFC107"
+    },
+    "secondary": {
+      "value": "#FFC107",
+      "light": "#FFD54F",
+      "dark": "#FF8F00"
+    },
+    "tertiary": {
+      "value": "#D4AF37",
+      "light": "#E1C554", 
+      "dark": "#B8941F"
+    },
+    "background": {
+      "surface_dark": "#1A1208",
+      "surface_darker": "#0F0A04",
+      "surface_medium": "#241A0C",
+      "surface_light": "#332611",
+      "surface_white": "#FFF8F0",
+      "surface_gray": "#F5F0E8"
+    },
+    "text": {
+      "primary": "#F5E6D3",
+      "secondary": "#D4C4A8",
+      "tertiary": "#B8A888",
+      "disabled": "#8A7A68",
+      "primary_light": "#1A1208", 
+      "secondary_light": "#8B4513"
+    },
+    "status": {
+      "success": "#8BC34A",
+      "warning": "#FF9800",
+      "error": "#E91E63", 
+      "info": "#03A9F4"
+    },
+    "effects": {
+      "glow": "#FFC107",
+      "shimmer": "#D4AF37",
+      "overlay": "#80000000",
+      "glass": "#1AFFC107"
+    }
+  },
+  "radius": {
+    "default": 8,
+    "small": 6,
+    "medium": 8,
+    "large": 12, 
+    "xl": 20
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48
+  },
+  "typography": {
+    "heading": {
+      "fontSize": 24,
+      "fontWeight": "bold", 
+      "letterSpacing": -0.3
+    },
+    "body": {
+      "fontSize": 16,
+      "fontWeight": "normal",
+      "lineHeight": 1.4
+    },
+    "caption": {
+      "fontSize": 12,
+      "fontWeight": "normal",
+      "letterSpacing": 0.5
+    }
+  },
+  "shadows": {
+    "small": {
+      "blurRadius": 6,
+      "spreadRadius": 1,
+      "offset": [0, 3],
+      "color": "#40FFC107"
+    },
+    "medium": {
+      "blurRadius": 12,
+      "spreadRadius": 2,
+      "offset": [0, 6], 
+      "color": "#60FFC107"
+    },
+    "large": {
+      "blurRadius": 20,
+      "spreadRadius": 3,
+      "offset": [0, 10],
+      "color": "#80FFC107"
+    }
+  }
+}

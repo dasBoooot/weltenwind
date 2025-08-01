@@ -103,7 +103,7 @@ abstract class AppLocalizations {
     Locale('en')
   ];
 
-  /// The title of the application
+  /// The application title
   ///
   /// In en, this message translates to:
   /// **'Weltenwind'**
@@ -133,10 +133,10 @@ abstract class AppLocalizations {
   /// **'Register'**
   String get authRegisterButton;
 
-  /// Button to log out
+  /// Button for signing out
   ///
   /// In en, this message translates to:
-  /// **'Log out'**
+  /// **'Sign Out'**
   String get authLogoutButton;
 
   /// Label for email input field
@@ -208,10 +208,10 @@ abstract class AppLocalizations {
   /// Text before registration link
   ///
   /// In en, this message translates to:
-  /// **'Don\'t have an account? '**
+  /// **'Don\'t have an account?'**
   String get authNoAccount;
 
-  /// Loading text during sign in
+  /// Loading text during login
   ///
   /// In en, this message translates to:
   /// **'Signing in...'**
@@ -229,13 +229,13 @@ abstract class AppLocalizations {
   /// **'GitHub'**
   String get authGithubLabel;
 
-  /// Message when Google login not yet available
+  /// Coming soon text for Google login
   ///
   /// In en, this message translates to:
   /// **'Google login will be available soon'**
   String get authGoogleComingSoon;
 
-  /// Message when GitHub login not yet available
+  /// Coming soon text for GitHub login
   ///
   /// In en, this message translates to:
   /// **'GitHub login will be available soon'**
@@ -244,46 +244,46 @@ abstract class AppLocalizations {
   /// Welcome title on registration page
   ///
   /// In en, this message translates to:
-  /// **'Registration'**
+  /// **'Join Weltenwind'**
   String get authRegisterWelcome;
 
   /// Subtitle on registration page
   ///
   /// In en, this message translates to:
-  /// **'Create your account for Weltenwind'**
+  /// **'Create your account and start your adventure'**
   String get authRegisterSubtitle;
 
-  /// Alternative validation message for username
+  /// Alternative validation error for empty username field
   ///
   /// In en, this message translates to:
   /// **'Username is required'**
   String get authUsernameRequiredAlt;
 
-  /// Validation error for invalid characters in username
+  /// Validation error for invalid username characters
   ///
   /// In en, this message translates to:
-  /// **'Username may only contain letters, numbers and underscores'**
+  /// **'Username can only contain letters, numbers, and underscores'**
   String get authUsernameInvalidChars;
 
   /// Validation error for empty email field
   ///
   /// In en, this message translates to:
-  /// **'Email is required'**
+  /// **'Please enter your email'**
   String get authEmailRequired;
 
-  /// Text before login link on registration page
+  /// Text before login link on register page
   ///
   /// In en, this message translates to:
-  /// **'Already have an account? '**
+  /// **'Already have an account?'**
   String get authHaveAccount;
 
-  /// Success message after normal registration
+  /// Success message after registration
   ///
   /// In en, this message translates to:
   /// **'Registration successful! Welcome to Weltenwind!'**
   String get authRegisterSuccessWelcome;
 
-  /// Title on forgot password page
+  /// Title for forgot password page
   ///
   /// In en, this message translates to:
   /// **'Reset Password'**
@@ -292,28 +292,28 @@ abstract class AppLocalizations {
   /// Description on forgot password page
   ///
   /// In en, this message translates to:
-  /// **'Enter your email address and we\'ll send you a link to reset your password.'**
+  /// **'We\'ll send you a link to reset your password.'**
   String get authForgotPasswordDescription;
 
-  /// Label for email input field on forgot password page
+  /// Label for email input on forgot password page
   ///
   /// In en, this message translates to:
   /// **'Email Address'**
   String get authForgotPasswordEmailLabel;
 
-  /// Validation error for empty email field on forgot password page
+  /// Validation error for empty email on forgot password
   ///
   /// In en, this message translates to:
   /// **'Please enter your email address'**
   String get authForgotPasswordEmailRequired;
 
-  /// Success message after sending password reset link
+  /// Success message after sending password reset email
   ///
   /// In en, this message translates to:
   /// **'Email sent! Please check your inbox.'**
   String get authForgotPasswordSuccess;
 
-  /// Button text to send password reset link
+  /// Button text for sending password reset link
   ///
   /// In en, this message translates to:
   /// **'Send Link'**
@@ -322,7 +322,7 @@ abstract class AppLocalizations {
   /// Button text to go back to login after successful sending
   ///
   /// In en, this message translates to:
-  /// **'Back to Login'**
+  /// **'Back to Sign In'**
   String get authForgotPasswordBackToLogin;
 
   /// Button text to cancel password reset request
@@ -340,7 +340,7 @@ abstract class AppLocalizations {
   /// Title after successful password reset
   ///
   /// In en, this message translates to:
-  /// **'Password successfully changed!'**
+  /// **'Password Changed Successfully!'**
   String get authResetPasswordSuccessTitle;
 
   /// Title on password reset page
@@ -352,7 +352,7 @@ abstract class AppLocalizations {
   /// Message after successful password reset
   ///
   /// In en, this message translates to:
-  /// **'You will be automatically redirected to login...'**
+  /// **'You will be automatically redirected to sign in...'**
   String get authResetPasswordSuccessMessage;
 
   /// Description on password reset page
@@ -367,7 +367,7 @@ abstract class AppLocalizations {
   /// **'New Password'**
   String get authNewPasswordLabel;
 
-  /// Helper text below password input field
+  /// Helper text under password input field
   ///
   /// In en, this message translates to:
   /// **'At least 6 characters'**
@@ -382,7 +382,7 @@ abstract class AppLocalizations {
   /// Validation error for spaces in password
   ///
   /// In en, this message translates to:
-  /// **'Password must not contain spaces'**
+  /// **'Password cannot contain spaces'**
   String get authPasswordNoSpaces;
 
   /// Label for password confirmation input field
@@ -403,7 +403,7 @@ abstract class AppLocalizations {
   /// **'Passwords do not match'**
   String get authPasswordsDoNotMatch;
 
-  /// Title for password requirements list
+  /// Title for password requirements section
   ///
   /// In en, this message translates to:
   /// **'Password Requirements:'**
@@ -418,25 +418,25 @@ abstract class AppLocalizations {
   /// Password requirement: no spaces
   ///
   /// In en, this message translates to:
-  /// **'No spaces'**
+  /// **'No spaces allowed'**
   String get authRequirementNoSpaces;
 
-  /// Password requirement: passwords match
+  /// Password requirement: passwords match validation
   ///
   /// In en, this message translates to:
   /// **'Passwords match'**
   String get authRequirementPasswordsMatch;
 
-  /// Button text to reset password
+  /// Button text for password reset
   ///
   /// In en, this message translates to:
   /// **'Reset Password'**
   String get authResetPasswordButton;
 
-  /// Button text back to login
+  /// Link text to go back to login
   ///
   /// In en, this message translates to:
-  /// **'Back to Login'**
+  /// **'Back to Sign In'**
   String get authBackToLogin;
 
   /// Navigation item for dashboard
@@ -457,19 +457,19 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get navProfile;
 
-  /// Title for the worlds page
+  /// Title for worlds section
   ///
   /// In en, this message translates to:
   /// **'Game Worlds'**
   String get worldsTitle;
 
-  /// Button to leave a world
+  /// Button text to leave a world
   ///
   /// In en, this message translates to:
   /// **'Leave'**
   String get worldLeaveButton;
 
-  /// Button to pre-register for a world
+  /// Button text to pre-register for a world
   ///
   /// In en, this message translates to:
   /// **'Pre-Register'**
@@ -481,31 +481,31 @@ abstract class AppLocalizations {
   /// **'Cancel Pre-Registration'**
   String get worldCancelPreRegisterButton;
 
-  /// World Status: Upcoming/Planned
+  /// Status label for upcoming worlds
   ///
   /// In en, this message translates to:
   /// **'Upcoming'**
   String get worldStatusUpcoming;
 
-  /// World Status: Open for joining
+  /// Status label for open worlds
   ///
   /// In en, this message translates to:
   /// **'Open'**
   String get worldStatusOpen;
 
-  /// World Status: Currently running
+  /// Status label for running worlds
   ///
   /// In en, this message translates to:
-  /// **'Running'**
+  /// **'Active'**
   String get worldStatusRunning;
 
-  /// World Status: Closed
+  /// Status label for closed worlds
   ///
   /// In en, this message translates to:
   /// **'Closed'**
   String get worldStatusClosed;
 
-  /// Generic error message
+  /// General error message
   ///
   /// In en, this message translates to:
   /// **'An error occurred. Please try again.'**
@@ -517,55 +517,55 @@ abstract class AppLocalizations {
   /// **'Network error. Please check your connection.'**
   String get errorNetwork;
 
-  /// Authorization error message
+  /// Unauthorized access error message
   ///
   /// In en, this message translates to:
   /// **'You are not authorized to access this resource.'**
   String get errorUnauthorized;
 
-  /// Email validation error
+  /// Email validation error message
   ///
   /// In en, this message translates to:
   /// **'Please enter a valid email address'**
   String get errorValidationEmail;
 
-  /// Password validation error
+  /// Password validation error message
   ///
   /// In en, this message translates to:
   /// **'Password must be at least 8 characters long'**
   String get errorValidationPassword;
 
-  /// Generic OK button
+  /// OK button text
   ///
   /// In en, this message translates to:
   /// **'OK'**
   String get buttonOk;
 
-  /// Separator word between options
+  /// Or conjunction text
   ///
   /// In en, this message translates to:
   /// **'or'**
   String get commonOr;
 
-  /// Label for language selection
+  /// Language selection label
   ///
   /// In en, this message translates to:
   /// **'Language'**
   String get commonLanguage;
 
-  /// Generic cancel button
+  /// Cancel button text
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
   String get buttonCancel;
 
-  /// Generic save button
+  /// Save button text
   ///
   /// In en, this message translates to:
   /// **'Save'**
   String get buttonSave;
 
-  /// Generic retry button
+  /// Retry button text
   ///
   /// In en, this message translates to:
   /// **'Try Again'**
@@ -583,7 +583,7 @@ abstract class AppLocalizations {
   /// **'Your portal to infinite worlds'**
   String get landingSubtitle;
 
-  /// Short description of main features
+  /// Tagline on the landing page
   ///
   /// In en, this message translates to:
   /// **'🎮 Play • 🌍 Explore • 🤝 Connect'**
@@ -592,136 +592,136 @@ abstract class AppLocalizations {
   /// Main CTA button on landing page
   ///
   /// In en, this message translates to:
-  /// **'Start free now'**
+  /// **'Start Free Now'**
   String get landingStartButton;
 
-  /// Note below registration button
+  /// No credit card disclaimer
   ///
   /// In en, this message translates to:
   /// **'No credit card required'**
   String get landingNoCreditCard;
 
-  /// Link to login for existing users
+  /// Login prompt for existing users
   ///
   /// In en, this message translates to:
   /// **'Already a member? Sign in'**
   String get landingLoginPrompt;
 
-  /// Registration button in CTA area
+  /// Registration button text
   ///
   /// In en, this message translates to:
-  /// **'Register for free →'**
+  /// **'Register for Free →'**
   String get landingRegisterButton;
 
-  /// Label for player statistics
+  /// Player count label in stats
   ///
   /// In en, this message translates to:
   /// **'Players'**
   String get landingStatsPlayers;
 
-  /// Label for online status statistics
+  /// Online count label in stats
   ///
   /// In en, this message translates to:
   /// **'Online'**
   String get landingStatsOnline;
 
-  /// Button text to discover more features
+  /// Discover more button text
   ///
   /// In en, this message translates to:
-  /// **'Discover more'**
+  /// **'Discover More'**
   String get landingDiscoverMore;
 
-  /// Title of features section
+  /// Features section title
   ///
   /// In en, this message translates to:
   /// **'What makes Weltenwind special?'**
   String get landingFeaturesTitle;
 
-  /// Subtitle of features section
+  /// Features section subtitle
   ///
   /// In en, this message translates to:
   /// **'Experience gaming on a new level'**
   String get landingFeaturesSubtitle;
 
-  /// Title of worlds feature
+  /// Worlds feature title
   ///
   /// In en, this message translates to:
   /// **'Infinite Worlds'**
   String get landingFeatureWorldsTitle;
 
-  /// Description of worlds feature
+  /// Worlds feature description
   ///
   /// In en, this message translates to:
   /// **'Explore hundreds of unique game worlds or create your own'**
   String get landingFeatureWorldsDesc;
 
-  /// Title of community feature
+  /// Community feature title
   ///
   /// In en, this message translates to:
   /// **'Community'**
   String get landingFeatureCommunityTitle;
 
-  /// Description of community feature
+  /// Community feature description
   ///
   /// In en, this message translates to:
   /// **'Connect with players from around the world'**
   String get landingFeatureCommunityDesc;
 
-  /// Title of security feature
+  /// Security feature title
   ///
   /// In en, this message translates to:
   /// **'Safe & Fair'**
   String get landingFeatureSecurityTitle;
 
-  /// Description of security feature
+  /// Security feature description
   ///
   /// In en, this message translates to:
   /// **'State-of-the-art security and fair rules for everyone'**
   String get landingFeatureSecurityDesc;
 
-  /// Title of performance feature
+  /// Speed feature title
   ///
   /// In en, this message translates to:
   /// **'Lightning Fast'**
   String get landingFeatureSpeedTitle;
 
-  /// Description of performance feature
+  /// Speed feature description
   ///
   /// In en, this message translates to:
   /// **'Optimized servers for minimal latency'**
   String get landingFeatureSpeedDesc;
 
-  /// Title of mobile feature
+  /// Mobile feature title
   ///
   /// In en, this message translates to:
   /// **'Play Everywhere'**
   String get landingFeatureMobileTitle;
 
-  /// Description of mobile feature
+  /// Mobile feature description
   ///
   /// In en, this message translates to:
   /// **'On PC, tablet or smartphone - always with you'**
   String get landingFeatureMobileDesc;
 
-  /// Title of rewards feature
+  /// Rewards feature title
   ///
   /// In en, this message translates to:
   /// **'Rewards'**
   String get landingFeatureRewardsTitle;
 
-  /// Description of rewards feature
+  /// Rewards feature description
   ///
   /// In en, this message translates to:
   /// **'Collect achievements and exclusive rewards'**
   String get landingFeatureRewardsDesc;
 
-  /// Title of final call-to-action area
+  /// Final CTA section title
   ///
   /// In en, this message translates to:
   /// **'Ready for your adventure?'**
   String get landingCtaTitle;
 
-  /// Subtitle of final call-to-action area
+  /// Final CTA section subtitle
   ///
   /// In en, this message translates to:
   /// **'Join thousands of players and start today!'**
@@ -733,19 +733,19 @@ abstract class AppLocalizations {
   /// **'© 2024 Weltenwind. All rights reserved.'**
   String get footerCopyright;
 
-  /// Link to privacy policy in footer
+  /// Privacy link in footer
   ///
   /// In en, this message translates to:
   /// **'Privacy'**
   String get footerPrivacy;
 
-  /// Link to legal notice in footer
+  /// Legal link in footer
   ///
   /// In en, this message translates to:
   /// **'Legal'**
   String get footerLegal;
 
-  /// Link to support in footer
+  /// Support link in footer
   ///
   /// In en, this message translates to:
   /// **'Support'**
@@ -754,7 +754,7 @@ abstract class AppLocalizations {
   /// Main title on world list page
   ///
   /// In en, this message translates to:
-  /// **'Choose your world'**
+  /// **'Choose Your World'**
   String get worldListTitle;
 
   /// Subtitle on world list page
@@ -769,10 +769,10 @@ abstract class AppLocalizations {
   /// **'Error loading worlds: {error}'**
   String worldListLoadingError(String error);
 
-  /// Title for error when loading worlds
+  /// Title for world loading error
   ///
   /// In en, this message translates to:
-  /// **'Error loading worlds'**
+  /// **'Error Loading Worlds'**
   String get worldListErrorTitle;
 
   /// Unknown error when loading worlds
@@ -781,13 +781,13 @@ abstract class AppLocalizations {
   /// **'Unknown error'**
   String get worldListErrorUnknown;
 
-  /// Title when no worlds are available
+  /// Title when no worlds available
   ///
   /// In en, this message translates to:
-  /// **'No worlds found'**
+  /// **'No Worlds Found'**
   String get worldListEmptyTitle;
 
-  /// Message when no worlds were found
+  /// Message when no worlds found
   ///
   /// In en, this message translates to:
   /// **'Try different filter settings.'**
@@ -799,7 +799,7 @@ abstract class AppLocalizations {
   /// **'Refresh'**
   String get worldListRefreshButton;
 
-  /// Button to create a new world
+  /// Button to create new world
   ///
   /// In en, this message translates to:
   /// **'New World'**
@@ -811,631 +811,631 @@ abstract class AppLocalizations {
   /// **'Loading worlds...'**
   String get worldListLoadingText;
 
-  /// Message when user is already member of a world
+  /// Message when user is already member of world
   ///
   /// In en, this message translates to:
   /// **'You are already a member of world \"{worldName}\"!'**
   String worldAlreadyMember(String worldName);
 
-  /// Success message after pre-registration
+  /// Success message for pre-registration
   ///
   /// In en, this message translates to:
   /// **'Successfully pre-registered for {worldName}!'**
   String worldPreRegisterSuccessful(String worldName);
 
-  /// Message after cancelling pre-registration
+  /// Message when pre-registration is cancelled
   ///
   /// In en, this message translates to:
   /// **'Pre-registration for {worldName} cancelled.'**
   String worldPreRegisterCancelled(String worldName);
 
-  /// Title of dialog for leaving a world
+  /// Dialog title for leaving world
   ///
   /// In en, this message translates to:
-  /// **'Leave world?'**
+  /// **'Leave World?'**
   String get worldLeaveDialogTitle;
 
-  /// Message in dialog for leaving a world
+  /// Dialog message for leaving world
   ///
   /// In en, this message translates to:
   /// **'Do you really want to leave world \"{worldName}\"?'**
   String worldLeaveDialogMessage(String worldName);
 
-  /// Confirmation button for leaving a world
+  /// Confirm button for leaving world
   ///
   /// In en, this message translates to:
   /// **'Leave'**
   String get worldLeaveConfirm;
 
-  /// Success message after leaving a world
+  /// Success message when leaving world
   ///
   /// In en, this message translates to:
   /// **'You have left {worldName}.'**
   String worldLeaveSuccessful(String worldName);
 
-  /// Button to play in a world
+  /// Button to start playing in world
   ///
   /// In en, this message translates to:
   /// **'Play'**
   String get worldPlayButton;
 
-  /// Error message when logging out
+  /// Error message when logout fails
   ///
   /// In en, this message translates to:
-  /// **'Error logging out'**
+  /// **'Error signing out'**
   String get worldLogoutError;
 
-  /// Button for new registration
+  /// Register now button text
   ///
   /// In en, this message translates to:
-  /// **'Register now'**
+  /// **'Register Now'**
   String get worldRegisterNow;
 
-  /// Link for already registered users
+  /// Sign in prompt for registered users
   ///
   /// In en, this message translates to:
   /// **'Already registered? Sign in'**
   String get worldAlreadyRegistered;
 
-  /// Button to sign out and register again
+  /// Sign out and register again button
   ///
   /// In en, this message translates to:
   /// **'Sign out & register again'**
   String get worldLogoutAndRegister;
 
-  /// Button back to homepage
+  /// Back to home button text
   ///
   /// In en, this message translates to:
-  /// **'Back to homepage'**
+  /// **'Back to Home'**
   String get worldBackToHome;
 
-  /// Button back to world list
+  /// Back to worlds button text
   ///
   /// In en, this message translates to:
-  /// **'Back to worlds'**
+  /// **'Back to Worlds'**
   String get worldBackToWorlds;
 
-  /// Button for login in world context
+  /// Sign in button text
   ///
   /// In en, this message translates to:
   /// **'Sign In'**
   String get worldLoginButton;
 
-  /// Button for registration in world context
+  /// Register button text
   ///
   /// In en, this message translates to:
   /// **'Register'**
   String get worldRegisterButton;
 
-  /// Button to sign out in world context
+  /// Sign out button text
   ///
   /// In en, this message translates to:
   /// **'Sign Out'**
   String get worldLogoutButton;
 
-  /// Title when world was not found
+  /// Title when world not found
   ///
   /// In en, this message translates to:
-  /// **'World not found'**
+  /// **'World Not Found'**
   String get worldNotFoundTitle;
 
-  /// Message when world was not found
+  /// Message when world not found
   ///
   /// In en, this message translates to:
   /// **'The requested world does not exist or is not available.'**
   String get worldNotFoundMessage;
 
-  /// Error when loading a world
+  /// Generic world loading error
   ///
   /// In en, this message translates to:
-  /// **'Error loading'**
+  /// **'Error Loading'**
   String get worldLoadingError;
 
-  /// Title for information about a world
+  /// World information section title
   ///
   /// In en, this message translates to:
   /// **'Information'**
   String get worldInformationTitle;
 
-  /// Start date of a world
+  /// World start date label
   ///
   /// In en, this message translates to:
   /// **'Start: {date}'**
   String worldStartDate(String date);
 
-  /// End date of a world
+  /// World end date label
   ///
   /// In en, this message translates to:
   /// **'End: {date}'**
   String worldEndDate(String date);
 
-  /// Unknown date
+  /// Unknown date placeholder
   ///
   /// In en, this message translates to:
   /// **'Unknown'**
   String get worldDateUnknown;
 
-  /// Title for 'About this world' section
+  /// World about section title
   ///
   /// In en, this message translates to:
-  /// **'About this world'**
+  /// **'About This World'**
   String get worldAboutTitle;
 
-  /// Default description for a world
+  /// Default world description
   ///
   /// In en, this message translates to:
   /// **'This is an exciting world full of adventures and challenges. Explore unknown territories, form alliances and become a legend!'**
   String get worldAboutDescription;
 
-  /// Title for game rules section
+  /// World rules section title
   ///
   /// In en, this message translates to:
-  /// **'Game rules'**
+  /// **'Rules'**
   String get worldRulesTitle;
 
-  /// Title for world statistics
+  /// World statistics section title
   ///
   /// In en, this message translates to:
-  /// **'World statistics'**
+  /// **'World Statistics'**
   String get worldStatsTitle;
 
-  /// Number of active players
+  /// Active players count
   ///
   /// In en, this message translates to:
   /// **'{count} players active'**
   String worldPlayersActive(int count);
 
-  /// Default description for world cards
+  /// Default world description
   ///
   /// In en, this message translates to:
   /// **'An exciting world full of adventures'**
   String get worldDefaultDescription;
 
-  /// Category label for Classic worlds
+  /// Classic world category
   ///
   /// In en, this message translates to:
   /// **'Classic'**
   String get worldCategoryClassic;
 
-  /// Category label for PvP worlds
+  /// PvP world category
   ///
   /// In en, this message translates to:
   /// **'Player vs Player'**
   String get worldCategoryPvP;
 
-  /// Category label for Event worlds
+  /// Event world category
   ///
   /// In en, this message translates to:
   /// **'Event'**
   String get worldCategoryEvent;
 
-  /// Category label for Experimental worlds
+  /// Experimental world category
   ///
   /// In en, this message translates to:
   /// **'Experimental'**
   String get worldCategoryExperimental;
 
-  /// Label for status filter
+  /// Status filter label
   ///
   /// In en, this message translates to:
-  /// **'Status: '**
+  /// **'Status:'**
   String get worldFiltersStatus;
 
-  /// Label for category filter
+  /// Category filter label
   ///
   /// In en, this message translates to:
-  /// **'Category: '**
+  /// **'Category:'**
   String get worldFiltersCategory;
 
-  /// Label for sort options
+  /// Sort by filter label
   ///
   /// In en, this message translates to:
-  /// **'Sort by: '**
+  /// **'Sort by:'**
   String get worldFiltersSortBy;
 
-  /// Sort by start date
+  /// Sort by start date option
   ///
   /// In en, this message translates to:
   /// **'Start Date'**
   String get worldFiltersSortStartDate;
 
-  /// Sort by name
+  /// Sort by name option
   ///
   /// In en, this message translates to:
   /// **'Name'**
   String get worldFiltersSortName;
 
-  /// Sort by status
+  /// Sort by status option
   ///
   /// In en, this message translates to:
   /// **'Status'**
   String get worldFiltersSortStatus;
 
-  /// Sort by player count
+  /// Sort by player count option
   ///
   /// In en, this message translates to:
   /// **'Player Count'**
   String get worldFiltersSortPlayerCount;
 
-  /// Label for active filters
+  /// Active filters label
   ///
   /// In en, this message translates to:
-  /// **'Active filters: '**
+  /// **'Active filters:'**
   String get worldFiltersActiveFilters;
 
-  /// Button to reset all filters
+  /// Reset all filters button
   ///
   /// In en, this message translates to:
-  /// **'Reset all'**
+  /// **'Reset All'**
   String get worldFiltersResetAll;
 
-  /// World Status: Archived
+  /// Archived world status
   ///
   /// In en, this message translates to:
   /// **'Archived'**
   String get worldStatusArchived;
 
-  /// Hint text for user info details
+  /// Click for details tooltip
   ///
   /// In en, this message translates to:
   /// **'Click for details'**
   String get userInfoClickForDetails;
 
-  /// Label for roles display
+  /// User roles label
   ///
   /// In en, this message translates to:
   /// **'Roles:'**
   String get userInfoRoles;
 
-  /// Message when joining the world is required
+  /// Message when user needs to join world for dashboard
   ///
   /// In en, this message translates to:
   /// **'You must join the world first to see the dashboard'**
   String get navigationJoinRequiredMessage;
 
-  /// Back button in navigation
+  /// Back navigation button
   ///
   /// In en, this message translates to:
   /// **'Back'**
   String get navigationBack;
 
-  /// Navigation item for world overview
+  /// World overview navigation item
   ///
   /// In en, this message translates to:
   /// **'World Overview'**
   String get navigationWorldOverview;
 
-  /// Navigation item for world details
+  /// World details navigation item
   ///
   /// In en, this message translates to:
   /// **'World Details'**
   String get navigationWorldDetails;
 
-  /// Navigation item for dashboard
+  /// Dashboard navigation item
   ///
   /// In en, this message translates to:
   /// **'To Dashboard'**
   String get navigationDashboard;
 
-  /// Dashboard link when join is required
+  /// Dashboard navigation when join required
   ///
   /// In en, this message translates to:
   /// **'Dashboard (Join required)'**
   String get navigationDashboardRequiresJoin;
 
-  /// Title of the navigation widget
+  /// Navigation section title
   ///
   /// In en, this message translates to:
   /// **'Navigation'**
   String get navigationTitle;
 
-  /// Subtitle to open the navigation menu
+  /// Open menu button text
   ///
   /// In en, this message translates to:
-  /// **'Open menu'**
+  /// **'Open Menu'**
   String get navigationOpenMenu;
 
-  /// Tooltip text for locked dashboard feature
+  /// Tooltip when join required for dashboard
   ///
   /// In en, this message translates to:
   /// **'You must join the world to see the dashboard'**
   String get navigationTooltipJoinRequired;
 
-  /// Success message after world join
+  /// Success message when joining world
   ///
   /// In en, this message translates to:
-  /// **'Successfully joined the world \"{worldName}\"!'**
+  /// **'Successfully joined world \"{worldName}\"!'**
   String worldJoinSuccess(String worldName);
 
-  /// Error message on join failure
+  /// Error message when joining world fails
   ///
   /// In en, this message translates to:
   /// **'Join failed. Please try again.'**
   String get worldJoinFailed;
 
-  /// Error message on pre-registration failure
+  /// Error message for pre-registration failure
   ///
   /// In en, this message translates to:
   /// **'Error during pre-registration'**
   String get worldJoinPreRegistrationError;
 
-  /// Error message when canceling pre-registration
+  /// Error message when canceling pre-registration fails
   ///
   /// In en, this message translates to:
   /// **'Error canceling pre-registration'**
   String get worldJoinCancelPreRegistrationError;
 
-  /// Title of leave dialog
+  /// Leave world dialog title
   ///
   /// In en, this message translates to:
-  /// **'Leave world?'**
+  /// **'Leave World?'**
   String get worldJoinLeaveDialogTitle;
 
-  /// Content of leave dialog
+  /// Leave world dialog content
   ///
   /// In en, this message translates to:
-  /// **'Do you really want to leave the world \"{worldName}\"?'**
+  /// **'Do you really want to leave world \"{worldName}\"?'**
   String worldJoinLeaveDialogContent(String worldName);
 
-  /// Text for unknown world
+  /// Unknown world placeholder
   ///
   /// In en, this message translates to:
   /// **'Unknown'**
   String get worldJoinUnknownWorld;
 
-  /// Button text back to world list
+  /// Back to worlds button text
   ///
   /// In en, this message translates to:
   /// **'Back to Worlds'**
   String get worldJoinBackToWorldsButton;
 
-  /// Button text to cancel pre-registration
+  /// Cancel pre-registration button text
   ///
   /// In en, this message translates to:
   /// **'Cancel Pre-registration'**
   String get worldJoinCancelPreRegistrationButton;
 
-  /// Button text while canceling pre-registration
+  /// Canceling pre-registration loading text
   ///
   /// In en, this message translates to:
   /// **'Canceling...'**
   String get worldJoinCancelPreRegistrationInProgress;
 
-  /// Generic error message
+  /// Generic error message with details
   ///
   /// In en, this message translates to:
   /// **'An error occurred: {error}'**
   String worldJoinGenericError(String error);
 
-  /// Text for unknown errors
+  /// Unknown error message
   ///
   /// In en, this message translates to:
   /// **'Unknown error'**
   String get worldJoinUnknownError;
 
-  /// Text for unknown world
+  /// Unknown world name placeholder
   ///
   /// In en, this message translates to:
   /// **'Unknown World'**
   String get worldJoinUnknownWorldName;
 
-  /// Button text for pre-registration
+  /// Pre-register button text
   ///
   /// In en, this message translates to:
   /// **'Pre-register'**
   String get worldJoinPreRegisterButton;
 
-  /// Button text during pre-registration
+  /// Pre-registration loading text
   ///
   /// In en, this message translates to:
   /// **'Registering...'**
   String get worldJoinPreRegisterInProgress;
 
-  /// Button text during leaving
+  /// Leaving world loading text
   ///
   /// In en, this message translates to:
   /// **'Leaving...'**
   String get worldJoinLeaveInProgress;
 
-  /// Button text for immediate join
+  /// Join now button text
   ///
   /// In en, this message translates to:
   /// **'Join Now'**
   String get worldJoinNowButton;
 
-  /// Button text during join
+  /// Joining world loading text
   ///
   /// In en, this message translates to:
   /// **'Joining...'**
   String get worldJoinInProgress;
 
-  /// Status text for closed world
+  /// Message when world is closed
   ///
   /// In en, this message translates to:
   /// **'This world is currently closed'**
   String get worldJoinWorldClosedStatus;
 
-  /// Status text for archived world
+  /// Message when world is archived
   ///
   /// In en, this message translates to:
   /// **'This world is archived'**
   String get worldJoinWorldArchivedStatus;
 
-  /// Error message when loading world data
+  /// Error loading world data
   ///
   /// In en, this message translates to:
   /// **'Error loading world data: {error}'**
   String worldJoinErrorLoadingWorldData(String error);
 
-  /// Title of the invitation page
+  /// Invite page title
   ///
   /// In en, this message translates to:
   /// **'Invitation'**
   String get invitePageTitle;
 
-  /// Welcome title on the invitation page
+  /// Invite welcome title
   ///
   /// In en, this message translates to:
-  /// **'You\'ve been invited!'**
+  /// **'You\'ve Been Invited!'**
   String get inviteWelcomeTitle;
 
-  /// Welcome subtitle with world name
+  /// Invite welcome subtitle
   ///
   /// In en, this message translates to:
-  /// **'You\'ve been invited to the world \"{worldName}\"'**
+  /// **'You\'ve been invited to world \"{worldName}\"'**
   String inviteWelcomeSubtitle(String worldName);
 
-  /// Shows who sent the invitation
+  /// Invited by user text
   ///
   /// In en, this message translates to:
   /// **'Invited by {username}'**
   String inviteFromUser(String username);
 
-  /// Title for invitation details section
+  /// Invitation details section title
   ///
   /// In en, this message translates to:
   /// **'Invitation Details'**
   String get inviteDetailsTitle;
 
-  /// Label for email in invitation details
+  /// Email field label
   ///
   /// In en, this message translates to:
   /// **'Email'**
   String get inviteDetailsEmail;
 
-  /// Label for world in invitation details
+  /// World field label
   ///
   /// In en, this message translates to:
   /// **'World'**
   String get inviteDetailsWorld;
 
-  /// Label for status in invitation details
+  /// Status field label
   ///
   /// In en, this message translates to:
   /// **'Status'**
   String get inviteDetailsStatus;
 
-  /// Label for expiration time in invitation details
+  /// Expiration field label
   ///
   /// In en, this message translates to:
   /// **'Expires'**
   String get inviteDetailsExpires;
 
-  /// Hint text for registration
+  /// Hint to register for joining world
   ///
   /// In en, this message translates to:
   /// **'You need an account to join the world.'**
   String get inviteActionRegisterHint;
 
-  /// Button text for registration and joining
+  /// Register and join button text
   ///
   /// In en, this message translates to:
   /// **'Register & Join'**
   String get inviteActionRegisterAndJoin;
 
-  /// Link text for already registered users
+  /// Sign in prompt for existing users
   ///
   /// In en, this message translates to:
   /// **'Already have an account? Sign in'**
   String get inviteActionAlreadyHaveAccount;
 
-  /// Hint text for login
+  /// Hint to login for joining world
   ///
   /// In en, this message translates to:
   /// **'You already have an account. Sign in to join the world.'**
   String get inviteActionLoginHint;
 
-  /// Button text for login
+  /// Sign in button text
   ///
   /// In en, this message translates to:
   /// **'Sign In'**
   String get inviteActionLogin;
 
-  /// Hint text for accepting/declining invitation
+  /// Accept invitation hint
   ///
   /// In en, this message translates to:
   /// **'Hello {username}! You can now accept or decline the invitation.'**
   String inviteActionAcceptHint(String username);
 
-  /// Button text for accepting the invitation
+  /// Accept invitation button text
   ///
   /// In en, this message translates to:
   /// **'Accept Invitation'**
   String get inviteActionAccept;
 
-  /// Button text for declining the invitation
+  /// Decline invitation button text
   ///
   /// In en, this message translates to:
   /// **'Decline'**
   String get inviteActionDecline;
 
-  /// Hint text for wrong email
+  /// Wrong email hint
   ///
   /// In en, this message translates to:
   /// **'You are signed in as {currentEmail}, but the invitation is for {inviteEmail}. You need to sign out and register with the correct email.'**
   String inviteActionWrongEmailHint(String currentEmail, String inviteEmail);
 
-  /// Button text for logout and registration
+  /// Sign out and register button text
   ///
   /// In en, this message translates to:
   /// **'Sign Out & Register'**
   String get inviteActionLogoutAndRegister;
 
-  /// Error message for unknown user status
+  /// Unknown status message
   ///
   /// In en, this message translates to:
   /// **'Unknown status. Please try again later.'**
   String get inviteActionUnknownStatus;
 
-  /// Error message when no invitation data could be loaded
+  /// No invitation data error
   ///
   /// In en, this message translates to:
   /// **'No invitation data available.'**
   String get inviteErrorNoData;
 
-  /// Error message when invitation is invalid or expired
+  /// Invalid or expired invitation error
   ///
   /// In en, this message translates to:
   /// **'Invitation invalid or expired'**
   String get inviteErrorInvalidOrExpired;
 
-  /// Error message when loading invitation data fails
+  /// Error loading invitation data
   ///
   /// In en, this message translates to:
   /// **'Error loading invitation data: {error}'**
   String inviteErrorLoadingData(String error);
 
-  /// Error message when accepting invitation fails
+  /// Error accepting invitation
   ///
   /// In en, this message translates to:
   /// **'Error accepting invitation'**
   String get inviteErrorAcceptFailed;
 
-  /// Error message with exception when accepting invitation
+  /// Error accepting invitation with details
   ///
   /// In en, this message translates to:
   /// **'Error accepting invitation: {error}'**
   String inviteErrorAcceptException(String error);
 
-  /// Error message when declining invitation fails
+  /// Error declining invitation
   ///
   /// In en, this message translates to:
   /// **'Error declining invitation'**
   String get inviteErrorDeclineFailed;
 
-  /// Error message with exception when declining invitation
+  /// Error declining invitation with details
   ///
   /// In en, this message translates to:
   /// **'Error declining invitation: {error}'**
   String inviteErrorDeclineException(String error);
 
-  /// Success message when declining invitation
+  /// Invitation declined success message
   ///
   /// In en, this message translates to:
   /// **'Invitation declined'**
   String get inviteDeclineSuccess;
 
-  /// Header for more worlds in marketing section
+  /// Discover more worlds header in marketing
   ///
   /// In en, this message translates to:
   /// **'Discover more exciting worlds'**
@@ -1447,55 +1447,55 @@ abstract class AppLocalizations {
   /// **'Discover hundreds of worlds, create your own, or join existing communities!'**
   String get marketingCallToAction;
 
-  /// Title for Community feature in marketing
+  /// Community feature title in marketing
   ///
   /// In en, this message translates to:
   /// **'Community'**
   String get marketingFeatureCommunityTitle;
 
-  /// Description for Community feature in marketing
+  /// Community feature description in marketing
   ///
   /// In en, this message translates to:
   /// **'Play with friends'**
   String get marketingFeatureCommunityDesc;
 
-  /// Title for Create feature in marketing
+  /// Create feature title in marketing
   ///
   /// In en, this message translates to:
   /// **'Create'**
   String get marketingFeatureCreateTitle;
 
-  /// Description for Create feature in marketing
+  /// Create feature description in marketing
   ///
   /// In en, this message translates to:
   /// **'Build your world'**
   String get marketingFeatureCreateDesc;
 
-  /// Title for Explore feature in marketing
+  /// Explore feature title in marketing
   ///
   /// In en, this message translates to:
   /// **'Explore'**
   String get marketingFeatureExploreTitle;
 
-  /// Description for Explore feature in marketing
+  /// Explore feature description in marketing
   ///
   /// In en, this message translates to:
   /// **'New adventures'**
   String get marketingFeatureExploreDesc;
 
-  /// Button text for browsing all worlds
+  /// Browse all worlds button text
   ///
   /// In en, this message translates to:
-  /// **'Browse all worlds'**
+  /// **'Browse All Worlds'**
   String get marketingBrowseAllWorlds;
 
-  /// Label for invitation creation date
+  /// Invitation creation date label
   ///
   /// In en, this message translates to:
   /// **'Created on'**
   String get inviteDetailsCreated;
 
-  /// No description provided for @inviteWidgetTitle.
+  /// Invite widget title
   ///
   /// In en, this message translates to:
   /// **'Send invitation for {worldName}'**
@@ -1504,7 +1504,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteWidgetEmailLabel.
   ///
   /// In en, this message translates to:
-  /// **'Email address'**
+  /// **'Email Address'**
   String get inviteWidgetEmailLabel;
 
   /// No description provided for @inviteWidgetEmailHint.
@@ -1540,13 +1540,13 @@ abstract class AppLocalizations {
   /// No description provided for @inviteWidgetSendButton.
   ///
   /// In en, this message translates to:
-  /// **'Send invitation'**
+  /// **'Send Invitation'**
   String get inviteWidgetSendButton;
 
   /// No description provided for @inviteWidgetCreateLinkButton.
   ///
   /// In en, this message translates to:
-  /// **'Create link'**
+  /// **'Create Link'**
   String get inviteWidgetCreateLinkButton;
 
   /// No description provided for @inviteWidgetSuccessWithEmail.
@@ -1570,7 +1570,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteWidgetDialogTitle.
   ///
   /// In en, this message translates to:
-  /// **'Invite player'**
+  /// **'Invite Player'**
   String get inviteWidgetDialogTitle;
 
   /// No description provided for @inviteWidgetCancel.
@@ -1582,7 +1582,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteWidgetLinkTitle.
   ///
   /// In en, this message translates to:
-  /// **'Invite Link:'**
+  /// **'Invitation Link:'**
   String get inviteWidgetLinkTitle;
 
   /// No description provided for @worldInviteButton.

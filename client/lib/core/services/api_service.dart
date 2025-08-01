@@ -268,7 +268,8 @@ class ApiService {
     AppLogger.logApiRequest('GET', endpoint, headers: _headers);
     
     // Automatische Token-Validierung für geschützte Endpoints
-    if (!endpoint.startsWith('/auth/')) {
+    // Public endpoints: /auth/, /themes
+    if (!endpoint.startsWith('/auth/') && !endpoint.startsWith('/themes')) {
       await _ensureValidToken();
     }
     

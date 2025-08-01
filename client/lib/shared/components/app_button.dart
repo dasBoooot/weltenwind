@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/tokens/colors.dart';
-import '../../theme/tokens/spacing.dart';
+import '../../theme/tokens/spacing.dart'; 
 import '../../theme/tokens/typography.dart';
 import '../../theme/tokens/shadows.dart';
 
@@ -371,8 +371,9 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
   // ========================================
 
   BoxDecoration _getDecoration(BuildContext context, bool isDark, bool isEnabled) {
+    final colorScheme = Theme.of(context).colorScheme;
     return BoxDecoration(
-      color: _getBackgroundColor(isDark, isEnabled),
+      color: _getBackgroundColorLegacy(isDark, isEnabled),
       borderRadius: BorderRadius.circular(_getBorderRadius()),
       border: _getBorder(isDark, isEnabled),
       boxShadow: _getShadows(isEnabled),
@@ -380,7 +381,34 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
     );
   }
 
-  Color _getBackgroundColor(bool isDark, bool isEnabled) {
+  Color _getBackgroundColor(bool isDark, bool isEnabled, ColorScheme colorScheme) {
+    if (!isEnabled) {
+      return colorScheme.onSurface.withValues(alpha: 0.12);
+    }
+
+    switch (widget.variant) {
+      case AppButtonVariant.primary:
+      case AppButtonVariant.magic:
+        return colorScheme.primary;
+      case AppButtonVariant.secondary:
+        return Colors.transparent;
+      case AppButtonVariant.tertiary:
+        return Colors.transparent;
+      case AppButtonVariant.portal:
+        return colorScheme.tertiary;
+      case AppButtonVariant.artifact:
+        return colorScheme.secondary;
+      case AppButtonVariant.success:
+        return const Color(0xFF4CAF50);
+      case AppButtonVariant.danger:
+        return const Color(0xFFF44336);
+      case AppButtonVariant.ghost:
+        return colorScheme.surface.withValues(alpha: 0.5);
+    }
+  }
+
+  // Legacy method for backwards compatibility
+  Color _getBackgroundColorLegacy(bool isDark, bool isEnabled) {
     if (!isEnabled) {
       return isDark ? AppColors.surfaceLight.withValues(alpha: 0.3) : AppColors.surfaceGray.withValues(alpha: 0.5);
     }

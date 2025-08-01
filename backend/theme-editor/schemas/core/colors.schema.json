@@ -1,0 +1,280 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/core/colors.schema.json",
+  "title": "Weltenwind Core Colors Schema",
+  "description": "Vollständige Farbpalette für Gaming Theme System mit Fantasy-Focus",
+  "type": "object",
+  "required": ["primary", "secondary", "tertiary", "background", "text", "status", "effects"],
+  "properties": {
+    "primary": {
+      "type": "object",
+      "description": "Haupt-Brandfarben des Themes",
+      "required": ["value", "light", "dark"],
+      "properties": {
+        "value": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Primäre Markenfarbe",
+          "default": "#7C6BAF"
+        },
+        "light": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Hellere Variante der Primärfarbe",
+          "default": "#A594D1"
+        },
+        "dark": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Dunklere Variante der Primärfarbe", 
+          "default": "#5A4D7C"
+        },
+        "surface": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Primärfarbe für Oberflächen",
+          "default": "#6A5ACD"
+        },
+        "accent": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Akzentfarbe basierend auf Primär",
+          "default": "#9370DB"
+        }
+      },
+      "additionalProperties": false
+    },
+    "secondary": {
+      "type": "object",
+      "description": "Sekundäre Farbpalette für Highlights",
+      "required": ["value", "light", "dark"],
+      "properties": {
+        "value": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Sekundäre Markenfarbe",
+          "default": "#4A90E2"
+        },
+        "light": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Hellere Sekundärfarbe",
+          "default": "#6BB6FF"
+        },
+        "dark": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Dunklere Sekundärfarbe",
+          "default": "#357ABD"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tertiary": {
+      "type": "object", 
+      "description": "Tertiäre Farben für spezielle Akzente",
+      "required": ["value", "light", "dark"],
+      "properties": {
+        "value": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Tertiäre Akzentfarbe",
+          "default": "#F39C12"
+        },
+        "light": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Helles Tertiär",
+          "default": "#F7DC6F"
+        },
+        "dark": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Dunkles Tertiär",
+          "default": "#D68910"
+        }
+      },
+      "additionalProperties": false
+    },
+    "background": {
+      "type": "object",
+      "description": "Hintergrund-Farbschema für verschiedene UI-Ebenen",
+      "required": ["surface_dark", "surface_darker", "surface_medium", "surface_light", "surface_white", "surface_gray"],
+      "properties": {
+        "surface_dark": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Dunkelste Hintergrund-Ebene",
+          "default": "#1A1A1A"
+        },
+        "surface_darker": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Sehr dunkle Hintergrund-Ebene",
+          "default": "#141414"
+        },
+        "surface_medium": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Mittlere Hintergrund-Ebene",
+          "default": "#2A2A2A"
+        },
+        "surface_light": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Helle Hintergrund-Ebene",
+          "default": "#3A3A3A"
+        },
+        "surface_white": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Hellste Hintergrund-Ebene",
+          "default": "#FFFFFF"
+        },
+        "surface_gray": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Neutrale graue Oberfläche",
+          "default": "#F5F5F5"
+        }
+      },
+      "additionalProperties": false
+    },
+    "text": {
+      "type": "object",
+      "description": "Textfarben für verschiedene Kontrast-Ebenen",
+      "required": ["primary", "secondary", "tertiary", "disabled", "primary_light", "secondary_light"],
+      "properties": {
+        "primary": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Primäre Textfarbe (dunkel)",
+          "default": "#FFFFFF"
+        },
+        "secondary": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Sekundäre Textfarbe (dunkel)",
+          "default": "#CCCCCC"
+        },
+        "tertiary": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Tertiäre Textfarbe (dunkel)",
+          "default": "#999999"
+        },
+        "disabled": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Deaktivierte Textfarbe",
+          "default": "#666666"
+        },
+        "primary_light": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Primäre Textfarbe (hell)",
+          "default": "#2C2C2C"
+        },
+        "secondary_light": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Sekundäre Textfarbe (hell)",
+          "default": "#666666"
+        }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "object",
+      "description": "Status-Farben für System-Feedback",
+      "required": ["success", "warning", "error", "info"],
+      "properties": {
+        "success": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Erfolg-Zustand Farbe",
+          "default": "#27AE60"
+        },
+        "warning": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Warnung-Zustand Farbe",
+          "default": "#F39C12"
+        },
+        "error": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Fehler-Zustand Farbe",
+          "default": "#E74C3C"
+        },
+        "info": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Info-Zustand Farbe",
+          "default": "#3498DB"
+        }
+      },
+      "additionalProperties": false
+    },
+    "effects": {
+      "type": "object",
+      "description": "Fantasy-Effekt Farben für Gaming UI",
+      "required": ["glow", "shimmer", "overlay", "glass"],
+      "properties": {
+        "glow": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Glow-Effekt Basis-Farbe",
+          "default": "#A594D1"
+        },
+        "shimmer": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Shimmer-Effekt Farbe",
+          "default": "#7C6BAF"
+        },
+        "overlay": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{8}$",
+          "description": "Overlay-Farbe mit Alpha (8 Zeichen Hex)",
+          "default": "#00000040"
+        },
+        "glass": { 
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{8}$",
+          "description": "Glasmorphism-Farbe mit Alpha (8 Zeichen Hex)",
+          "default": "#FFFFFF20"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "primary": {
+        "value": "#7C6BAF",
+        "light": "#A594D1", 
+        "dark": "#5A4D7C",
+        "surface": "#6A5ACD",
+        "accent": "#9370DB"
+      },
+      "secondary": {
+        "value": "#4A90E2",
+        "light": "#6BB6FF",
+        "dark": "#357ABD"
+      },
+      "tertiary": {
+        "value": "#F39C12",
+        "light": "#F7DC6F",
+        "dark": "#D68910"
+      },
+      "effects": {
+        "glow": "#A594D1",
+        "shimmer": "#7C6BAF",
+        "overlay": "#00000040",
+        "glass": "#FFFFFF20"
+      }
+    }
+  ]
+}

@@ -1,0 +1,832 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/gaming/hud.schema.json",
+  "title": "Weltenwind Gaming HUD Schema", 
+  "description": "In-Game HUD System mit Minimap, Buff Bars, Resource Display und Notifications",
+  "type": "object",
+  "required": ["minimap", "buffBar", "resourceDisplay"],
+  "properties": {
+    "minimap": {
+      "type": "object",
+      "description": "Minimap/Radar System für Navigation",
+      "required": ["size", "backgroundColor", "borderColor"],
+      "properties": {
+        "size": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 300,
+          "default": 150,
+          "description": "Minimap Größe in Pixeln (quadratisch)"
+        },
+        "borderRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 75,
+          "default": 8,
+          "description": "Rundung der Minimap-Ecken"
+        },
+        "backgroundColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{8}$",
+          "default": "#00000080",
+          "description": "Hintergrundfarbe mit Alpha"
+        },
+        "borderColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#7C6BAF",
+          "description": "Umrandungsfarbe"
+        },
+        "borderWidth": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5,
+          "default": 2,
+          "description": "Umrandungsbreite"
+        },
+        "player": {
+          "type": "object",
+          "description": "Player Dot auf Minimap",
+          "required": ["color", "size"],
+          "properties": {
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FFD700",
+              "description": "Player Dot Farbe"
+            },
+            "size": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 12,
+              "default": 6,
+              "description": "Player Dot Größe"
+            },
+            "glowRadius": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 10,
+              "default": 3,
+              "description": "Glow-Radius um Player Dot"
+            },
+            "showDirection": {
+              "type": "boolean",
+              "default": true,
+              "description": "Richtungspfeil anzeigen"
+            }
+          }
+        },
+        "enemies": {
+          "type": "object",
+          "description": "Enemy Dots auf Minimap",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enemy Dots anzeigen"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#E74C3C",
+              "description": "Enemy Dot Standardfarbe"
+            },
+            "size": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 8,
+              "default": 4,
+              "description": "Enemy Dot Größe"
+            },
+            "bossColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#8B0000",
+              "description": "Boss Enemy Farbe"
+            },
+            "bossSize": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 12,
+              "default": 8,
+              "description": "Boss Enemy Größe"
+            },
+            "aggroColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FF4500",
+              "description": "Aggro Enemy Farbe"
+            }
+          }
+        },
+        "npcs": {
+          "type": "object",
+          "description": "NPC Dots auf Minimap",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "NPC Dots anzeigen"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#3498DB",
+              "description": "NPC Dot Farbe"
+            },
+            "size": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 6,
+              "default": 3,
+              "description": "NPC Dot Größe"
+            },
+            "questGiverColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#F39C12",
+              "description": "Quest NPC Farbe"
+            },
+            "merchantColor": {
+              "type": "string", 
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#27AE60",
+              "description": "Händler NPC Farbe"
+            }
+          }
+        },
+        "points": {
+          "type": "object",
+          "description": "Interessante Punkte auf Minimap",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Points of Interest anzeigen"
+            },
+            "treasureColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FFD700",
+              "description": "Schatz-Punkt Farbe"
+            },
+            "portalColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#9370DB",
+              "description": "Portal-Punkt Farbe"
+            },
+            "dangerZoneColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#DC143C",
+              "description": "Gefahrenzone Farbe"
+            }
+          }
+        },
+        "zoom": {
+          "type": "object",
+          "description": "Minimap-Zoom Funktionen",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Zoom-Funktionalität"
+            },
+            "minZoom": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 1.0,
+              "default": 0.5,
+              "description": "Minimaler Zoom-Level"
+            },
+            "maxZoom": {
+              "type": "number",
+              "minimum": 1.0,
+              "maximum": 5.0,
+              "default": 3.0,
+              "description": "Maximaler Zoom-Level"
+            },
+            "defaultZoom": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 3.0,
+              "default": 1.0,
+              "description": "Standard Zoom-Level"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "buffBar": {
+      "type": "object",
+      "description": "Buff/Debuff Anzeige System",
+      "required": ["iconSize", "spacing"],
+      "properties": {
+        "iconSize": {
+          "type": "number",
+          "minimum": 20,
+          "maximum": 64,
+          "default": 32,
+          "description": "Buff-Icon Größe in Pixeln"
+        },
+        "spacing": {
+          "type": "number",
+          "minimum": 2,
+          "maximum": 12,
+          "default": 4,
+          "description": "Abstand zwischen Buff-Icons"
+        },
+        "maxBuffs": {
+          "type": "number",
+          "minimum": 5,
+          "maximum": 20,
+          "default": 10,
+          "description": "Maximale Anzahl sichtbarer Buffs"
+        },
+        "layout": {
+          "type": "string",
+          "enum": ["horizontal", "vertical", "grid"],
+          "default": "horizontal",
+          "description": "Layout der Buff-Bar"
+        },
+        "positive": {
+          "type": "object",
+          "description": "Positive Buff Konfiguration",
+          "required": ["borderColor"],
+          "properties": {
+            "borderColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#27AE60",
+              "description": "Umrandung für positive Buffs"
+            },
+            "glowColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#2ECC71",
+              "description": "Glow-Farbe für positive Buffs"
+            },
+            "borderWidth": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 4,
+              "default": 2,
+              "description": "Umrandungsbreite"
+            }
+          }
+        },
+        "negative": {
+          "type": "object",
+          "description": "Negative Buff/Debuff Konfiguration",
+          "required": ["borderColor"],
+          "properties": {
+            "borderColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#E74C3C",
+              "description": "Umrandung für Debuffs"
+            },
+            "glowColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#EC7063",
+              "description": "Glow-Farbe für Debuffs"
+            },
+            "borderWidth": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 4,
+              "default": 2,
+              "description": "Umrandungsbreite"
+            },
+            "pulse": {
+              "type": "boolean",
+              "default": true,
+              "description": "Pulsing-Effekt für Debuffs"
+            }
+          }
+        },
+        "duration": {
+          "type": "object",
+          "description": "Buff-Dauer Anzeige",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Dauer-Timer anzeigen"
+            },
+            "position": {
+              "type": "string",
+              "enum": ["overlay", "bottom", "top", "corner"],
+              "default": "bottom",
+              "description": "Position des Dauer-Timers"
+            },
+            "fontSize": {
+              "type": "number",
+              "minimum": 8,
+              "maximum": 16,
+              "default": 10,
+              "description": "Schriftgröße des Timers"
+            },
+            "textColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FFFFFF",
+              "description": "Timer-Text Farbe"
+            },
+            "backgroundColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{8}$",
+              "default": "#00000080",
+              "description": "Timer-Hintergrund mit Alpha"
+            }
+          }
+        },
+        "stacks": {
+          "type": "object",
+          "description": "Stack-Counter für stapelbare Buffs",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Stack-Counter anzeigen"
+            },
+            "position": {
+              "type": "string",
+              "enum": ["corner", "center", "edge"],
+              "default": "corner",
+              "description": "Position des Stack-Counters"
+            },
+            "fontSize": {
+              "type": "number",
+              "minimum": 8,
+              "maximum": 14,
+              "default": 12,
+              "description": "Schriftgröße des Counters"
+            },
+            "textColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FFD700",
+              "description": "Counter-Text Farbe"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "resourceDisplay": {
+      "type": "object",
+      "description": "Resource/Currency Display System",
+      "required": ["layout"],
+      "properties": {
+        "layout": {
+          "type": "string",
+          "enum": ["horizontal", "vertical", "compact", "detailed"],
+          "default": "horizontal",
+          "description": "Layout der Resource-Anzeige"
+        },
+        "backgroundColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{8}$",
+          "default": "#2A181080",
+          "description": "Hintergrundfarbe mit Alpha"
+        },
+        "borderRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 15,
+          "default": 8,
+          "description": "Rundung der Resource-Anzeige"
+        },
+        "padding": {
+          "type": "number",
+          "minimum": 4,
+          "maximum": 16,
+          "default": 8,
+          "description": "Innenabstand"
+        },
+        "gold": {
+          "type": "object",
+          "description": "Gold/Währung Anzeige",
+          "required": ["color"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Gold-Anzeige aktiviert"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FFD700",
+              "description": "Gold-Text Farbe"
+            },
+            "icon": {
+              "type": "string",
+              "default": "coin",
+              "description": "Gold-Icon"
+            },
+            "fontSize": {
+              "type": "number",
+              "minimum": 12,
+              "maximum": 24,
+              "default": 16,
+              "description": "Schriftgröße der Gold-Anzeige"
+            },
+            "animated": {
+              "type": "boolean",
+              "default": true,
+              "description": "Animierte Änderungen"
+            },
+            "gainColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#27AE60",
+              "description": "Farbe bei Gold-Gewinn"
+            },
+            "lossColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#E74C3C",
+              "description": "Farbe bei Gold-Verlust"
+            }
+          }
+        },
+        "gems": {
+          "type": "object",
+          "description": "Premium-Währung Anzeige",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Premium-Währung aktiviert"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#9B59B6",
+              "description": "Premium-Währung Farbe"
+            },
+            "icon": {
+              "type": "string",
+              "default": "gem",
+              "description": "Premium-Währung Icon"
+            },
+            "glowEffect": {
+              "type": "boolean",
+              "default": true,
+              "description": "Glow-Effekt für Premium-Währung"
+            }
+          }
+        },
+        "items": {
+          "type": "object",
+          "description": "Item-Counter Anzeige",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Item-Counter aktiviert"
+            },
+            "maxVisible": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 10,
+              "default": 5,
+              "description": "Max. sichtbare Item-Counter"
+            },
+            "iconSize": {
+              "type": "number",
+              "minimum": 16,
+              "maximum": 32,
+              "default": 20,
+              "description": "Item-Icon Größe"
+            },
+            "fontSize": {
+              "type": "number",
+              "minimum": 10,
+              "maximum": 16,
+              "default": 12,
+              "description": "Counter-Text Größe"
+            },
+            "textColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FFFFFF",
+              "description": "Counter-Text Farbe"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "notifications": {
+      "type": "object",
+      "description": "In-Game Notification System",
+      "properties": {
+        "toast": {
+          "type": "object",
+          "description": "Toast Notification Konfiguration",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Toast Notifications aktiviert"
+            },
+            "position": {
+              "type": "string",
+              "enum": ["top-left", "top-center", "top-right", "bottom-left", "bottom-center", "bottom-right"],
+              "default": "top-center",
+              "description": "Toast Position"
+            },
+            "maxVisible": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 10,
+              "default": 3,
+              "description": "Max. gleichzeitige Toasts"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 1000,
+              "maximum": 10000,
+              "default": 4000,
+              "description": "Standard Toast-Dauer (ms)"
+            },
+            "backgroundColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{8}$",
+              "default": "#2A1810E6",
+              "description": "Toast-Hintergrund mit Alpha"
+            },
+            "borderColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#7C6BAF",
+              "description": "Toast-Umrandung"
+            },
+            "textColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FFFFFF",
+              "description": "Toast-Text Farbe"
+            },
+            "types": {
+              "type": "object",
+              "description": "Toast-Typ spezifische Farben",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#27AE60",
+                  "description": "Erfolg-Toast Akzentfarbe"
+                },
+                "error": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#E74C3C",
+                  "description": "Fehler-Toast Akzentfarbe"
+                },
+                "warning": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#F39C12",
+                  "description": "Warnung-Toast Akzentfarbe"
+                },
+                "info": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#3498DB",
+                  "description": "Info-Toast Akzentfarbe"
+                }
+              }
+            }
+          }
+        },
+        "floatingText": {
+          "type": "object",
+          "description": "Floating Combat Text",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Floating Text aktiviert"
+            },
+            "fontSize": {
+              "type": "number",
+              "minimum": 12,
+              "maximum": 32,
+              "default": 18,
+              "description": "Floating Text Größe"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 500,
+              "maximum": 3000,
+              "default": 1500,
+              "description": "Sichtbarkeitsdauer (ms)"
+            },
+            "damage": {
+              "type": "object",
+              "properties": {
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#E74C3C",
+                  "description": "Schaden-Text Farbe"
+                },
+                "criticalColor": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#FF8000",
+                  "description": "Kritischer Schaden Farbe"
+                },
+                "criticalSize": {
+                  "type": "number",
+                  "minimum": 1.2,
+                  "maximum": 2.0,
+                  "default": 1.5,
+                  "description": "Kritischer Schaden Größe-Multiplikator"
+                }
+              }
+            },
+            "healing": {
+              "type": "object",
+              "properties": {
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#27AE60",
+                  "description": "Heilung-Text Farbe"
+                },
+                "glowColor": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#2ECC71",
+                  "description": "Heilung-Glow Farbe"
+                }
+              }
+            },
+            "experience": {
+              "type": "object",
+              "properties": {
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#F39C12",
+                  "description": "XP-Text Farbe"
+                },
+                "bonusColor": {
+                  "type": "string",
+                  "pattern": "^#[0-9A-Fa-f]{6}$",
+                  "default": "#FFD700",
+                  "description": "Bonus-XP Farbe"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "positioning": {
+      "type": "object",
+      "description": "HUD Element Positionierung",
+      "properties": {
+        "anchors": {
+          "type": "object",
+          "description": "Anker-Punkte für HUD-Elemente",
+          "properties": {
+            "minimap": {
+              "type": "string",
+              "enum": ["top-left", "top-right", "bottom-left", "bottom-right"],
+              "default": "top-right",
+              "description": "Minimap Position"
+            },
+            "buffBar": {
+              "type": "string",
+              "enum": ["top-left", "top-center", "top-right", "bottom-left", "bottom-center", "bottom-right"],
+              "default": "top-left",
+              "description": "Buff Bar Position"
+            },
+            "resourceDisplay": {
+              "type": "string",
+              "enum": ["top-left", "top-center", "top-right", "bottom-left", "bottom-center", "bottom-right"],
+              "default": "top-center",
+              "description": "Resource Display Position"
+            }
+          }
+        },
+        "margins": {
+          "type": "object",
+          "description": "Außenabstände der HUD-Elemente",
+          "properties": {
+            "top": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 20,
+              "description": "Oberer Rand"
+            },
+            "right": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 20,
+              "description": "Rechter Rand"
+            },
+            "bottom": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 20,
+              "description": "Unterer Rand"
+            },
+            "left": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 20,
+              "description": "Linker Rand"
+            }
+          }
+        },
+        "responsive": {
+          "type": "object",
+          "description": "Responsive HUD-Anpassungen",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Responsive Anpassungen aktiviert"
+            },
+            "mobileScale": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 1.5,
+              "default": 0.8,
+              "description": "Skalierung für Mobile"
+            },
+            "tabletScale": {
+              "type": "number",
+              "minimum": 0.7,
+              "maximum": 1.3,
+              "default": 0.9,
+              "description": "Skalierung für Tablet"
+            },
+            "hideOnMobile": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["buffBar", "notifications", "floatingText"]
+              },
+              "description": "Elemente die auf Mobile ausgeblendet werden"
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "minimap": {
+        "size": 150,
+        "backgroundColor": "#00000080",
+        "borderColor": "#7C6BAF",
+        "player": {
+          "color": "#FFD700",
+          "size": 6,
+          "showDirection": true
+        },
+        "enemies": {
+          "enabled": true,
+          "color": "#E74C3C",
+          "bossColor": "#8B0000"
+        }
+      },
+      "buffBar": {
+        "iconSize": 32,
+        "spacing": 4,
+        "positive": {
+          "borderColor": "#27AE60",
+          "glowColor": "#2ECC71"
+        },
+        "negative": {
+          "borderColor": "#E74C3C",
+          "pulse": true
+        }
+      },
+      "resourceDisplay": {
+        "layout": "horizontal",
+        "gold": {
+          "enabled": true,
+          "color": "#FFD700",
+          "animated": true
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,543 @@
+openapi: 3.0.0
+info:
+  title: Weltenwind Theme API
+  description: API für dynamisches Theme-Management im Weltenwind-System
+  version: 1.0.0
+
+paths:
+  /api/themes:
+    get:
+      summary: Liste aller verfügbaren Themes
+      description: Lädt eine Liste aller verfügbaren Theme-Dateien aus dem tokens/ Verzeichnis
+      tags:
+        - Themes
+      responses:
+        '200':
+          description: Liste der verfügbaren Themes erfolgreich geladen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  themes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: Benutzerfreundlicher Theme-Name
+                          example: "Default Weltenwind"
+                        filename:
+                          type: string
+                          description: Dateiname ohne Erweiterung
+                          example: "default"
+                        description:
+                          type: string
+                          description: Theme-Beschreibung
+                          example: "Standard Weltenwind Theme mit mystischer Fantasy-Ästhetik"
+                        version:
+                          type: string
+                          description: Theme-Version
+                          example: "1.0.0"
+        '500':
+          description: Serverfehler beim Laden der Theme-Liste
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/themes/{name}:
+    get:
+      summary: Einzelnes Theme laden
+      description: Lädt die vollständigen Daten eines spezifischen Themes
+      tags:
+        - Themes
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Theme-Name (Dateiname ohne .json)
+          schema:
+            type: string
+            example: "default"
+      responses:
+        '200':
+          description: Theme erfolgreich geladen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThemeData'
+        '404':
+          description: Theme nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Serverfehler beim Laden des Themes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Theme speichern
+      description: Speichert ein Theme (nur für authentifizierte Benutzer)
+      tags:
+        - Themes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Theme-Name (Dateiname ohne .json)
+          schema:
+            type: string
+            example: "custom"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThemeData'
+      responses:
+        '200':
+          description: Theme erfolgreich gespeichert
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Theme erfolgreich gespeichert"
+                  theme:
+                    type: string
+                    example: "custom"
+        '400':
+          description: Ungültige Theme-Daten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Nicht authentifiziert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Keine Berechtigung (Admin erforderlich)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Serverfehler beim Speichern
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/themes/{name}/clone:
+    post:
+      summary: Theme klonen
+      description: Erstellt eine Kopie eines bestehenden Themes mit neuem Namen
+      tags:
+        - Themes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Quell-Theme Name
+          schema:
+            type: string
+            example: "default"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newName:
+                  type: string
+                  description: Name für das neue Theme
+                  example: "my-custom-theme"
+                newDescription:
+                  type: string
+                  description: Beschreibung für das neue Theme
+                  example: "Mein angepasstes Theme basierend auf Default"
+              required:
+                - newName
+      responses:
+        '200':
+          description: Theme erfolgreich geklont
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Theme erfolgreich geklont"
+                  source:
+                    type: string
+                    example: "default"
+                  target:
+                    type: string
+                    example: "my-custom-theme"
+        '400':
+          description: Ungültige Anfrage (newName fehlt)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Nicht authentifiziert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Quell-Theme nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Ziel-Theme existiert bereits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Serverfehler beim Klonen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ThemeData:
+      type: object
+      description: Vollständige Theme-Definition
+      properties:
+        name:
+          type: string
+          description: Theme-Name
+          example: "Default Weltenwind"
+        version:
+          type: string
+          description: Semantic Version
+          pattern: '^\\d+\\.\\d+\\.\\d+$'
+          example: "1.0.0"
+        description:
+          type: string
+          description: Theme-Beschreibung
+          example: "Standard Weltenwind Theme mit mystischer Fantasy-Ästhetik"
+        colors:
+          type: object
+          description: Farbdefinitionen
+          properties:
+            primary:
+              $ref: '#/components/schemas/ColorPalette'
+            secondary:
+              $ref: '#/components/schemas/ColorPalette'
+            tertiary:
+              $ref: '#/components/schemas/ColorPalette'
+            background:
+              type: object
+              properties:
+                surface_dark:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#1E1E2E"
+                surface_darker:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#141420"
+                surface_medium:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#2A2A3E"
+                surface_light:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#3A3A52"
+                surface_white:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#F8F9FA"
+                surface_gray:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#E9ECEF"
+            text:
+              type: object
+              properties:
+                primary:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#E0E0E0"
+                secondary:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#B0B0B0"
+                tertiary:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#808080"
+                disabled:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#505060"
+                primary_light:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#1F2937"
+                secondary_light:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#6B7280"
+            status:
+              type: object
+              properties:
+                success:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#10B981"
+                warning:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#F59E0B"
+                error:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#EF4444"
+                info:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#3B82F6"
+            effects:
+              type: object
+              properties:
+                glow:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#9D4EDD"
+                shimmer:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#FFD700"
+                overlay:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{8}$'
+                  example: "#80000000"
+                glass:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{8}$'
+                  example: "#1AFFFFFF"
+        radius:
+          type: object
+          description: Border-Radius Werte
+          properties:
+            default:
+              type: number
+              minimum: 0
+              example: 12
+            small:
+              type: number
+              minimum: 0
+              example: 8
+            medium:
+              type: number
+              minimum: 0
+              example: 12
+            large:
+              type: number
+              minimum: 0
+              example: 16
+            xl:
+              type: number
+              minimum: 0
+              example: 24
+        spacing:
+          type: object
+          description: Spacing/Padding Werte
+          properties:
+            xs:
+              type: number
+              minimum: 0
+              example: 4
+            sm:
+              type: number
+              minimum: 0
+              example: 8
+            md:
+              type: number
+              minimum: 0
+              example: 16
+            lg:
+              type: number
+              minimum: 0
+              example: 24
+            xl:
+              type: number
+              minimum: 0
+              example: 32
+            xxl:
+              type: number
+              minimum: 0
+              example: 48
+        typography:
+          type: object
+          description: Typografie-Definitionen
+          properties:
+            heading:
+              $ref: '#/components/schemas/TextStyle'
+            body:
+              $ref: '#/components/schemas/TextStyle'
+            caption:
+              $ref: '#/components/schemas/TextStyle'
+        shadows:
+          type: object
+          description: Schatten-Definitionen
+          properties:
+            small:
+              $ref: '#/components/schemas/Shadow'
+            medium:
+              $ref: '#/components/schemas/Shadow'
+            large:
+              $ref: '#/components/schemas/Shadow'
+      required:
+        - name
+        - version
+        - description
+        - colors
+        - radius
+        - spacing
+        - typography
+        - shadows
+
+    ColorPalette:
+      type: object
+      description: Farbpalette mit Varianten
+      properties:
+        value:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          description: Hauptfarbe
+          example: "#4B3B79"
+        light:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          description: Helle Variante
+          example: "#6A5394"
+        dark:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          description: Dunkle Variante
+          example: "#2E1F4A"
+        surface:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          description: Surface-Variante
+          example: "#1A1025"
+        accent:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          description: Akzent-Variante
+          example: "#7C6BAF"
+      required:
+        - value
+        - light
+        - dark
+
+    TextStyle:
+      type: object
+      description: Typografie-Style Definition
+      properties:
+        fontSize:
+          type: number
+          minimum: 8
+          description: Schriftgröße in px
+          example: 16
+        fontWeight:
+          type: string
+          description: Schriftgewicht
+          example: "normal"
+        letterSpacing:
+          type: number
+          description: Buchstabenabstand
+          example: 0.4
+        lineHeight:
+          type: number
+          description: Zeilenhöhe
+          example: 1.5
+      required:
+        - fontSize
+        - fontWeight
+
+    Shadow:
+      type: object
+      description: Schatten-Definition
+      properties:
+        blurRadius:
+          type: number
+          minimum: 0
+          description: Unschärfe-Radius
+          example: 4
+        spreadRadius:
+          type: number
+          description: Spread-Radius
+          example: 0
+        offset:
+          type: array
+          description: Schatten-Versatz [x, y]
+          items:
+            type: number
+          minItems: 2
+          maxItems: 2
+          example: [0, 2]
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{8}$'
+          description: Schatten-Farbe mit Alpha
+          example: "#1A000000"
+      required:
+        - blurRadius
+        - spreadRadius
+        - offset
+        - color
+
+    ErrorResponse:
+      type: object
+      description: Standard Fehlerantwort
+      properties:
+        error:
+          type: string
+          description: Fehlermeldung
+          example: "Theme nicht gefunden"
+        message:
+          type: string
+          description: Detaillierte Fehlermeldung
+          example: "Das angeforderte Theme existiert nicht im System"
+      required:
+        - error
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Token für Authentifizierung
+
+tags:
+  - name: Themes
+    description: Theme-Management Operationen

@@ -1,0 +1,757 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Weltenwind Theme Schema",
+  "description": "Vollständiges JSON Schema für Weltenwind Fantasy Themes",
+  "type": "object",
+  "required": ["name", "version", "colors", "radius", "spacing", "typography", "components"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Schema reference"
+    },
+    "name": {
+      "type": "string",
+      "description": "Theme display name"
+    },
+    "version": {
+      "type": "string",
+      "description": "Theme version"
+    },
+    "description": {
+      "type": "string", 
+      "description": "Theme description"
+    },
+    "colors": {
+      "type": "object",
+      "description": "Vollständige Farbdefinitionen",
+      "required": ["primary", "secondary", "tertiary", "background", "text", "status", "effects"],
+      "properties": {
+        "primary": {
+          "type": "object",
+          "required": ["value", "light", "dark"],
+          "properties": {
+            "value": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "light": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "dark": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "surface": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "accent": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+          }
+        },
+        "secondary": {
+          "type": "object",
+          "required": ["value", "light", "dark"],
+          "properties": {
+            "value": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "light": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "dark": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+          }
+        },
+        "tertiary": {
+          "type": "object",
+          "required": ["value", "light", "dark"],
+          "properties": {
+            "value": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "light": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "dark": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+          }
+        },
+        "background": {
+          "type": "object",
+          "required": ["surface_dark", "surface_darker", "surface_medium", "surface_light", "surface_white", "surface_gray"],
+          "properties": {
+            "surface_dark": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "surface_darker": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "surface_medium": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "surface_light": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "surface_white": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "surface_gray": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+          }
+        },
+        "text": {
+          "type": "object",
+          "required": ["primary", "secondary", "tertiary", "disabled", "primary_light", "secondary_light"],
+          "properties": {
+            "primary": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "secondary": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "tertiary": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "disabled": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "primary_light": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "secondary_light": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+          }
+        },
+        "status": {
+          "type": "object",
+          "required": ["success", "warning", "error", "info"],
+          "properties": {
+            "success": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "warning": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "error": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "info": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+          }
+        },
+        "effects": {
+          "type": "object",
+          "required": ["glow", "shimmer", "overlay", "glass"],
+          "properties": {
+            "glow": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "shimmer": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "overlay": { "type": "string", "pattern": "^#[0-9A-Fa-f]{8}$" },
+            "glass": { "type": "string", "pattern": "^#[0-9A-Fa-f]{8}$" }
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "object",
+      "description": "UI Component Konfigurationen",
+      "properties": {
+        "appBar": {
+          "type": "object",
+          "properties": {
+            "elevation": { "type": "number", "minimum": 0, "default": 0 },
+            "centerTitle": { "type": "boolean", "default": true },
+            "shadowColor": { "type": "string", "default": "transparent" },
+            "surfaceTintColor": { "type": "string", "default": "transparent" },
+            "systemOverlayStyle": { "type": "string", "enum": ["light", "dark"], "default": "dark" },
+            "titleTextStyle": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "minimum": 8, "default": 24 },
+                "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "bold" },
+                "letterSpacing": { "type": "number", "default": -0.3 },
+                "lineHeight": { "type": "number", "minimum": 0.5, "default": 1.2 }
+              }
+            }
+          }
+        },
+        "card": {
+          "type": "object",
+          "properties": {
+            "elevation": { "type": "number", "minimum": 0, "default": 0 },
+            "shadowColor": { "type": "string" },
+            "borderRadius": { "type": "number", "minimum": 0, "default": 16 },
+            "clipBehavior": { "type": "string", "enum": ["none", "antiAlias", "hardEdge"], "default": "antiAlias" },
+            "margin": { "type": "number", "minimum": 0, "default": 4 },
+            "side": {
+              "type": "object",
+              "description": "Card border configuration",
+              "properties": {
+                "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+                "width": { "type": "number", "minimum": 0, "default": 1.0 }
+              }
+            }
+          }
+        },
+        "buttons": {
+          "type": "object",
+          "properties": {
+            "elevation": { "type": "number", "minimum": 0, "default": 0 },
+            "shadowColor": { "type": "string", "default": "transparent" },
+            "borderRadius": { "type": "number", "minimum": 0, "default": 12 },
+            "paddingHorizontal": { "type": "number", "minimum": 0, "default": 24 },
+            "paddingVertical": { "type": "number", "minimum": 0, "default": 16 },
+            "borderWidth": { "type": "number", "minimum": 0, "default": 1.5 },
+            "overlayColor": {
+              "type": "object",
+              "description": "Button interaction state colors",
+              "properties": {
+                "pressed": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+                "hovered": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+                "pressedOpacity": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.2 },
+                "hoveredOpacity": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.1 }
+              }
+            },
+            "textStyle": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "minimum": 8, "default": 16 },
+                "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "600" },
+                "letterSpacing": { "type": "number", "default": 0.1 },
+                "lineHeight": { "type": "number", "minimum": 0.5, "default": 1.2 }
+              }
+            }
+          }
+        },
+        "inputs": {
+          "type": "object",
+          "properties": {
+            "filled": { "type": "boolean", "default": true },
+            "borderRadius": { "type": "number", "minimum": 0, "default": 12 },
+            "borderWidth": { "type": "number", "minimum": 0, "default": 1 },
+            "focusedBorderWidth": { "type": "number", "minimum": 0, "default": 2 },
+            "errorBorderWidth": { "type": "number", "minimum": 0, "default": 1.5 },
+            "paddingHorizontal": { "type": "number", "minimum": 0, "default": 16 },
+            "paddingVertical": { "type": "number", "minimum": 0, "default": 16 },
+            "labelStyle": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "minimum": 8, "default": 14 },
+                "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "500" },
+                "letterSpacing": { "type": "number", "default": 0.1 },
+                "lineHeight": { "type": "number", "minimum": 0.5, "default": 1.4 }
+              }
+            },
+            "hintStyle": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "minimum": 8, "default": 16 },
+                "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "normal" },
+                "letterSpacing": { "type": "number", "default": 0 },
+                "lineHeight": { "type": "number", "minimum": 0.5, "default": 1.4 }
+              }
+            }
+          }
+        },
+        "floatingActionButton": {
+          "type": "object",
+          "properties": {
+            "elevation": { "type": "number", "minimum": 0, "default": 6 },
+            "highlightElevation": { "type": "number", "minimum": 0, "default": 12 },
+            "borderRadius": { "type": "number", "minimum": 0, "default": 16 }
+          }
+        },
+        "navigation": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["fixed", "shifting"], "default": "fixed" },
+            "elevation": { "type": "number", "minimum": 0, "default": 8 },
+            "selectedLabelStyle": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "minimum": 8, "default": 12 },
+                "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "500" },
+                "letterSpacing": { "type": "number", "default": 0.5 },
+                "lineHeight": { "type": "number", "minimum": 0.5, "default": 1.3 }
+              }
+            },
+            "unselectedLabelStyle": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "minimum": 8, "default": 12 },
+                "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "normal" },
+                "letterSpacing": { "type": "number", "default": 0.5 },
+                "lineHeight": { "type": "number", "minimum": 0.5, "default": 1.3 }
+              }
+            }
+          }
+        },
+        "divider": {
+          "type": "object",
+          "properties": {
+            "thickness": { "type": "number", "minimum": 0, "default": 1 },
+            "space": { "type": "number", "minimum": 0, "default": 16 }
+          }
+        },
+        "dialog": {
+          "type": "object",
+          "properties": {
+            "elevation": { "type": "number", "minimum": 0, "default": 24 },
+            "borderRadius": { "type": "number", "minimum": 0, "default": 20 },
+            "borderWidth": { "type": "number", "minimum": 0, "default": 1 },
+            "titleTextStyle": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "minimum": 8, "default": 24 },
+                "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "bold" },
+                "letterSpacing": { "type": "number", "default": -0.3 },
+                "lineHeight": { "type": "number", "minimum": 0.5, "default": 1.2 }
+              }
+            },
+            "contentTextStyle": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "minimum": 8, "default": 16 },
+                "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "normal" },
+                "letterSpacing": { "type": "number", "default": 0 },
+                "lineHeight": { "type": "number", "minimum": 0.5, "default": 1.4 }
+              }
+            }
+          }
+        },
+        "bottomSheet": {
+          "type": "object",
+          "properties": {
+            "elevation": { "type": "number", "minimum": 0, "default": 16 },
+            "borderRadius": { "type": "number", "minimum": 0, "default": 20 },
+            "clipBehavior": { "type": "string", "enum": ["none", "antiAlias", "hardEdge"], "default": "antiAlias" }
+          }
+        }
+      }
+    },
+    "radius": {
+      "type": "object",
+      "required": ["default", "small", "medium", "large", "xl"],
+      "properties": {
+        "default": { "type": "number", "minimum": 0, "default": 8 },
+        "small": { "type": "number", "minimum": 0, "default": 6 },
+        "medium": { "type": "number", "minimum": 0, "default": 8 },
+        "large": { "type": "number", "minimum": 0, "default": 12 },
+        "xl": { "type": "number", "minimum": 0, "default": 20 }
+      }
+    },
+    "spacing": {
+      "type": "object",
+      "required": ["xs", "sm", "md", "lg", "xl", "xxl"],
+      "properties": {
+        "xs": { "type": "number", "minimum": 0, "default": 4 },
+        "sm": { "type": "number", "minimum": 0, "default": 8 },
+        "md": { "type": "number", "minimum": 0, "default": 16 },
+        "lg": { "type": "number", "minimum": 0, "default": 24 },
+        "xl": { "type": "number", "minimum": 0, "default": 32 },
+        "xxl": { "type": "number", "minimum": 0, "default": 48 }
+      }
+    },
+    "typography": {
+      "type": "object",
+      "required": ["heading", "body", "caption"],
+      "properties": {
+        "fontFamily": {
+          "type": "object",
+          "description": "Fantasy-Schriftarten Konfiguration",
+          "properties": {
+            "primary": { "type": "string", "default": "CinzelDecorative", "description": "Haupt-Fantasy-Schriftart" },
+            "secondary": { "type": "string", "default": "Cinzel", "description": "Sekundäre Fantasy-Schriftart" },
+            "body": { "type": "string", "default": "EB Garamond", "description": "Körpertext-Schriftart" },
+            "monospace": { "type": "string", "default": "Fira Code", "description": "Monospace-Schriftart für Code" }
+          }
+        },
+        "heading": {
+          "type": "object",
+          "required": ["fontSize", "fontWeight"],
+          "properties": {
+            "fontSize": { "type": "number", "minimum": 8, "default": 24 },
+            "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "bold" },
+            "fontFamily": { "type": "string", "default": "primary", "enum": ["primary", "secondary", "body", "monospace"] },
+            "letterSpacing": { "type": "number", "default": -0.3 },
+            "lineHeight": { "type": "number", "minimum": 0.5, "default": 1.2 }
+          }
+        },
+        "body": {
+          "type": "object",
+          "required": ["fontSize", "fontWeight"],
+          "properties": {
+            "fontSize": { "type": "number", "minimum": 8, "default": 16 },
+            "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "normal" },
+            "fontFamily": { "type": "string", "default": "body", "enum": ["primary", "secondary", "body", "monospace"] },
+            "letterSpacing": { "type": "number", "default": 0 },
+            "lineHeight": { "type": "number", "minimum": 0.5, "default": 1.4 }
+          }
+        },
+        "caption": {
+          "type": "object",
+          "required": ["fontSize", "fontWeight"],
+          "properties": {
+            "fontSize": { "type": "number", "minimum": 8, "default": 12 },
+            "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "normal" },
+            "fontFamily": { "type": "string", "default": "body", "enum": ["primary", "secondary", "body", "monospace"] },
+            "letterSpacing": { "type": "number", "default": 0.5 },
+            "lineHeight": { "type": "number", "minimum": 0.5, "default": 1.3 }
+          }
+        }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Fantasy Theme Extensions für spezielle Effekte",
+      "properties": {
+        "magicGradient": {
+          "type": "object",
+          "description": "Magischer Gradient-Effekt",
+          "properties": {
+            "colors": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+              "minItems": 2,
+              "maxItems": 4,
+              "default": ["#7C6BAF", "#A594D1"]
+            },
+            "begin": { "type": "string", "enum": ["topLeft", "topCenter", "topRight", "centerLeft", "center", "centerRight", "bottomLeft", "bottomCenter", "bottomRight"], "default": "topLeft" },
+            "end": { "type": "string", "enum": ["topLeft", "topCenter", "topRight", "centerLeft", "center", "centerRight", "bottomLeft", "bottomCenter", "bottomRight"], "default": "bottomRight" }
+          }
+        },
+        "portalGradient": {
+          "type": "object",
+          "description": "Portal-Gradient-Effekt",
+          "properties": {
+            "colors": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+              "minItems": 2,
+              "maxItems": 4,
+              "default": ["#4A90E2", "#7C6BAF"]
+            },
+            "begin": { "type": "string", "enum": ["topLeft", "topCenter", "topRight", "centerLeft", "center", "centerRight", "bottomLeft", "bottomCenter", "bottomRight"], "default": "centerLeft" },
+            "end": { "type": "string", "enum": ["topLeft", "topCenter", "topRight", "centerLeft", "center", "centerRight", "bottomLeft", "bottomCenter", "bottomRight"], "default": "centerRight" }
+          }
+        },
+        "glowColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Glow-Effekt Farbe",
+          "default": "#A594D1"
+        },
+        "shimmerColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Shimmer-Effekt Farbe",
+          "default": "#7C6BAF"
+        },
+        "overlayColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{8}$",
+          "description": "Overlay-Farbe mit Alpha (8 Zeichen Hex)",
+          "default": "#00000040"
+        },
+        "glassColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{8}$",
+          "description": "Glasmorphism-Farbe mit Alpha (8 Zeichen Hex)",
+          "default": "#FFFFFF20"
+        },
+        "parallaxStrength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5.0,
+          "default": 1.0,
+          "description": "Parallax-Scrolling Stärke für Hintergrund-Elemente"
+        },
+        "hoverAuraColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Farbe für Hover-Aura Effekte",
+          "default": "#A594D1"
+        },
+        "depthBlur": {
+          "type": "boolean",
+          "default": true,
+          "description": "Z-Depth basierte Blur-Effekte für Tiefenwirkung"
+        },
+        "particles": {
+          "type": "object",
+          "description": "Partikel-Effekt System",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "density": { "type": "string", "enum": ["low", "medium", "high"], "default": "medium" },
+            "colors": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+              "minItems": 1,
+              "maxItems": 5,
+              "default": ["#7C6BAF", "#A594D1", "#4A90E2"]
+            },
+            "speed": { "type": "number", "minimum": 0.1, "maximum": 5.0, "default": 1.0 },
+            "size": { "type": "number", "minimum": 1, "maximum": 10, "default": 3 }
+          }
+        },
+        "screenEffects": {
+          "type": "object",
+          "description": "Bildschirm-weite visuelle Effekte",
+          "properties": {
+            "vignetteStrength": { "type": "number", "minimum": 0, "maximum": 1.0, "default": 0.3 },
+            "bloomIntensity": { "type": "number", "minimum": 0, "maximum": 2.0, "default": 0.5 },
+            "colorGrading": { "type": "string", "enum": ["neutral", "warm", "cool", "fantasy"], "default": "warm" },
+            "weather": {
+              "type": "object",
+              "properties": {
+                "rainOpacity": { "type": "number", "minimum": 0, "maximum": 1.0, "default": 0.6 },
+                "snowOpacity": { "type": "number", "minimum": 0, "maximum": 1.0, "default": 0.4 },
+                "fogIntensity": { "type": "number", "minimum": 0, "maximum": 1.0, "default": 0.3 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "gaming": {
+      "type": "object",
+      "description": "Gaming-spezifische UI Komponenten für RPG/Fantasy Spiele",
+      "properties": {
+        "progress": {
+          "type": "object",
+          "description": "Progress Bars für Health, Mana, XP etc.",
+          "properties": {
+            "barHeight": { "type": "number", "minimum": 8, "maximum": 32, "default": 12 },
+            "cornerRadius": { "type": "number", "minimum": 0, "maximum": 16, "default": 8 },
+            "backgroundColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#2A1810" },
+            "foregroundColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#7C6BAF" },
+            "borderColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "borderWidth": { "type": "number", "minimum": 0, "maximum": 4, "default": 1 },
+            "animationDurationMs": { "type": "number", "minimum": 100, "maximum": 2000, "default": 500 },
+            "specialBars": {
+              "type": "object",
+              "properties": {
+                "health": {
+                  "type": "object", 
+                  "properties": {
+                    "fillColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#E74C3C" },
+                    "lowHealthColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FF4444" },
+                    "criticalThreshold": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.25 }
+                  }
+                },
+                "mana": {
+                  "type": "object",
+                  "properties": {
+                    "fillColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#3498DB" },
+                    "lowManaColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#5DADE2" }
+                  }
+                },
+                "experience": {
+                  "type": "object", 
+                  "properties": {
+                    "fillColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#F39C12" },
+                    "levelUpColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FFD700" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "inventory": {
+          "type": "object",
+          "description": "Inventory Slot System mit Rarity Colors",
+          "properties": {
+            "slotSize": { "type": "number", "minimum": 32, "maximum": 128, "default": 64 },
+            "slotSpacing": { "type": "number", "minimum": 2, "maximum": 16, "default": 4 },
+            "slotBorderRadius": { "type": "number", "minimum": 0, "maximum": 16, "default": 8 },
+            "slotBorderColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#7C6BAF" },
+            "slotBackgroundColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#2A1810" },
+            "selectedSlotColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#A594D1" },
+            "rarityColors": {
+              "type": "object",
+              "required": ["common", "uncommon", "rare", "epic", "legendary"],
+              "properties": {
+                "common": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FFFFFF" },
+                "uncommon": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#1EFF00" },
+                "rare": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#0070DD" },
+                "epic": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#A335EE" },
+                "legendary": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FF8000" }
+              }
+            },
+            "hoverEffect": { "type": "string", "enum": ["glow", "scale", "none"], "default": "glow" }
+          }
+        },
+        "tooltip": {
+          "type": "object",
+          "description": "Tooltips und Popups für Gaming UI",
+          "properties": {
+            "backgroundColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{8}$", "default": "#1A1A1AE6" },
+            "borderColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#7C6BAF" },
+            "borderWidth": { "type": "number", "minimum": 0, "maximum": 4, "default": 1 },
+            "borderRadius": { "type": "number", "minimum": 0, "maximum": 20, "default": 8 },
+            "maxWidth": { "type": "number", "minimum": 200, "maximum": 500, "default": 300 },
+            "padding": { "type": "number", "minimum": 8, "maximum": 24, "default": 12 },
+            "shadow": { "type": "string", "enum": ["none", "small", "medium", "large"], "default": "medium" },
+            "textStyle": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "minimum": 10, "maximum": 18, "default": 14 },
+                "fontWeight": { "type": "string", "enum": ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"], "default": "normal" },
+                "fontFamily": { "type": "string", "default": "body", "enum": ["primary", "secondary", "body", "monospace"] }
+              }
+            }
+          }
+        },
+        "animations": {
+          "type": "object",
+          "description": "Animationen und Übergänge für Gaming UI",
+          "properties": {
+            "defaultDurationMs": { "type": "number", "minimum": 100, "maximum": 1000, "default": 300 },
+            "appear": { "type": "string", "enum": ["fade", "scale", "slide", "none"], "default": "fade" },
+            "interactions": {
+              "type": "object",
+              "properties": {
+                "hover": { "type": "string", "enum": ["scale", "glow", "shake", "none"], "default": "glow" },
+                "click": { "type": "string", "enum": ["pulse", "ripple", "none"], "default": "pulse" },
+                "hoverScale": { "type": "number", "minimum": 1.0, "maximum": 1.2, "default": 1.05 },
+                "clickScale": { "type": "number", "minimum": 0.8, "maximum": 1.0, "default": 0.95 }
+              }
+            },
+            "easing": {
+              "type": "object",
+              "properties": {
+                "default": { "type": "string", "default": "cubic-bezier(0.4, 0, 0.2, 1)" },
+                "bounce": { "type": "string", "default": "cubic-bezier(0.68, -0.55, 0.265, 1.55)" },
+                "smooth": { "type": "string", "default": "cubic-bezier(0.25, 0.46, 0.45, 0.94)" }
+              }
+            }
+          }
+        },
+        "accessibility": {
+          "type": "object",
+          "description": "Gaming Accessibility Features",
+          "properties": {
+            "focusOutlineColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#A594D1" },
+            "focusOutlineWidth": { "type": "number", "minimum": 1, "maximum": 4, "default": 2 },
+            "highContrastMode": { "type": "boolean", "default": false },
+            "fontScaleFactor": { "type": "number", "minimum": 0.5, "maximum": 2.0, "default": 1.0 },
+            "colorBlindSupport": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean", "default": false },
+                "mode": { "type": "string", "enum": ["none", "deuteranopia", "protanopia", "tritanopia"], "default": "none" },
+                "alternativeColors": {
+                  "type": "object",
+                  "properties": {
+                    "red": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FF6B6B" },
+                    "green": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#51CF66" },
+                    "blue": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#74C0FC" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "achievements": {
+          "type": "object",
+          "description": "Achievement und Progression System",
+          "properties": {
+            "iconSize": { "type": "number", "minimum": 32, "maximum": 96, "default": 48 },
+            "unlockedColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FFD700" },
+            "lockedColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#666666" },
+            "highlightGlow": { "type": "boolean", "default": true },
+            "glowRadius": { "type": "number", "minimum": 0, "maximum": 16, "default": 8 },
+            "animationOnUnlock": { "type": "boolean", "default": true },
+            "levelColors": {
+              "type": "object",
+              "properties": {
+                "bronze": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#CD7F32" },
+                "silver": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#C0C0C0" },
+                "gold": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FFD700" },
+                "platinum": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#E5E4E2" }
+              }
+            }
+          }
+        },
+        "hud": {
+          "type": "object",
+          "description": "HUD Elemente für Spiel-Interface",
+          "properties": {
+            "minimap": {
+              "type": "object",
+              "properties": {
+                "backgroundColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{8}$", "default": "#00000080" },
+                "borderColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#7C6BAF" },
+                "playerDotColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FFD700" },
+                "enemyDotColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#E74C3C" }
+              }
+            },
+            "buffBar": {
+              "type": "object",
+              "properties": {
+                "iconSize": { "type": "number", "minimum": 20, "maximum": 40, "default": 32 },
+                "spacing": { "type": "number", "minimum": 2, "maximum": 8, "default": 4 },
+                "positiveBuffBorder": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#27AE60" },
+                "negativeBuffBorder": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#E74C3C" }
+              }
+            },
+            "resourceDisplay": {
+              "type": "object",
+              "properties": {
+                "backgroundColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{8}$", "default": "#2A181080" },
+                "goldColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FFD700" },
+                "fontSize": { "type": "number", "minimum": 12, "maximum": 24, "default": 16 }
+              }
+            }
+          }
+        },
+        "battleEffects": {
+          "type": "object",
+          "description": "Kampf und Effekt-System",
+          "properties": {
+            "combatLog": {
+              "type": "object",
+              "properties": {
+                "backgroundColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{8}$", "default": "#00000090" },
+                "playerDamageColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FFD700" },
+                "enemyDamageColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#E74C3C" },
+                "criticalHitColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FF8000" },
+                "healColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#27AE60" }
+              }
+            },
+            "statusEffects": {
+              "type": "object",
+              "properties": {
+                "poison": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#8E44AD" },
+                "burn": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#E67E22" },
+                "freeze": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#3498DB" },
+                "blessing": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#F1C40F" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responsive": {
+      "type": "object",
+      "description": "Responsive Design Konfiguration für verschiedene Endgeräte",
+      "properties": {
+        "breakpoints": {
+          "type": "object",
+          "description": "Bildschirm-Breakpoints in Pixeln",
+          "properties": {
+            "mobile": { "type": "number", "minimum": 320, "maximum": 768, "default": 480, "description": "Mobile Geräte bis zu diesem Wert" },
+            "tablet": { "type": "number", "minimum": 481, "maximum": 1024, "default": 768, "description": "Tablet Geräte bis zu diesem Wert" },
+            "desktop": { "type": "number", "minimum": 769, "maximum": 1920, "default": 1024, "description": "Desktop Geräte ab diesem Wert" },
+            "wide": { "type": "number", "minimum": 1025, "maximum": 3840, "default": 1440, "description": "Breite Bildschirme ab diesem Wert" }
+          }
+        },
+        "scaleFactor": {
+          "type": "object", 
+          "description": "Skalierungsfaktoren für verschiedene Bildschirmgrößen",
+          "properties": {
+            "mobile": { "type": "number", "minimum": 0.5, "maximum": 2.0, "default": 0.85, "description": "Skalierung für Mobile" },
+            "tablet": { "type": "number", "minimum": 0.5, "maximum": 2.0, "default": 0.95, "description": "Skalierung für Tablet" },
+            "desktop": { "type": "number", "minimum": 0.5, "maximum": 2.0, "default": 1.0, "description": "Skalierung für Desktop" },
+            "wide": { "type": "number", "minimum": 0.5, "maximum": 2.0, "default": 1.1, "description": "Skalierung für breite Bildschirme" }
+          }
+        },
+        "adaptiveSpacing": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatische Anpassung von Spacing basierend auf Bildschirmgröße"
+        },
+        "adaptiveTypography": {
+          "type": "boolean", 
+          "default": true,
+          "description": "Automatische Anpassung von Schriftgrößen basierend auf Bildschirmgröße"
+        }
+      }
+    },
+    "shadows": {
+      "type": "object",
+      "properties": {
+        "small": {
+          "type": "object",
+          "required": ["blurRadius", "spreadRadius", "offset", "color"],
+          "properties": {
+            "blurRadius": { "type": "number", "minimum": 0 },
+            "spreadRadius": { "type": "number" },
+            "offset": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{8}$" }
+          }
+        },
+        "medium": {
+          "type": "object",
+          "required": ["blurRadius", "spreadRadius", "offset", "color"],
+          "properties": {
+            "blurRadius": { "type": "number", "minimum": 0 },
+            "spreadRadius": { "type": "number" },
+            "offset": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{8}$" }
+          }
+        },
+        "large": {
+          "type": "object",
+          "required": ["blurRadius", "spreadRadius", "offset", "color"],
+          "properties": {
+            "blurRadius": { "type": "number", "minimum": 0 },
+            "spreadRadius": { "type": "number" },
+            "offset": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{8}$" }
+          }
+        }
+      }
+    }
+  }
+}
+}

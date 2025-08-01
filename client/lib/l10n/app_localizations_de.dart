@@ -14,7 +14,7 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get appTitle => '⚡Weltenwind⚡';
+  String get appTitle => 'Weltenwind';
 
   @override
   String get authLoginTitle => 'Anmelden';
@@ -26,7 +26,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authRegisterTitle => 'Registrieren';
 
   @override
-  String get authRegisterButton => 'Registrieren';
+  String get authRegisterButton => 'Account erstellen';
 
   @override
   String get authLogoutButton => 'Abmelden';
@@ -38,20 +38,20 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authPasswordLabel => 'Passwort';
 
   @override
-  String get authUsernameLabel => 'Benutzername';
+  String get authUsernameLabel => 'Spielername';
 
   @override
   String get authLoginWelcome => 'Willkommen bei Weltenwind';
 
   @override
-  String get authLoginSubtitle => 'Melde dich an, um deine Welten zu verwalten';
+  String get authLoginSubtitle => 'Melde dich an um deine Welten zu verwalten';
 
   @override
-  String get authUsernameRequired => 'Bitte gib deinen Benutzernamen ein';
+  String get authUsernameRequired => 'Bitte gib deinen Spielernamen ein';
 
   @override
   String get authUsernameMinLength =>
-      'Benutzername muss mindestens 3 Zeichen lang sein';
+      'Spielername muss mindestens 3 Zeichen lang sein';
 
   @override
   String get authPasswordRequired => 'Bitte gib dein Passwort ein';
@@ -67,7 +67,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authForgotPassword => 'Passwort vergessen?';
 
   @override
-  String get authNoAccount => 'Noch kein Konto? ';
+  String get authNoAccount => 'Noch kein Account?';
 
   @override
   String get authLoginLoading => 'Anmeldung läuft...';
@@ -79,29 +79,30 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authGithubLabel => 'GitHub';
 
   @override
-  String get authGoogleComingSoon => 'Google Login wird bald verfügbar sein';
+  String get authGoogleComingSoon => 'Google-Anmeldung kommt bald';
 
   @override
-  String get authGithubComingSoon => 'GitHub Login wird bald verfügbar sein';
+  String get authGithubComingSoon => 'GitHub-Anmeldung kommt bald';
 
   @override
-  String get authRegisterWelcome => 'Registrierung';
+  String get authRegisterWelcome => 'Bei Weltenwind registrieren';
 
   @override
-  String get authRegisterSubtitle => 'Erstelle dein Konto für Weltenwind';
+  String get authRegisterSubtitle =>
+      'Erstelle deinen Account und starte dein Abenteuer';
 
   @override
-  String get authUsernameRequiredAlt => 'Benutzername ist erforderlich';
+  String get authUsernameRequiredAlt => 'Spielername ist erforderlich';
 
   @override
   String get authUsernameInvalidChars =>
-      'Benutzername darf nur Buchstaben, Zahlen und Unterstriche enthalten';
+      'Spielername darf nur Buchstaben, Zahlen und Unterstriche enthalten';
 
   @override
-  String get authEmailRequired => 'E-Mail ist erforderlich';
+  String get authEmailRequired => 'Bitte gib deine E-Mail ein';
 
   @override
-  String get authHaveAccount => 'Bereits ein Konto? ';
+  String get authHaveAccount => 'Bereits einen Account?';
 
   @override
   String get authRegisterSuccessWelcome =>
@@ -112,7 +113,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authForgotPasswordDescription =>
-      'Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen deines Passworts.';
+      'Wir senden dir einen Link zum Zurücksetzen deines Passworts.';
 
   @override
   String get authForgotPasswordEmailLabel => 'E-Mail-Adresse';
@@ -123,13 +124,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authForgotPasswordSuccess =>
-      'E-Mail gesendet! Bitte überprüfe deinen Posteingang.';
+      'E-Mail versendet! Prüfe dein Postfach.';
 
   @override
   String get authForgotPasswordSendButton => 'Link senden';
 
   @override
-  String get authForgotPasswordBackToLogin => 'Zurück zum Login';
+  String get authForgotPasswordBackToLogin => 'Zurück zur Anmeldung';
 
   @override
   String get authForgotPasswordCancel => 'Abbrechen';
@@ -142,7 +143,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authResetPasswordSuccessTitle => 'Passwort erfolgreich geändert!';
 
   @override
-  String get authResetPasswordTitle => 'Neues Passwort festlegen';
+  String get authResetPasswordTitle => 'Neues Passwort setzen';
 
   @override
   String get authResetPasswordSuccessMessage =>
@@ -173,7 +174,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Bitte bestätige dein neues Passwort';
 
   @override
-  String get authPasswordsDoNotMatch => 'Die Passwörter stimmen nicht überein';
+  String get authPasswordsDoNotMatch => 'Passwörter stimmen nicht überein';
 
   @override
   String get authPasswordRequirementsTitle => 'Passwort-Anforderungen:';
@@ -182,7 +183,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authRequirementMinLength => 'Mindestens 6 Zeichen';
 
   @override
-  String get authRequirementNoSpaces => 'Keine Leerzeichen';
+  String get authRequirementNoSpaces => 'Keine Leerzeichen erlaubt';
 
   @override
   String get authRequirementPasswordsMatch => 'Passwörter stimmen überein';
@@ -194,10 +195,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authBackToLogin => 'Zurück zur Anmeldung';
 
   @override
-  String get navDashboard => 'Dashboard';
+  String get navDashboard => 'Übersicht';
 
   @override
-  String get navWorldList => 'Welten';
+  String get navWorldList => 'Spielwelten';
 
   @override
   String get navProfile => 'Profil';
@@ -212,10 +213,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get worldPreRegisterButton => 'Vorregistrieren';
 
   @override
-  String get worldCancelPreRegisterButton => 'Vorregistrierung zurückziehen';
+  String get worldCancelPreRegisterButton => 'Vorregistrierung abbrechen';
 
   @override
-  String get worldStatusUpcoming => 'Geplant';
+  String get worldStatusUpcoming => 'Demnächst';
 
   @override
   String get worldStatusOpen => 'Offen';
@@ -228,23 +229,22 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get errorGeneral =>
-      'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+      'Ein Fehler ist aufgetreten. Bitte versuche es erneut.';
 
   @override
-  String get errorNetwork =>
-      'Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.';
+  String get errorNetwork => 'Netzwerkfehler. Bitte prüfe deine Verbindung.';
 
   @override
   String get errorUnauthorized =>
-      'Sie sind nicht berechtigt, auf diese Ressource zuzugreifen.';
+      'Du bist nicht berechtigt auf diese Ressource zuzugreifen.';
 
   @override
   String get errorValidationEmail =>
-      'Bitte geben Sie eine gültige E-Mail-Adresse ein';
+      'Bitte gib eine gültige E-Mail-Adresse ein';
 
   @override
   String get errorValidationPassword =>
-      'Das Passwort muss mindestens 8 Zeichen lang sein';
+      'Password must be at least 8 characters long';
 
   @override
   String get buttonOk => 'OK';
@@ -265,13 +265,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get buttonRetry => 'Erneut versuchen';
 
   @override
-  String get loadingText => 'Wird geladen...';
+  String get loadingText => 'Lädt...';
 
   @override
   String get landingSubtitle => 'Dein Portal zu unendlichen Welten';
 
   @override
-  String get landingTagline => '🎮 Spiele • 🌍 Erkunde • 🤝 Verbinde';
+  String get landingTagline => '🎮 Spielen • 🌍 Erkunden • 🤝 Verbinden';
 
   @override
   String get landingStartButton => 'Jetzt kostenlos starten';
@@ -292,7 +292,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get landingStatsOnline => 'Online';
 
   @override
-  String get landingDiscoverMore => 'Entdecke mehr';
+  String get landingDiscoverMore => 'Mehr entdecken';
 
   @override
   String get landingFeaturesTitle => 'Was macht Weltenwind besonders?';
@@ -312,14 +312,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get landingFeatureCommunityDesc =>
-      'Verbinde dich mit Spielern aus der ganzen Welt';
+      'Verbinde dich mit Spielern aus aller Welt';
 
   @override
   String get landingFeatureSecurityTitle => 'Sicher & Fair';
 
   @override
   String get landingFeatureSecurityDesc =>
-      'Modernste Sicherheit und faire Spielregeln für alle';
+      'Modernste Sicherheit und faire Regeln für alle';
 
   @override
   String get landingFeatureSpeedTitle => 'Blitzschnell';
@@ -332,7 +332,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get landingFeatureMobileDesc =>
-      'Auf PC, Tablet oder Smartphone - immer dabei';
+      'Am PC, Tablet oder Smartphone - immer dabei';
 
   @override
   String get landingFeatureRewardsTitle => 'Belohnungen';
@@ -355,7 +355,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get footerPrivacy => 'Datenschutz';
 
   @override
-  String get footerLegal => 'Impressum';
+  String get footerLegal => 'Rechtliches';
 
   @override
   String get footerSupport => 'Support';
@@ -364,7 +364,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get worldListTitle => 'Wähle deine Welt';
 
   @override
-  String get worldListSubtitle => 'Wähle deine Welt aus';
+  String get worldListSubtitle => 'Wähle deine Spielwelt aus';
 
   @override
   String worldListLoadingError(String error) {
@@ -381,7 +381,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get worldListEmptyTitle => 'Keine Welten gefunden';
 
   @override
-  String get worldListEmptyMessage => 'Versuche andere Filter-Einstellungen.';
+  String get worldListEmptyMessage => 'Versuche andere Filtereinstellungen.';
 
   @override
   String get worldListRefreshButton => 'Aktualisieren';
@@ -390,7 +390,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get worldListCreateButton => 'Neue Welt';
 
   @override
-  String get worldListLoadingText => 'Welten werden geladen...';
+  String get worldListLoadingText => 'Lade Welten...';
 
   @override
   String worldAlreadyMember(String worldName) {
@@ -404,7 +404,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String worldPreRegisterCancelled(String worldName) {
-    return 'Vorregistrierung für $worldName zurückgezogen.';
+    return 'Vorregistrierung für $worldName abgebrochen.';
   }
 
   @override
@@ -412,7 +412,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String worldLeaveDialogMessage(String worldName) {
-    return 'Möchtest du die Welt \"$worldName\" wirklich verlassen?';
+    return 'Willst du die Welt \"$worldName\" wirklich verlassen?';
   }
 
   @override
@@ -464,7 +464,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get worldLoadingError => 'Fehler beim Laden';
 
   @override
-  String get worldInformationTitle => 'Information';
+  String get worldInformationTitle => 'Informationen';
 
   @override
   String worldStartDate(String date) {
@@ -484,10 +484,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get worldAboutDescription =>
-      'Dies ist eine spannende Welt voller Abenteuer und Herausforderungen. Erkunde unbekannte Gebiete, schließe Allianzen und werde zur Legende!';
+      'Das ist eine aufregende Welt voller Abenteuer und Herausforderungen. Erkunde unbekannte Gebiete, schmiede Allianzen und werde zur Legende!';
 
   @override
-  String get worldRulesTitle => 'Spielregeln';
+  String get worldRulesTitle => 'Regeln';
 
   @override
   String get worldStatsTitle => 'Welt-Statistiken';
@@ -498,7 +498,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get worldDefaultDescription => 'Eine spannende Welt voller Abenteuer';
+  String get worldDefaultDescription => 'Eine aufregende Welt voller Abenteuer';
 
   @override
   String get worldCategoryClassic => 'Klassisch';
@@ -513,13 +513,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get worldCategoryExperimental => 'Experimentell';
 
   @override
-  String get worldFiltersStatus => 'Status: ';
+  String get worldFiltersStatus => 'Status:';
 
   @override
-  String get worldFiltersCategory => 'Kategorie: ';
+  String get worldFiltersCategory => 'Kategorie:';
 
   @override
-  String get worldFiltersSortBy => 'Sortieren nach: ';
+  String get worldFiltersSortBy => 'Sortieren nach:';
 
   @override
   String get worldFiltersSortStartDate => 'Startdatum';
@@ -534,7 +534,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get worldFiltersSortPlayerCount => 'Spieleranzahl';
 
   @override
-  String get worldFiltersActiveFilters => 'Aktive Filter: ';
+  String get worldFiltersActiveFilters => 'Aktive Filter:';
 
   @override
   String get worldFiltersResetAll => 'Alle zurücksetzen';
@@ -550,13 +550,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get navigationJoinRequiredMessage =>
-      'Sie müssen erst der Welt beitreten, um das Dashboard zu sehen';
+      'Du musst zuerst der Welt beitreten um das Dashboard zu sehen';
 
   @override
   String get navigationBack => 'Zurück';
 
   @override
-  String get navigationWorldOverview => 'Welten-Übersicht';
+  String get navigationWorldOverview => 'Welt-Übersicht';
 
   @override
   String get navigationWorldDetails => 'Welt-Details';
@@ -566,7 +566,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get navigationDashboardRequiresJoin =>
-      'Dashboard (Beitreten erforderlich)';
+      'Dashboard (Beitritt erforderlich)';
 
   @override
   String get navigationTitle => 'Navigation';
@@ -576,7 +576,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get navigationTooltipJoinRequired =>
-      'Sie müssen der Welt beitreten, um das Dashboard zu sehen';
+      'Du musst der Welt beitreten um das Dashboard zu sehen';
 
   @override
   String worldJoinSuccess(String worldName) {
@@ -584,21 +584,22 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get worldJoinFailed => 'Beitritt fehlgeschlagen. Versuche es erneut.';
+  String get worldJoinFailed =>
+      'Beitritt fehlgeschlagen. Bitte versuche es erneut.';
 
   @override
   String get worldJoinPreRegistrationError => 'Fehler bei der Vorregistrierung';
 
   @override
   String get worldJoinCancelPreRegistrationError =>
-      'Fehler beim Zurückziehen der Vorregistrierung';
+      'Fehler beim Abbrechen der Vorregistrierung';
 
   @override
   String get worldJoinLeaveDialogTitle => 'Welt verlassen?';
 
   @override
   String worldJoinLeaveDialogContent(String worldName) {
-    return 'Möchtest du die Welt \"$worldName\" wirklich verlassen?';
+    return 'Willst du die Welt \"$worldName\" wirklich verlassen?';
   }
 
   @override
@@ -609,11 +610,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get worldJoinCancelPreRegistrationButton =>
-      'Vorregistrierung zurückziehen';
+      'Vorregistrierung abbrechen';
 
   @override
-  String get worldJoinCancelPreRegistrationInProgress =>
-      'Wird zurückgezogen...';
+  String get worldJoinCancelPreRegistrationInProgress => 'Wird abgebrochen...';
 
   @override
   String worldJoinGenericError(String error) {
@@ -630,16 +630,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get worldJoinPreRegisterButton => 'Vorregistrieren';
 
   @override
-  String get worldJoinPreRegisterInProgress => 'Wird registriert...';
+  String get worldJoinPreRegisterInProgress => 'Registriere...';
 
   @override
-  String get worldJoinLeaveInProgress => 'Wird verlassen...';
+  String get worldJoinLeaveInProgress => 'Verlasse...';
 
   @override
   String get worldJoinNowButton => 'Jetzt beitreten';
 
   @override
-  String get worldJoinInProgress => 'Wird beigetreten...';
+  String get worldJoinInProgress => 'Trete bei...';
 
   @override
   String get worldJoinWorldClosedStatus => 'Diese Welt ist derzeit geschlossen';
@@ -649,7 +649,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String worldJoinErrorLoadingWorldData(String error) {
-    return 'Fehler beim Laden der Welt-Daten: $error';
+    return 'Fehler beim Laden der Weltdaten: $error';
   }
 
   @override
@@ -685,17 +685,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get inviteActionRegisterHint =>
-      'Du benötigst ein Konto um der Welt beizutreten.';
+      'Du brauchst einen Account um der Welt beizutreten.';
 
   @override
   String get inviteActionRegisterAndJoin => 'Registrieren & Beitreten';
 
   @override
-  String get inviteActionAlreadyHaveAccount => 'Bereits ein Konto? Anmelden';
+  String get inviteActionAlreadyHaveAccount =>
+      'Bereits einen Account? Anmelden';
 
   @override
   String get inviteActionLoginHint =>
-      'Du hast bereits ein Konto. Melde dich an um der Welt beizutreten.';
+      'Du hast bereits einen Account. Melde dich an um der Welt beizutreten.';
 
   @override
   String get inviteActionLogin => 'Anmelden';
@@ -713,18 +714,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String inviteActionWrongEmailHint(String currentEmail, String inviteEmail) {
-    return 'Du bist als $currentEmail angemeldet, aber die Einladung ist für $inviteEmail. Du musst dich abmelden und mit der richtigen E-Mail registrieren.';
+    return 'Du bist als $currentEmail angemeldet, aber die Einladung ist für $inviteEmail. Du musst dich abmelden und mit der korrekten E-Mail registrieren.';
   }
 
   @override
-  String get inviteActionLogoutAndRegister => 'Abmelden & Neu registrieren';
+  String get inviteActionLogoutAndRegister => 'Abmelden & Registrieren';
 
   @override
   String get inviteActionUnknownStatus =>
       'Unbekannter Status. Bitte versuche es später erneut.';
 
   @override
-  String get inviteErrorNoData => 'Keine Einladungs-Daten verfügbar.';
+  String get inviteErrorNoData => 'Keine Einladungsdaten verfügbar.';
 
   @override
   String get inviteErrorInvalidOrExpired =>
@@ -755,12 +756,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get inviteDeclineSuccess => 'Einladung abgelehnt';
 
   @override
-  String get marketingDiscoverMoreWorlds =>
-      'Weitere spannende Welten entdecken';
+  String get marketingDiscoverMoreWorlds => 'Entdecke weitere spannende Welten';
 
   @override
   String get marketingCallToAction =>
-      'Entdecke hunderte von Welten, erstelle deine eigene oder tritt bestehenden Communities bei!';
+      'Entdecke hunderte Welten, erschaffe deine eigene oder schließe dich bestehenden Communities an!';
 
   @override
   String get marketingFeatureCommunityTitle => 'Community';
@@ -769,19 +769,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get marketingFeatureCommunityDesc => 'Spiele mit Freunden';
 
   @override
-  String get marketingFeatureCreateTitle => 'Erstellen';
+  String get marketingFeatureCreateTitle => 'Erschaffen';
 
   @override
   String get marketingFeatureCreateDesc => 'Baue deine Welt';
 
   @override
-  String get marketingFeatureExploreTitle => 'Entdecken';
+  String get marketingFeatureExploreTitle => 'Erkunden';
 
   @override
   String get marketingFeatureExploreDesc => 'Neue Abenteuer';
 
   @override
-  String get marketingBrowseAllWorlds => 'Alle Welten durchstöbern';
+  String get marketingBrowseAllWorlds => 'Alle Welten durchsuchen';
 
   @override
   String get inviteDetailsCreated => 'Erstellt am';
@@ -795,7 +795,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get inviteWidgetEmailLabel => 'E-Mail-Adresse';
 
   @override
-  String get inviteWidgetEmailHint => 'freund@example.com';
+  String get inviteWidgetEmailHint => 'freund@beispiel.de';
 
   @override
   String get inviteWidgetEmailRequired => 'E-Mail-Adresse ist erforderlich';
@@ -804,11 +804,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get inviteWidgetEmailInvalid => 'Ungültige E-Mail-Adresse';
 
   @override
-  String get inviteWidgetSendEmailOption => 'E-Mail automatisch versenden';
+  String get inviteWidgetSendEmailOption => 'E-Mail automatisch senden';
 
   @override
   String get inviteWidgetSendEmailHint =>
-      'Deaktivieren um nur den Einladungslink zu erstellen';
+      'Deaktivieren um nur Einladungslink zu erstellen';
 
   @override
   String get inviteWidgetSendButton => 'Einladung senden';

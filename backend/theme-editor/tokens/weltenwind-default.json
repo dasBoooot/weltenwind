@@ -1,0 +1,620 @@
+{
+  "$schema": "../schemas/main.schema.json",
+  "name": "Weltenwind Professional Gaming",
+  "version": "1.0.0",
+  "description": "Der offizielle Weltenwind Default Theme - Mystischer Dark-Fantasy mit moderner Gaming-UI. Magischer Realismus trifft professionelle Funktionalität.",
+  "bundle": {
+    "type": "complete",
+    "context": "universal",
+    "modules": ["colors", "typography", "spacing", "radius", "components", "gaming", "effects", "accessibility", "responsive", "extensions"]
+  },
+  "metadata": {
+    "author": "Weltenwind Development Team",
+    "category": "fantasy",
+    "tags": ["default", "professional", "gaming", "dark-fantasy", "mystical", "complete", "showcase"],
+    "targetWorlds": ["universal", "nexus", "hub", "menu", "loading", "preview"],
+    "compatibility": {
+      "minVersion": "1.0.0",
+      "features": ["complete-gaming", "accessibility", "animations", "effects", "responsive"]
+    }
+  },
+  "colors": {
+    "primary": {
+      "value": "#7C6BAF",
+      "light": "#A594D1",
+      "dark": "#4B3B79",
+      "surface": "#2A1810",
+      "accent": "#A594D1"
+    },
+    "secondary": {
+      "value": "#A594D1",
+      "light": "#C0B3E0",
+      "dark": "#7C6BAF"
+    },
+    "tertiary": {
+      "value": "#FFD700",
+      "light": "#FFED4E",
+      "dark": "#D4AF37"
+    },
+    "background": {
+      "surface_dark": "#1A1A1A",
+      "surface_darker": "#0D0D0D",
+      "surface_medium": "#2A1810",
+      "surface_light": "#3A2820",
+      "surface_white": "#FFFFFF",
+      "surface_gray": "#F0F0F0",
+      "surface_gray_light": "#F8F8F8"
+    },
+    "text": {
+      "primary": "#E0E0E0",
+      "secondary": "#CCCCCC",
+      "tertiary": "#999999",
+      "disabled": "#666666",
+      "primary_light": "#333333",
+      "secondary_light": "#666666",
+      "tertiary_light": "#999999"
+    },
+    "status": {
+      "success": "#4CAF50",
+      "warning": "#FF9800",
+      "error": "#F44336",
+      "info": "#2196F3"
+    },
+    "effects": {
+      "glow": "#A594D1",
+      "shimmer": "#7C6BAF",
+      "overlay": "#00000060",
+      "glass": "#FFFFFF15"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": "Inter",
+      "secondary": "Cinzel Decorative",
+      "body": "Inter",
+      "monospace": "JetBrains Mono"
+    },
+    "heading": {
+      "fontSize": 24,
+      "fontWeight": "600",
+      "letterSpacing": -0.2,
+      "lineHeight": 1.2,
+      "fontFamily": "Cinzel Decorative"
+    },
+    "body": {
+      "fontSize": 16,
+      "fontWeight": "400",
+      "letterSpacing": 0,
+      "lineHeight": 1.5,
+      "fontFamily": "Inter"
+    },
+    "caption": {
+      "fontSize": 12,
+      "fontWeight": "500",
+      "letterSpacing": 0.3,
+      "lineHeight": 1.4,
+      "fontFamily": "Inter"
+    }
+  },
+  "radius": {
+    "small": 4,
+    "medium": 8,
+    "large": 12,
+    "extraLarge": 16,
+    "circle": 50
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48
+  },
+  "components": {
+    "appBar": {
+      "elevation": 0,
+      "centerTitle": true,
+      "shadowColor": "transparent",
+      "surfaceTintColor": "transparent",
+      "systemOverlayStyle": "dark"
+    },
+    "card": {
+      "elevation": 0,
+      "shadowColor": "#40A594D1",
+      "borderRadius": 12,
+      "clipBehavior": "antiAlias",
+      "margin": 4
+    },
+    "buttons": {
+      "elevation": 0,
+      "shadowColor": "transparent",
+      "borderRadius": 8,
+      "paddingHorizontal": 20,
+      "paddingVertical": 12,
+      "borderWidth": 1.5
+    },
+    "inputs": {
+      "filled": true,
+      "borderRadius": 8,
+      "borderWidth": 1,
+      "focusedBorderWidth": 2,
+      "paddingHorizontal": 16,
+      "paddingVertical": 12
+    }
+  },
+  "gaming": {
+    "inventory": {
+      "slots": {
+        "size": 56,
+        "spacing": 4,
+        "borderRadius": 6,
+        "borderWidth": 1.5,
+        "backgroundColor": "#2A1810",
+        "borderColor": "#7C6BAF",
+        "hoverBorderColor": "#A594D1",
+        "selectedBorderColor": "#FFD700",
+        "disabledOpacity": 0.6
+      },
+      "rarity": {
+        "common": {
+          "color": "#FFFFFF",
+          "glowIntensity": 0.0,
+          "name": "Gewöhnlich"
+        },
+        "uncommon": {
+          "color": "#1EFF00",
+          "glowIntensity": 0.15,
+          "name": "Ungewöhnlich"
+        },
+        "rare": {
+          "color": "#0070DD",
+          "glowIntensity": 0.3,
+          "name": "Selten"
+        },
+        "epic": {
+          "color": "#A335EE",
+          "glowIntensity": 0.5,
+          "name": "Episch"
+        },
+        "legendary": {
+          "color": "#FF8000",
+          "glowIntensity": 0.7,
+          "name": "Legendär"
+        },
+        "mythic": {
+          "color": "#FFD700",
+          "glowIntensity": 1.0,
+          "name": "Mythisch",
+          "animated": true
+        }
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 8,
+        "rows": 5,
+        "maxItems": 120,
+        "autoSort": false,
+        "categories": {
+          "enabled": true,
+          "tabs": [
+            { "id": "all", "name": "Alle", "icon": "inventory" },
+            { "id": "weapons", "name": "Waffen", "icon": "sword", "color": "#E74C3C" },
+            { "id": "armor", "name": "Rüstung", "icon": "shield", "color": "#3498DB" },
+            { "id": "consumables", "name": "Verbrauchsgegenstände", "icon": "potion", "color": "#27AE60" },
+            { "id": "materials", "name": "Materialien", "icon": "gem", "color": "#F39C12" },
+            { "id": "quest", "name": "Quest-Items", "icon": "scroll", "color": "#9B59B6" },
+            { "id": "artifacts", "name": "Artefakte", "icon": "artifact", "color": "#FFD700" }
+          ]
+        }
+      },
+      "interactions": {
+        "hover": {
+          "enabled": true,
+          "effect": "glow",
+          "scaleAmount": 1.02,
+          "glowRadius": 6,
+          "duration": 150
+        },
+        "selection": {
+          "enabled": true,
+          "multiSelect": true,
+          "highlightColor": "#FFD70040",
+          "borderGlow": true
+        },
+        "dragDrop": {
+          "enabled": true,
+          "ghostOpacity": 0.8,
+          "dropZoneColor": "#4CAF5030",
+          "invalidDropColor": "#F4433630",
+          "snapToGrid": true
+        },
+        "tooltip": {
+          "enabled": true,
+          "delay": 400,
+          "maxWidth": 320,
+          "showRarity": true,
+          "showStats": true
+        }
+      },
+      "animations": {
+        "itemAppear": {
+          "enabled": true,
+          "type": "sparkle",
+          "duration": 600
+        },
+        "itemDisappear": {
+          "enabled": true,
+          "type": "fade",
+          "duration": 300
+        },
+        "sorting": {
+          "enabled": true,
+          "duration": 800,
+          "easing": "cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+        }
+      },
+      "accessibility": {
+        "keyboardNavigation": true,
+        "screenReaderSupport": true,
+        "highContrastMode": false,
+        "focusIndicator": {
+          "color": "#A594D1",
+          "width": 2
+        }
+      }
+    },
+    "progress": {
+      "base": {
+        "height": 18,
+        "borderRadius": 9,
+        "borderWidth": 1,
+        "backgroundColor": "#2A1810",
+        "borderColor": "#7C6BAF",
+        "animationDuration": 400,
+        "gradient": {
+          "enabled": true,
+          "direction": "horizontal",
+          "intensity": 0.25
+        },
+        "glow": {
+          "enabled": false,
+          "radius": 3,
+          "intensity": 0.4
+        }
+      },
+      "health": {
+        "fillColor": "#E74C3C",
+        "criticalThreshold": 0.2,
+        "criticalColor": "#FF1744",
+        "lowHealthColor": "#FF5722",
+        "warningThreshold": 0.4,
+        "pulse": {
+          "enabled": true,
+          "intensity": 0.6,
+          "speed": 1.8
+        },
+        "regeneration": {
+          "enabled": true,
+          "color": "#4CAF50",
+          "glowColor": "#66BB6A"
+        }
+      },
+      "mana": {
+        "fillColor": "#2196F3",
+        "lowManaThreshold": 0.25,
+        "lowManaColor": "#42A5F5",
+        "shimmer": {
+          "enabled": true,
+          "color": "#64B5F6",
+          "speed": 1.0,
+          "intensity": 0.4
+        },
+        "spellCast": {
+          "enabled": true,
+          "glowColor": "#90CAF9",
+          "flashDuration": 250
+        }
+      },
+      "experience": {
+        "fillColor": "#FF9800",
+        "levelUpColor": "#FFD700",
+        "nearLevelUpThreshold": 0.85,
+        "nearLevelUpColor": "#FFC107",
+        "levelUp": {
+          "enabled": true,
+          "flashColor": "#FFD700",
+          "glowRadius": 12,
+          "duration": 2000,
+          "sparkles": true
+        },
+        "segments": {
+          "enabled": false,
+          "count": 10,
+          "spacing": 1
+        }
+      },
+      "stamina": {
+        "enabled": true,
+        "fillColor": "#4CAF50",
+        "exhaustedColor": "#FF9800",
+        "exhaustedThreshold": 0.15,
+        "recovery": {
+          "enabled": true,
+          "glowColor": "#66BB6A"
+        }
+      },
+      "animations": {
+        "fillAnimation": {
+          "enabled": true,
+          "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+          "smoothing": true
+        },
+        "damageFlash": {
+          "enabled": true,
+          "color": "#FFFFFF",
+          "duration": 120
+        },
+        "healGlow": {
+          "enabled": true,
+          "color": "#4CAF50",
+          "duration": 400
+        }
+      },
+      "positioning": {
+        "layout": "horizontal",
+        "alignment": "left",
+        "spacing": 6,
+        "labels": {
+          "enabled": true,
+          "position": "inside",
+          "showValues": true,
+          "showPercentage": false
+        }
+      }
+    },
+    "hud": {
+      "minimap": {
+        "size": 140,
+        "borderRadius": 6,
+        "backgroundColor": "#00000070",
+        "borderColor": "#7C6BAF",
+        "borderWidth": 1.5,
+        "player": {
+          "color": "#FFD700",
+          "size": 5,
+          "glowRadius": 2,
+          "showDirection": true
+        },
+        "enemies": {
+          "enabled": true,
+          "color": "#F44336",
+          "size": 3,
+          "bossColor": "#B71C1C",
+          "bossSize": 6,
+          "aggroColor": "#FF5722"
+        },
+        "npcs": {
+          "enabled": true,
+          "color": "#2196F3",
+          "size": 2,
+          "questGiverColor": "#FF9800",
+          "merchantColor": "#4CAF50"
+        },
+        "points": {
+          "enabled": true,
+          "treasureColor": "#FFD700",
+          "portalColor": "#9C27B0",
+          "dangerZoneColor": "#E91E63"
+        },
+        "zoom": {
+          "enabled": true,
+          "minZoom": 0.6,
+          "maxZoom": 2.5,
+          "defaultZoom": 1.0
+        }
+      },
+      "buffBar": {
+        "iconSize": 28,
+        "spacing": 3,
+        "maxBuffs": 12,
+        "layout": "horizontal",
+        "positive": {
+          "borderColor": "#4CAF50",
+          "glowColor": "#66BB6A",
+          "borderWidth": 1.5
+        },
+        "negative": {
+          "borderColor": "#F44336",
+          "glowColor": "#EF5350",
+          "borderWidth": 1.5,
+          "pulse": true
+        },
+        "duration": {
+          "enabled": true,
+          "position": "bottom",
+          "fontSize": 9,
+          "textColor": "#FFFFFF",
+          "backgroundColor": "#00000080"
+        },
+        "stacks": {
+          "enabled": true,
+          "position": "corner",
+          "fontSize": 10,
+          "textColor": "#FFD700"
+        }
+      },
+      "resourceDisplay": {
+        "layout": "horizontal",
+        "backgroundColor": "#2A181080",
+        "borderRadius": 6,
+        "padding": 6,
+        "gold": {
+          "enabled": true,
+          "color": "#FFD700",
+          "icon": "coin",
+          "fontSize": 14,
+          "animated": true,
+          "gainColor": "#4CAF50",
+          "lossColor": "#F44336"
+        },
+        "gems": {
+          "enabled": true,
+          "color": "#E91E63",
+          "icon": "gem",
+          "glowEffect": true
+        },
+        "items": {
+          "enabled": true,
+          "maxVisible": 6,
+          "iconSize": 18,
+          "fontSize": 11,
+          "textColor": "#E0E0E0"
+        }
+      },
+      "notifications": {
+        "toast": {
+          "enabled": true,
+          "position": "top-center",
+          "maxVisible": 3,
+          "duration": 3500,
+          "backgroundColor": "#2A1810F0",
+          "borderColor": "#7C6BAF",
+          "textColor": "#E0E0E0",
+          "types": {
+            "success": "#4CAF50",
+            "error": "#F44336",
+            "warning": "#FF9800",
+            "info": "#2196F3"
+          }
+        },
+        "floatingText": {
+          "enabled": true,
+          "fontSize": 16,
+          "duration": 1200,
+          "damage": {
+            "color": "#F44336",
+            "criticalColor": "#FF9800",
+            "criticalSize": 1.4
+          },
+          "healing": {
+            "color": "#4CAF50",
+            "glowColor": "#66BB6A"
+          },
+          "experience": {
+            "color": "#FF9800",
+            "bonusColor": "#FFD700"
+          }
+        }
+      },
+      "positioning": {
+        "anchors": {
+          "minimap": "top-right",
+          "buffBar": "top-left",
+          "resourceDisplay": "top-center"
+        },
+        "margins": {
+          "top": 16,
+          "right": 16,
+          "bottom": 16,
+          "left": 16
+        },
+        "responsive": {
+          "enabled": true,
+          "mobileScale": 0.8,
+          "tabletScale": 0.9,
+          "hideOnMobile": ["floatingText"]
+        }
+      }
+    }
+  },
+  "responsive": {
+    "breakpoints": {
+      "mobile": 576,
+      "tablet": 768,
+      "desktop": 1024,
+      "wide": 1440
+    },
+    "scaleFactor": {
+      "mobile": 0.85,
+      "tablet": 0.92,
+      "desktop": 1.0,
+      "wide": 1.08
+    },
+    "adaptiveSpacing": true,
+    "adaptiveTypography": true
+  },
+  "shadows": {
+    "small": {
+      "blurRadius": 4,
+      "spreadRadius": 0,
+      "offset": [0, 2],
+      "color": "#00000025"
+    },
+    "medium": {
+      "blurRadius": 8,
+      "spreadRadius": 0,
+      "offset": [0, 4],
+      "color": "#00000035"
+    },
+    "large": {
+      "blurRadius": 16,
+      "spreadRadius": 0,
+      "offset": [0, 8],
+      "color": "#00000045"
+    }
+  },
+  "conditions": {
+    "enabled": true,
+    "rules": [
+      {
+        "condition": {
+          "deviceTier": "low"
+        },
+        "modules": {
+          "gaming": {
+            "inventory": {
+              "animations": {
+                "itemAppear": { "enabled": false },
+                "sorting": { "enabled": false }
+              }
+            },
+            "progress": {
+              "base": { "gradient": { "enabled": false } },
+              "animations": { "fillAnimation": { "smoothing": false } }
+            },
+            "hud": {
+              "notifications": { "floatingText": { "enabled": false } }
+            }
+          },
+          "extensions": {
+            "particles": { "enabled": false },
+            "screenEffects": { "bloom": 0, "vignette": 0 }
+          }
+        }
+      }
+    ]
+  },
+  "extensions": {
+    "magicGradient": ["#7C6BAF", "#A594D1", "#FFD700"],
+    "portalGradient": ["#4B3B79", "#7C6BAF", "#A594D1"],
+    "parallaxStrength": 0.15,
+    "hoverAuraColor": "#A594D1",
+    "depthBlur": {
+      "enabled": false,
+      "intensity": 1,
+      "focusDistance": 75
+    },
+    "particles": {
+      "enabled": true,
+      "density": 0.2,
+      "color": "#A594D1"
+    },
+    "screenEffects": {
+      "vignette": 0.1,
+      "bloom": 0.05,
+      "colorGrading": "fantasy",
+      "weather": "none"
+    }
+  }
+}

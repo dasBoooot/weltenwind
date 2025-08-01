@@ -4,7 +4,6 @@ import 'config/env.dart';
 import 'config/logger.dart';
 import 'routing/app_router.dart';
 import 'shared/widgets/splash_screen.dart';
-import 'theme/fantasy_theme.dart';
 import 'main.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/api_service.dart';
@@ -71,14 +70,8 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
       appName: Env.appName,
       child: MaterialApp.router(
         title: Env.appName,
-        theme: FantasyTheme.getThemeForPreset(
-          brightness: Brightness.light,
-          preset: _themeProvider.stylePreset,
-        ),
-        darkTheme: FantasyTheme.getThemeForPreset(
-          brightness: Brightness.dark,
-          preset: _themeProvider.stylePreset,
-        ),
+        theme: _themeProvider.currentLightTheme, // Unterstützt Fantasy & Custom Themes
+        darkTheme: _themeProvider.currentDarkTheme, // Unterstützt Fantasy & Custom Themes  
         themeMode: _themeProvider.themeMode, // Dynamisch basierend auf ThemeProvider
         routerConfig: AppRouter.router,
         debugShowCheckedModeBanner: false,
@@ -108,22 +101,17 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
     
     AppLogger.app.i('🌍 Environment initialisiert');
     
-    // 2. Fantasy Theme Assets preloaden
-    await FantasyTheme.preloadAssets();
-    
-    AppLogger.app.i('🎨 Fantasy Theme Assets geladen');
-    
-    // 3. LocaleProvider initialisieren
+    // 2. LocaleProvider initialisieren
     await LocaleProvider.initialize();
     
     AppLogger.app.i('🌐 LocaleProvider initialisiert');
     
-    // 4. ThemeProvider initialisieren
+    // 3. ThemeProvider initialisieren
     await ThemeProvider.initialize();
     
     AppLogger.app.i('🎨 ThemeProvider initialisiert');
     
-    // 5. Services initialisieren (jetzt sicher, da App bereits läuft)
+    // 4. Services initialisieren (jetzt sicher, da App bereits läuft)
     try {
       final authService = AuthService();
       final apiService = ApiService.withAuth(authService);

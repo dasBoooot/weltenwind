@@ -169,10 +169,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
             right: 20.0,
             child: SafeArea(
               child: ThemeSwitcher(
-                currentThemeMode: ThemeProvider().themeMode,
-                onThemeModeChanged: (mode) => ThemeProvider().setThemeMode(mode),
-                currentStylePreset: ThemeProvider().stylePreset,
-                onStylePresetChanged: (preset) => ThemeProvider().setStylePreset(preset),
+                themeProvider: ThemeProvider(),
                 isCompact: true,
               ),
             ),
