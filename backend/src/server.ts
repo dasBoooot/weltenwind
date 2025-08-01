@@ -127,6 +127,36 @@ app.use('/docs', express.static(swaggerEditorPath));
 // === ARB Manager unter /arb-manager ===
 const publicPath = path.resolve(__dirname, '../public');
 console.log(`🌍 ARB Manager-Pfad: ${publicPath}`);
+
+// Security-Middleware für ARB Manager
+app.use('/arb-manager', (req, res, next) => {
+  // XSS-Protection Headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // Content Security Policy für ARB Manager
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'", // Für inline Event-Handler wie onclick
+    "style-src 'self' 'unsafe-inline'",  // Für inline Styles
+    "connect-src 'self'",                // Für API-Calls
+    "img-src 'self' data:",              // Für Base64-Bilder falls nötig
+    "font-src 'self'",                   // Für Web-Fonts
+    "object-src 'none'",                 // Plugins blockieren
+    "base-uri 'self'",                   // Base-Tag Manipulation verhindern
+    "form-action 'self'"                 // Form-Submissions nur an eigene Domain
+  ].join('; '));
+  
+  // Cache-Control für sensible ARB-Daten
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
+  next();
+});
+
 app.use('/arb-manager', express.static(publicPath));
 
 // === Flutter-Web-App unter /game ===
@@ -265,7 +295,7 @@ process.on('SIGTERM', async () => {
 app.listen(PORT, () => {
   console.log(`🚀 Weltenwind-API läuft auf Port ${PORT}`);
   console.log(`🎮 Flutter-Game verfügbar unter: http://localhost:${PORT}/game`);
-  console.log(`🌍 ARB Manager verfügbar unter: http://localhost:${PORT}/arb-manager/arb-manager.html`);
+  console.log(`🌍 ARB Manager verfügbar unter: http://localhost:${PORT}/arb-manager/`);
   console.log(`📘 Swagger Editor verfügbar unter: http://localhost:${PORT}/docs`);
   console.log(`📄 API-Doku YAML erreichbar unter: http://localhost:${PORT}/api-combined.yaml`);
   console.log(`🔍 Log-Viewer verfügbar unter: http://localhost:${PORT}/api/logs/viewer`);
@@ -284,7 +314,7 @@ app.listen(PORT, () => {
     endpoints: {
       api: `http://localhost:${PORT}/api`,
       game: `http://localhost:${PORT}/game`,
-      arbManager: `http://localhost:${PORT}/arb-manager/arb-manager.html`,
+      arbManager: `http://localhost:${PORT}/arb-manager/`,
       docs: `http://localhost:${PORT}/docs`,
       logs: `http://localhost:${PORT}/api/logs/viewer`,
       openapi: `http://localhost:${PORT}/api-combined.yaml`
