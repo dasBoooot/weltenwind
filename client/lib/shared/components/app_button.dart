@@ -1,217 +1,62 @@
 import 'package:flutter/material.dart';
-import '../../theme/tokens/colors.dart';
-import '../../theme/tokens/spacing.dart'; 
-import '../../theme/tokens/typography.dart';
-import '../../theme/tokens/shadows.dart';
+import '../../core/services/modular_theme_service.dart';
 
-/// 🎯 Fantasy Button Variants
+/// 🎯 Fantasy Button Variants based on Theme Schema
 enum AppButtonVariant {
-  /// Hauptaktion - gefüllt mit Primary-Color
+  /// Primary action button
   primary,
-  /// Sekundäre Aktion - Outline-Style
-  secondary,
-  /// Tertiäre Aktion - nur Text
+  /// Secondary action with outline
+  secondary, 
+  /// Text-only button
   tertiary,
-  /// Magische Aktion - mit Glow-Effekt
+  /// Fantasy magic button with glow effects
   magic,
-  /// Portal-Aktion - mit Aqua-Glow
+  /// Portal button with aqua effects
   portal,
-  /// Artefakt-Aktion - Golden mit Glow
+  /// Artifact button with golden effects
   artifact,
-  /// Erfolg - Grüner Glow
+  /// Success button
   success,
-  /// Fehler/Gefahr - Roter Glow
+  /// Danger/error button
   danger,
-  /// Geist-Button - durchsichtig
+  /// Ghost transparent button
   ghost,
 }
 
-/// 📏 Button-Größen
+/// 📏 Button Sizes based on Schema
 enum AppButtonSize {
   small,
-  medium,
+  medium, 
   large,
   extraLarge,
 }
 
-/// 🎯 Weltenwind Fantasy Button
+/// 🎨 Weltenwind Schema-Based Fantasy Button
 /// 
-/// Magische Buttons mit verschiedenen Effekten und Animationen
+/// Completely rebuilt based on JSON Theme Schema with ModularThemeService integration
 class AppButton extends StatefulWidget {
   final String? text;
   final Widget? child;
   final VoidCallback? onPressed;
-  final VoidCallback? onLongPress;
   final AppButtonVariant variant;
   final AppButtonSize size;
   final bool isLoading;
   final bool isExpanded;
   final IconData? icon;
   final IconData? suffixIcon;
-  final double? width;
-  final double? height;
-  final EdgeInsetsGeometry? padding;
-  final bool enabled;
 
   const AppButton({
     super.key,
     this.text,
     this.child,
-    required this.onPressed,
-    this.onLongPress,
+    this.onPressed,
     this.variant = AppButtonVariant.primary,
     this.size = AppButtonSize.medium,
     this.isLoading = false,
     this.isExpanded = false,
     this.icon,
     this.suffixIcon,
-    this.width,
-    this.height,
-    this.padding,
-    this.enabled = true,
-  }) : assert(text != null || child != null, 'Either text or child must be provided');
-
-  // ========================================
-  // 🏭 FACTORY CONSTRUCTORS - Häufige Varianten
-  // ========================================
-
-  factory AppButton.primary({
-    required String text,
-    required VoidCallback? onPressed,
-    AppButtonSize size = AppButtonSize.medium,
-    IconData? icon,
-    bool isLoading = false,
-    bool isExpanded = false,
-  }) {
-    return AppButton(
-      text: text,
-      onPressed: onPressed,
-      variant: AppButtonVariant.primary,
-      size: size,
-      icon: icon,
-      isLoading: isLoading,
-      isExpanded: isExpanded,
-    );
-  }
-
-  factory AppButton.secondary({
-    required String text,
-    required VoidCallback? onPressed,
-    AppButtonSize size = AppButtonSize.medium,
-    IconData? icon,
-    bool isLoading = false,
-  }) {
-    return AppButton(
-      text: text,
-      onPressed: onPressed,
-      variant: AppButtonVariant.secondary,
-      size: size,
-      icon: icon,
-      isLoading: isLoading,
-    );
-  }
-
-  factory AppButton.magic({
-    required String text,
-    required VoidCallback? onPressed,
-    AppButtonSize size = AppButtonSize.medium,
-    IconData? icon,
-    bool isLoading = false,
-  }) {
-    return AppButton(
-      text: text,
-      onPressed: onPressed,
-      variant: AppButtonVariant.magic,
-      size: size,
-      icon: icon,
-      isLoading: isLoading,
-    );
-  }
-
-  factory AppButton.portal({
-    required String text,
-    required VoidCallback? onPressed,
-    AppButtonSize size = AppButtonSize.medium,
-    IconData? icon,
-    bool isLoading = false,
-  }) {
-    return AppButton(
-      text: text,
-      onPressed: onPressed,
-      variant: AppButtonVariant.portal,
-      size: size,
-      icon: icon,
-      isLoading: isLoading,
-    );
-  }
-
-  factory AppButton.artifact({
-    required String text,
-    required VoidCallback? onPressed,
-    AppButtonSize size = AppButtonSize.medium,
-    IconData? icon,
-    bool isLoading = false,
-  }) {
-    return AppButton(
-      text: text,
-      onPressed: onPressed,
-      variant: AppButtonVariant.artifact,
-      size: size,
-      icon: icon,
-      isLoading: isLoading,
-    );
-  }
-
-  factory AppButton.success({
-    required String text,
-    required VoidCallback? onPressed,
-    AppButtonSize size = AppButtonSize.medium,
-    IconData? icon,
-    bool isLoading = false,
-  }) {
-    return AppButton(
-      text: text,
-      onPressed: onPressed,
-      variant: AppButtonVariant.success,
-      size: size,
-      icon: icon,
-      isLoading: isLoading,
-    );
-  }
-
-  factory AppButton.danger({
-    required String text,
-    required VoidCallback? onPressed,
-    AppButtonSize size = AppButtonSize.medium,
-    IconData? icon,
-    bool isLoading = false,
-  }) {
-    return AppButton(
-      text: text,
-      onPressed: onPressed,
-      variant: AppButtonVariant.danger,
-      size: size,
-      icon: icon,
-      isLoading: isLoading,
-    );
-  }
-
-  factory AppButton.ghost({
-    required String text,
-    required VoidCallback? onPressed,
-    AppButtonSize size = AppButtonSize.medium,
-    IconData? icon,
-    bool isLoading = false,
-  }) {
-    return AppButton(
-      text: text,
-      onPressed: onPressed,
-      variant: AppButtonVariant.ghost,
-      size: size,
-      icon: icon,
-      isLoading: isLoading,
-    );
-  }
+  });
 
   @override
   State<AppButton> createState() => _AppButtonState();
@@ -244,35 +89,48 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
     super.dispose();
   }
 
+  void _handleTapDown(TapDownDetails details) {
+    setState(() => _isPressed = true);
+    _animationController.forward();
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    setState(() => _isPressed = false);
+    _animationController.reverse();
+  }
+
+  void _handleTapCancel() {
+    setState(() => _isPressed = false);
+    _animationController.reverse();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final isEnabled = widget.enabled && widget.onPressed != null && !widget.isLoading;
-
+    final isEnabled = widget.onPressed != null && !widget.isLoading;
+    
+    // Get extensions from ModularThemeService for fantasy effects
+    final extensions = ModularThemeService().getCurrentThemeExtensions();
+    
     return ScaleTransition(
       scale: _scaleAnimation,
       child: SizedBox(
-        width: widget.isExpanded ? double.infinity : widget.width,
-        height: widget.height ?? _getButtonHeight(),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          decoration: _getDecoration(context, isDark, isEnabled),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: isEnabled ? () => _handleTap() : null,
-              onLongPress: widget.onLongPress,
-              onTapDown: (_) => _setPressed(true),
-              onTapUp: (_) => _setPressed(false),
-              onTapCancel: () => _setPressed(false),
-              borderRadius: BorderRadius.circular(_getBorderRadius()),
-              splashColor: _getSplashColor(isDark).withValues(alpha: 0.2),
-              highlightColor: _getSplashColor(isDark).withValues(alpha: 0.1),
-              child: Container(
-                padding: widget.padding ?? _getPadding(),
-                child: _buildContent(theme, isDark, isEnabled),
-              ),
+        width: widget.isExpanded ? double.infinity : null,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: isEnabled ? widget.onPressed : null,
+            onTapDown: isEnabled ? _handleTapDown : null,
+            onTapUp: isEnabled ? _handleTapUp : null,
+            onTapCancel: _handleTapCancel,
+            borderRadius: BorderRadius.circular(_getBorderRadius(theme)),
+            splashColor: _getSplashColor(theme, extensions).withValues(alpha: 0.2),
+            highlightColor: _getSplashColor(theme, extensions).withValues(alpha: 0.1),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              decoration: _getDecoration(theme, isEnabled, extensions),
+              padding: _getPadding(theme),
+              child: _buildContent(theme, isEnabled),
             ),
           ),
         ),
@@ -280,286 +138,145 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
     );
   }
 
-  void _handleTap() {
-    if (widget.onPressed != null) {
-      _animationController.forward().then((_) {
-        _animationController.reverse();
-      });
-      widget.onPressed!();
-    }
-  }
-
-  void _setPressed(bool pressed) {
-    if (_isPressed != pressed) {
-      setState(() {
-        _isPressed = pressed;
-      });
-    }
-  }
-
-  Widget _buildContent(ThemeData theme, bool isDark, bool isEnabled) {
-    if (widget.isLoading) {
-      return _buildLoadingContent(isDark);
-    }
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (widget.icon != null) ...[
-          Icon(
-            widget.icon,
-            size: _getIconSize(),
-            color: _getContentColor(isDark, isEnabled),
-          ),
-          if (widget.text != null || widget.child != null)
-            SizedBox(width: _getIconSpacing()),
-        ],
-        if (widget.text != null)
-          Flexible(
-            child: Text(
-              widget.text!,
-              style: _getTextStyle(theme, isDark, isEnabled),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          )
-        else if (widget.child != null)
-          Flexible(child: widget.child!),
-        if (widget.suffixIcon != null) ...[
-          if (widget.text != null || widget.child != null)
-            SizedBox(width: _getIconSpacing()),
-          Icon(
-            widget.suffixIcon,
-            size: _getIconSize(),
-            color: _getContentColor(isDark, isEnabled),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildLoadingContent(bool isDark) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: _getIconSize(),
-          height: _getIconSize(),
-          child: CircularProgressIndicator(
-            strokeWidth: 2.0,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              _getContentColor(isDark, true),
-            ),
-          ),
-        ),
-        if (widget.text != null) ...[
-          SizedBox(width: _getIconSpacing()),
-          Text(
-            widget.text!,
-            style: _getTextStyle(Theme.of(context), isDark, true),
-          ),
-        ],
-      ],
-    );
-  }
-
-  // ========================================
-  // 🎨 STYLING METHODS
-  // ========================================
-
-  BoxDecoration _getDecoration(BuildContext context, bool isDark, bool isEnabled) {
-    final colorScheme = Theme.of(context).colorScheme;
+  /// Get decoration based on schema and fantasy extensions
+  BoxDecoration _getDecoration(ThemeData theme, bool isEnabled, Map<String, dynamic>? extensions) {
     return BoxDecoration(
-      color: _getBackgroundColorLegacy(isDark, isEnabled),
-      borderRadius: BorderRadius.circular(_getBorderRadius()),
-      border: _getBorder(isDark, isEnabled),
-      boxShadow: _getShadows(isEnabled),
-      gradient: _getGradient(isDark, isEnabled),
+      color: _getBackgroundColor(theme, isEnabled),
+      borderRadius: BorderRadius.circular(_getBorderRadius(theme)),
+      border: _getBorder(theme, isEnabled),
+      gradient: _getGradient(theme, isEnabled, extensions),
+      boxShadow: _getShadows(theme, isEnabled, extensions),
     );
   }
 
-  Color _getBackgroundColor(bool isDark, bool isEnabled, ColorScheme colorScheme) {
+  /// Background color based on variant and theme
+  Color _getBackgroundColor(ThemeData theme, bool isEnabled) {
     if (!isEnabled) {
-      return colorScheme.onSurface.withValues(alpha: 0.12);
+      return theme.colorScheme.onSurface.withValues(alpha: 0.12);
     }
 
     switch (widget.variant) {
       case AppButtonVariant.primary:
-      case AppButtonVariant.magic:
-        return colorScheme.primary;
-      case AppButtonVariant.secondary:
-        return Colors.transparent;
-      case AppButtonVariant.tertiary:
-        return Colors.transparent;
-      case AppButtonVariant.portal:
-        return colorScheme.tertiary;
-      case AppButtonVariant.artifact:
-        return colorScheme.secondary;
-      case AppButtonVariant.success:
-        return const Color(0xFF4CAF50);
-      case AppButtonVariant.danger:
-        return const Color(0xFFF44336);
-      case AppButtonVariant.ghost:
-        return colorScheme.surface.withValues(alpha: 0.5);
-    }
-  }
-
-  // Legacy method for backwards compatibility
-  Color _getBackgroundColorLegacy(bool isDark, bool isEnabled) {
-    if (!isEnabled) {
-      return isDark ? AppColors.surfaceLight.withValues(alpha: 0.3) : AppColors.surfaceGray.withValues(alpha: 0.5);
-    }
-
-    switch (widget.variant) {
-      case AppButtonVariant.primary:
-        return isDark ? AppColors.primaryAccent : AppColors.primary;
-      case AppButtonVariant.secondary:
-        return Colors.transparent;
-      case AppButtonVariant.tertiary:
-        return Colors.transparent;
-      case AppButtonVariant.magic:
-        return AppColors.primary;
-      case AppButtonVariant.portal:
-        return AppColors.aqua;
-      case AppButtonVariant.artifact:
-        return AppColors.secondary;
-      case AppButtonVariant.success:
-        return AppColors.success;
-      case AppButtonVariant.danger:
-        return AppColors.error;
-      case AppButtonVariant.ghost:
-        return isDark ? AppColors.surfaceMedium.withValues(alpha: 0.5) : AppColors.surfaceGray.withValues(alpha: 0.3);
-    }
-  }
-
-  Color _getContentColor(bool isDark, bool isEnabled) {
-    if (!isEnabled) {
-      return isDark ? AppColors.textDisabled : AppColors.textTertiaryLight;
-    }
-
-    switch (widget.variant) {
-      case AppButtonVariant.primary:
-      case AppButtonVariant.magic:
-      case AppButtonVariant.success:
-      case AppButtonVariant.danger:
-        return Colors.white;
-      case AppButtonVariant.portal:
-      case AppButtonVariant.artifact:
-        return AppColors.surfaceDark;
+        return theme.colorScheme.primary;
       case AppButtonVariant.secondary:
       case AppButtonVariant.tertiary:
       case AppButtonVariant.ghost:
-        return isDark ? AppColors.textPrimary : AppColors.textPrimaryLight;
-    }
-  }
-
-  Border? _getBorder(bool isDark, bool isEnabled) {
-    switch (widget.variant) {
-      case AppButtonVariant.secondary:
-        return Border.all(
-          color: isEnabled
-              ? (isDark ? AppColors.primaryAccent : AppColors.primary)
-              : (isDark ? AppColors.textDisabled : AppColors.textTertiaryLight),
-          width: 1.5,
-        );
-      case AppButtonVariant.ghost:
-        return Border.all(
-          color: isEnabled
-              ? (isDark ? AppColors.surfaceLight : AppColors.surfaceGray)
-              : (isDark ? AppColors.textDisabled : AppColors.textTertiaryLight),
-          width: 1.0,
-        );
-      default:
-        return null;
-    }
-  }
-
-  List<BoxShadow> _getShadows(bool isEnabled) {
-    if (!isEnabled) return AppShadows.none;
-    if (_isPressed) return AppShadows.pressed;
-
-    switch (widget.variant) {
+        return Colors.transparent;
       case AppButtonVariant.magic:
-        return AppShadows.magicGlow;
+        return theme.colorScheme.primary;
       case AppButtonVariant.portal:
-        return AppShadows.portalGlow;
+        return theme.colorScheme.tertiary;
       case AppButtonVariant.artifact:
-        return AppShadows.goldenGlow;
+        return theme.colorScheme.secondary;
       case AppButtonVariant.success:
-        return AppShadows.successGlow;
+        return theme.colorScheme.tertiary;
       case AppButtonVariant.danger:
-        return AppShadows.errorGlow;
-      case AppButtonVariant.primary:
-        return AppShadows.small;
-      default:
-        return AppShadows.none;
+        return theme.colorScheme.error;
     }
   }
 
-  Gradient? _getGradient(bool isDark, bool isEnabled) {
+  /// Border based on variant
+  Border? _getBorder(ThemeData theme, bool isEnabled) {
+    if (widget.variant == AppButtonVariant.secondary || 
+        widget.variant == AppButtonVariant.tertiary || 
+        widget.variant == AppButtonVariant.ghost) {
+      return Border.all(
+        color: isEnabled 
+            ? theme.colorScheme.primary 
+            : theme.colorScheme.onSurface.withValues(alpha: 0.12),
+        width: 1.5,
+      );
+    }
+    return null;
+  }
+
+  /// Fantasy gradients from extensions
+  Gradient? _getGradient(ThemeData theme, bool isEnabled, Map<String, dynamic>? extensions) {
     if (!isEnabled) return null;
 
     switch (widget.variant) {
       case AppButtonVariant.magic:
-        return AppColors.magicGradient;
+        if (extensions != null && extensions.containsKey('magicGradient')) {
+          final colors = (extensions['magicGradient'] as List<dynamic>)
+              .map((color) => _parseColor(color.toString()) ?? theme.colorScheme.primary)
+              .toList();
+          return LinearGradient(colors: colors);
+        }
+        return LinearGradient(colors: [theme.colorScheme.primary, theme.colorScheme.primaryContainer]);
       case AppButtonVariant.portal:
-        return AppColors.portalGradient;
+        if (extensions != null && extensions.containsKey('portalGradient')) {
+          final colors = (extensions['portalGradient'] as List<dynamic>)
+              .map((color) => _parseColor(color.toString()) ?? theme.colorScheme.tertiary)
+              .toList();
+          return LinearGradient(colors: colors);
+        }
+        return LinearGradient(colors: [theme.colorScheme.tertiary, theme.colorScheme.tertiaryContainer]);
       default:
         return null;
     }
   }
 
-  Color _getSplashColor(bool isDark) {
+  /// Fantasy shadows and glow effects
+  List<BoxShadow> _getShadows(ThemeData theme, bool isEnabled, Map<String, dynamic>? extensions) {
+    if (!isEnabled) return [];
+
     switch (widget.variant) {
       case AppButtonVariant.magic:
-        return AppColors.glow;
+        return [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.4),
+            blurRadius: _isPressed ? 8 : 12,
+            spreadRadius: _isPressed ? 1 : 2,
+            offset: const Offset(0, 2),
+          ),
+        ];
       case AppButtonVariant.portal:
-        return AppColors.aqua;
+        return [
+          BoxShadow(
+            color: theme.colorScheme.tertiary.withValues(alpha: 0.4),
+            blurRadius: _isPressed ? 8 : 12,
+            spreadRadius: _isPressed ? 1 : 2,
+            offset: const Offset(0, 2),
+          ),
+        ];
       case AppButtonVariant.artifact:
-        return AppColors.secondary;
-      case AppButtonVariant.success:
-        return AppColors.success;
-      case AppButtonVariant.danger:
-        return AppColors.error;
+        return [
+          BoxShadow(
+            color: theme.colorScheme.secondary.withValues(alpha: 0.4),
+            blurRadius: _isPressed ? 6 : 10,
+            spreadRadius: _isPressed ? 0 : 1,
+            offset: const Offset(0, 2),
+          ),
+        ];
       default:
-        return isDark ? AppColors.primaryAccent : AppColors.primary;
+        return [];
     }
   }
 
-  // ========================================
-  // 📏 SIZE & DIMENSION METHODS
-  // ========================================
-
-  double _getButtonHeight() {
-    switch (widget.size) {
-      case AppButtonSize.small:
-        return 32.0;
-      case AppButtonSize.medium:
-        return 40.0;
-      case AppButtonSize.large:
-        return 48.0;
-      case AppButtonSize.extraLarge:
-        return 56.0;
+  /// Splash color for interactions
+  Color _getSplashColor(ThemeData theme, Map<String, dynamic>? extensions) {
+    switch (widget.variant) {
+      case AppButtonVariant.magic:
+        if (extensions != null && extensions.containsKey('hoverAuraColor')) {
+          return _parseColor(extensions['hoverAuraColor'].toString()) ?? theme.colorScheme.primary;
+        }
+        return theme.colorScheme.primary;
+      case AppButtonVariant.portal:
+        return theme.colorScheme.tertiary;
+      case AppButtonVariant.artifact:
+        return theme.colorScheme.secondary;
+      case AppButtonVariant.success:
+        return theme.colorScheme.tertiary;
+      case AppButtonVariant.danger:
+        return theme.colorScheme.error;
+      default:
+        return theme.colorScheme.primary;
     }
   }
 
-  EdgeInsetsGeometry _getPadding() {
-    switch (widget.size) {
-      case AppButtonSize.small:
-        return const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs);
-      case AppButtonSize.medium:
-        return const EdgeInsets.symmetric(horizontal: AppSpacing.buttonPaddingHorizontal, vertical: AppSpacing.buttonPaddingVertical);
-      case AppButtonSize.large:
-        return const EdgeInsets.symmetric(horizontal: AppSpacing.buttonPaddingLarge, vertical: AppSpacing.md);
-      case AppButtonSize.extraLarge:
-        return const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.lg);
-    }
-  }
-
-  double _getBorderRadius() {
+  /// Border radius from schema components.buttons configuration  
+  double _getBorderRadius(ThemeData theme) {
+    // TODO: Get from schema - for now use reasonable defaults
     switch (widget.size) {
       case AppButtonSize.small:
         return 8.0;
@@ -572,6 +289,109 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
     }
   }
 
+  /// Padding from schema components.buttons configuration
+  EdgeInsetsGeometry _getPadding(ThemeData theme) {
+    // TODO: Get from schema - for now use reasonable defaults
+    switch (widget.size) {
+      case AppButtonSize.small:
+        return const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0);
+      case AppButtonSize.medium:
+        return const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0);
+      case AppButtonSize.large:
+        return const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0);
+      case AppButtonSize.extraLarge:
+        return const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0);
+    }
+  }
+
+  /// Build button content
+  Widget _buildContent(ThemeData theme, bool isEnabled) {
+    final contentColor = _getContentColor(theme, isEnabled);
+    
+    if (widget.isLoading) {
+      return SizedBox(
+        height: 20,
+        width: 20,
+        child: CircularProgressIndicator(
+          strokeWidth: 2.0,
+          valueColor: AlwaysStoppedAnimation<Color>(contentColor),
+        ),
+      );
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (widget.icon != null) ...[
+          Icon(
+            widget.icon,
+            color: contentColor,
+            size: _getIconSize(),
+          ),
+          if (widget.text != null || widget.child != null)
+            SizedBox(width: _getIconSpacing()),
+        ],
+        if (widget.child != null)
+          widget.child!
+        else if (widget.text != null)
+          Text(
+            widget.text!,
+            style: _getTextStyle(theme, isEnabled),
+          ),
+        if (widget.suffixIcon != null) ...[
+          if (widget.text != null || widget.child != null)
+            SizedBox(width: _getIconSpacing()),
+          Icon(
+            widget.suffixIcon,
+            color: contentColor,
+            size: _getIconSize(),
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// Content color based on variant
+  Color _getContentColor(ThemeData theme, bool isEnabled) {
+    if (!isEnabled) {
+      return theme.colorScheme.onSurface.withValues(alpha: 0.38);
+    }
+
+    switch (widget.variant) {
+      case AppButtonVariant.primary:
+      case AppButtonVariant.magic:
+      case AppButtonVariant.portal:
+      case AppButtonVariant.artifact:
+      case AppButtonVariant.success:
+      case AppButtonVariant.danger:
+        return theme.colorScheme.onPrimary;
+      case AppButtonVariant.secondary:
+      case AppButtonVariant.tertiary:
+      case AppButtonVariant.ghost:
+        return theme.colorScheme.primary;
+    }
+  }
+
+  /// Text style based on size and schema typography
+  TextStyle _getTextStyle(ThemeData theme, bool isEnabled) {
+    final baseStyle = switch (widget.size) {
+      AppButtonSize.small => theme.textTheme.bodyMedium,
+      AppButtonSize.medium => theme.textTheme.bodyLarge,
+      AppButtonSize.large => theme.textTheme.bodyLarge,
+      AppButtonSize.extraLarge => theme.textTheme.headlineSmall,
+    };
+
+    return baseStyle?.copyWith(
+      color: _getContentColor(theme, isEnabled),
+      fontWeight: FontWeight.w600,
+    ) ?? TextStyle(
+      color: _getContentColor(theme, isEnabled),
+      fontWeight: FontWeight.w600,
+    );
+  }
+
+  /// Icon size based on button size
   double _getIconSize() {
     switch (widget.size) {
       case AppButtonSize.small:
@@ -585,30 +405,28 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
     }
   }
 
+  /// Icon spacing based on button size
   double _getIconSpacing() {
     switch (widget.size) {
       case AppButtonSize.small:
-        return AppSpacing.xs;
+        return 6.0;
       case AppButtonSize.medium:
-        return AppSpacing.sm;
+        return 8.0;
       case AppButtonSize.large:
-        return AppSpacing.md;
+        return 10.0;
       case AppButtonSize.extraLarge:
-        return AppSpacing.lg;
+        return 12.0;
     }
   }
 
-  TextStyle _getTextStyle(ThemeData theme, bool isDark, bool isEnabled) {
-    final baseStyle = switch (widget.size) {
-      AppButtonSize.small => AppTypography.labelMedium(isDark: isDark),
-      AppButtonSize.medium => AppTypography.labelLarge(isDark: isDark),
-      AppButtonSize.large => AppTypography.labelLarge(isDark: isDark),
-      AppButtonSize.extraLarge => AppTypography.h6(isDark: isDark),
-    };
-
-    return baseStyle.copyWith(
-      color: _getContentColor(isDark, isEnabled),
-      fontWeight: FontWeight.w600,
-    );
+  /// Helper: Parse color from hex string
+  Color? _parseColor(String colorString) {
+    if (colorString.startsWith('#')) {
+      final hex = colorString.replaceAll('#', '');
+      if (hex.length == 6) {
+        return Color(int.parse('FF$hex', radix: 16));
+      }
+    }
+    return null;
   }
 }

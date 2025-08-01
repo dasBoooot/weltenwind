@@ -564,6 +564,23 @@ class ModularThemeService {
     };
   }
 
+  /// 🎨 Gibt Fantasy-Extensions des aktuellen Themes zurück
+  Map<String, dynamic>? getCurrentThemeExtensions() {
+    if (_currentBundle == null) return null;
+    
+    // Suche im Cache nach dem aktuellen Theme
+    for (final entry in _moduleCache.entries) {
+      if (entry.key.startsWith('base_')) {
+        final themeData = entry.value;
+        if (themeData.containsKey('extensions')) {
+          return themeData['extensions'] as Map<String, dynamic>;
+        }
+      }
+    }
+    
+    return null;
+  }
+
   /// Berechnet Cache-Hit-Rate
   double _calculateCacheHitRate() {
     // Vereinfachte Berechnung - in echter App würde man Cache-Hits vs. Misses tracken

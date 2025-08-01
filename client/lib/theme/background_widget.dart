@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'app_theme.dart';
 
 class BackgroundWidget extends StatelessWidget {
   final Widget child;
@@ -13,6 +12,8 @@ class BackgroundWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -27,8 +28,8 @@ class BackgroundWidget extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                            AppTheme.backgroundColor.withValues(alpha: 0.8),
-        AppTheme.surfaceColor.withValues(alpha: 0.9),
+                    colorScheme.surface.withValues(alpha: 0.8),
+                    colorScheme.surface.withValues(alpha: 0.9),
                   ],
                 ),
               ),

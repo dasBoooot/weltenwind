@@ -1,45 +1,43 @@
 import 'package:flutter/material.dart';
-import '../../theme/tokens/colors.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/tokens/typography.dart';
-import '../../theme/tokens/shadows.dart';
+import 'package:flutter/services.dart';
+import '../../core/services/modular_theme_service.dart';
 
-/// 🖼️ Fantasy Frame Variants
+/// 🖼️ Fantasy Frame Variants based on Theme Schema
 enum AppFrameVariant {
-  /// Standard-Rahmen ohne Effekte
+  /// Standard frame with surface colors
   standard,
-  /// Magischer Rahmen mit Glow
+  /// Fantasy magic frame with glow effects
   magic,
-  /// Portal-Rahmen mit Aqua-Glow
+  /// Portal frame with aqua effects
   portal,
-  /// Artefakt-Rahmen in Gold
+  /// Artifact frame with golden effects
   artifact,
-  /// Rune-Rahmen mit mystischen Ecken
+  /// Rune frame with mystical corners
   rune,
-  /// Crystal-Rahmen mit Glitzer-Effekt
+  /// Crystal frame with shimmer effects
   crystal,
-  /// Ancient-Rahmen für alte Schriftrollen
+  /// Ancient frame for scrolls and artifacts
   ancient,
-  /// Minimaler Rahmen
+  /// Minimal frame with subtle borders
   minimal,
 }
 
-/// 🎭 Frame-Stile
+/// 🎭 Frame Styles
 enum AppFrameStyle {
-  /// Vollständig gefüllt
+  /// Filled background
   filled,
-  /// Nur Umrandung
+  /// Border only
   outlined,
-  /// Glasmorphism-Effekt
+  /// Glass morphism effect
   glass,
-  /// Gradient-Hintergrund
+  /// Gradient background
   gradient,
 }
 
-/// 🖼️ Weltenwind Fantasy Frame
+/// 🖼️ Weltenwind Schema-Based Fantasy Frame
 /// 
-/// Mystische Rahmen und Container für UI-Elemente
-class AppFrame extends StatelessWidget {
+/// Layout container for grouping UI elements with fantasy theming
+class AppFrame extends StatefulWidget {
   final Widget child;
   final AppFrameVariant variant;
   final AppFrameStyle style;
@@ -47,12 +45,9 @@ class AppFrame extends StatelessWidget {
   final Widget? titleWidget;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
-  final double borderRadius;
-  final double borderWidth;
-  final Color? customColor;
-  final bool showShadow;
-  final bool animated;
-  final VoidCallback? onTap;
+  final double? width;
+  final double? height;
+  final bool isInteractive;
 
   const AppFrame({
     super.key,
@@ -63,463 +58,399 @@ class AppFrame extends StatelessWidget {
     this.titleWidget,
     this.padding,
     this.margin,
-    this.borderRadius = 16.0,
-    this.borderWidth = 2.0,
-    this.customColor,
-    this.showShadow = true,
-    this.animated = true,
-    this.onTap,
+    this.width,
+    this.height,
+    this.isInteractive = false,
   });
 
-  // ========================================
-  // 🏭 FACTORY CONSTRUCTORS
-  // ========================================
+  @override
+  State<AppFrame> createState() => _AppFrameState();
+}
 
-  factory AppFrame.magic({
-    required Widget child,
-    String? title,
-    EdgeInsetsGeometry? padding,
-    bool showShadow = true,
-  }) {
-    return AppFrame(
-      variant: AppFrameVariant.magic,
-      title: title,
-      padding: padding,
-      showShadow: showShadow,
-      child: child,
+class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _glowAnimation;
+  bool _isHovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
     );
+    
+    _glowAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Start continuous glow animation for fantasy variants  
+    if (_shouldAnimateGlow()) {
+      _animationController.repeat(reverse: true);
+    }
   }
 
-  factory AppFrame.portal({
-    required Widget child,
-    String? title,
-    EdgeInsetsGeometry? padding,
-    bool showShadow = true,
-  }) {
-    return AppFrame(
-      variant: AppFrameVariant.portal,
-      title: title,
-      padding: padding,
-      showShadow: showShadow,
-      child: child,
-    );
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
-  factory AppFrame.artifact({
-    required Widget child,
-    String? title,
-    EdgeInsetsGeometry? padding,
-    bool showShadow = true,
-  }) {
-    return AppFrame(
-      variant: AppFrameVariant.artifact,
-      title: title,
-      padding: padding,
-      showShadow: showShadow,
-      child: child,
-    );
+  bool _shouldAnimateGlow() {
+    return widget.variant == AppFrameVariant.magic ||
+           widget.variant == AppFrameVariant.portal ||
+           widget.variant == AppFrameVariant.crystal ||
+           widget.variant == AppFrameVariant.rune;
   }
 
-  factory AppFrame.rune({
-    required Widget child,
-    String? title,
-    EdgeInsetsGeometry? padding,
-  }) {
-    return AppFrame(
-      variant: AppFrameVariant.rune,
-      title: title,
-      padding: padding,
-      borderRadius: 8.0,
-      child: child,
-    );
+  void _handleHoverEnter(PointerEnterEvent event) {
+    if (widget.isInteractive) {
+      setState(() => _isHovered = true);
+    }
   }
 
-  factory AppFrame.crystal({
-    required Widget child,
-    String? title,
-    EdgeInsetsGeometry? padding,
-  }) {
-    return AppFrame(
-      variant: AppFrameVariant.crystal,
-      style: AppFrameStyle.glass,
-      title: title,
-      padding: padding,
-      child: child,
-    );
-  }
-
-  factory AppFrame.ancient({
-    required Widget child,
-    String? title,
-    EdgeInsetsGeometry? padding,
-  }) {
-    return AppFrame(
-      variant: AppFrameVariant.ancient,
-      style: AppFrameStyle.gradient,
-      title: title,
-      padding: padding,
-      borderRadius: 4.0,
-      child: child,
-    );
-  }
-
-  factory AppFrame.minimal({
-    required Widget child,
-    String? title,
-    EdgeInsetsGeometry? padding,
-  }) {
-    return AppFrame(
-      variant: AppFrameVariant.minimal,
-      style: AppFrameStyle.outlined,
-      title: title,
-      padding: padding,
-      showShadow: false,
-      child: child,
-    );
+  void _handleHoverExit(PointerExitEvent event) {
+    if (widget.isInteractive) {
+      setState(() => _isHovered = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    Widget content = _buildContent(theme, isDark);
-
-    if (animated) {
-      content = AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOutCubic,
-        margin: margin ?? EdgeInsets.zero,
-        child: content,
-      );
-    } else if (margin != null) {
-      content = Container(margin: margin, child: content);
-    }
-
-    if (onTap != null) {
-      content = GestureDetector(
-        onTap: onTap,
-        child: content,
-      );
-    }
-
-    return content;
-  }
-
-  Widget _buildContent(ThemeData theme, bool isDark) {
-    return Container(
-      decoration: _getDecoration(isDark),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Title Section
-          if (title != null || titleWidget != null)
-            _buildTitle(theme, isDark),
-          
-          // Main Content
-          Padding(
-            padding: _getContentPadding(),
-            child: child,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTitle(ThemeData theme, bool isDark) {
-    return Container(
-      width: double.infinity,
-      padding: _getTitlePadding(),
-      decoration: _getTitleDecoration(isDark),
-      child: titleWidget ?? _buildTitleText(theme, isDark),
-    );
-  }
-
-  Widget _buildTitleText(ThemeData theme, bool isDark) {
-    TextStyle titleStyle;
+    final extensions = ModularThemeService().getCurrentThemeExtensions();
     
-    switch (variant) {
-      case AppFrameVariant.magic:
-        titleStyle = AppTypography.mysticalTitle(isDark: isDark);
-        break;
-      case AppFrameVariant.portal:
-        titleStyle = AppTypography.portalText(isDark: isDark);
-        break;
-      case AppFrameVariant.artifact:
-        titleStyle = AppTypography.artifactName(isDark: isDark);
-        break;
-      case AppFrameVariant.ancient:
-        titleStyle = AppTypography.h5(isDark: isDark).copyWith(
-          fontStyle: FontStyle.italic,
-          color: isDark ? AppColors.textSecondary : AppColors.textSecondaryLight,
-        );
-        break;
-      default:
-        titleStyle = AppTypography.h5(isDark: isDark);
-    }
-
-    return Text(
-      title!,
-      style: titleStyle,
-      textAlign: TextAlign.center,
-      maxLines: null,
-    );
-  }
-
-  // ========================================
-  // 🎨 STYLING METHODS
-  // ========================================
-
-  BoxDecoration _getDecoration(bool isDark) {
-    return BoxDecoration(
-      color: _getBackgroundColor(isDark),
-      borderRadius: BorderRadius.circular(borderRadius),
-      border: _getBorder(isDark),
-      boxShadow: showShadow ? _getShadows() : null,
-      gradient: _getGradient(isDark),
-    );
-  }
-
-  Color? _getBackgroundColor(bool isDark) {
-    if (style == AppFrameStyle.outlined) return Colors.transparent;
-    if (style == AppFrameStyle.glass) {
-      return isDark 
-        ? AppColors.surfaceMedium.withValues(alpha: 0.3)
-        : AppColors.surfaceWhite.withValues(alpha: 0.7);
-    }
-
-    if (customColor != null) return customColor;
-
-    switch (variant) {
-      case AppFrameVariant.standard:
-      case AppFrameVariant.minimal:
-        return isDark ? AppColors.surfaceMedium : AppColors.surfaceWhite;
-      case AppFrameVariant.magic:
-        return isDark ? AppColors.primarySurface : AppColors.surfaceWhite;
-      case AppFrameVariant.portal:
-        return isDark ? AppColors.surfaceDark : AppColors.surfaceGrayLight;
-      case AppFrameVariant.artifact:
-        return isDark ? AppColors.surfaceMedium : AppColors.surfaceWhite;
-      case AppFrameVariant.rune:
-      case AppFrameVariant.ancient:
-        return isDark ? AppColors.surfaceDarker : AppColors.surfaceGray;
-      case AppFrameVariant.crystal:
-        return Colors.transparent;
-    }
-  }
-
-  Border? _getBorder(bool isDark) {
-    Color borderColor;
-    
-    switch (variant) {
-      case AppFrameVariant.magic:
-        borderColor = AppColors.glow;
-        break;
-      case AppFrameVariant.portal:
-        borderColor = AppColors.aqua;
-        break;
-      case AppFrameVariant.artifact:
-        borderColor = AppColors.secondary;
-        break;
-      case AppFrameVariant.rune:
-        borderColor = isDark ? AppColors.primaryAccent : AppColors.primary;
-        break;
-      case AppFrameVariant.crystal:
-        borderColor = AppColors.shimmer;
-        break;
-      case AppFrameVariant.ancient:
-        borderColor = isDark ? AppColors.textSecondary : AppColors.textSecondaryLight;
-        break;
-      case AppFrameVariant.minimal:
-        borderColor = isDark ? AppColors.surfaceLight : AppColors.surfaceGray;
-        break;
-      default:
-        borderColor = isDark ? AppColors.surfaceLight : AppColors.surfaceGray;
-    }
-
-    return Border.all(
-      color: borderColor,
-      width: variant == AppFrameVariant.minimal ? 1.0 : borderWidth,
-    );
-  }
-
-  List<BoxShadow>? _getShadows() {
-    switch (variant) {
-      case AppFrameVariant.magic:
-        return AppShadows.magicGlow;
-      case AppFrameVariant.portal:
-        return AppShadows.portalGlow;
-      case AppFrameVariant.artifact:
-        return AppShadows.goldenGlow;
-      case AppFrameVariant.crystal:
-        return AppShadows.customGlow(
-          color: AppColors.shimmer,
-          intensity: 0.3,
-          blurRadius: 8.0,
-          spreadRadius: 1.0,
-        );
-      case AppFrameVariant.rune:
-        return AppShadows.medium;
-      case AppFrameVariant.ancient:
-        return AppShadows.large;
-      case AppFrameVariant.minimal:
-        return AppShadows.none;
-      default:
-        return AppShadows.small;
-    }
-  }
-
-  Gradient? _getGradient(bool isDark) {
-    if (style != AppFrameStyle.gradient && style != AppFrameStyle.glass) return null;
-
-    switch (variant) {
-      case AppFrameVariant.magic:
-        return AppColors.magicGradient;
-      case AppFrameVariant.portal:
-        return AppColors.portalGradient;
-      case AppFrameVariant.crystal:
-        return LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.glass,
-            AppColors.glassDark,
-            AppColors.shimmer.withValues(alpha: 0.1),
+    return MouseRegion(
+      onEnter: _handleHoverEnter,
+      onExit: _handleHoverExit,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: widget.width,
+        height: widget.height,
+        margin: widget.margin ?? _getDefaultMargin(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.title != null || widget.titleWidget != null)
+              _buildTitle(theme, extensions),
+            Flexible(
+              child: Container(
+                decoration: _getDecoration(theme, extensions),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(_getBorderRadius()),
+                  child: Padding(
+                    padding: widget.padding ?? _getDefaultPadding(),
+                    child: widget.child,
+                  ),
+                ),
+              ),
+            ),
           ],
-        );
-      case AppFrameVariant.ancient:
-        return LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: isDark 
-            ? [AppColors.surfaceDarker, AppColors.surfaceMedium]
-            : [AppColors.surfaceGray, AppColors.surfaceWhite],
-        );
-      default:
-        return null;
-    }
-  }
-
-  BoxDecoration? _getTitleDecoration(bool isDark) {
-    if (title == null && titleWidget == null) return null;
-
-    Color? titleBgColor;
-    BorderRadius? titleBorderRadius;
-
-    switch (variant) {
-      case AppFrameVariant.magic:
-        titleBgColor = AppColors.glow.withValues(alpha: 0.1);
-        break;
-      case AppFrameVariant.portal:
-        titleBgColor = AppColors.aqua.withValues(alpha: 0.1);
-        break;
-      case AppFrameVariant.artifact:
-        titleBgColor = AppColors.secondary.withValues(alpha: 0.1);
-        break;
-      case AppFrameVariant.ancient:
-        titleBgColor = isDark 
-          ? AppColors.surfaceDarker.withValues(alpha: 0.8)
-          : AppColors.surfaceGray.withValues(alpha: 0.5);
-        break;
-      default:
-        titleBgColor = isDark 
-          ? AppColors.surfaceLight.withValues(alpha: 0.3)
-          : AppColors.surfaceGray.withValues(alpha: 0.3);
-    }
-
-    titleBorderRadius = BorderRadius.only(
-      topLeft: Radius.circular(borderRadius),
-      topRight: Radius.circular(borderRadius),
-    );
-
-    return BoxDecoration(
-      color: titleBgColor,
-      borderRadius: titleBorderRadius,
-      border: Border(
-        bottom: BorderSide(
-          color: _getBorder(isDark)?.top.color ?? Colors.transparent,
-          width: 1.0,
         ),
       ),
     );
   }
 
-  // ========================================
-  // 📏 PADDING & SPACING
-  // ========================================
-
-  EdgeInsetsGeometry _getContentPadding() {
-    final basePadding = padding ?? const EdgeInsets.all(AppSpacing.cardPaddingMedium);
-    
-    // Wenn Titel vorhanden ist, nur unten, links und rechts padden
-    if (title != null || titleWidget != null) {
-      return EdgeInsets.only(
-        left: basePadding.horizontal / 2,
-        right: basePadding.horizontal / 2,
-        bottom: basePadding.vertical,
-      );
-    }
-    
-    return basePadding;
-  }
-
-  EdgeInsetsGeometry _getTitlePadding() {
-    final basePadding = padding ?? const EdgeInsets.all(AppSpacing.cardPaddingMedium);
-    
-    return EdgeInsets.only(
-      left: basePadding.horizontal / 2,
-      right: basePadding.horizontal / 2,
-      top: basePadding.vertical * 0.75,
-      bottom: basePadding.vertical * 0.75,
-    );
-  }
-}
-
-/// 🎯 Frame-Builder für komplexere Layouts
-class AppFrameBuilder extends StatelessWidget {
-  final String? title;
-  final List<Widget> children;
-  final AppFrameVariant variant;
-  final CrossAxisAlignment crossAxisAlignment;
-  final MainAxisAlignment mainAxisAlignment;
-  final MainAxisSize mainAxisSize;
-  final EdgeInsetsGeometry? padding;
-  final double spacing;
-
-  const AppFrameBuilder({
-    super.key,
-    this.title,
-    required this.children,
-    this.variant = AppFrameVariant.standard,
-    this.crossAxisAlignment = CrossAxisAlignment.start,
-    this.mainAxisAlignment = MainAxisAlignment.start,
-    this.mainAxisSize = MainAxisSize.min,
-    this.padding,
-    this.spacing = AppSpacing.md,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AppFrame(
-      title: title,
-      variant: variant,
-      padding: padding,
-      child: Column(
-        crossAxisAlignment: crossAxisAlignment,
-        mainAxisAlignment: mainAxisAlignment,
-        mainAxisSize: mainAxisSize,
-        children: [
-          for (int i = 0; i < children.length; i++)
-            if (i == children.length - 1)
-              children[i] // Letztes Element ohne Padding
-            else
-              Padding(
-                padding: EdgeInsets.only(bottom: spacing),
-                child: children[i],
-              ),
-        ]
+  /// Build title section
+  Widget _buildTitle(ThemeData theme, Map<String, dynamic>? extensions) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0, left: 4.0, right: 4.0),
+      child: widget.titleWidget ?? Text(
+        widget.title!,
+        style: _getTitleStyle(theme),
       ),
     );
+  }
+
+  /// Get decoration based on schema and fantasy extensions
+  BoxDecoration _getDecoration(ThemeData theme, Map<String, dynamic>? extensions) {
+    return BoxDecoration(
+      color: _getBackgroundColor(theme, extensions),
+      borderRadius: BorderRadius.circular(_getBorderRadius()),
+      border: _getBorder(theme, extensions),
+      gradient: _getGradient(theme, extensions),
+      boxShadow: _getShadows(theme, extensions),
+    );
+  }
+
+  /// Background color based on variant and style
+  Color? _getBackgroundColor(ThemeData theme, Map<String, dynamic>? extensions) {
+    switch (widget.style) {
+      case AppFrameStyle.outlined:
+        return Colors.transparent;
+      case AppFrameStyle.glass:
+        return theme.colorScheme.surface.withValues(alpha: 0.1);
+      case AppFrameStyle.filled:
+      case AppFrameStyle.gradient:
+        switch (widget.variant) {
+          case AppFrameVariant.standard:
+          case AppFrameVariant.minimal:
+            return theme.colorScheme.surface;
+          case AppFrameVariant.magic:
+            return theme.colorScheme.primaryContainer.withValues(alpha: 0.2);
+          case AppFrameVariant.portal:
+            return theme.colorScheme.tertiaryContainer.withValues(alpha: 0.2);
+          case AppFrameVariant.artifact:
+            return theme.colorScheme.secondaryContainer.withValues(alpha: 0.2);
+          case AppFrameVariant.ancient:
+            return theme.colorScheme.surfaceContainerHighest;
+          case AppFrameVariant.rune:
+          case AppFrameVariant.crystal:
+            return theme.colorScheme.surface.withValues(alpha: 0.9);
+        }
+    }
+  }
+
+  /// Border based on variant and style
+  Border? _getBorder(ThemeData theme, Map<String, dynamic>? extensions) {
+    if (widget.style == AppFrameStyle.outlined || widget.variant == AppFrameVariant.minimal) {
+      final borderColor = _getBorderColor(theme, extensions);
+      return Border.all(
+        color: borderColor,
+        width: _getBorderWidth(),
+      );
+    }
+    return null;
+  }
+
+  /// Border color based on variant
+  Color _getBorderColor(ThemeData theme, Map<String, dynamic>? extensions) {
+    switch (widget.variant) {
+      case AppFrameVariant.magic:
+        return theme.colorScheme.primary.withValues(alpha: _isHovered ? 0.8 : 0.6);
+      case AppFrameVariant.portal:
+        return theme.colorScheme.tertiary.withValues(alpha: _isHovered ? 0.8 : 0.6);
+      case AppFrameVariant.artifact:
+        return theme.colorScheme.secondary.withValues(alpha: _isHovered ? 0.8 : 0.6);
+      case AppFrameVariant.rune:
+        return theme.colorScheme.primary.withValues(alpha: 0.7);
+      case AppFrameVariant.crystal:
+        return theme.colorScheme.onSurface.withValues(alpha: 0.3);
+      case AppFrameVariant.ancient:
+        return theme.colorScheme.outline;
+      default:
+        return theme.colorScheme.outline;
+    }
+  }
+
+  /// Fantasy gradients from extensions
+  Gradient? _getGradient(ThemeData theme, Map<String, dynamic>? extensions) {
+    if (widget.style != AppFrameStyle.gradient) return null;
+
+    switch (widget.variant) {
+      case AppFrameVariant.magic:
+        if (extensions != null && extensions.containsKey('magicGradient')) {
+          final colors = (extensions['magicGradient'] as List<dynamic>)
+              .map((color) => _parseColor(color.toString())?.withValues(alpha: 0.3) ?? 
+                   theme.colorScheme.primary.withValues(alpha: 0.3))
+              .toList();
+          return LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: colors,
+          );
+        }
+        return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary.withValues(alpha: 0.2),
+            theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
+          ],
+        );
+      case AppFrameVariant.portal:
+        if (extensions != null && extensions.containsKey('portalGradient')) {
+          final colors = (extensions['portalGradient'] as List<dynamic>)
+              .map((color) => _parseColor(color.toString())?.withValues(alpha: 0.3) ?? 
+                   theme.colorScheme.tertiary.withValues(alpha: 0.3))
+              .toList();
+          return LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: colors,
+          );
+        }
+        return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.tertiary.withValues(alpha: 0.2),
+            theme.colorScheme.tertiaryContainer.withValues(alpha: 0.1),
+          ],
+        );
+      case AppFrameVariant.crystal:
+        return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: const [0.0, 0.3, 0.7, 1.0],
+          colors: [
+            theme.colorScheme.surface.withValues(alpha: 0.2),
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
+            theme.colorScheme.surface.withValues(alpha: 0.05),
+            theme.colorScheme.surfaceContainer.withValues(alpha: 0.1),
+          ],
+        );
+      default:
+        return LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            theme.colorScheme.surface,
+            theme.colorScheme.surfaceContainer,
+          ],
+        );
+    }
+  }
+
+  /// Fantasy shadows and glow effects
+  List<BoxShadow> _getShadows(ThemeData theme, Map<String, dynamic>? extensions) {
+    switch (widget.variant) {
+      case AppFrameVariant.magic:
+        final glowOpacity = 0.3 + (0.2 * _glowAnimation.value);
+        return [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: glowOpacity),
+            blurRadius: 12 + (8 * _glowAnimation.value),
+            spreadRadius: 1 + (2 * _glowAnimation.value),
+            offset: const Offset(0, 2),
+          ),
+          BoxShadow(
+            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+            blurRadius: 8,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+        ];
+      case AppFrameVariant.portal:
+        final glowOpacity = 0.3 + (0.2 * _glowAnimation.value);
+        return [
+          BoxShadow(
+            color: theme.colorScheme.tertiary.withValues(alpha: glowOpacity),
+            blurRadius: 12 + (6 * _glowAnimation.value),
+            spreadRadius: 1 + (1 * _glowAnimation.value),
+            offset: const Offset(0, 2),
+          ),
+        ];
+      case AppFrameVariant.artifact:
+        return [
+          BoxShadow(
+            color: theme.colorScheme.secondary.withValues(alpha: _isHovered ? 0.4 : 0.2),
+            blurRadius: _isHovered ? 16 : 12,
+            spreadRadius: _isHovered ? 2 : 1,
+            offset: const Offset(0, 2),
+          ),
+        ];
+      case AppFrameVariant.crystal:
+        final shimmerOpacity = 0.1 + (0.1 * _glowAnimation.value);
+        return [
+          BoxShadow(
+            color: theme.colorScheme.onSurface.withValues(alpha: shimmerOpacity),
+            blurRadius: 20 + (10 * _glowAnimation.value),
+            spreadRadius: 0,
+            offset: const Offset(0, 8),
+          ),
+        ];
+      case AppFrameVariant.rune:
+        final glowOpacity = 0.2 + (0.3 * _glowAnimation.value);
+        return [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: glowOpacity),
+            blurRadius: 8 + (12 * _glowAnimation.value),
+            spreadRadius: 0 + (2 * _glowAnimation.value),
+            offset: const Offset(0, 2),
+          ),
+        ];
+      case AppFrameVariant.ancient:
+        return [
+          BoxShadow(
+            color: theme.colorScheme.shadow.withValues(alpha: 0.15),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: const Offset(0, 6),
+          ),
+        ];
+      default:
+        return [
+          BoxShadow(
+            color: theme.colorScheme.shadow.withValues(alpha: 0.08),
+            blurRadius: 8,
+            spreadRadius: 0,
+            offset: const Offset(0, 2),
+          ),
+        ];
+    }
+  }
+
+  /// Title text style
+  TextStyle _getTitleStyle(ThemeData theme) {
+    return theme.textTheme.titleMedium?.copyWith(
+      fontWeight: FontWeight.w600,
+      color: theme.colorScheme.onSurface,
+    ) ?? TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: theme.colorScheme.onSurface,
+    );
+  }
+
+  /// Border radius
+  double _getBorderRadius() {
+    switch (widget.variant) {
+      case AppFrameVariant.minimal:
+        return 4.0;
+      case AppFrameVariant.ancient:
+        return 2.0;
+      case AppFrameVariant.crystal:
+        return 20.0;
+      default:
+        return 12.0;
+    }
+  }
+
+  /// Border width
+  double _getBorderWidth() {
+    switch (widget.variant) {
+      case AppFrameVariant.magic:
+      case AppFrameVariant.portal:
+      case AppFrameVariant.rune:
+        return 2.0;
+      case AppFrameVariant.ancient:
+        return 1.5;
+      default:
+        return 1.0;
+    }
+  }
+
+  /// Default margin
+  EdgeInsetsGeometry _getDefaultMargin() {
+    return const EdgeInsets.all(4.0);
+  }
+
+  /// Default padding
+  EdgeInsetsGeometry _getDefaultPadding() {
+    switch (widget.variant) {
+      case AppFrameVariant.minimal:
+        return const EdgeInsets.all(8.0);
+      case AppFrameVariant.ancient:
+        return const EdgeInsets.all(20.0);
+      default:
+        return const EdgeInsets.all(16.0);
+    }
+  }
+
+  /// Helper: Parse color from hex string
+  Color? _parseColor(String colorString) {
+    if (colorString.startsWith('#')) {
+      final hex = colorString.replaceAll('#', '');
+      if (hex.length == 6) {
+        return Color(int.parse('FF$hex', radix: 16));
+      }
+    }
+    return null;
   }
 }

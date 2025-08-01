@@ -1,29 +1,31 @@
 import 'package:flutter/material.dart';
-import '../../theme/tokens/colors.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/tokens/shadows.dart';
+import 'package:flutter/services.dart';
+import '../../core/services/modular_theme_service.dart';
 
-/// 🎴 Fantasy Card Component
-/// 
-/// Mystische Karten mit verschiedenen Varianten und magischen Effekten
+/// 🎴 Fantasy Card Variants based on Theme Schema
 enum AppCardVariant {
-  /// Standard-Karte ohne besondere Effekte
+  /// Standard card with surface colors
   standard,
-  /// Elevated Karte mit Schatten
+  /// Elevated card with shadows
   elevated,
-  /// Magische Karte mit Glow-Effekt
+  /// Fantasy magic card with glow effects
   magic,
-  /// Portal-Karte mit Aqua-Glow
+  /// Portal card with aqua effects
   portal,
-  /// Golden Artefakt-Karte
+  /// Artifact card with golden effects
   artifact,
-  /// Outlined Karte nur mit Rahmen
+  /// Outlined card with border only
   outlined,
-  /// Glasmorphism-Effekt
+  /// Glass morphism effect
   glass,
+  /// Game inventory slot card
+  inventorySlot,
 }
 
-class AppCard extends StatelessWidget {
+/// 🎨 Weltenwind Schema-Based Fantasy Card
+/// 
+/// Completely rebuilt based on JSON Theme Schema with ModularThemeService integration
+class AppCard extends StatefulWidget {
   final Widget child;
   final AppCardVariant variant;
   final EdgeInsetsGeometry? padding;
@@ -33,9 +35,8 @@ class AppCard extends StatelessWidget {
   final double? width;
   final double? height;
   final Color? customColor;
-  final bool isInteractive;
   final bool isSelected;
-  final double borderRadius;
+  final bool isHoverable;
 
   const AppCard({
     super.key,
@@ -48,328 +49,362 @@ class AppCard extends StatelessWidget {
     this.width,
     this.height,
     this.customColor,
-    this.isInteractive = true,
     this.isSelected = false,
-    this.borderRadius = 16.0,
+    this.isHoverable = true,
   });
 
-  /// Factory Constructors für häufige Varianten
-  factory AppCard.magic({
-    required Widget child,
-    EdgeInsetsGeometry? padding,
-    VoidCallback? onTap,
-    bool isSelected = false,
-  }) {
-    return AppCard(
-      variant: AppCardVariant.magic,
-      onTap: onTap,
-      isSelected: isSelected,
-      padding: padding,
-      child: child,
+  @override
+  State<AppCard> createState() => _AppCardState();
+}
+
+class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  bool _isHovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
     );
+    
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.98,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+
   }
 
-  factory AppCard.portal({
-    required Widget child,
-    EdgeInsetsGeometry? padding,
-    VoidCallback? onTap,
-  }) {
-    return AppCard(
-      variant: AppCardVariant.portal,
-      onTap: onTap,
-      padding: padding,
-      child: child,
-    );
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
-  factory AppCard.artifact({
-    required Widget child,
-    EdgeInsetsGeometry? padding,
-    VoidCallback? onTap,
-  }) {
-    return AppCard(
-      variant: AppCardVariant.artifact,
-      onTap: onTap,
-      padding: padding,
-      child: child,
-    );
+  void _handleTapDown(TapDownDetails details) {
+    if (widget.onTap != null) {
+      _animationController.forward();
+    }
   }
 
-  factory AppCard.glass({
-    required Widget child,
-    EdgeInsetsGeometry? padding,
-    VoidCallback? onTap,
-  }) {
-    return AppCard(
-      variant: AppCardVariant.glass,
-      onTap: onTap,
-      padding: padding,
-      child: child,
-    );
+  void _handleTapUp(TapUpDetails details) {
+    _animationController.reverse();
+  }
+
+  void _handleTapCancel() {
+    _animationController.reverse();
+  }
+
+  void _handleHoverEnter(PointerEnterEvent event) {
+    if (widget.isHoverable) {
+      setState(() => _isHovered = true);
+    }
+  }
+
+  void _handleHoverExit(PointerExitEvent event) {
+    if (widget.isHoverable) {
+      setState(() => _isHovered = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final extensions = ModularThemeService().getCurrentThemeExtensions();
     
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOutCubic,
-      width: width,
-      height: height,
-      margin: margin ?? const EdgeInsets.all(AppSpacing.xs),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: isInteractive ? onTap : null,
-          onLongPress: isInteractive ? onLongPress : null,
-          borderRadius: BorderRadius.circular(borderRadius),
-          splashColor: _getSplashColor(isDark),
-          highlightColor: _getHighlightColor(isDark),
-          child: Container(
-            padding: padding ?? const EdgeInsets.all(AppSpacing.cardPaddingMedium),
-            decoration: _getDecoration(context, isDark),
-            child: child,
+    return MouseRegion(
+      onEnter: _handleHoverEnter,
+      onExit: _handleHoverExit,
+      child: GestureDetector(
+        onTapDown: _handleTapDown,
+        onTapUp: _handleTapUp,
+        onTapCancel: _handleTapCancel,
+        onTap: widget.onTap,
+        onLongPress: widget.onLongPress,
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: widget.width,
+            height: widget.height,
+            margin: widget.margin ?? _getDefaultMargin(theme),
+            decoration: _getDecoration(theme, extensions),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(_getBorderRadius(theme)),
+              child: Material(
+                color: Colors.transparent,
+                child: Padding(
+                  padding: widget.padding ?? _getDefaultPadding(theme),
+                  child: widget.child,
+                ),
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  /// Bestimmt die Splash-Farbe basierend auf Variante
-  Color _getSplashColor(bool isDark) {
-    switch (variant) {
-      case AppCardVariant.magic:
-        return AppColors.glow.withValues(alpha: 0.2);
-      case AppCardVariant.portal:
-        return AppColors.aqua.withValues(alpha: 0.2);
-      case AppCardVariant.artifact:
-        return AppColors.secondary.withValues(alpha: 0.2);
-      default:
-        return isDark ? AppColors.primaryAccent.withValues(alpha: 0.1) : AppColors.primary.withValues(alpha: 0.1);
-    }
-  }
-
-  /// Bestimmt die Highlight-Farbe basierend auf Variante
-  Color _getHighlightColor(bool isDark) {
-    switch (variant) {
-      case AppCardVariant.magic:
-        return AppColors.glow.withValues(alpha: 0.1);
-      case AppCardVariant.portal:
-        return AppColors.aqua.withValues(alpha: 0.1);
-      case AppCardVariant.artifact:
-        return AppColors.secondary.withValues(alpha: 0.1);
-      default:
-        return isDark ? AppColors.primaryAccent.withValues(alpha: 0.05) : AppColors.primary.withValues(alpha: 0.05);
-    }
-  }
-
-  /// Erstellt die Dekoration basierend auf Variante und Theme
-  BoxDecoration _getDecoration(BuildContext context, bool isDark) {
-    final baseColor = customColor ?? _getBaseColor(isDark);
-    final borderColor = _getBorderColor(isDark);
-    final shadows = _getShadows();
-
+  /// Get decoration based on schema and fantasy extensions
+  BoxDecoration _getDecoration(ThemeData theme, Map<String, dynamic>? extensions) {
     return BoxDecoration(
-      color: baseColor,
-      borderRadius: BorderRadius.circular(borderRadius),
-      border: _getBorder(borderColor),
-      boxShadow: shadows,
-      gradient: _getGradient(),
+      color: _getBackgroundColor(theme, extensions),
+      borderRadius: BorderRadius.circular(_getBorderRadius(theme)),
+      border: _getBorder(theme),
+      gradient: _getGradient(theme, extensions),
+      boxShadow: _getShadows(theme, extensions),
     );
   }
 
-  /// Bestimmt die Basisfarbe der Karte
-  Color _getBaseColor(bool isDark) {
-    switch (variant) {
-      case AppCardVariant.glass:
-        return isDark 
-                  ? AppColors.surfaceMedium.withValues(alpha: 0.3)
-        : AppColors.surfaceWhite.withValues(alpha: 0.7);
+  /// Background color based on variant and theme
+  Color? _getBackgroundColor(ThemeData theme, Map<String, dynamic>? extensions) {
+    if (widget.customColor != null) {
+      return widget.customColor;
+    }
+
+    switch (widget.variant) {
+      case AppCardVariant.standard:
+      case AppCardVariant.elevated:
+        return theme.colorScheme.surface;
       case AppCardVariant.outlined:
         return Colors.transparent;
-      default:
-        return isDark ? AppColors.surfaceMedium : AppColors.surfaceWhite;
+      case AppCardVariant.glass:
+        return theme.colorScheme.surface.withValues(alpha: 0.1);
+      case AppCardVariant.magic:
+        return theme.colorScheme.primaryContainer.withValues(alpha: 0.3);
+      case AppCardVariant.portal:
+        return theme.colorScheme.tertiaryContainer.withValues(alpha: 0.3);
+      case AppCardVariant.artifact:
+        return theme.colorScheme.secondaryContainer.withValues(alpha: 0.3);
+      case AppCardVariant.inventorySlot:
+        // Try to get from gaming schema
+        return theme.colorScheme.surfaceContainerHighest;
     }
   }
 
-  /// Bestimmt die Rahmenfarbe
-  Color? _getBorderColor(bool isDark) {
-    if (isSelected) {
-      switch (variant) {
-        case AppCardVariant.magic:
-          return AppColors.glow;
-        case AppCardVariant.portal:
-          return AppColors.aqua;
-        case AppCardVariant.artifact:
-          return AppColors.secondary;
-        default:
-          return isDark ? AppColors.primaryAccent : AppColors.primary;
-      }
-    }
-
-    switch (variant) {
+  /// Border based on variant and selection state
+  Border? _getBorder(ThemeData theme) {
+    switch (widget.variant) {
       case AppCardVariant.outlined:
-        return isDark ? AppColors.surfaceLight : AppColors.surfaceGray;
+        return Border.all(
+          color: widget.isSelected 
+              ? theme.colorScheme.primary 
+              : theme.colorScheme.outline,
+          width: widget.isSelected ? 2.0 : 1.0,
+        );
+      case AppCardVariant.inventorySlot:
+        return Border.all(
+          color: widget.isSelected 
+              ? theme.colorScheme.primary 
+              : theme.colorScheme.outline.withValues(alpha: 0.5),
+          width: 2.0,
+        );
+      default:
+        if (widget.isSelected) {
+          return Border.all(
+            color: theme.colorScheme.primary,
+            width: 2.0,
+          );
+        }
+        return null;
+    }
+  }
+
+  /// Fantasy gradients from extensions
+  Gradient? _getGradient(ThemeData theme, Map<String, dynamic>? extensions) {
+    switch (widget.variant) {
+      case AppCardVariant.magic:
+        if (extensions != null && extensions.containsKey('magicGradient')) {
+          final colors = (extensions['magicGradient'] as List<dynamic>)
+              .map((color) => _parseColor(color.toString())?.withValues(alpha: 0.2) ?? 
+                   theme.colorScheme.primary.withValues(alpha: 0.2))
+              .toList();
+          return LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: colors,
+          );
+        }
+        return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary.withValues(alpha: 0.1),
+            theme.colorScheme.primaryContainer.withValues(alpha: 0.2),
+          ],
+        );
+      case AppCardVariant.portal:
+        if (extensions != null && extensions.containsKey('portalGradient')) {
+          final colors = (extensions['portalGradient'] as List<dynamic>)
+              .map((color) => _parseColor(color.toString())?.withValues(alpha: 0.2) ?? 
+                   theme.colorScheme.tertiary.withValues(alpha: 0.2))
+              .toList();
+          return LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: colors,
+          );
+        }
+        return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.tertiary.withValues(alpha: 0.1),
+            theme.colorScheme.tertiaryContainer.withValues(alpha: 0.2),
+          ],
+        );
       case AppCardVariant.glass:
-        return isDark ? AppColors.surfaceLight.withValues(alpha: 0.3) : AppColors.surfaceGray.withValues(alpha: 0.5);
+        return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.surface.withValues(alpha: 0.1),
+            theme.colorScheme.surface.withValues(alpha: 0.05),
+          ],
+        );
       default:
         return null;
     }
   }
 
-  /// Erstellt den Rahmen falls notwendig
-  Border? _getBorder(Color? borderColor) {
-    if (borderColor == null) return null;
+  /// Fantasy shadows and glow effects
+  List<BoxShadow> _getShadows(ThemeData theme, Map<String, dynamic>? extensions) {
+    final baseElevation = _getElevation(theme);
     
-    return Border.all(
-      color: borderColor,
-      width: isSelected ? 2.0 : 1.0,
-    );
-  }
-
-  /// Bestimmt die Schatten basierend auf Variante
-  List<BoxShadow> _getShadows() {
-    switch (variant) {
+    switch (widget.variant) {
       case AppCardVariant.elevated:
-        return AppShadows.medium;
+        return [
+          BoxShadow(
+            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+            blurRadius: baseElevation * 2,
+            spreadRadius: 0,
+            offset: Offset(0, baseElevation / 2),
+          ),
+        ];
       case AppCardVariant.magic:
-        return isSelected ? AppShadows.magicGlow : AppShadows.small;
+        final glowIntensity = _isHovered ? 1.0 : 0.6;
+        return [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.3 * glowIntensity),
+            blurRadius: _isHovered ? 16 : 12,
+            spreadRadius: _isHovered ? 2 : 1,
+            offset: const Offset(0, 2),
+          ),
+          BoxShadow(
+            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+            blurRadius: 8,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+        ];
       case AppCardVariant.portal:
-        return isSelected ? AppShadows.portalGlow : AppShadows.small;
+        final glowIntensity = _isHovered ? 1.0 : 0.6;
+        return [
+          BoxShadow(
+            color: theme.colorScheme.tertiary.withValues(alpha: 0.3 * glowIntensity),
+            blurRadius: _isHovered ? 16 : 12,
+            spreadRadius: _isHovered ? 2 : 1,
+            offset: const Offset(0, 2),
+          ),
+        ];
       case AppCardVariant.artifact:
-        return isSelected ? AppShadows.goldenGlow : AppShadows.small;
+        final glowIntensity = _isHovered ? 1.0 : 0.6;
+        return [
+          BoxShadow(
+            color: theme.colorScheme.secondary.withValues(alpha: 0.3 * glowIntensity),
+            blurRadius: _isHovered ? 14 : 10,
+            spreadRadius: _isHovered ? 1 : 0,
+            offset: const Offset(0, 2),
+          ),
+        ];
       case AppCardVariant.glass:
-        return AppShadows.minimal;
-      case AppCardVariant.outlined:
-        return AppShadows.none;
+        return [
+          BoxShadow(
+            color: theme.colorScheme.shadow.withValues(alpha: 0.05),
+            blurRadius: 20,
+            spreadRadius: 0,
+            offset: const Offset(0, 8),
+          ),
+        ];
+      case AppCardVariant.inventorySlot:
+        if (widget.isSelected) {
+          return [
+            BoxShadow(
+              color: theme.colorScheme.primary.withValues(alpha: 0.4),
+              blurRadius: 8,
+              spreadRadius: 1,
+              offset: const Offset(0, 2),
+            ),
+          ];
+        }
+        return [
+          BoxShadow(
+            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+            blurRadius: 4,
+            spreadRadius: 0,
+            offset: const Offset(0, 2),
+          ),
+        ];
       default:
-        return AppShadows.small;
+        return [];
     }
   }
 
-  /// Bestimmt optionale Verläufe
-  Gradient? _getGradient() {
-    if (variant == AppCardVariant.glass) {
-      return const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          AppColors.glass,
-          AppColors.glassDark,
-        ],
-      );
+  /// Border radius from schema components.card configuration
+  double _getBorderRadius(ThemeData theme) {
+    // TODO: Get from schema - for now use reasonable defaults
+    switch (widget.variant) {
+      case AppCardVariant.inventorySlot:
+        return 8.0;
+      default:
+        return 16.0;
+    }
+  }
+
+  /// Elevation from schema components.card configuration
+  double _getElevation(ThemeData theme) {
+    // TODO: Get from schema - for now use reasonable defaults
+    switch (widget.variant) {
+      case AppCardVariant.elevated:
+        return 4.0;
+      case AppCardVariant.magic:
+      case AppCardVariant.portal:
+      case AppCardVariant.artifact:
+        return 6.0;
+      default:
+        return 0.0;
+    }
+  }
+
+  /// Default margin from schema
+  EdgeInsetsGeometry _getDefaultMargin(ThemeData theme) {
+    // TODO: Get from schema components.card.margin
+    return const EdgeInsets.all(4.0);
+  }
+
+  /// Default padding from schema  
+  EdgeInsetsGeometry _getDefaultPadding(ThemeData theme) {
+    switch (widget.variant) {
+      case AppCardVariant.inventorySlot:
+        return const EdgeInsets.all(8.0);
+      default:
+        return const EdgeInsets.all(16.0);
+    }
+  }
+
+  /// Helper: Parse color from hex string
+  Color? _parseColor(String colorString) {
+    if (colorString.startsWith('#')) {
+      final hex = colorString.replaceAll('#', '');
+      if (hex.length == 6) {
+        return Color(int.parse('FF$hex', radix: 16));
+      }
     }
     return null;
-  }
-}
-
-/// 🎴 Card-Builder für komplexere Layouts
-class AppCardBuilder extends StatelessWidget {
-  final String? title;
-  final String? subtitle;
-  final Widget? leading;
-  final Widget? trailing;
-  final Widget? content;
-  final List<Widget>? actions;
-  final AppCardVariant variant;
-  final VoidCallback? onTap;
-  final bool isSelected;
-
-  const AppCardBuilder({
-    super.key,
-    this.title,
-    this.subtitle,
-    this.leading,
-    this.trailing,
-    this.content,
-    this.actions,
-    this.variant = AppCardVariant.standard,
-    this.onTap,
-    this.isSelected = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return AppCard(
-      variant: variant,
-      onTap: onTap,
-      isSelected: isSelected,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Header mit Title/Subtitle und Leading/Trailing
-          if (title != null || leading != null || trailing != null)
-            _buildHeader(theme),
-          
-          // Content
-          if (content != null) ...[
-            if (title != null || subtitle != null) 
-              const SizedBox(height: AppSpacing.md),
-            content!,
-          ],
-          
-          // Actions
-          if (actions != null && actions!.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.md),
-            _buildActions(),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(ThemeData theme) {
-    return Row(
-      children: [
-        if (leading != null) ...[
-          leading!,
-          const SizedBox(width: AppSpacing.md),
-        ],
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (title != null) 
-                Text(
-                  title!,
-                  style: theme.textTheme.titleMedium,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              if (subtitle != null) ...[
-                if (title != null) const SizedBox(height: AppSpacing.tiny),
-                Text(
-                  subtitle!,
-                  style: theme.textTheme.bodySmall,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ],
-          ),
-        ),
-        if (trailing != null) ...[
-          const SizedBox(width: AppSpacing.md),
-          trailing!,
-        ],
-      ],
-    );
-  }
-
-  Widget _buildActions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: actions!
-          .map((action) => Padding(
-                padding: const EdgeInsets.only(left: AppSpacing.sm),
-                child: action,
-              ))
-          .toList(),
-    );
   }
 }
