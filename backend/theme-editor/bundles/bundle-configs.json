@@ -818,6 +818,317 @@
           "bundleAnalysis": true
         }
       }
+    },
+    
+    "fantasy_world_bundle": {
+      "name": "Fantasy World Bundle",
+      "description": "Märchenhafte Welten mit magischen Effekten, mittelalterlicher Atmosphäre und Fantasy-Elementen",
+      "context": "world-fantasy",
+      "priority": "medium",
+      "estimatedSize": "85KB",
+      "loadTime": "medium",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing",
+          "radius",
+          "effects.visual",
+          "effects.animations",
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud"
+        ],
+        "optional": [
+          "gaming.accessibility"
+        ],
+        "excluded": []
+      },
+      "features": {
+        "worldThemed": true,
+        "magicEffects": true,
+        "medievalAesthetics": true,
+        "enchantedAnimations": true,
+        "mysticalParticles": true,
+        "gamingFeatures": true,
+        "visualEffects": "fantasy-themed",
+        "accessibility": "enhanced"
+      },
+      "performance": {
+        "target": "medium-devices",
+        "priority": "atmospheric-quality",
+        "memoryUsage": "medium",
+        "batterySaving": false,
+        "gpuAcceleration": true
+      },
+      "dependencies": {
+        "colors": {
+          "sections": ["fantasy.primary", "fantasy.secondary", "magic.glow", "nature.earth"],
+          "excludes": ["sci-fi", "modern"]
+        },
+        "typography": {
+          "sections": ["fantasy.decorative", "medieval.serif", "magic.script"],
+          "excludes": ["sci-fi", "modern.sans"]
+        },
+        "effects.visual": {
+          "sections": ["magic", "sparkle", "nature", "medieval"],
+          "excludes": ["tech", "neon", "digital"]
+        }
+      },
+      "overrides": {
+        "worldTheme": {
+          "type": "fantasy",
+          "intensity": "medium-high",
+          "ambientEffects": true
+        },
+        "colors": {
+          "primary": "#8B4513",
+          "secondary": "#DAA520", 
+          "accent": "#32CD32",
+          "background": "#2F2F1B",
+          "surface": "#654321"
+        },
+        "effects": {
+          "particles": {
+            "type": "sparkle",
+            "density": 0.5,
+            "movement": "magical-drift"
+          },
+          "glow": {
+            "color": "#DAA520",
+            "intensity": 0.6,
+            "pulsing": true
+          }
+        }
+      }
+    },
+    
+    "sci_fi_world_bundle": {
+      "name": "Sci-Fi World Bundle", 
+      "description": "Futuristische Welten mit Neon-Effekten, Tech-Atmosphäre und Cyberpunk-Elementen",
+      "context": "world-scifi",
+      "priority": "medium",
+      "estimatedSize": "90KB",
+      "loadTime": "medium",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing",
+          "radius", 
+          "effects.visual",
+          "effects.animations",
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud"
+        ],
+        "optional": [
+          "gaming.accessibility"
+        ],
+        "excluded": []
+      },
+      "features": {
+        "worldThemed": true,
+        "neonEffects": true,
+        "cyberpunkAesthetics": true,
+        "techAnimations": true,
+        "digitalParticles": true,
+        "gamingFeatures": true,
+        "visualEffects": "sci-fi-themed",
+        "accessibility": "enhanced"
+      },
+      "performance": {
+        "target": "medium-high-devices",
+        "priority": "tech-quality",
+        "memoryUsage": "medium-high",
+        "batterySaving": false,
+        "gpuAcceleration": true
+      },
+      "dependencies": {
+        "colors": {
+          "sections": ["sci-fi.primary", "neon.cyan", "neon.magenta", "tech.blue"],
+          "excludes": ["fantasy", "medieval", "nature"]
+        },
+        "typography": {
+          "sections": ["sci-fi.mono", "tech.sans", "digital.display"],
+          "excludes": ["fantasy.decorative", "medieval"]
+        },
+        "effects.visual": {
+          "sections": ["neon", "digital", "tech", "cyberpunk"],
+          "excludes": ["magic", "nature", "medieval"]
+        }
+      },
+      "overrides": {
+        "worldTheme": {
+          "type": "sci-fi",
+          "intensity": "high",
+          "ambientEffects": true
+        },
+        "colors": {
+          "primary": "#00FFFF",
+          "secondary": "#FF00FF",
+          "accent": "#00CED1", 
+          "background": "#0A0A0A",
+          "surface": "#1A1A2E"
+        },
+        "effects": {
+          "particles": {
+            "type": "digital",
+            "density": 0.8,
+            "movement": "matrix-flow"
+          },
+          "glow": {
+            "color": "#00FFFF",
+            "intensity": 0.9,
+            "pulsing": true
+          },
+          "distortion": {
+            "type": "digital-glitch",
+            "intensity": 0.2
+          }
+        }
+      }
+    },
+    
+    "ancient_world_bundle": {
+      "name": "Ancient World Bundle",
+      "description": "Antike Welten mit klassischen Elementen, Marmor-Texturen und historischer Atmosphäre", 
+      "context": "world-ancient",
+      "priority": "medium", 
+      "estimatedSize": "75KB",
+      "loadTime": "medium-fast",
+      "modules": {
+        "required": [
+          "colors",
+          "typography", 
+          "spacing",
+          "radius",
+          "effects.animations",
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud"
+        ],
+        "optional": [
+          "effects.visual",
+          "gaming.accessibility"
+        ],
+        "excluded": []
+      },
+      "features": {
+        "worldThemed": true,
+        "classicalElements": true,
+        "marbleTextures": true,
+        "ancientAnimations": true,
+        "historicalAesthetics": true,
+        "gamingFeatures": true,
+        "visualEffects": "ancient-themed",
+        "accessibility": "enhanced"
+      },
+      "performance": {
+        "target": "all-devices",
+        "priority": "elegance-over-effects",
+        "memoryUsage": "medium",
+        "batterySaving": true,
+        "gpuAcceleration": false
+      },
+      "dependencies": {
+        "colors": {
+          "sections": ["ancient.gold", "ancient.crimson", "marble.white", "bronze.brown"],
+          "excludes": ["neon", "digital", "modern"]
+        },
+        "typography": {
+          "sections": ["ancient.serif", "classical.carved", "latin.inscription"],
+          "excludes": ["sci-fi", "fantasy.script"]
+        },
+        "effects.animations": {
+          "sections": ["classical.fade", "marble.shimmer", "bronze.patina"],
+          "excludes": ["neon", "magic", "digital"]
+        }
+      },
+      "overrides": {
+        "worldTheme": {
+          "type": "ancient",
+          "intensity": "medium",
+          "ambientEffects": false
+        },
+        "colors": {
+          "primary": "#800020",
+          "secondary": "#FFD700",
+          "accent": "#CD853F",
+          "background": "#F5F5DC",
+          "surface": "#DDBEA9"
+        },
+        "effects": {
+          "particles": {
+            "type": "dust",
+            "density": 0.2,
+            "movement": "gentle-drift"
+          },
+          "glow": {
+            "color": "#FFD700",
+            "intensity": 0.3,
+            "pulsing": false
+          }
+        }
+      }
+    },
+    
+    "default_world_bundle": {
+      "name": "Default World Bundle",
+      "description": "Standard World-Bundle als Basis für alle Welten ohne spezifisches Theme",
+      "context": "world-default",
+      "priority": "medium",
+      "estimatedSize": "65KB", 
+      "loadTime": "fast",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing",
+          "radius",
+          "effects.animations",
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud"
+        ],
+        "optional": [
+          "effects.visual",
+          "gaming.accessibility"
+        ],
+        "excluded": []
+      },
+      "features": {
+        "worldThemed": false,
+        "standardUI": true,
+        "basicAnimations": true,
+        "gamingFeatures": true,
+        "visualEffects": "minimal",
+        "accessibility": "standard"
+      },
+      "performance": {
+        "target": "all-devices",
+        "priority": "balanced",
+        "memoryUsage": "medium",
+        "batterySaving": true,
+        "gpuAcceleration": false
+      },
+      "dependencies": {
+        "colors": {
+          "sections": ["primary", "secondary", "background", "text", "status"],
+          "excludes": ["themed"]
+        },
+        "typography": {
+          "sections": ["primary", "gaming.standard"],
+          "excludes": ["themed", "decorative"]
+        }
+      },
+      "overrides": {
+        "worldTheme": {
+          "type": "default",
+          "intensity": "low",
+          "ambientEffects": false
+        }
+      }
     }
   },
   "bundleResolver": {

@@ -96,6 +96,12 @@ model World {
   createdAt        DateTime          @default(now())
   startsAt         DateTime
   endsAt           DateTime?
+  
+  themeBundle      String            @default("default_world_bundle") @map("theme_bundle")
+  parentTheme      String?           @map("parent_theme")
+  themeOverrides   Json?             @map("theme_overrides")
+  themeVariant     String?           @default("standard") @map("theme_variant")
+  
   invites          Invite[]
   players          Player[]
   preRegistrations PreRegistration[]
