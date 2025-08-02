@@ -1,0 +1,280 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/components/world-preview.schema.json",
+  "title": "Weltenwind World Preview Card Schema",
+  "description": "World preview cards for world selection with thumbnails, status, and player information",
+  "type": "object",
+  "required": ["layout", "thumbnail", "content", "status", "actions"],
+  "properties": {
+    "layout": {
+      "type": "object",
+      "description": "Card layout configuration",
+      "required": ["width", "height", "borderRadius", "padding"],
+      "properties": {
+        "width": {
+          "type": "number",
+          "minimum": 200,
+          "maximum": 500,
+          "default": 320,
+          "description": "Card width in pixels"
+        },
+        "height": {
+          "type": "number",
+          "minimum": 150,
+          "maximum": 400,
+          "default": 240,
+          "description": "Card height in pixels"
+        },
+        "borderRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 30,
+          "default": 16,
+          "description": "Card border radius"
+        },
+        "padding": {
+          "type": "number",
+          "minimum": 8,
+          "maximum": 32,
+          "default": 16,
+          "description": "Inner padding"
+        },
+        "aspectRatio": {
+          "type": "string",
+          "enum": ["16:9", "4:3", "1:1"],
+          "default": "16:9",
+          "description": "Thumbnail aspect ratio"
+        }
+      }
+    },
+    "thumbnail": {
+      "type": "object",
+      "description": "World thumbnail configuration",
+      "required": ["enabled", "height", "borderRadius"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show world thumbnail"
+        },
+        "height": {
+          "type": "number",
+          "minimum": 80,
+          "maximum": 200,
+          "default": 120,
+          "description": "Thumbnail height in pixels"
+        },
+        "borderRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 12,
+          "description": "Thumbnail border radius"
+        },
+        "fallbackIcon": {
+          "type": "string",
+          "enum": ["world", "landscape", "castle", "forest"],
+          "default": "world",
+          "description": "Icon to show when no thumbnail available"
+        },
+        "overlay": {
+          "type": "object",
+          "description": "Thumbnail overlay configuration",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Show overlay gradient"
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.3,
+              "description": "Overlay opacity"
+            }
+          }
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "description": "Card content configuration",
+      "required": ["showName", "showDescription", "showPlayerCount"],
+      "properties": {
+        "showName": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show world name"
+        },
+        "showDescription": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show world description"
+        },
+        "showPlayerCount": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show current/max players"
+        },
+        "showCreator": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show world creator"
+        },
+        "showTags": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show world tags"
+        },
+        "maxDescriptionLines": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 5,
+          "default": 2,
+          "description": "Maximum description lines"
+        },
+        "maxTags": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 3,
+          "description": "Maximum tags to show"
+        }
+      }
+    },
+    "status": {
+      "type": "object",
+      "description": "World status indicator configuration",
+      "required": ["enabled", "position", "size"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show status indicator"
+        },
+        "position": {
+          "type": "string",
+          "enum": ["top-left", "top-right", "bottom-left", "bottom-right"],
+          "default": "top-right",
+          "description": "Status indicator position"
+        },
+        "size": {
+          "type": "number",
+          "minimum": 8,
+          "maximum": 20,
+          "default": 12,
+          "description": "Status indicator size"
+        },
+        "showText": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show status text alongside indicator"
+        },
+        "colors": {
+          "type": "object",
+          "description": "Status colors",
+          "properties": {
+            "online": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#22C55E",
+              "description": "Online status color"
+            },
+            "offline": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#EF4444",
+              "description": "Offline status color"
+            },
+            "maintenance": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#F59E0B",
+              "description": "Maintenance status color"
+            },
+            "full": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#8B5CF6",
+              "description": "Full world status color"
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "description": "Card action configuration",
+      "required": ["showJoinButton", "hoverEffect"],
+      "properties": {
+        "showJoinButton": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show join button"
+        },
+        "showFavoriteButton": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show favorite toggle"
+        },
+        "showInfoButton": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show more info button"
+        },
+        "hoverEffect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable hover effect"
+        },
+        "glowOnHover": {
+          "type": "boolean",
+          "default": true,
+          "description": "Glow effect on hover"
+        },
+        "scaleOnHover": {
+          "type": "number",
+          "minimum": 1.0,
+          "maximum": 1.2,
+          "default": 1.02,
+          "description": "Scale factor on hover"
+        },
+        "animationDuration": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 1000,
+          "default": 200,
+          "description": "Hover animation duration (ms)"
+        }
+      }
+    },
+    "themes": {
+      "type": "object",
+      "description": "Theme-specific styling",
+      "properties": {
+        "fantasy": {
+          "type": "object",
+          "description": "Fantasy theme enhancements",
+          "properties": {
+            "magicBorder": {
+              "type": "boolean",
+              "default": true,
+              "description": "Magic glowing border"
+            },
+            "particleEffect": {
+              "type": "boolean",
+              "default": false,
+              "description": "Floating particle effect"
+            },
+            "gradientOverlay": {
+              "type": "boolean",
+              "default": true,
+              "description": "Magic gradient overlay"
+            }
+          }
+        }
+      }
+    }
+  }
+}

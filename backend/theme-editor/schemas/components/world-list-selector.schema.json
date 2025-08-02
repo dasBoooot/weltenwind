@@ -1,0 +1,355 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/components/world-list-selector.schema.json",
+  "title": "Weltenwind World List Selector Schema",
+  "description": "World list selector with search, filters, sorting, and pagination for world selection",
+  "type": "object",
+  "required": ["layout", "search", "filters", "sorting", "items"],
+  "properties": {
+    "layout": {
+      "type": "object",
+      "description": "List layout configuration",
+      "required": ["itemHeight", "maxVisibleItems", "spacing"],
+      "properties": {
+        "itemHeight": {
+          "type": "number",
+          "minimum": 60,
+          "maximum": 120,
+          "default": 80,
+          "description": "Height of each list item in pixels"
+        },
+        "maxVisibleItems": {
+          "type": "number",
+          "minimum": 3,
+          "maximum": 10,
+          "default": 5,
+          "description": "Maximum items visible without scrolling"
+        },
+        "spacing": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 8,
+          "description": "Spacing between items"
+        },
+        "borderRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 12,
+          "description": "Container border radius"
+        },
+        "padding": {
+          "type": "number",
+          "minimum": 8,
+          "maximum": 32,
+          "default": 16,
+          "description": "Container padding"
+        }
+      }
+    },
+    "search": {
+      "type": "object",
+      "description": "Search functionality configuration",
+      "required": ["enabled", "placeholder"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable search functionality"
+        },
+        "placeholder": {
+          "type": "string",
+          "default": "Search worlds...",
+          "description": "Search input placeholder text"
+        },
+        "debounceMs": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000,
+          "default": 300,
+          "description": "Search debounce delay in milliseconds"
+        },
+        "clearButton": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show clear search button"
+        },
+        "searchFields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["name", "description", "creator", "tags"]
+          },
+          "default": ["name", "description", "tags"],
+          "description": "Fields to search in"
+        }
+      }
+    },
+    "filters": {
+      "type": "object",
+      "description": "Filter functionality configuration",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable filter functionality"
+        },
+        "showFilterCount": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show active filter count"
+        },
+        "collapsible": {
+          "type": "boolean",
+          "default": true,
+          "description": "Filters can be collapsed"
+        },
+        "types": {
+          "type": "object",
+          "description": "Available filter types",
+          "properties": {
+            "status": {
+              "type": "object",
+              "description": "Filter by world status",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Enable status filter"
+                },
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["online", "offline", "maintenance", "full"]
+                  },
+                  "default": ["online", "offline", "maintenance", "full"],
+                  "description": "Available status options"
+                }
+              }
+            },
+            "playerCount": {
+              "type": "object",
+              "description": "Filter by player count",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Enable player count filter"
+                },
+                "ranges": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": { "type": "string" },
+                      "min": { "type": "number", "minimum": 0 },
+                      "max": { "type": "number", "minimum": 0 }
+                    }
+                  },
+                  "default": [
+                    { "label": "Empty (0 players)", "min": 0, "max": 0 },
+                    { "label": "Low (1-10 players)", "min": 1, "max": 10 },
+                    { "label": "Medium (11-50 players)", "min": 11, "max": 50 },
+                    { "label": "High (50+ players)", "min": 50, "max": 999 }
+                  ]
+                }
+              }
+            },
+            "tags": {
+              "type": "object",
+              "description": "Filter by world tags",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Enable tags filter"
+                },
+                "maxVisible": {
+                  "type": "number",
+                  "minimum": 3,
+                  "maximum": 20,
+                  "default": 10,
+                  "description": "Maximum visible tag filters"
+                }
+              }
+            },
+            "favorites": {
+              "type": "object",
+              "description": "Filter favorites",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Enable favorites filter"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sorting": {
+      "type": "object",
+      "description": "Sorting functionality configuration",
+      "required": ["enabled", "defaultOption"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable sorting functionality"
+        },
+        "defaultOption": {
+          "type": "string",
+          "enum": ["name", "playerCount", "status", "lastPlayed", "created"],
+          "default": "name",
+          "description": "Default sort option"
+        },
+        "defaultDirection": {
+          "type": "string",
+          "enum": ["asc", "desc"],
+          "default": "asc",
+          "description": "Default sort direction"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": { 
+                "type": "string",
+                "enum": ["name", "playerCount", "status", "lastPlayed", "created"]
+              },
+              "label": { "type": "string" },
+              "directions": {
+                "type": "array",
+                "items": { "type": "string", "enum": ["asc", "desc"] },
+                "default": ["asc", "desc"]
+              }
+            }
+          },
+          "default": [
+            { "key": "name", "label": "Name", "directions": ["asc", "desc"] },
+            { "key": "playerCount", "label": "Players", "directions": ["desc", "asc"] },
+            { "key": "status", "label": "Status", "directions": ["asc", "desc"] },
+            { "key": "lastPlayed", "label": "Last Played", "directions": ["desc", "asc"] }
+          ]
+        }
+      }
+    },
+    "items": {
+      "type": "object",
+      "description": "List item configuration",
+      "required": ["showThumbnail", "showStatus", "showPlayerCount"],
+      "properties": {
+        "showThumbnail": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show world thumbnail in list items"
+        },
+        "thumbnailSize": {
+          "type": "number",
+          "minimum": 40,
+          "maximum": 80,
+          "default": 60,
+          "description": "Thumbnail size in pixels"
+        },
+        "showStatus": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show status indicator"
+        },
+        "showPlayerCount": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show current/max players"
+        },
+        "showDescription": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show world description"
+        },
+        "showTags": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show world tags"
+        },
+        "maxTags": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 3,
+          "description": "Maximum tags to show per item"
+        },
+        "hoverEffect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable hover effects on items"
+        },
+        "selectionEffect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable selection visual effects"
+        }
+      }
+    },
+    "pagination": {
+      "type": "object",
+      "description": "Pagination configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable pagination instead of infinite scroll"
+        },
+        "itemsPerPage": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 100,
+          "default": 20,
+          "description": "Items per page"
+        },
+        "showPageNumbers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show page numbers"
+        },
+        "showItemCount": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show total item count"
+        }
+      }
+    },
+    "animations": {
+      "type": "object",
+      "description": "Animation configuration",
+      "properties": {
+        "listTransition": {
+          "type": "boolean",
+          "default": true,
+          "description": "Animate list changes"
+        },
+        "itemEnter": {
+          "type": "boolean",
+          "default": true,
+          "description": "Animate items entering list"
+        },
+        "filterTransition": {
+          "type": "boolean",
+          "default": true,
+          "description": "Animate filter changes"
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 1000,
+          "default": 300,
+          "description": "Animation duration in milliseconds"
+        }
+      }
+    }
+  }
+}

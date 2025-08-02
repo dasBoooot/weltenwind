@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../core/services/modular_theme_service.dart';
 
@@ -76,6 +77,9 @@ class _GameMinimapState extends State<GameMinimap> with TickerProviderStateMixin
   late AnimationController _radarSweepController;
   late Animation<double> _playerGlowAnimation;
   late Animation<double> _radarSweepAnimation;
+  
+  // 🔥 PERFORMANCE FIX: Timer for entity updates
+  Timer? _entityUpdateTimer;
 
   @override
   void initState() {
@@ -95,9 +99,9 @@ class _GameMinimapState extends State<GameMinimap> with TickerProviderStateMixin
       curve: Curves.easeInOut,
     ));
     
-    // Radar sweep animation
+    // 🔥 PERFORMANCE FIX: Slower radar sweep for better performance
     _radarSweepController = AnimationController(
-      duration: const Duration(milliseconds: 3000),
+      duration: const Duration(milliseconds: 5000), // 3s → 5s throttling
       vsync: this,
     );
     
@@ -111,12 +115,25 @@ class _GameMinimapState extends State<GameMinimap> with TickerProviderStateMixin
 
     _playerGlowController.repeat(reverse: true);
     _radarSweepController.repeat();
+    
+    // 🔥 PERFORMANCE FIX: Throttled entity updates via Timer.periodic
+    _entityUpdateTimer = Timer.periodic(
+      const Duration(milliseconds: 200), // Update every 200ms instead of every frame
+      (timer) {
+        if (mounted) {
+          setState(() {
+            // This triggers a rebuild, but only every 200ms for better performance
+          });
+        }
+      },
+    );
   }
 
   @override
   void dispose() {
     _playerGlowController.dispose();
     _radarSweepController.dispose();
+    _entityUpdateTimer?.cancel(); // 🔥 PERFORMANCE FIX: Clean up timer
     super.dispose();
   }
 
@@ -128,8 +145,8 @@ class _GameMinimapState extends State<GameMinimap> with TickerProviderStateMixin
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
-        width: widget.size,
-        height: widget.size,
+        width: _getResponsiveSize(),
+        height: _getResponsiveSize(),
         decoration: _getMinimapDecoration(theme, extensions),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(_getBorderRadius()),
@@ -137,7 +154,7 @@ class _GameMinimapState extends State<GameMinimap> with TickerProviderStateMixin
             animation: Listenable.merge([_playerGlowController, _radarSweepController]),
             builder: (context, child) {
               return CustomPaint(
-                size: Size(widget.size, widget.size),
+                size: Size(_getResponsiveSize(), _getResponsiveSize()),
                 painter: MinimapPainter(
                   worldWidth: widget.worldWidth,
                   worldHeight: widget.worldHeight,
@@ -200,6 +217,27 @@ class _GameMinimapState extends State<GameMinimap> with TickerProviderStateMixin
   /// Border width from schema
   double _getBorderWidth() {
     return 2.0; // Schema default
+  }
+
+  /// 🔥 RESPONSIVE FIX: Calculate responsive minimap size
+  double _getResponsiveSize() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final smallerDimension = math.min(screenWidth, screenHeight);
+    
+    // Use provided size if it's not the default, otherwise calculate responsive size
+    if (widget.size != 150.0) {
+      return widget.size; // User provided explicit size
+    }
+    
+    // Calculate responsive size based on screen size
+    if (smallerDimension < 600) {
+      return 100.0; // Mobile: 100px (smaller for limited screen space)
+    } else if (smallerDimension < 900) {
+      return 150.0; // Tablet: 150px (default)  
+    } else {
+      return 200.0; // Desktop: 200px (larger for better visibility)
+    }
   }
 }
 

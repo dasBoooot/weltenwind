@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/providers/locale_provider.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/tokens/typography.dart';
+
 import '../components/index.dart';
 import '../utils/dynamic_components.dart';
 
@@ -110,7 +109,7 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
     
     return DynamicComponents.frame(
       title: AppLocalizations.of(context).commonLanguage,
-      padding: const EdgeInsets.all(AppSpacing.sm),
+      padding: const EdgeInsets.all(16.0), // sm
       child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,12 +125,12 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
                       color: Theme.of(context).colorScheme.primary,
                       size: 16,
                     ),
-                    const SizedBox(width: AppSpacing.xs),
+                    const SizedBox(width: 8.0), // xs
                     Text(
                       AppLocalizations.of(context).commonLanguage,
-                      style: AppTypography.bodySmall(
-                        isDark: Theme.of(context).brightness == Brightness.dark,
-                      ),
+                              style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurface,
+        ),
                     ),
                   ],
                 ),
@@ -145,14 +144,14 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: 16.0), // sm
             // Language buttons - dynamisch generiert
             Column(
               mainAxisSize: MainAxisSize.min,
               children: _availableLanguages.map((language) {
                 final isSelected = currentLanguage == language['code'];
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                  padding: const EdgeInsets.only(bottom: 8.0), // xs
                   child: SizedBox(
                     width: double.infinity, // Feste Breite für Row-Kompatibilität
                     child: isSelected

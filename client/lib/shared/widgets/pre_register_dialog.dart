@@ -50,7 +50,7 @@ class _PreRegisterDialogState extends State<PreRegisterDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Fehler: ${e.toString()}'),
-            backgroundColor: AppTheme.errorColor,
+            backgroundColor: theme.colorScheme.error,
           ),
         );
       }
@@ -70,7 +70,7 @@ class _PreRegisterDialogState extends State<PreRegisterDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+          color: theme.colorScheme.primary.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -100,7 +100,7 @@ class _PreRegisterDialogState extends State<PreRegisterDialog> {
               decoration: InputDecoration(
                 labelText: 'E-Mail-Adresse',
                 labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.email, color: AppTheme.primaryColor),
+                prefixIcon: Icon(Icons.email, color: theme.colorScheme.primary),
                 filled: true,
                 fillColor: const Color(0xFF2D2D2D),
                 border: OutlineInputBorder(
@@ -113,7 +113,7 @@ class _PreRegisterDialogState extends State<PreRegisterDialog> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppTheme.primaryColor),
+                  borderSide: BorderSide(color: theme.colorScheme.primary),
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -144,7 +144,7 @@ class _PreRegisterDialogState extends State<PreRegisterDialog> {
         ElevatedButton(
           onPressed: _isLoading ? null : _submit,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor,
+            backgroundColor: theme.colorScheme.primary,
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),

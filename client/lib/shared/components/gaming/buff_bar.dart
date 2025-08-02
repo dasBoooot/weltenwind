@@ -125,7 +125,7 @@ class _GameBuffBarState extends State<GameBuffBar> with TickerProviderStateMixin
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extensions = ModularThemeService().getCurrentThemeExtensions();
-    final visibleBuffs = widget.buffs.take(widget.maxSlots).toList();
+    final visibleBuffs = _getVisibleBuffs();
     
     return AnimatedBuilder(
       animation: _pulseAnimation,
@@ -360,5 +360,44 @@ class _GameBuffBarState extends State<GameBuffBar> with TickerProviderStateMixin
   /// Border width from schema
   double _getBorderWidth() {
     return 2.0; // Schema default
+  }
+
+  /// 🔥 PERFORMANCE FIX: Entity culling for visible buffs only
+  List<BuffData> _getVisibleBuffs() {
+    // Step 1: Filter active buffs only
+    final activeBuffs = widget.buffs.where((buff) {
+      return buff.isActive && buff.duration != null;
+    }).toList();
+    
+    // Step 2: Sort by priority (important buffs first)
+    activeBuffs.sort((a, b) {
+      // Sort by type priority first
+      final aPriority = _getBuffTypePriority(a.type);
+      final bPriority = _getBuffTypePriority(b.type);
+      
+      if (aPriority != bPriority) {
+        return aPriority.compareTo(bPriority); // Lower number = higher priority
+      }
+      
+      // Then by duration (longer duration first for stability)
+      final aDuration = a.duration?.inMilliseconds ?? 0;
+      final bDuration = b.duration?.inMilliseconds ?? 0;
+      return bDuration.compareTo(aDuration);
+    });
+    
+    // Step 3: Limit to visible slots only (culling)
+    return activeBuffs.take(widget.maxSlots).toList();
+  }
+
+  /// Get buff type rendering priority (lower = higher priority)
+  int _getBuffTypePriority(BuffType type) {
+    switch (type) {
+      case BuffType.buff:
+        return 0; // Highest priority
+      case BuffType.debuff:
+        return 1;
+      case BuffType.neutral:
+        return 2; // Lowest priority
+    }
   }
 }

@@ -8,6 +8,22 @@ export 'app_button.dart';
 export 'app_frame.dart';
 export 'app_input.dart';
 export 'app_bar.dart';
+export 'app_scaffold.dart';
+export 'app_divider.dart';
+export 'app_tooltip.dart';
+export 'error_message_box.dart';
+export 'loading_overlay.dart';
+export 'app_progress_indicator.dart';
+export 'world_preview_card.dart';
+export 'invite_status_banner.dart';
+export 'worlds_list_selector.dart';
+export 'theme_switcher.dart';
+export 'app_checkbox.dart';
+export 'app_dropdown.dart';
+export 'app_snackbar.dart';
+export 'app_tab_bar.dart';
+export 'app_icon_button.dart';
+export 'schema_indicator.dart';
 
 // 🎮 Gaming Components
 export 'gaming/inventory_slot.dart';

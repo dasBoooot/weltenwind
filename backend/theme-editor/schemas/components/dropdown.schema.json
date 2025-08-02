@@ -1,0 +1,354 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/components/dropdown.schema.json",
+  "title": "Weltenwind Dropdown/Select Schema",
+  "description": "Dropdown/Select component with search, multi-select, groups, and custom styling",
+  "type": "object",
+  "required": ["layout", "search", "options", "selection"],
+  "properties": {
+    "layout": {
+      "type": "object",
+      "description": "Dropdown layout and appearance configuration",
+      "required": ["minWidth", "maxWidth", "maxHeight"],
+      "properties": {
+        "minWidth": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 300,
+          "default": 150,
+          "description": "Minimum dropdown width in pixels"
+        },
+        "maxWidth": {
+          "type": "number",
+          "minimum": 200,
+          "maximum": 800,
+          "default": 300,
+          "description": "Maximum dropdown width in pixels"
+        },
+        "maxHeight": {
+          "type": "number",
+          "minimum": 150,
+          "maximum": 500,
+          "default": 250,
+          "description": "Maximum dropdown height in pixels"
+        },
+        "borderRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 8,
+          "description": "Dropdown border radius"
+        },
+        "elevation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 8,
+          "description": "Dropdown shadow elevation"
+        },
+        "padding": {
+          "type": "number",
+          "minimum": 4,
+          "maximum": 20,
+          "default": 8,
+          "description": "Dropdown padding"
+        }
+      }
+    },
+    "search": {
+      "type": "object",
+      "description": "Search functionality configuration",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable search functionality"
+        },
+        "placeholder": {
+          "type": "string",
+          "default": "Search...",
+          "description": "Search input placeholder"
+        },
+        "debounceMs": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000,
+          "default": 300,
+          "description": "Search debounce delay in milliseconds"
+        },
+        "caseSensitive": {
+          "type": "boolean",
+          "default": false,
+          "description": "Case sensitive search"
+        },
+        "searchFields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["label", "value", "description", "keywords"]
+          },
+          "default": ["label"],
+          "description": "Fields to search in"
+        },
+        "highlightMatches": {
+          "type": "boolean",
+          "default": true,
+          "description": "Highlight search matches in results"
+        },
+        "noResultsText": {
+          "type": "string",
+          "default": "No results found",
+          "description": "Text to show when no results"
+        }
+      }
+    },
+    "options": {
+      "type": "object",
+      "description": "Options display and interaction configuration",
+      "required": ["itemHeight", "showIcons", "showDescriptions"],
+      "properties": {
+        "itemHeight": {
+          "type": "number",
+          "minimum": 32,
+          "maximum": 80,
+          "default": 48,
+          "description": "Height of each option item"
+        },
+        "showIcons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show icons in options"
+        },
+        "showDescriptions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show option descriptions"
+        },
+        "showDividers": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show dividers between options"
+        },
+        "hoverEffect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable hover effects on options"
+        },
+        "rippleEffect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable ripple effects on tap"
+        },
+        "animationDuration": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 500,
+          "default": 200,
+          "description": "Option animation duration (ms)"
+        }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "description": "Selection behavior configuration",
+      "required": ["multiSelect", "clearable"],
+      "properties": {
+        "multiSelect": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable multi-selection"
+        },
+        "clearable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow clearing selection"
+        },
+        "closeOnSelect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Close dropdown on selection (single select only)"
+        },
+        "maxSelections": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Maximum selections for multi-select"
+        },
+        "showSelectAll": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show select all option for multi-select"
+        },
+        "showSelectionCount": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show selection count for multi-select"
+        },
+        "selectionDisplay": {
+          "type": "string",
+          "enum": ["tags", "count", "list"],
+          "default": "tags",
+          "description": "How to display multiple selections"
+        }
+      }
+    },
+    "groups": {
+      "type": "object",
+      "description": "Option grouping configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable option grouping"
+        },
+        "showHeaders": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show group headers"
+        },
+        "collapsible": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow collapsing groups"
+        },
+        "headerStyle": {
+          "type": "string",
+          "enum": ["default", "bold", "colored", "divider"],
+          "default": "default",
+          "description": "Group header styling"
+        },
+        "spacing": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 8,
+          "description": "Spacing between groups"
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "description": "Validation and error handling configuration",
+      "properties": {
+        "required": {
+          "type": "boolean",
+          "default": false,
+          "description": "Field is required"
+        },
+        "showErrors": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show validation errors"
+        },
+        "errorPosition": {
+          "type": "string",
+          "enum": ["below", "tooltip", "inline"],
+          "default": "below",
+          "description": "Where to display errors"
+        },
+        "customValidation": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable custom validation rules"
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "description": "Accessibility configuration",
+      "properties": {
+        "screenReader": {
+          "type": "boolean",
+          "default": true,
+          "description": "Screen reader support"
+        },
+        "keyboardNavigation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Keyboard navigation support"
+        },
+        "focusIndicator": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show focus indicators"
+        },
+        "announceChanges": {
+          "type": "boolean",
+          "default": true,
+          "description": "Announce selection changes"
+        },
+        "semanticLabels": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use semantic labels for better accessibility"
+        }
+      }
+    },
+    "customization": {
+      "type": "object",
+      "description": "Custom styling and behavior options",
+      "properties": {
+        "allowCustomOptions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow users to add custom options"
+        },
+        "customOptionTemplate": {
+          "type": "string",
+          "description": "Template for custom options"
+        },
+        "loadingIndicator": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show loading indicator for async options"
+        },
+        "emptyState": {
+          "type": "object",
+          "description": "Empty state configuration",
+          "properties": {
+            "show": {
+              "type": "boolean",
+              "default": true,
+              "description": "Show empty state"
+            },
+            "text": {
+              "type": "string",
+              "default": "No options available",
+              "description": "Empty state text"
+            },
+            "icon": {
+              "type": "string",
+              "description": "Empty state icon"
+            }
+          }
+        },
+        "virtualScrolling": {
+          "type": "object",
+          "description": "Virtual scrolling for large lists",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable virtual scrolling"
+            },
+            "threshold": {
+              "type": "number",
+              "minimum": 50,
+              "maximum": 1000,
+              "default": 100,
+              "description": "Minimum items to enable virtual scrolling"
+            },
+            "itemHeight": {
+              "type": "number",
+              "minimum": 32,
+              "maximum": 80,
+              "default": 48,
+              "description": "Fixed item height for virtual scrolling"
+            }
+          }
+        }
+      }
+    }
+  }
+}

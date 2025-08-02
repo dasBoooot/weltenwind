@@ -1,0 +1,426 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/components/tab-bar.schema.json",
+  "title": "Weltenwind Tab Bar Schema",
+  "description": "Tab bar component with indicators, badges, animations, and custom styling",
+  "type": "object",
+  "required": ["layout", "tabs", "indicators", "animations"],
+  "properties": {
+    "layout": {
+      "type": "object",
+      "description": "Tab bar layout configuration",
+      "required": ["position", "height", "padding"],
+      "properties": {
+        "position": {
+          "type": "string",
+          "enum": ["top", "bottom"],
+          "default": "top",
+          "description": "Tab bar position"
+        },
+        "height": {
+          "type": "number",
+          "minimum": 40,
+          "maximum": 80,
+          "default": 48,
+          "description": "Tab bar height in pixels"
+        },
+        "padding": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 4,
+          "description": "Tab bar padding"
+        },
+        "spacing": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 0,
+          "description": "Spacing between tabs"
+        },
+        "scrollable": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable horizontal scrolling for many tabs"
+        },
+        "centered": {
+          "type": "boolean",
+          "default": false,
+          "description": "Center tabs horizontally"
+        },
+        "fillWidth": {
+          "type": "boolean",
+          "default": true,
+          "description": "Tabs fill available width equally"
+        }
+      }
+    },
+    "tabs": {
+      "type": "object",
+      "description": "Individual tab configuration",
+      "required": ["minWidth", "maxWidth", "height"],
+      "properties": {
+        "minWidth": {
+          "type": "number",
+          "minimum": 50,
+          "maximum": 200,
+          "default": 80,
+          "description": "Minimum tab width in pixels"
+        },
+        "maxWidth": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 400,
+          "default": 200,
+          "description": "Maximum tab width in pixels"
+        },
+        "height": {
+          "type": "number",
+          "minimum": 32,
+          "maximum": 72,
+          "default": 40,
+          "description": "Tab height in pixels"
+        },
+        "borderRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 8,
+          "description": "Tab border radius"
+        },
+        "showIcons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show icons in tabs"
+        },
+        "showLabels": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show text labels in tabs"
+        },
+        "iconSize": {
+          "type": "number",
+          "minimum": 16,
+          "maximum": 32,
+          "default": 20,
+          "description": "Tab icon size"
+        },
+        "fontSize": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 18,
+          "default": 14,
+          "description": "Tab label font size"
+        },
+        "iconPosition": {
+          "type": "string",
+          "enum": ["top", "left", "right", "bottom"],
+          "default": "top",
+          "description": "Icon position relative to label"
+        }
+      }
+    },
+    "indicators": {
+      "type": "object",
+      "description": "Tab selection indicators configuration",
+      "required": ["type", "position", "thickness"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["underline", "background", "border", "glow", "none"],
+          "default": "underline",
+          "description": "Type of selection indicator"
+        },
+        "position": {
+          "type": "string",
+          "enum": ["top", "bottom", "left", "right"],
+          "default": "bottom",
+          "description": "Indicator position relative to tab"
+        },
+        "thickness": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 8,
+          "default": 2,
+          "description": "Indicator thickness in pixels"
+        },
+        "width": {
+          "type": "string",
+          "enum": ["full", "content", "fixed"],
+          "default": "content",
+          "description": "Indicator width behavior"
+        },
+        "fixedWidth": {
+          "type": "number",
+          "minimum": 20,
+          "maximum": 100,
+          "default": 40,
+          "description": "Fixed indicator width when width is 'fixed'"
+        },
+        "borderRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 1,
+          "description": "Indicator border radius"
+        },
+        "animated": {
+          "type": "boolean",
+          "default": true,
+          "description": "Animate indicator movement between tabs"
+        },
+        "glowEffect": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add glow effect to active indicator"
+        }
+      }
+    },
+    "badges": {
+      "type": "object",
+      "description": "Tab badge configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable tab badges"
+        },
+        "position": {
+          "type": "string",
+          "enum": ["top-right", "top-left", "bottom-right", "bottom-left"],
+          "default": "top-right",
+          "description": "Badge position on tab"
+        },
+        "size": {
+          "type": "number",
+          "minimum": 12,
+          "maximum": 24,
+          "default": 16,
+          "description": "Badge size in pixels"
+        },
+        "showCount": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show count in badge"
+        },
+        "maxCount": {
+          "type": "number",
+          "minimum": 9,
+          "maximum": 999,
+          "default": 99,
+          "description": "Maximum count before showing '+'"
+        },
+        "showDot": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show simple dot badge instead of count"
+        },
+        "animated": {
+          "type": "boolean",
+          "default": true,
+          "description": "Animate badge appearance/changes"
+        }
+      }
+    },
+    "states": {
+      "type": "object",
+      "description": "Tab state styling configuration",
+      "properties": {
+        "default": {
+          "type": "object",
+          "description": "Default tab state styling",
+          "properties": {
+            "opacity": {
+              "type": "number",
+              "minimum": 0.3,
+              "maximum": 1.0,
+              "default": 0.7,
+              "description": "Default tab opacity"
+            },
+            "scale": {
+              "type": "number",
+              "minimum": 0.8,
+              "maximum": 1.0,
+              "default": 1.0,
+              "description": "Default tab scale"
+            }
+          }
+        },
+        "active": {
+          "type": "object",
+          "description": "Active tab state styling",
+          "properties": {
+            "opacity": {
+              "type": "number",
+              "minimum": 0.8,
+              "maximum": 1.0,
+              "default": 1.0,
+              "description": "Active tab opacity"
+            },
+            "scale": {
+              "type": "number",
+              "minimum": 1.0,
+              "maximum": 1.2,
+              "default": 1.0,
+              "description": "Active tab scale"
+            },
+            "fontWeight": {
+              "type": "string",
+              "enum": ["normal", "medium", "semibold", "bold"],
+              "default": "semibold",
+              "description": "Active tab font weight"
+            }
+          }
+        },
+        "hover": {
+          "type": "object",
+          "description": "Hover tab state styling",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable hover state"
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 1.0,
+              "default": 0.8,
+              "description": "Hover tab opacity"
+            },
+            "scale": {
+              "type": "number",
+              "minimum": 0.9,
+              "maximum": 1.1,
+              "default": 1.0,
+              "description": "Hover tab scale"
+            },
+            "backgroundOpacity": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 0.3,
+              "default": 0.1,
+              "description": "Hover background opacity"
+            }
+          }
+        },
+        "disabled": {
+          "type": "object",
+          "description": "Disabled tab state styling",
+          "properties": {
+            "opacity": {
+              "type": "number",
+              "minimum": 0.2,
+              "maximum": 0.6,
+              "default": 0.4,
+              "description": "Disabled tab opacity"
+            },
+            "grayscale": {
+              "type": "boolean",
+              "default": false,
+              "description": "Apply grayscale filter to disabled tabs"
+            }
+          }
+        }
+      }
+    },
+    "animations": {
+      "type": "object",
+      "description": "Tab animations configuration",
+      "required": ["enabled", "duration"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable tab animations"
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 800,
+          "default": 250,
+          "description": "Animation duration in milliseconds"
+        },
+        "curve": {
+          "type": "string",
+          "enum": ["linear", "easeIn", "easeOut", "easeInOut", "bounce", "elastic"],
+          "default": "easeOut",
+          "description": "Animation curve"
+        },
+        "stagger": {
+          "type": "boolean",
+          "default": false,
+          "description": "Stagger tab entrance animations"
+        },
+        "staggerDelay": {
+          "type": "number",
+          "minimum": 50,
+          "maximum": 300,
+          "default": 100,
+          "description": "Delay between staggered animations"
+        }
+      }
+    },
+    "scrolling": {
+      "type": "object",
+      "description": "Scrollable tab bar configuration",
+      "properties": {
+        "physics": {
+          "type": "string",
+          "enum": ["bouncing", "clamping", "never"],
+          "default": "bouncing",
+          "description": "Scroll physics behavior"
+        },
+        "showScrollButtons": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show scroll navigation buttons"
+        },
+        "autoScroll": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto scroll to active tab"
+        },
+        "fadeEdges": {
+          "type": "boolean",
+          "default": true,
+          "description": "Fade edges when scrolling"
+        },
+        "fadeWidth": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 50,
+          "default": 20,
+          "description": "Width of fade effect in pixels"
+        }
+      }
+    },
+    "theming": {
+      "type": "object",
+      "description": "Theme-specific styling options",
+      "properties": {
+        "fantasy": {
+          "type": "object",
+          "description": "Fantasy theme enhancements",
+          "properties": {
+            "magicGlow": {
+              "type": "boolean",
+              "default": false,
+              "description": "Add magical glow to active tab"
+            },
+            "runicBorders": {
+              "type": "boolean",
+              "default": false,
+              "description": "Use runic-style borders"
+            },
+            "gradientBackground": {
+              "type": "boolean",
+              "default": false,
+              "description": "Use gradient backgrounds for tabs"
+            }
+          }
+        }
+      }
+    }
+  }
+}

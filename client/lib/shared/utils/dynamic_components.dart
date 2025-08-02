@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/tokens/typography.dart';
 import '../components/index.dart';
 
 /// 🎨 Dynamische UI-Komponenten basierend auf dem aktuellen Style-Preset
@@ -55,24 +53,29 @@ class DynamicComponents {
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.sectionMedium),
+          const SizedBox(height: 32.0), // sectionMedium
           
           // 🏰 Seiten-Titel
           Text(
             pageTitle,
-            style: AppTypography.h2(isDark: isDark),
+            style: theme.textTheme.headlineLarge?.copyWith(
+              color: theme.colorScheme.onSurface,
+              fontWeight: FontWeight.bold,
+            ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: 16.0), // sm
           
           // 📝 Subtitle (optional)
           if (subtitle != null) ...[
             Text(
               subtitle,
-              style: AppTypography.bodyLarge(isDark: isDark),
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurface,
+              ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: AppSpacing.sectionSmall),
+            const SizedBox(height: 24.0), // sectionSmall
           ],
           
           // 📝 Inhalt

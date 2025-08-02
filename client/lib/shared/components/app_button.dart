@@ -44,6 +44,11 @@ class AppButton extends StatefulWidget {
   final bool isExpanded;
   final IconData? icon;
   final IconData? suffixIcon;
+  
+  // 🦾 Accessibility Parameters
+  final String? semanticLabel;
+  final String? tooltip;
+  final String? hint;
 
   const AppButton({
     super.key,
@@ -56,6 +61,10 @@ class AppButton extends StatefulWidget {
     this.isExpanded = false,
     this.icon,
     this.suffixIcon,
+    // 🦾 Accessibility 
+    this.semanticLabel,
+    this.tooltip,
+    this.hint,
   });
 
   @override
@@ -112,31 +121,66 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
     // Get extensions from ModularThemeService for fantasy effects
     final extensions = ModularThemeService().getCurrentThemeExtensions();
     
-    return ScaleTransition(
-      scale: _scaleAnimation,
-      child: SizedBox(
-        width: widget.isExpanded ? double.infinity : null,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: isEnabled ? widget.onPressed : null,
-            onTapDown: isEnabled ? _handleTapDown : null,
-            onTapUp: isEnabled ? _handleTapUp : null,
-            onTapCancel: _handleTapCancel,
-            borderRadius: BorderRadius.circular(_getBorderRadius(theme)),
-            splashColor: _getSplashColor(theme, extensions).withValues(alpha: 0.2),
-            highlightColor: _getSplashColor(theme, extensions).withValues(alpha: 0.1),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              decoration: _getDecoration(theme, isEnabled, extensions),
-              padding: _getPadding(theme),
-              child: _buildContent(theme, isEnabled),
+    return Semantics(
+      label: _getSemanticLabel(),
+      hint: _getSemanticHint(),
+      button: true,
+      enabled: isEnabled,
+      onTap: isEnabled ? widget.onPressed : null,
+      child: widget.tooltip != null
+        ? Tooltip(
+            message: widget.tooltip!,
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: SizedBox(
+                width: widget.isExpanded ? double.infinity : null,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: isEnabled ? widget.onPressed : null,
+                    onTapDown: isEnabled ? _handleTapDown : null,
+                    onTapUp: isEnabled ? _handleTapUp : null,
+                    onTapCancel: _handleTapCancel,
+                    borderRadius: BorderRadius.circular(_getBorderRadius(theme)),
+                    splashColor: _getSplashColor(theme, extensions).withValues(alpha: 0.2),
+                    highlightColor: _getSplashColor(theme, extensions).withValues(alpha: 0.1),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      decoration: _getDecoration(theme, isEnabled, extensions),
+                      padding: _getPadding(theme),
+                      child: _buildContent(theme, isEnabled),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
+        : ScaleTransition(
+            scale: _scaleAnimation,
+            child: SizedBox(
+              width: widget.isExpanded ? double.infinity : null,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: isEnabled ? widget.onPressed : null,
+                  onTapDown: isEnabled ? _handleTapDown : null,
+                  onTapUp: isEnabled ? _handleTapUp : null,
+                  onTapCancel: _handleTapCancel,
+                  borderRadius: BorderRadius.circular(_getBorderRadius(theme)),
+                  splashColor: _getSplashColor(theme, extensions).withValues(alpha: 0.2),
+                  highlightColor: _getSplashColor(theme, extensions).withValues(alpha: 0.1),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    decoration: _getDecoration(theme, isEnabled, extensions),
+                    padding: _getPadding(theme),
+                    child: _buildContent(theme, isEnabled),
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    );
-  }
+      );
+    }
 
   /// Get decoration based on schema and fantasy extensions
   BoxDecoration _getDecoration(ThemeData theme, bool isEnabled, Map<String, dynamic>? extensions) {
@@ -428,5 +472,75 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
       }
     }
     return null;
+  }
+
+  /// 🦾 ACCESSIBILITY FIX: Generate semantic label
+  String _getSemanticLabel() {
+    if (widget.semanticLabel != null) return widget.semanticLabel!;
+    if (widget.text != null) return widget.text!;
+    
+    // Fallback based on variant
+    switch (widget.variant) {
+      case AppButtonVariant.primary:
+        return 'Primary button';
+      case AppButtonVariant.secondary:
+        return 'Secondary button';
+      case AppButtonVariant.tertiary:
+        return 'Text button';
+      case AppButtonVariant.magic:
+        return 'Magic button';
+      case AppButtonVariant.portal:
+        return 'Portal button';
+      case AppButtonVariant.artifact:
+        return 'Artifact button';
+      case AppButtonVariant.success:
+        return 'Success button';
+      case AppButtonVariant.danger:
+        return 'Danger button';
+      case AppButtonVariant.ghost:
+        return 'Ghost button';
+    }
+  }
+
+  /// 🦾 ACCESSIBILITY FIX: Generate semantic hint
+  String? _getSemanticHint() {
+    if (widget.hint != null) return widget.hint!;
+    
+    List<String> hints = [];
+    
+    // Loading state
+    if (widget.isLoading) {
+      hints.add('Loading');
+    }
+    
+    // Disabled state
+    if (widget.onPressed == null && !widget.isLoading) {
+      hints.add('Disabled');
+    }
+    
+    // Variant context
+    switch (widget.variant) {
+      case AppButtonVariant.magic:
+        hints.add('Magical action');
+        break;
+      case AppButtonVariant.portal:
+        hints.add('Portal navigation');
+        break;
+      case AppButtonVariant.artifact:
+        hints.add('Artifact interaction');
+        break;
+      case AppButtonVariant.danger:
+        hints.add('Destructive action');
+        break;
+      default:
+        break;
+    }
+    
+    // Size context
+    if (widget.size == AppButtonSize.extraLarge) {
+      hints.add('Large button');
+    }
+    
+    return hints.isNotEmpty ? hints.join(', ') : null;
   }
 }

@@ -247,6 +247,193 @@
             "paddingHorizontal": { "type": "number", "minimum": 0, "default": 16 },
             "paddingVertical": { "type": "number", "minimum": 0, "default": 16 }
           }
+        },
+        "scaffold": {
+          "type": "object",
+          "description": "App scaffold layout configuration",
+          "properties": {
+            "showAppBar": { "type": "boolean", "default": true },
+            "showFloatingActionButton": { "type": "boolean", "default": false },
+            "extendBodyBehindAppBar": { "type": "boolean", "default": false },
+            "resizeToAvoidBottomInset": { "type": "boolean", "default": true },
+            "backgroundColor": { "type": "string", "default": "transparent" },
+            "backgroundGradient": { "type": "boolean", "default": true }
+          }
+        },
+        "divider": {
+          "type": "object",
+          "description": "Visual divider component configuration",
+          "properties": {
+            "thickness": { "type": "number", "minimum": 0.5, "maximum": 10, "default": 1 },
+            "height": { "type": "number", "minimum": 1, "maximum": 100, "default": 20 },
+            "indent": { "type": "number", "minimum": 0, "maximum": 50, "default": 0 },
+            "endIndent": { "type": "number", "minimum": 0, "maximum": 50, "default": 0 },
+            "opacity": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.3 },
+            "gradient": { "type": "boolean", "default": true },
+            "animated": { "type": "boolean", "default": false }
+          }
+        },
+        "tooltip": {
+          "type": "object",
+          "description": "Tooltip component configuration",
+          "properties": {
+            "backgroundColor": { "type": "string", "default": "#000000CC" },
+            "textColor": { "type": "string", "default": "#FFFFFF" },
+            "borderRadius": { "type": "number", "minimum": 0, "default": 8 },
+            "padding": { "type": "number", "minimum": 4, "maximum": 20, "default": 8 },
+            "margin": { "type": "number", "minimum": 4, "maximum": 20, "default": 12 },
+            "maxWidth": { "type": "number", "minimum": 100, "maximum": 400, "default": 200 },
+            "showDelay": { "type": "number", "minimum": 0, "maximum": 2000, "default": 500 },
+            "hideDelay": { "type": "number", "minimum": 0, "maximum": 2000, "default": 0 },
+            "fontSize": { "type": "number", "minimum": 10, "maximum": 18, "default": 12 }
+          }
+        },
+        "errorBox": {
+          "type": "object",
+          "description": "Error message box component",
+          "properties": {
+            "borderRadius": { "type": "number", "minimum": 0, "default": 12 },
+            "padding": { "type": "number", "minimum": 8, "maximum": 32, "default": 16 },
+            "iconSize": { "type": "number", "minimum": 16, "maximum": 32, "default": 20 },
+            "showIcon": { "type": "boolean", "default": true },
+            "showClose": { "type": "boolean", "default": true },
+            "glowEffect": { "type": "boolean", "default": true },
+            "animateIn": { "type": "boolean", "default": true }
+          }
+        },
+        "loadingOverlay": {
+          "type": "object",
+          "description": "Loading overlay configuration",
+          "properties": {
+            "backgroundColor": { "type": "string", "default": "#00000080" },
+            "spinnerSize": { "type": "number", "minimum": 20, "maximum": 60, "default": 40 },
+            "showText": { "type": "boolean", "default": true },
+            "textColor": { "type": "string", "default": "#FFFFFF" },
+            "glowEffect": { "type": "boolean", "default": true },
+            "pulseAnimation": { "type": "boolean", "default": true },
+            "backdropBlur": { "type": "boolean", "default": false }
+          }
+        },
+        "progressIndicator": {
+          "type": "object",
+          "description": "Progress indicator configuration",
+          "properties": {
+            "height": { "type": "number", "minimum": 4, "maximum": 20, "default": 6 },
+            "borderRadius": { "type": "number", "minimum": 0, "default": 3 },
+            "showPercentage": { "type": "boolean", "default": false },
+            "animationDuration": { "type": "number", "minimum": 100, "maximum": 2000, "default": 500 },
+            "glowEffect": { "type": "boolean", "default": false },
+            "gradient": { "type": "boolean", "default": true }
+          }
+        },
+        "worldPreviewCard": {
+          "type": "object",
+          "description": "World preview card component",
+          "properties": {
+            "borderRadius": { "type": "number", "minimum": 0, "default": 16 },
+            "padding": { "type": "number", "minimum": 8, "maximum": 32, "default": 16 },
+            "showThumbnail": { "type": "boolean", "default": true },
+            "thumbnailHeight": { "type": "number", "minimum": 80, "maximum": 200, "default": 120 },
+            "showPlayerCount": { "type": "boolean", "default": true },
+            "showStatus": { "type": "boolean", "default": true },
+            "hoverEffect": { "type": "boolean", "default": true },
+            "glowOnHover": { "type": "boolean", "default": true },
+            "statusIndicatorSize": { "type": "number", "minimum": 8, "maximum": 16, "default": 12 }
+          }
+        },
+        "inviteStatusBanner": {
+          "type": "object",
+          "description": "Invite status banner component",
+          "properties": {
+            "borderRadius": { "type": "number", "minimum": 0, "default": 12 },
+            "padding": { "type": "number", "minimum": 8, "maximum": 24, "default": 16 },
+            "showAvatar": { "type": "boolean", "default": true },
+            "avatarSize": { "type": "number", "minimum": 24, "maximum": 48, "default": 32 },
+            "showWorldThumbnail": { "type": "boolean", "default": true },
+            "thumbnailSize": { "type": "number", "minimum": 40, "maximum": 80, "default": 60 },
+            "showExpiry": { "type": "boolean", "default": true },
+            "glowEffect": { "type": "boolean", "default": true },
+            "animateIn": { "type": "boolean", "default": true }
+          }
+        },
+        "worldListSelector": {
+          "type": "object",
+          "description": "World list selector component",
+          "properties": {
+            "itemHeight": { "type": "number", "minimum": 60, "maximum": 120, "default": 80 },
+            "showSearch": { "type": "boolean", "default": true },
+            "showFilters": { "type": "boolean", "default": true },
+            "showSort": { "type": "boolean", "default": true },
+            "maxVisibleItems": { "type": "number", "minimum": 3, "maximum": 10, "default": 5 },
+            "searchPlaceholder": { "type": "string", "default": "Search worlds..." },
+            "borderRadius": { "type": "number", "minimum": 0, "default": 12 },
+            "spacing": { "type": "number", "minimum": 4, "maximum": 16, "default": 8 }
+          }
+        },
+        "themeSwitcher": {
+          "type": "object",
+          "description": "Theme switcher component",
+          "properties": {
+            "showPreview": { "type": "boolean", "default": true },
+            "previewSize": { "type": "number", "minimum": 30, "maximum": 60, "default": 40 },
+            "showLabels": { "type": "boolean", "default": true },
+            "animateTransition": { "type": "boolean", "default": true },
+            "transitionDuration": { "type": "number", "minimum": 200, "maximum": 1000, "default": 400 },
+            "borderRadius": { "type": "number", "minimum": 0, "default": 20 },
+            "spacing": { "type": "number", "minimum": 4, "maximum": 16, "default": 8 }
+          }
+        },
+        "checkbox": {
+          "type": "object",
+          "description": "Checkbox component configuration",
+          "properties": {
+            "size": { "type": "number", "minimum": 16, "maximum": 32, "default": 20 },
+            "borderRadius": { "type": "number", "minimum": 0, "maximum": 8, "default": 4 },
+            "borderWidth": { "type": "number", "minimum": 1, "maximum": 3, "default": 2 },
+            "animationDuration": { "type": "number", "minimum": 100, "maximum": 500, "default": 200 },
+            "showRipple": { "type": "boolean", "default": true },
+            "glowEffect": { "type": "boolean", "default": false },
+            "checkmarkStyle": { "type": "string", "enum": ["check", "tick", "cross"], "default": "check" }
+          }
+        },
+        "dropdown": {
+          "$ref": "https://weltenwind.game/schemas/components/dropdown.schema.json",
+          "description": "Dropdown/Select component with search, multi-select, and custom options"
+        },
+        "snackbar": {
+          "type": "object",
+          "description": "Snackbar notification component",
+          "properties": {
+            "position": { "type": "string", "enum": ["top", "bottom"], "default": "bottom" },
+            "duration": { "type": "number", "minimum": 1000, "maximum": 10000, "default": 4000 },
+            "maxWidth": { "type": "number", "minimum": 200, "maximum": 600, "default": 400 },
+            "borderRadius": { "type": "number", "minimum": 0, "maximum": 16, "default": 8 },
+            "showIcon": { "type": "boolean", "default": true },
+            "showAction": { "type": "boolean", "default": true },
+            "slideAnimation": { "type": "boolean", "default": true },
+            "backdrop": { "type": "boolean", "default": false }
+          }
+        },
+        "tabBar": {
+          "$ref": "https://weltenwind.game/schemas/components/tab-bar.schema.json",
+          "description": "Tab bar component with indicators, badges, and custom styling"
+        },
+        "iconButton": {
+          "type": "object",
+          "description": "Icon button component configuration",
+          "properties": {
+            "size": { "type": "string", "enum": ["small", "medium", "large"], "default": "medium" },
+            "shape": { "type": "string", "enum": ["circle", "square", "rounded"], "default": "circle" },
+            "variant": { "type": "string", "enum": ["filled", "outlined", "ghost"], "default": "ghost" },
+            "showTooltip": { "type": "boolean", "default": false },
+            "rippleEffect": { "type": "boolean", "default": true },
+            "glowOnHover": { "type": "boolean", "default": false },
+            "animationDuration": { "type": "number", "minimum": 100, "maximum": 500, "default": 200 }
+          }
+        },
+        "schemaIndicator": {
+          "$ref": "https://weltenwind.game/schemas/components/schema-indicator.schema.json",
+          "description": "Development helper for live schema visualization and debugging"
         }
       }
     },

@@ -403,8 +403,8 @@ class ErrorPage extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppTheme.primaryColor.withValues(alpha: 0.1),
-              AppTheme.surfaceColor,
+              theme.colorScheme.primary.withValues(alpha: 0.1),
+          theme.colorScheme.surface,
             ],
           ),
         ),
@@ -422,13 +422,13 @@ class ErrorPage extends StatelessWidget {
                   const Icon(
                     Icons.error_outline,
                     size: 64,
-                    color: AppTheme.errorColor,
+                    color: theme.colorScheme.error,
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'Seite nicht gefunden',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppTheme.textPrimary,
+                      color: theme.colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -436,7 +436,7 @@ class ErrorPage extends StatelessWidget {
                   Text(
                     'Die angeforderte Seite existiert nicht oder wurde verschoben.',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppTheme.textSecondary,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -449,7 +449,7 @@ class ErrorPage extends StatelessWidget {
                         icon: const Icon(Icons.home),
                         label: const Text('Startseite'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryColor,
+                          backgroundColor: theme.colorScheme.primary,
                           foregroundColor: Colors.white,
                         ),
                       ),
@@ -458,8 +458,8 @@ class ErrorPage extends StatelessWidget {
                         icon: const Icon(Icons.public),
                         label: const Text('Welten'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.surfaceColor,
-                          foregroundColor: AppTheme.textPrimary,
+                          backgroundColor: theme.colorScheme.surface,
+                          foregroundColor: theme.colorScheme.onSurface,
                         ),
                       ),
                     ],
@@ -486,7 +486,7 @@ class AuthErrorPage extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppTheme.errorColor.withValues(alpha: 0.1),
+              theme.colorScheme.error.withValues(alpha: 0.1),
               AppTheme.surfaceColor,
             ],
           ),
@@ -505,13 +505,13 @@ class AuthErrorPage extends StatelessWidget {
                   const Icon(
                     Icons.lock_outline,
                     size: 64,
-                    color: AppTheme.errorColor,
+                    color: theme.colorScheme.error,
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'Zugriff verweigert',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppTheme.textPrimary,
+                      color: theme.colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -519,7 +519,7 @@ class AuthErrorPage extends StatelessWidget {
                   Text(
                     'Du musst dich anmelden, um auf diese Seite zuzugreifen.',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppTheme.textSecondary,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -529,7 +529,7 @@ class AuthErrorPage extends StatelessWidget {
                     icon: const Icon(Icons.login),
                     label: const Text('Anmelden'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
+                      backgroundColor: theme.colorScheme.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
@@ -559,8 +559,8 @@ class WorldNotFoundPage extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppTheme.primaryColor.withValues(alpha: 0.1),
-              AppTheme.surfaceColor,
+              theme.colorScheme.primary.withValues(alpha: 0.1),
+          theme.colorScheme.surface,
             ],
           ),
         ),
@@ -578,13 +578,13 @@ class WorldNotFoundPage extends StatelessWidget {
                   Icon(
                     Icons.public_off,
                     size: 64,
-                    color: AppTheme.primaryColor.withValues(alpha: 0.7),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.7),
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'Welt nicht gefunden',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppTheme.textPrimary,
+                      color: theme.colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -592,7 +592,7 @@ class WorldNotFoundPage extends StatelessWidget {
                   Text(
                     'Die angeforderte Welt existiert nicht oder wurde entfernt.',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppTheme.textSecondary,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -602,7 +602,7 @@ class WorldNotFoundPage extends StatelessWidget {
                     icon: const Icon(Icons.list),
                     label: const Text('Alle Welten anzeigen'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
+                      backgroundColor: theme.colorScheme.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,

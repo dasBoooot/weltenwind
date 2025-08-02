@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../theme/tokens/spacing.dart';
 import '../components/index.dart';
 import '../utils/dynamic_components.dart';
 import '../../l10n/app_localizations.dart';
@@ -204,8 +203,8 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
     final actions = _navigationActions;
     
     return Positioned(
-      top: AppSpacing.md,
-      right: AppSpacing.md,
+              top: 24.0, // md
+        right: 24.0, // md
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: AnimatedContainer(
@@ -260,7 +259,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
   Widget _buildExpandedView(List<NavigationAction> actions) {
     return DynamicComponents.frame(
       title: _contextTitle,
-      padding: const EdgeInsets.all(AppSpacing.sm),
+              padding: const EdgeInsets.all(16.0), // sm
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,7 +268,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
           GestureDetector(
             onTap: _toggleExpanded,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+              padding: const EdgeInsets.symmetric(vertical: 8.0), // xs
               child: Row(
                 children: [
                   Icon(
@@ -277,7 +276,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
                     color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
-                  const SizedBox(width: AppSpacing.sm),
+                  const SizedBox(width: 16.0), // sm
                   Expanded(
                     child: Text(
                       _contextTitle,
@@ -301,7 +300,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
               height: 1,
               thickness: 1,
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: 16.0), // sm
             
             // 🧭 Navigation Actions als DynamicComponents Buttons
             ...actions.map((action) => Padding(

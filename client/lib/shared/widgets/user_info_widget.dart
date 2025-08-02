@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/services/auth_service.dart';
-import '../../theme/tokens/colors.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/tokens/typography.dart';
+
 import '../components/index.dart';
 import '../utils/dynamic_components.dart';
 import '../../main.dart';
@@ -69,21 +67,21 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
   }
   
   /// 🛡️ Bestimmt die Rolle-Farbe basierend auf Theme-System
-  Color _getRoleColor(String roleName) {
+  Color _getRoleColor(String roleName, ThemeData theme) {
     switch (roleName.toLowerCase()) {
       case 'admin':
-        return AppColors.error; // 🔴 Admin = Rot
+        return theme.colorScheme.error; // 🔴 Admin = Rot
       case 'developer':
-        return AppColors.glow; // 🔮 Developer = Magisches Lila
+        return const Color(0xFF9D4EDD); // 🔮 Developer = Magisches Lila
       case 'support':
-        return AppColors.info; // 🔵 Support = Blau
+        return theme.colorScheme.tertiary; // 🔵 Support = Blau
       case 'mod':
-        return AppColors.warning; // 🟠 Mod = Orange
+        return const Color(0xFFF77F00); // 🟠 Mod = Orange
       case 'world-admin':
-        return AppColors.primary; // 🟣 World-Admin = Primary
+        return theme.colorScheme.primary; // 🟣 World-Admin = Primary
       case 'user':
       default:
-        return AppColors.success; // 🟢 User = Grün
+        return const Color(0xFF52B788); // 🟢 User = Grün
     }
   }
   
@@ -95,8 +93,8 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Positioned(
-      top: AppSpacing.md,
-      left: AppSpacing.md,
+              top: 24.0, // md
+        left: 24.0, // md
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: AnimatedContainer(
@@ -107,7 +105,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
           ),
           child: DynamicComponents.frame(
             title: user.username,
-            padding: const EdgeInsets.all(AppSpacing.sm),
+            padding: const EdgeInsets.all(16.0), // sm
             child: GestureDetector(
               onTap: _toggleExpanded,
               child: Column(
@@ -119,13 +117,13 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
                   
                   // 📋 Erweiterte Details
                   if (_isExpanded) ...[
-                    const SizedBox(height: AppSpacing.sm),
+                    const SizedBox(height: 16.0), // sm
                     Divider(
                       color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                       height: 1,
                       thickness: 1,
                     ),
-                    const SizedBox(height: AppSpacing.sm),
+                    const SizedBox(height: 16.0), // sm
                     _buildExpandedDetails(user, isDark),
                   ],
                 ],
@@ -156,13 +154,13 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
           child: Center(
             child: Text(
               user.username.substring(0, 1).toUpperCase(),
-              style: AppTypography.h4(isDark: isDark).copyWith(
+                                style: theme.textTheme.headlineSmall?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ),
         ),
-        const SizedBox(width: AppSpacing.sm),
+                            const SizedBox(width: 16.0), // sm
         // 📝 Name und Status
         Expanded(
           child: Column(
@@ -173,15 +171,15 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
                   Flexible(
                     child: Text(
                       user.username,
-                      style: AppTypography.labelLarge(isDark: isDark),
+                      style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onSurface),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   if (user.isLocked ?? false) ...[
-                    const SizedBox(width: AppSpacing.xs),
+                    const SizedBox(width: 8.0), // xs
                     const Icon(
                       Icons.lock,
-                      color: AppColors.error,
+                      color: theme.colorScheme.error,
                       size: 16,
                     ),
                   ],
@@ -190,8 +188,8 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
               if (!_isExpanded)
                 Text(
                   AppLocalizations.of(context).userInfoClickForDetails,
-                  style: AppTypography.bodySmall(isDark: isDark).copyWith(
-                    color: isDark ? AppColors.textSecondary : AppColors.textSecondaryLight,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
             ],
@@ -200,7 +198,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
         // 🔽 Expand/Collapse Icon
         Icon(
           _isExpanded ? Icons.expand_less : Icons.expand_more,
-          color: isDark ? AppColors.textSecondary : AppColors.textSecondaryLight,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
           size: 20,
         ),
       ],
@@ -218,20 +216,20 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
             Icon(
               Icons.email_outlined, 
               size: 16, 
-              color: isDark ? AppColors.textSecondary : AppColors.textSecondaryLight,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
-            const SizedBox(width: AppSpacing.xs),
+            const SizedBox(width: 8.0), // xs
             Expanded(
               child: Text(
                 user.email,
-                style: AppTypography.bodyMedium(isDark: isDark),
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
         ),
         
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: 16.0), // sm
         
         // 🛡️ Rollen
         if (user.roles != null && user.roles!.isNotEmpty) ...[
@@ -240,20 +238,20 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
               Icon(
                 Icons.security, 
                 size: 16, 
-                color: isDark ? AppColors.textSecondary : AppColors.textSecondaryLight,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
-              const SizedBox(width: AppSpacing.xs),
+              const SizedBox(width: 8.0), // xs
               Text(
                 AppLocalizations.of(context).userInfoRoles,
-                style: AppTypography.bodyMedium(isDark: isDark).copyWith(
-                  color: isDark ? AppColors.textSecondary : AppColors.textSecondaryLight,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.xs),
+          const SizedBox(height: 8.0), // xs
           _buildRoleBadges(user.roles!),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: 16.0), // sm
         ],
         
         // 🌟 Divider
@@ -262,7 +260,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
           height: 1,
           thickness: 1,
         ),
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: 16.0), // sm
         
         // 🚪 Logout Button mit DynamicComponents
         SizedBox(
@@ -286,18 +284,18 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
   /// 🛡️ Rolle-Badges mit Fantasy-Theme-Colors
   Widget _buildRoleBadges(List<dynamic> userRoles) {
     return Wrap(
-      spacing: AppSpacing.xs,
-      runSpacing: AppSpacing.xs,
+      spacing: 8.0, // xs
+      runSpacing: 8.0, // xs
       children: userRoles.map((userRole) {
         final roleName = userRole.role.name;
         final scopeInfo = userRole.scopeType == 'global' 
             ? '' 
             : ' (${userRole.scopeType})';
-        final roleColor = _getRoleColor(roleName);
+        final roleColor = _getRoleColor(roleName, theme);
         
         return Container(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.xs,
+            horizontal: 8.0, // xs
             vertical: 4,
           ),
           decoration: BoxDecoration(
@@ -319,7 +317,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
               const SizedBox(width: 4),
               Text(
                 '$roleName$scopeInfo',
-                style: AppTypography.bodySmall(isDark: true).copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   color: roleColor,
                   fontWeight: FontWeight.w500,
                 ),
