@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
-import '../../theme/tokens/colors.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/tokens/typography.dart';
-import '../../shared/components/index.dart';
+import '../../core/providers/theme_context_provider.dart';
+import '../../shared/components/index.dart' hide ThemeSwitcher;
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
@@ -104,24 +102,40 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    
+    // 🎯 KONTEXTSENSITIVE THEME-BEREITSTELLUNG mit PRE-GAME BUNDLE
+    return ThemeContextConsumer(
+      componentName: 'ForgotPasswordPage',
+      contextOverrides: const {
+        'uiContext': 'login',               // Aktiviert pre_game_bundle (forgot password ist Teil des login flows)
+        'bundleType': 'pre_game_bundle',    // Explizite Bundle-Spezifikation
+        'pageType': 'auth',
+        'context': 'pre-game',             // Bundle-Context
+        'firstImpressionOptimized': 'true',
+        'welcomeAnimations': 'true',
+        'brandingElements': 'true',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildForgotPasswordPage(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildForgotPasswordPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Scaffold(
       body: Stack(
         children: [
           BackgroundWidget(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
+                padding: theme.cardTheme.margin ?? const EdgeInsets.all(24.0),
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 420),
                       child: _isSuccess
-                          ? _buildSuccessView(isDark)
-                          : _buildFormView(isDark),
+                          ? _buildSuccessView(theme)
+                          : _buildFormView(theme),
                     ),
                   ),
                 ),
@@ -137,16 +151,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.aqua),
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                       strokeWidth: 3,
                     ),
-                    const SizedBox(height: AppSpacing.md),
+                    SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
                     Text(
                       AppLocalizations.of(context).authLoginLoading,
-                      style: AppTypography.bodyLarge(
+                      style: theme.textTheme.bodyLarge?.copyWith(
                         color: Colors.white,
-                        isDark: true,
                       ),
                     ),
                   ],
@@ -179,12 +192,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
     );
   }
 
-  Widget _buildFormView(bool isDark) {
+  Widget _buildFormView(ThemeData theme) {
     return DynamicComponents.authFrame(
       welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
       pageTitle: AppLocalizations.of(context).authForgotPasswordTitle,
       subtitle: AppLocalizations.of(context).authForgotPasswordDescription,
-      padding: const EdgeInsets.all(AppSpacing.sectionMedium),
+      padding: theme.dialogTheme.contentTextStyle != null 
+          ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
+          : const EdgeInsets.all(32.0),
       context: context,
       child: Form(
         key: _formKey,
@@ -201,7 +216,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
               onFieldSubmitted: (_) => _isLoading ? null : _requestPasswordReset(),
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context).authEmailLabel,
-                prefixIcon: const Icon(Icons.email_outlined, color: AppColors.aqua),
+                prefixIcon: Icon(Icons.email_outlined, color: theme.colorScheme.primary),
 
               ),
               validator: (value) {
@@ -214,35 +229,34 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                 return null;
               },
             ),
-            const SizedBox(height: AppSpacing.lg),
+            SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
             
             // Error message
             if (_errorMessage != null)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                padding: EdgeInsets.all(theme.textTheme.bodySmall?.fontSize ?? 8.0),
+                margin: EdgeInsets.only(bottom: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
                 decoration: BoxDecoration(
-                  color: AppColors.error.withValues(alpha: 0.1),
+                  color: theme.colorScheme.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: AppColors.error.withValues(alpha: 0.3),
+                    color: theme.colorScheme.error.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline,
-                      color: AppColors.error,
+                      color: theme.colorScheme.error,
                       size: 20,
                     ),
-                    const SizedBox(width: AppSpacing.xs),
+                    SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 4.0),
                     Expanded(
                       child: Text(
                         _errorMessage!,
-                        style: AppTypography.bodySmall(
-                          color: AppColors.error,
-                          isDark: isDark,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.error,
                         ),
                       ),
                     ),
@@ -260,7 +274,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                 icon: Icons.send_rounded,
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
+            SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
             
               // Back to Login
               Row(
@@ -279,48 +293,50 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
     );
   }
 
-  Widget _buildSuccessView(bool isDark) {
+  Widget _buildSuccessView(ThemeData theme) {
     return DynamicComponents.authFrame(
       welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
       pageTitle: AppLocalizations.of(context).authForgotPasswordSuccess,
       subtitle: AppLocalizations.of(context).authForgotPasswordDescription,
-      padding: const EdgeInsets.all(AppSpacing.sectionMedium),
+      padding: theme.dialogTheme.contentTextStyle != null 
+          ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
+          : const EdgeInsets.all(32.0),
       context: context,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Success Icon
           Container(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 24.0),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.success.withValues(alpha: 0.1),
+              color: theme.colorScheme.tertiary.withValues(alpha: 0.1),
               border: Border.all(
-                color: AppColors.success.withValues(alpha: 0.3),
+                color: theme.colorScheme.tertiary.withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.mark_email_read_rounded,
               size: 48,
-              color: AppColors.success,
+              color: theme.colorScheme.tertiary,
             ),
           ),
-          const SizedBox(height: AppSpacing.lg),
+          SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
           
           // Success Message
           Text(
             AppLocalizations.of(context).authForgotPasswordTitle,
-            style: AppTypography.h4(isDark: isDark),
+            style: theme.textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppSpacing.sm),
+          SizedBox(height: theme.textTheme.bodySmall?.fontSize ?? 8.0),
           Text(
             AppLocalizations.of(context).authForgotPasswordSuccess,
-            style: AppTypography.bodyMedium(isDark: isDark),
+            style: theme.textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppSpacing.sectionSmall),
+          SizedBox(height: theme.textTheme.bodyLarge?.fontSize ?? 18.0),
           
           // Actions
           Column(
@@ -334,7 +350,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                   icon: Icons.arrow_back_rounded,
                 ),
               ),
-              const SizedBox(height: AppSpacing.sm),
+              SizedBox(height: theme.textTheme.bodySmall?.fontSize ?? 8.0),
               DynamicComponents.secondaryButton(
                 text: AppLocalizations.of(context).authForgotPasswordSendButton,
                 onPressed: () {

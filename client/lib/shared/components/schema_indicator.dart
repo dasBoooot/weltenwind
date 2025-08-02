@@ -57,10 +57,9 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
   
   bool _isVisible = false;
   bool _isExpanded = false;
-  bool _isDragging = false;
+
   Offset _dragOffset = Offset.zero;
   
-  Map<String, dynamic>? _currentThemeData;
   Map<String, dynamic>? _currentExtensions;
   String? _currentThemeName;
   List<String> _loadedModules = [];
@@ -293,7 +292,7 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
       right: 20,
       child: GestureDetector(
         onPanStart: widget.draggable ? (details) {
-          setState(() => _isDragging = true);
+          // Dragging state tracking removed
         } : null,
         onPanUpdate: widget.draggable ? (details) {
           setState(() {
@@ -301,7 +300,7 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
           });
         } : null,
         onPanEnd: widget.draggable ? (details) {
-          setState(() => _isDragging = false);
+          // Dragging state tracking removed
         } : null,
         child: Transform.translate(
           offset: _dragOffset,
@@ -484,13 +483,13 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
         Icon(
           hasErrors ? Icons.warning : Icons.check_circle,
           size: 14,
-          color: hasErrors ? _getWarningColor() : Colors.green,
+          color: hasErrors ? _getWarningColor() : _getSuccessColor(),
         ),
         const SizedBox(width: 4),
         Text(
           hasErrors ? '${_validationErrors.length} issues' : 'Valid',
           style: TextStyle(
-            color: hasErrors ? _getWarningColor() : Colors.green,
+            color: hasErrors ? _getWarningColor() : _getSuccessColor(),
             fontSize: _getFontSize(),
             fontFamily: _getFontFamily(),
           ),
@@ -558,7 +557,7 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
       borderRadius: BorderRadius.circular(_getBorderRadius()),
       boxShadow: _getShadow() ? [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.3),
+          color: _getShadowColor(),
           blurRadius: 12,
           offset: const Offset(0, 4),
         ),
@@ -579,11 +578,13 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
   }
 
   // Schema-based styling getters
-  Color _getBackgroundColor() => const Color(0x90000000); // Schema default
-  Color _getForegroundColor() => const Color(0xFFFFFFFF); // Schema default
-  Color _getAccentColor() => const Color(0xFF007AFF); // Schema default
-  Color _getWarningColor() => const Color(0xFFFF9500); // Schema default
-  Color _getErrorColor() => const Color(0xFFFF3B30); // Schema default
+  Color _getBackgroundColor() => const Color(0x90000000); // Debug-specific: keeps contrast
+  Color _getForegroundColor() => const Color(0xFFFFFFFF); // Debug-specific: keeps contrast
+  Color _getAccentColor() => const Color(0xFF007AFF); // Debug-specific: keeps contrast
+  Color _getWarningColor() => const Color(0xFFFF9500); // Debug-specific: keeps contrast
+
+  Color _getShadowColor() => const Color(0x4D000000); // Debug-specific: subtle shadow
+  Color _getSuccessColor() => const Color(0xFF34C759); // Debug-specific: success green
   
   String _getFontFamily() => 'monospace'; // Schema default
   double _getFontSize() => 11.0; // Schema default
@@ -656,11 +657,11 @@ class SchemaIndicatorHelpers {
     String hotkey = 'Ctrl+D',
   }) {
     return Builder(
-      builder: (context) => RawKeyboardListener(
+      builder: (context) => KeyboardListener(
         focusNode: FocusNode(),
-        onKey: (event) {
+        onKeyEvent: (event) {
           // Simplified hotkey detection - in real implementation would parse hotkey string
-          if (event.isControlPressed && event.logicalKey.keyLabel == 'D') {
+          if (HardwareKeyboard.instance.isControlPressed && event.logicalKey.keyLabel == 'D') {
             SchemaIndicatorManager.toggle(context);
           }
         },

@@ -92,7 +92,6 @@ class ThemeSwitcher extends StatefulWidget {
 
 class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateMixin {
   late AnimationController _transitionController;
-  late Animation<double> _transitionAnimation;
   
   String? _selectedThemeId;
   ThemeOption? _hoveredTheme;
@@ -108,14 +107,6 @@ class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateM
       duration: widget.transitionDuration,
       vsync: this,
     );
-    
-    _transitionAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _transitionController,
-      curve: Curves.easeInOut,
-    ));
   }
 
   @override
@@ -246,7 +237,7 @@ class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateM
       children: [
         // Preview
         if (widget.showPreview)
-          _buildThemePreview(themeOption, isSelected),
+          _buildThemePreview(themeOption, isSelected, theme),
         
         // Label
         if (widget.showLabels) ...[
@@ -263,7 +254,7 @@ class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateM
       children: [
         // Preview
         if (widget.showPreview)
-          _buildThemePreview(themeOption, isSelected),
+          _buildThemePreview(themeOption, isSelected, theme),
         
         // Label
         if (widget.showLabels) ...[
@@ -274,7 +265,7 @@ class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateM
     );
   }
 
-  Widget _buildThemePreview(ThemeOption themeOption, bool isSelected) {
+  Widget _buildThemePreview(ThemeOption themeOption, bool isSelected, ThemeData theme) {
     final size = _getPreviewSize();
     
     return AnimatedContainer(
@@ -285,13 +276,13 @@ class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateM
         borderRadius: BorderRadius.circular(_getBorderRadius()),
         border: Border.all(
           color: isSelected 
-              ? Colors.white
+              ? theme.colorScheme.primary
               : Colors.transparent,
           width: 2,
         ),
         boxShadow: isSelected ? [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: theme.colorScheme.shadow.withValues(alpha: 0.2),
             blurRadius: 8,
             spreadRadius: 2,
           ),
@@ -299,12 +290,12 @@ class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateM
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(_getBorderRadius() - 2),
-        child: _buildPreviewContent(themeOption),
+        child: _buildPreviewContent(themeOption, theme),
       ),
     );
   }
 
-  Widget _buildPreviewContent(ThemeOption themeOption) {
+  Widget _buildPreviewContent(ThemeOption themeOption, ThemeData theme) {
     if (themeOption.previewColors.length == 1) {
       // Solid color
       return Container(
@@ -312,7 +303,7 @@ class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateM
         child: themeOption.icon != null
             ? Icon(
                 themeOption.icon,
-                color: Colors.white,
+                color: theme.colorScheme.onPrimaryContainer,
                 size: _getPreviewSize() * 0.5,
               )
             : null,
@@ -330,7 +321,7 @@ class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateM
         child: themeOption.icon != null
             ? Icon(
                 themeOption.icon,
-                color: Colors.white,
+                color: theme.colorScheme.onPrimaryContainer,
                 size: _getPreviewSize() * 0.5,
               )
             : null,
@@ -338,10 +329,10 @@ class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateM
     } else {
       // Fallback
       return Container(
-        color: Colors.grey,
+        color: theme.colorScheme.surfaceContainerHighest,
         child: Icon(
           themeOption.icon ?? Icons.palette,
-          color: Colors.white,
+          color: theme.colorScheme.onSurface,
           size: _getPreviewSize() * 0.5,
         ),
       );

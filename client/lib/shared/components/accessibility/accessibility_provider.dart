@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/providers/theme_context_provider.dart';
 
 /// 🦾 Color Blind Types from Accessibility Schema
 enum ColorBlindType {
@@ -245,11 +244,7 @@ class AccessibilityProviderWidget extends InheritedNotifier<AccessibilityProvide
     required super.child,
   });
 
-  static AccessibilityProvider? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<AccessibilityProviderWidget>()?.notifier;
-  }
-
-  static AccessibilityProvider of(BuildContext context, {bool listen = true}) {
+  static AccessibilityProvider? of(BuildContext context, {bool listen = true}) {
     if (listen) {
       return context.dependOnInheritedWidgetOfExactType<AccessibilityProviderWidget>()?.notifier ??
           AccessibilityProvider();

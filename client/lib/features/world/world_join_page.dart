@@ -4,12 +4,11 @@ import '../../config/logger.dart';
 import '../../core/models/world.dart';
 import '../../core/services/world_service.dart';
 import '../../core/services/auth_service.dart';
-import '../../theme/app_theme.dart';
+import '../../core/providers/theme_context_provider.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
 import '../../shared/widgets/language_switcher.dart';
-import '../../theme/tokens/spacing.dart';
 import '../invite/widgets/invite_widget.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -439,7 +438,30 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
 
   @override
   Widget build(BuildContext context) {
+    // 🌍 WORLD-SPECIFIC THEME: Komplette Page im World-Theme!
+    final worldTheme = _world?.themeBundle ?? 'default_world_bundle';
     
+    // 🎯 WORLD-THEMED EXPERIENCE: Komplett immersive World-spezifische Page
+    return ThemeContextConsumer(
+      componentName: 'WorldJoinPage',
+      enableMixedContext: true,
+      worldThemeOverride: worldTheme,
+      fallbackTheme: 'default_world_bundle', // Fallback während Loading
+      contextOverrides: {
+        'uiContext': 'world-join',
+        'pageType': 'world-join',
+        'context': 'world-themed',
+        'worldId': widget.worldId,
+        'immersiveExperience': 'true',
+        'brandingElements': 'true',
+      },
+      builder: (context, theme, extensions) {
+        return _buildWorldJoinPage(context, theme, extensions);
+      },
+    );
+  }
+
+  Widget _buildWorldJoinPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Scaffold(
       body: BackgroundWidget(
         child: Stack(
@@ -447,16 +469,16 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
             // Main content
             SafeArea(
               child: _isLoading
-                  ? const Center(
+                  ? Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                        valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                       ),
                     )
                   : _errorMessage != null
-                      ? _buildErrorState()
+                      ? _buildErrorState(theme)
                       : _world == null
-                          ? _buildNotFoundState()
-                          : _buildWorldContent(),
+                          ? _buildNotFoundState(theme)
+                          : _buildWorldContent(theme),
             ),
             
             // User info widget (only show when authenticated)
@@ -466,10 +488,10 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
             // Language switcher (only show when authenticated, left of NavigationWidget)
             if (_isAuthenticated)
               const Positioned(
-                top: AppSpacing.md,
+                top: 16.0, // Fixed spacing
                 right: 96, // 20px Abstand vom NavigationWidget (76 + 20)
                 child: SafeArea(
-                  child: LanguageSwitcher(),
+                child: LanguageSwitcher(),
                 ),
               ),
             
@@ -486,7 +508,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     );
   }
 
-  Widget _buildErrorState() {
+  Widget _buildErrorState(ThemeData theme) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -499,7 +521,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -552,7 +574,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                           icon: const Icon(Icons.refresh),
                           label: Text(AppLocalizations.of(context).buttonRetry),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryColor,
+                            backgroundColor: theme.colorScheme.primary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -565,8 +587,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                         onPressed: () => context.goNamed('world-list'),
                         child: Text(
                           AppLocalizations.of(context).worldJoinBackToWorldsButton,
-                          style: const TextStyle(
-                            color: AppTheme.primaryColor,
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -584,7 +606,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
 
 
 
-  Widget _buildNotFoundState() {
+  Widget _buildNotFoundState(ThemeData theme) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -597,7 +619,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -646,7 +668,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                         child: ElevatedButton(
                           onPressed: () => context.goNamed('world-list'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryColor,
+                            backgroundColor: theme.colorScheme.primary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -666,7 +688,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     );
   }
 
-  Widget _buildWorldContent() {
+  Widget _buildWorldContent(ThemeData theme) {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 900),
@@ -677,7 +699,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
             side: BorderSide(
-              color: AppTheme.primaryColor.withValues(alpha: 0.3),
+              color: theme.colorScheme.primary.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -695,8 +717,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      AppTheme.primaryColor.withValues(alpha: 0.1),
-                      AppTheme.primaryColor.withValues(alpha: 0.05),
+                      theme.colorScheme.primary.withValues(alpha: 0.1),
+                      theme.colorScheme.primary.withValues(alpha: 0.05),
                     ],
                   ),
                 ),
@@ -815,7 +837,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 ),
                 child: Column(
                   children: [
-                    _buildActionButtons(),
+                    _buildActionButtons(theme),
                     
                     // Join-Fehler anzeigen
                     if (_joinError != null) ...[
@@ -866,7 +888,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     }
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(ThemeData theme) {
     if (_world == null) return const SizedBox.shrink();
     
     List<Widget> buttons = [];
@@ -990,7 +1012,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 icon: const Icon(Icons.play_arrow),
                 label: Text(_isJoining ? AppLocalizations.of(context).worldJoinInProgress : AppLocalizations.of(context).worldJoinNowButton),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
+                  backgroundColor: theme.colorScheme.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(

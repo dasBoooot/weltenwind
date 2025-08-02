@@ -14,13 +14,13 @@ class KeyboardHelper {
 
   /// Handle arrow key navigation
   static bool handleArrowKeys(
-    RawKeyEvent event,
+    KeyEvent event,
     VoidCallback? onUp,
     VoidCallback? onDown,
     VoidCallback? onLeft,
     VoidCallback? onRight,
   ) {
-    if (event is RawKeyDownEvent) {
+    if (event is KeyDownEvent) {
       switch (event.logicalKey) {
         case LogicalKeyboardKey.arrowUp:
           onUp?.call();
@@ -41,10 +41,10 @@ class KeyboardHelper {
 
   /// Handle gaming shortcuts
   static bool handleGamingShortcuts(
-    RawKeyEvent event,
+    KeyEvent event,
     Map<String, VoidCallback> shortcuts,
   ) {
-    if (event is RawKeyDownEvent) {
+    if (event is KeyDownEvent) {
       for (final entry in gamingKeys.entries) {
         if (event.logicalKey == entry.value && shortcuts.containsKey(entry.key)) {
           shortcuts[entry.key]?.call();
@@ -67,16 +67,16 @@ class KeyboardHelper {
     Map<String, VoidCallback>? gamingShortcuts,
     FocusNode? focusNode,
   }) {
-    return RawKeyboardListener(
+    return KeyboardListener(
       focusNode: focusNode ?? FocusNode(),
-      onKey: (event) {
+      onKeyEvent: (event) {
         // Handle arrow keys
         if (handleArrowKeys(event, onUp, onDown, onLeft, onRight)) {
           return;
         }
 
         // Handle common keys
-        if (event is RawKeyDownEvent) {
+        if (event is KeyDownEvent) {
           switch (event.logicalKey) {
             case LogicalKeyboardKey.enter:
               onEnter?.call();
@@ -159,12 +159,12 @@ class _TabNavigatorWidgetState extends State<_TabNavigatorWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return RawKeyboardListener(
+    return KeyboardListener(
       focusNode: _containerFocusNode,
-      onKey: (event) {
-        if (event is RawKeyDownEvent) {
+      onKeyEvent: (event) {
+        if (event is KeyDownEvent) {
           if (event.logicalKey == LogicalKeyboardKey.tab) {
-            if (event.isShiftPressed) {
+            if (HardwareKeyboard.instance.isShiftPressed) {
               _focusPrevious();
             } else {
               _focusNext();

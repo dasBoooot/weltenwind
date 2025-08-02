@@ -236,37 +236,37 @@ class _GameProgressBarState extends State<GameProgressBar> with TickerProviderSt
       case ProgressBarType.health:
         return LinearGradient(
           colors: [
-            const Color(0xFFE53E3E), // Red
-            const Color(0xFFFC8181), // Light red  
+            theme.colorScheme.error,
+            theme.colorScheme.error.withValues(alpha: 0.7),
           ],
         );
       case ProgressBarType.mana:
         return LinearGradient(
           colors: [
-            const Color(0xFF3182CE), // Blue
-            const Color(0xFF63B3ED), // Light blue
+            theme.colorScheme.primary,
+            theme.colorScheme.primary.withValues(alpha: 0.7),
           ],
         );
       case ProgressBarType.experience:
         return LinearGradient(
           colors: [
-            const Color(0xFFD69E2E), // Gold
-            const Color(0xFFF7D794), // Light gold
-            const Color(0xFFD69E2E),
+            theme.colorScheme.tertiary,
+            theme.colorScheme.tertiary.withValues(alpha: 0.6),
+            theme.colorScheme.tertiary,
           ],
         );
       case ProgressBarType.stamina:
         return LinearGradient(
           colors: [
-            const Color(0xFF38A169), // Green
-            const Color(0xFF68D391), // Light green
+            theme.colorScheme.secondary,
+            theme.colorScheme.secondary.withValues(alpha: 0.7),
           ],
         );
       case ProgressBarType.energy:
         return LinearGradient(
           colors: [
-            const Color(0xFF805AD5), // Purple
-            const Color(0xFFB794F6), // Light purple
+            theme.colorScheme.primaryContainer,
+            theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
           ],
         );
       case ProgressBarType.custom:
@@ -312,10 +312,10 @@ class _GameProgressBarState extends State<GameProgressBar> with TickerProviderSt
                 1.0,
               ],
               colors: [
-                Colors.transparent,
-                Colors.white.withValues(alpha: 0.2),
-                Colors.white.withValues(alpha: 0.4),
-                Colors.transparent,
+                theme.colorScheme.surface.withValues(alpha: 0.0),
+                theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                theme.colorScheme.surface.withValues(alpha: 0.0),
               ],
             ),
           ),

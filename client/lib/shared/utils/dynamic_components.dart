@@ -14,7 +14,7 @@ class DynamicComponents {
     required Widget child,
   }) {
     // Standard Frame für das neue modulare Theme System
-    return AppFrame.magic(
+    return AppFrame(
       title: title,
       padding: padding,
       child: child,
@@ -31,7 +31,6 @@ class DynamicComponents {
     required BuildContext context,
   }) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     
     return frame(
       title: welcomeTitle,
@@ -46,9 +45,9 @@ class DynamicComponents {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.transparent,
+                  theme.colorScheme.surface.withValues(alpha: 0.0),
                   theme.colorScheme.primary.withValues(alpha: 0.3),
-                  Colors.transparent,
+                  theme.colorScheme.surface.withValues(alpha: 0.0),
                 ],
               ),
             ),
@@ -94,7 +93,7 @@ class DynamicComponents {
     AppButtonSize size = AppButtonSize.large,
   }) {
     // Standard Button für das neue modulare Theme System
-    return AppButton.magic(
+    return AppButton(
       text: text,
       onPressed: onPressed,
       size: size,
@@ -110,7 +109,7 @@ class DynamicComponents {
     required AppButtonSize size,
     IconData? icon,
   }) {
-    return AppButton.ghost(
+    return AppButton(
       text: text,
       onPressed: onPressed,
       size: size,
@@ -124,7 +123,7 @@ class DynamicComponents {
     required VoidCallback? onPressed,
     AppButtonSize size = AppButtonSize.small,
   }) {
-    return AppButton.ghost(
+    return AppButton(
       text: text,
       onPressed: onPressed,
       size: size,

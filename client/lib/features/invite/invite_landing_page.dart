@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
 import '../../theme/background_widget.dart';
@@ -146,10 +146,38 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     
+    // 🌍 WORLD-SPECIFIC THEME: Verwende World-Theme wenn verfügbar
+    String? worldTheme;
+    if (_inviteData != null && _inviteData!['world'] != null) {
+      worldTheme = _inviteData!['world']['themeBundle'] as String?;
+    }
+    
+    // 🎯 THEME CONTEXT CONSUMER: World-spezifisches Theme für Invite
+    return ThemeContextConsumer(
+      componentName: 'InviteLandingPage',
+      enableMixedContext: true,
+      worldThemeOverride: worldTheme, // 🌍 World-spezifisches Theme
+      fallbackTheme: 'pre_game_bundle', // 🎨 Fallback für Loading/Error States
+      contextOverrides: {
+        'uiContext': 'invite-landing',
+        'pageType': 'invite',
+        'context': worldTheme != null ? 'world-themed' : 'pre-game',
+        'immersiveExperience': 'true',
+        'brandingElements': 'true',
+      },
+      builder: (context, theme, extensions) {
+        return _buildInvitePage(context, theme, extensions, l10n);
+      },
+    );
+  }
+
+  Widget _buildInvitePage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions, AppLocalizations l10n) {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.invitePageTitle),
         centerTitle: true,
+        backgroundColor: theme.appBarTheme.backgroundColor,
+        foregroundColor: theme.appBarTheme.foregroundColor,
         actions: const [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -167,18 +195,22 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 500), // 🎯 SMOOTH TRANSITION
               child: _isLoading
-                  ? const Center(
-                      key: ValueKey('loading'),
-                      child: CircularProgressIndicator(),
+                  ? Center(
+                      key: const ValueKey('loading'),
+                      child: CircularProgressIndicator(
+                        color: theme.colorScheme.primary,
+                      ),
                     )
                   : _error != null
                       ? _buildErrorState(
                           context, 
+                          theme,
                           l10n,
                           key: const ValueKey('error'),
                         )
                       : _buildContent(
                           context, 
+                          theme,
                           l10n,
                           key: const ValueKey('content'),
                         ),
@@ -189,7 +221,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, AppLocalizations l10n, {Key? key}) {
+  Widget _buildErrorState(BuildContext context, ThemeData theme, AppLocalizations l10n, {Key? key}) {
     return Center(
       key: key,
       child: Column(
@@ -198,12 +230,12 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
           Icon(
             Icons.error_outline,
             size: 64,
-            color: Theme.of(context).colorScheme.error,
+            color: theme.colorScheme.error,
           ),
           const SizedBox(height: 16),
           Text(
             _error!,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: theme.textTheme.titleMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -216,7 +248,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     );
   }
 
-  Widget _buildContent(BuildContext context, AppLocalizations l10n, {Key? key}) {
+  Widget _buildContent(BuildContext context, ThemeData theme, AppLocalizations l10n, {Key? key}) {
     if (_inviteData == null) {
       return Center(
         key: key,

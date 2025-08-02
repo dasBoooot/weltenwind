@@ -6,7 +6,7 @@ import '../../../config/logger.dart';
 import '../../../config/env.dart';
 import '../../../core/services/api_service.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../theme/app_theme.dart';
+import '../../../core/providers/theme_context_provider.dart';
 import '../../../main.dart';
 
 /// Modulares Widget zum Versenden von Einladungen
@@ -163,7 +163,7 @@ class _InviteWidgetState extends State<InviteWidget> {
                   ? l10n.inviteWidgetSuccessWithEmail(email)
                   : l10n.inviteWidgetSuccessLinkOnly
               ),
-              backgroundColor: AppTheme.primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               duration: const Duration(seconds: 4),
               action: !_sendEmail ? SnackBarAction(
                 label: l10n.inviteWidgetCopyLink,
@@ -259,8 +259,22 @@ class _InviteWidgetState extends State<InviteWidget> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     
+    // 🎯 THEME CONTEXT CONSUMER: Invite Widget kann später World-spezifisch erweitert werden
+    return ThemeContextConsumer(
+      componentName: 'InviteWidget',
+      contextOverrides: const {
+        'uiContext': 'invite-widget',
+        'componentType': 'widget',
+        'context': 'utility', // Utility widget, kann überall verwendet werden
+      },
+      builder: (context, theme, extensions) {
+        return _buildInviteWidget(context, theme, l10n);
+      },
+    );
+  }
+
+  Widget _buildInviteWidget(BuildContext context, ThemeData theme, AppLocalizations l10n) {
     return Container(
       padding: widget.padding ?? const EdgeInsets.all(16.0),
       child: Form(
@@ -275,7 +289,7 @@ class _InviteWidgetState extends State<InviteWidget> {
                 children: [
                   Icon(
                     Icons.email,
-                    color: theme.primaryColor,
+                    color: theme.colorScheme.primary,
                     size: 24,
                   ),
                   const SizedBox(width: 8),
@@ -377,7 +391,7 @@ class _InviteWidgetState extends State<InviteWidget> {
                   : l10n.inviteWidgetCreateLinkButton
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
+                backgroundColor: theme.colorScheme.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(

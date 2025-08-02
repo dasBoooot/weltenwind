@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_theme.dart';
 
 class InviteDialog extends StatefulWidget {
   final String worldName;
@@ -45,19 +44,21 @@ class _InviteDialogState extends State<InviteDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return AlertDialog(
-      backgroundColor: const Color(0xFF1A1A1A), // Dunkler Hintergrund
+      backgroundColor: colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: theme.colorScheme.primary.withValues(alpha: 0.3),
+          color: colorScheme.primary.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
       title: Text(
         'Einladung für ${widget.worldName}',
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: colorScheme.onSurface,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -69,7 +70,7 @@ class _InviteDialogState extends State<InviteDialog> {
             Text(
               'Geben Sie die E-Mail-Adresse der Person ein, die Sie einladen möchten:',
               style: TextStyle(
-                color: Colors.grey[300],
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 16),
@@ -77,28 +78,28 @@ class _InviteDialogState extends State<InviteDialog> {
               controller: _emailController,
               autofocus: true, // Barrierefreiheit: Sofortiger Fokus
               keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(color: Colors.white), // Weiße Schrift
+              style: TextStyle(color: colorScheme.onSurface),
               decoration: InputDecoration(
                 labelText: 'E-Mail-Adresse',
-                labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: Icon(Icons.email, color: theme.colorScheme.primary),
+                labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+                prefixIcon: Icon(Icons.email, color: colorScheme.primary),
                 filled: true,
-                fillColor: const Color(0xFF2D2D2D),
+                fillColor: colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[600]!),
+                  borderSide: BorderSide(color: colorScheme.outline),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[600]!),
+                  borderSide: BorderSide(color: colorScheme.outline),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: theme.colorScheme.primary),
+                  borderSide: BorderSide(color: colorScheme.primary),
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.red[400]!),
+                  borderSide: BorderSide(color: colorScheme.error),
                 ),
               ),
               validator: (value) {
@@ -121,7 +122,7 @@ class _InviteDialogState extends State<InviteDialog> {
           child: TextButton(
             onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
             style: TextButton.styleFrom(
-              foregroundColor: Colors.grey[400],
+              foregroundColor: colorScheme.onSurfaceVariant,
             ),
             child: const Text('Abbrechen'),
           ),
@@ -131,19 +132,19 @@ class _InviteDialogState extends State<InviteDialog> {
           child: ElevatedButton(
             onPressed: _isLoading ? null : _submit,
             style: ElevatedButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
-              foregroundColor: Colors.white,
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: _isLoading 
-              ? const SizedBox(
+              ? SizedBox(
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimary),
                   ),
                 )
               : const Text('Einladung senden'),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/providers/locale_provider.dart';
+import '../../core/providers/theme_context_provider.dart';
 import '../../l10n/app_localizations.dart';
 
 import '../components/index.dart';
@@ -59,6 +60,25 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
   
   @override
   Widget build(BuildContext context) {
+    // 🎯 MIXED-CONTEXT THEME: Universal Language Switcher
+    return ThemeContextConsumer(
+      componentName: 'LanguageSwitcher',
+      enableMixedContext: true,
+      contextOverrides: const {
+        'uiContext': 'language-switcher',
+        'context': 'inherit', // Erbt Theme vom Parent (Pre-Game oder World-themed)
+        'inherit': 'parent-theme',
+        'universalComponent': 'true', // Universelles UI-Element
+      },
+      fallbackTheme: 'pre_game_bundle',
+      builder: (context, theme, extensions) {
+        return _buildLanguageSwitcher(context, theme);
+      },
+    );
+  }
+
+  /// 🎨 Language Switcher Build mit Theme
+  Widget _buildLanguageSwitcher(BuildContext context, ThemeData theme) {
     // Dynamische Größenberechnung basierend auf verfügbaren Sprachen
     final dynamicHeight = _isExpanded 
         ? 90.0 + (_availableLanguages.length * 50.0) // Header + Buttons
@@ -70,11 +90,11 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
         maxWidth: _isExpanded ? 200 : 48,  // Sichere feste Maximalbreite
         maxHeight: dynamicHeight,
       ),
-      child: _isExpanded ? _buildExpandedView(context) : _buildCompactView(),
+      child: _isExpanded ? _buildExpandedView(context, theme) : _buildCompactView(theme),
     );
   }
   
-  Widget _buildCompactView() {
+  Widget _buildCompactView(ThemeData theme) {
     return GestureDetector(
       onTap: _toggleExpanded,
       child: Container(
@@ -82,14 +102,14 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
         height: 48,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
+          color: theme.colorScheme.surface.withValues(alpha: 0.9),
           border: Border.all(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
             width: 2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.2),
+              color: theme.colorScheme.shadow.withValues(alpha: 0.2),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -97,14 +117,14 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
         ),
         child: Icon(
           Icons.language,
-          color: Theme.of(context).colorScheme.primary,
+          color: theme.colorScheme.primary,
           size: 28, // Exakt gleiche Größe wie NavigationWidget
         ),
       ),
     );
   }
   
-  Widget _buildExpandedView(BuildContext context) {
+  Widget _buildExpandedView(BuildContext context, ThemeData theme) {
     final currentLanguage = _localeProvider.currentLocale.languageCode;
     
     return DynamicComponents.frame(
@@ -122,15 +142,15 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
                   children: [
                     Icon(
                       Icons.language,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: theme.colorScheme.primary,
                       size: 16,
                     ),
                     const SizedBox(width: 8.0), // xs
                     Text(
                       AppLocalizations.of(context).commonLanguage,
-                              style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.onSurface,
-        ),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 ),
@@ -139,7 +159,7 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
                   child: Icon(
                     Icons.close,
                     size: 16,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
               ],

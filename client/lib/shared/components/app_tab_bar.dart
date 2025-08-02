@@ -278,9 +278,9 @@ class _AppTabBarState extends State<AppTabBar> with TickerProviderStateMixin {
       label: _getSemanticLabel(),
       hint: _getSemanticHint(),
       enabled: widget.onTabChanged != null,
-      child: RawKeyboardListener(
+      child: KeyboardListener(
         focusNode: _focusNode,
-        onKey: (event) {
+        onKeyEvent: (event) {
           _handleKeyEvent(event);
         },
         child: Container(
@@ -393,7 +393,7 @@ class _AppTabBarState extends State<AppTabBar> with TickerProviderStateMixin {
             return Expanded(
               child: GestureDetector(
                 onTap: () => _onTabTapped(index),
-                child: Container(
+                child: SizedBox(
                   height: _getTabHeight(),
                   child: _buildTabContent(tab, index, index == widget.selectedIndex, theme, extensions),
                 ),
@@ -707,9 +707,9 @@ class _AppTabBarState extends State<AppTabBar> with TickerProviderStateMixin {
   }
 
   /// 🦾 ACCESSIBILITY FIX: Handle keyboard navigation
-  void _handleKeyEvent(RawKeyEvent event) {
-    if (event is RawKeyDownEvent) {
-      switch (event.data.logicalKey) {
+  void _handleKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent) {
+              switch (event.logicalKey) {
         case LogicalKeyboardKey.arrowLeft:
           _navigateLeft();
           break;

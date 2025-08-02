@@ -246,7 +246,7 @@ class _LoadingOverlayState extends State<LoadingOverlay> with TickerProviderStat
     Widget spinner = widget.customSpinner ?? _buildDefaultSpinner(theme, extensions);
     
     // Add pulse animation
-    if (widget.pulseAnimation && _pulseController != null) {
+    if (widget.pulseAnimation) {
       spinner = AnimatedBuilder(
         animation: _pulseController,
         builder: (context, child) {
@@ -302,9 +302,9 @@ class _LoadingOverlayState extends State<LoadingOverlay> with TickerProviderStat
             ),
             child: Container(
               margin: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.transparent,
+                color: theme.colorScheme.surface.withValues(alpha: 0.0),
               ),
             ),
           ),
@@ -336,16 +336,14 @@ class _LoadingOverlayState extends State<LoadingOverlay> with TickerProviderStat
   Color _getBackgroundColor(ThemeData theme, Map<String, dynamic>? extensions) {
     if (widget.backgroundColor != null) return widget.backgroundColor!;
     
-    // Schema default: #00000080 (black with alpha)
-    return const Color(0x80000000);
+    return theme.colorScheme.surface.withValues(alpha: 0.8);
   }
 
   /// Get text color from schema
   Color _getTextColor(ThemeData theme) {
     if (widget.textColor != null) return widget.textColor!;
     
-    // Schema default: #FFFFFF (white)
-    return const Color(0xFFFFFFFF);
+    return theme.colorScheme.onSurface;
   }
 
   /// Get spinner size from schema
@@ -378,7 +376,7 @@ class _LoadingOverlayState extends State<LoadingOverlay> with TickerProviderStat
       colors: [
         spinnerColor,
         spinnerColor.withValues(alpha: 0.3),
-        Colors.transparent,
+        theme.colorScheme.surface.withValues(alpha: 0.0),
       ],
       stops: const [0.0, 0.7, 1.0],
     );

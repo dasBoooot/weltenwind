@@ -313,7 +313,7 @@ class _AppProgressIndicatorState extends State<AppProgressIndicator> with Ticker
     );
 
     // Add glow effect
-    if (widget.glowEffect && _glowController != null) {
+    if (widget.glowEffect) {
       progressBar = AnimatedBuilder(
         animation: _glowController,
         builder: (context, child) {
@@ -364,7 +364,7 @@ class _AppProgressIndicatorState extends State<AppProgressIndicator> with Ticker
     );
 
     // Add glow effect
-    if (widget.glowEffect && _glowController != null) {
+    if (widget.glowEffect) {
       progressIndicator = AnimatedBuilder(
         animation: _glowController,
         builder: (context, child) {

@@ -4,10 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
-import '../../theme/tokens/colors.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/tokens/typography.dart';
-import '../../shared/components/index.dart';
+import '../../core/providers/theme_context_provider.dart';
+import '../../shared/components/index.dart' hide ThemeSwitcher;
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
@@ -226,16 +224,32 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    
+    // 🎯 KONTEXTSENSITIVE THEME-BEREITSTELLUNG mit PRE-GAME BUNDLE
+    return ThemeContextConsumer(
+      componentName: 'LoginPage',
+      contextOverrides: const {
+        'uiContext': 'login',           // Aktiviert pre_game_bundle
+        'bundleType': 'pre_game_bundle', // Explizite Bundle-Spezifikation
+        'pageType': 'auth',
+        'context': 'pre-game',          // Bundle-Context
+        'firstImpressionOptimized': 'true',
+        'welcomeAnimations': 'true',
+        'brandingElements': 'true',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildLoginPage(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildLoginPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Scaffold(
       body: Stack(
         children: [
           BackgroundWidget(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
+                padding: theme.cardTheme.margin ?? const EdgeInsets.all(24.0),
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: Center(
@@ -245,7 +259,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
                         pageTitle: AppLocalizations.of(context).authLoginTitle,
                         subtitle: AppLocalizations.of(context).authLoginSubtitle,
-                        padding: const EdgeInsets.all(AppSpacing.sectionMedium),
+                        padding: theme.dialogTheme.contentTextStyle != null 
+                          ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
+                          : const EdgeInsets.all(32.0),
                         context: context,
                         child: Form(
                           key: _formKey,
@@ -267,7 +283,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authUsernameLabel,
-                                  prefixIcon: const Icon(Icons.person, color: AppColors.primaryAccent),
+                                  prefixIcon: Icon(Icons.person, color: theme.colorScheme.primary),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
@@ -279,7 +295,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: AppSpacing.md),
+                              SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
                               
                               // 🔒 Password field
                               TextFormField(
@@ -297,7 +313,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authPasswordLabel,
-                                  prefixIcon: const Icon(Icons.lock, color: AppColors.primaryAccent),
+                                  prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary),
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -316,7 +332,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: AppSpacing.md),
+                              SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
                               
                               // Remember me + forgot password
                               Row(
@@ -331,7 +347,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                             _rememberMe = value ?? false;
                                           });
                                         },
-                                        activeColor: AppColors.primaryAccent,
+                                        activeColor: theme.colorScheme.primary,
                                       ),
                                       GestureDetector(
                                         onTap: () {
@@ -341,7 +357,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                         },
                                         child: Text(
                                           AppLocalizations.of(context).authRememberMe,
-                                          style: AppTypography.bodyMedium(isDark: isDark),
+                                          style: theme.textTheme.bodyMedium,
                                         ),
                                       ),
                                     ],
@@ -355,35 +371,34 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: AppSpacing.sm),
+                              const SizedBox(height: kTextTabBarHeight / 3),
                               
                               // Error message
                               if (_loginError != null)
                                 Container(
                                   width: double.infinity,
-                                  padding: const EdgeInsets.all(AppSpacing.sm),
-                                  margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                                  padding: const EdgeInsets.all(kTextTabBarHeight / 3),
+                                  margin: const EdgeInsets.only(bottom: kTextTabBarHeight / 2),
                                   decoration: BoxDecoration(
-                                    color: AppColors.error.withValues(alpha: 0.1),
+                                    color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: AppColors.error.withValues(alpha: 0.3),
+                                      color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
                                     ),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.error_outline,
-                                        color: AppColors.error,
+                                        color: Theme.of(context).colorScheme.error,
                                         size: 20,
                                       ),
-                                      const SizedBox(width: AppSpacing.xs),
+                                      const SizedBox(width: kTextTabBarHeight / 6),
                                       Expanded(
                                         child: Text(
                                           _loginError!,
-                                          style: AppTypography.bodySmall(
-                                            color: AppColors.error,
-                                            isDark: isDark,
+                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                            color: Theme.of(context).colorScheme.error,
                                           ),
                                         ),
                                       ),
@@ -401,7 +416,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   icon: Icons.login_rounded,
                                 ),
                               ),
-                              const SizedBox(height: AppSpacing.lg),
+                              SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
                               
                               // Register-Bereich
                               Row(
@@ -409,9 +424,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 children: [
                                   Text(
                                     AppLocalizations.of(context).authNoAccount,
-                                    style: AppTypography.bodyMedium(isDark: isDark),
+                                    style: theme.textTheme.bodyMedium,
                                   ),
-                                  const SizedBox(width: AppSpacing.sm),
+                                  SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 8.0),
                                   DynamicComponents.secondaryButton(
                                     text: AppLocalizations.of(context).authRegisterButton,
                                     onPressed: () => context.goNamed('register'),
@@ -438,16 +453,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryAccent),
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                       strokeWidth: 3,
                     ),
-                    const SizedBox(height: AppSpacing.md),
+                    SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
                     Text(
                       AppLocalizations.of(context).authLoginLoading,
-                      style: AppTypography.bodyLarge(
+                      style: theme.textTheme.bodyLarge?.copyWith(
                         color: Colors.white,
-                        isDark: true,
                       ),
                     ),
                   ],

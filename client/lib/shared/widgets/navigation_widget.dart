@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/providers/theme_context_provider.dart';
 import '../components/index.dart';
 import '../utils/dynamic_components.dart';
 import '../../l10n/app_localizations.dart';
@@ -200,11 +201,67 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
       return const SizedBox.shrink();
     }
     
+    // 🎯 MIXED-CONTEXT THEME: Kontext-abhängige Theme-Resolution
+    return ThemeContextConsumer(
+      componentName: 'NavigationWidget',
+      enableMixedContext: true,
+      contextOverrides: _getContextOverrides(),
+      fallbackTheme: 'pre_game_bundle',
+      builder: (context, theme, extensions) {
+        return _buildNavigation(context, theme, extensions);
+      },
+    );
+  }
+
+  /// 🧠 Context Overrides basierend auf Navigation Context
+  Map<String, dynamic> _getContextOverrides() {
+    switch (_currentContext) {
+      case NavigationContext.worldDashboard:
+        // World Dashboard → World-spezifisches Theme erben
+        final worldId = widget.routeParams?['id']?.toString();
+        return {
+          'uiContext': 'navigation-world-dashboard',
+          'context': 'world-themed',
+          'worldId': worldId,
+          'inherit': 'world-theme', // Erbt World-Theme von der Page
+        };
+        
+      case NavigationContext.worldJoin:
+        // World Join → World-spezifisches Theme erben  
+        final worldId = widget.routeParams?['id']?.toString();
+        return {
+          'uiContext': 'navigation-world-join',
+          'context': 'world-themed',
+          'worldId': worldId,
+          'inherit': 'world-theme', // Erbt World-Theme von der Page
+        };
+        
+      case NavigationContext.invite:
+        // Invite → Erbt Theme von Invite Page (kann world-spezifisch sein)
+        return {
+          'uiContext': 'navigation-invite',
+          'context': 'inherit', // Erbt Kontext von Parent
+          'inherit': 'parent-theme',
+        };
+        
+      case NavigationContext.worldList:
+      case NavigationContext.general:
+        // World List, General → Pre-Game Bundle
+        return {
+          'uiContext': 'navigation-pre-game',
+          'context': 'pre-game',
+          'bundleType': 'pre_game_bundle',
+        };
+    }
+  }
+
+  /// 🎨 Haupt-Navigation Build mit Theme
+  Widget _buildNavigation(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     final actions = _navigationActions;
     
     return Positioned(
-              top: 24.0, // md
-        right: 24.0, // md
+      top: 24.0, // md
+      right: 24.0, // md
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: AnimatedContainer(
@@ -214,15 +271,15 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
             maxWidth: _isExpanded ? 250 : 60,
           ),
           child: _isExpanded 
-            ? _buildExpandedView(actions) 
-            : _buildCompactView(),
+            ? _buildExpandedView(actions, theme) 
+            : _buildCompactView(theme),
         ),
       ),
     );
   }
   
   /// 🔘 Kompakter Kreis-View 
-  Widget _buildCompactView() {
+  Widget _buildCompactView(ThemeData theme) {
     return GestureDetector(
       onTap: _toggleExpanded,
       child: Container(
@@ -234,13 +291,13 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).colorScheme.primary,
-              Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+              theme.colorScheme.primary,
+              theme.colorScheme.primary.withValues(alpha: 0.8),
             ],
           ),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+              color: theme.colorScheme.primary.withValues(alpha: 0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -248,7 +305,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
         ),
         child: Icon(
           _contextIcon,
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: theme.colorScheme.onPrimary,
           size: 28,
         ),
       ),
@@ -256,7 +313,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
   }
   
   /// 📋 Erweiterte Navigation-Liste
-  Widget _buildExpandedView(List<NavigationAction> actions) {
+  Widget _buildExpandedView(List<NavigationAction> actions, ThemeData theme) {
     return DynamicComponents.frame(
       title: _contextTitle,
               padding: const EdgeInsets.all(16.0), // sm
@@ -273,19 +330,19 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
                 children: [
                   Icon(
                     _contextIcon,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colorScheme.primary,
                     size: 20,
                   ),
                   const SizedBox(width: 16.0), // sm
                   Expanded(
                     child: Text(
                       _contextTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: theme.textTheme.titleMedium,
                     ),
                   ),
                   Icon(
                     Icons.keyboard_arrow_up,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     size: 20,
                   ),
                 ],
@@ -296,7 +353,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
           if (actions.isNotEmpty) ...[
             // 🌟 Divider
             Divider(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+              color: theme.colorScheme.primary.withValues(alpha: 0.3),
               height: 1,
               thickness: 1,
             ),

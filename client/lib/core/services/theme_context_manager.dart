@@ -233,7 +233,7 @@ class ThemeContextManager extends ChangeNotifier {
     _contextChangeController.add(change);
     notifyListeners();
 
-    AppLogger.app.i('🎯 Theme Context Change: ${type.name} → $newValue (${reason})');
+    AppLogger.app.i('🎯 Theme Context Change: ${type.name} → $newValue ($reason)');
   }
 
   /// 🎮 Private: Generate Bundle ID for World

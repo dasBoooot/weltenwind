@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
 
 class WorldListLoadingState extends StatelessWidget {
@@ -11,8 +10,8 @@ class WorldListLoadingState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
           ),
           const SizedBox(height: 16),
           Text(
@@ -79,7 +78,7 @@ class WorldListEmptyState extends StatelessWidget {
               icon: const Icon(Icons.refresh, size: 18),
               label: Text(AppLocalizations.of(context).buttonRetry),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -153,7 +152,7 @@ class WorldListErrorState extends StatelessWidget {
                 icon: const Icon(Icons.refresh, size: 18),
                 label: Text(AppLocalizations.of(context).buttonRetry),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -183,7 +182,7 @@ class WorldListRefreshIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: onRefresh,
-      color: AppTheme.primaryColor,
+      color: Theme.of(context).colorScheme.primary,
       backgroundColor: const Color(0xFF2A2A2A),
       child: child,
     );

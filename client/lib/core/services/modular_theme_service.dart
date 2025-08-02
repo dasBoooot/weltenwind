@@ -79,7 +79,8 @@ class ModularThemeService {
       
       // Direkter HTTP-Call ohne API-Service da theme-editor statisch bereitgestellt wird
       const urlPath = '/theme-editor/bundles/bundle-configs.json';
-      final url = '${Env.apiUrl}$urlPath';
+      const urlPrefix = Env.apiUrl;
+      final url = '$urlPrefix$urlPath';
       final response = await http.get(Uri.parse(url));
       
       if (response.statusCode != 200) {
@@ -582,6 +583,32 @@ class ModularThemeService {
     return null;
   }
 
+  /// 🎨 Gibt Extensions für spezifisches Bundle zurück (für Hybrid-System)
+  Map<String, dynamic>? getBundleExtensions(String bundleId) {
+    try {
+      // Suche nach Bundle-Extensions in _moduleCache
+      final cacheKey = '${bundleId}_base';
+      if (_moduleCache.containsKey(cacheKey)) {
+        final bundleData = _moduleCache[cacheKey];
+        if (bundleData != null && bundleData.containsKey('extensions')) {
+          return bundleData['extensions'] as Map<String, dynamic>;
+        }
+      }
+      
+      // Fallback: verwende aktuelle Extensions
+      return getCurrentThemeExtensions();
+    } catch (e) {
+      AppLogger.app.e('❌ Error getting bundle extensions for $bundleId', error: e);
+      return null;
+    }
+  }
+
+  /// 📦 Get cached Theme from Bundle (für Hybrid-System)
+  ThemeData? getCachedTheme(String bundleId, {bool isDark = false}) {
+    final cache = isDark ? _bundleDarkThemeCache : _bundleThemeCache;
+    return cache[bundleId];
+  }
+
   /// 🎯 CONTEXT-BASED THEME METHODS
   
   /// Lädt Theme basierend auf dem aktuellen Kontext
@@ -1032,11 +1059,11 @@ class ModularThemeService {
         foregroundColor: Colors.white,
         textStyle: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_parseRadius(radius['lg']) ?? 12.0),
+          borderRadius: BorderRadius.circular(_parseRadius(radius['lg'])),
         ),
         padding: EdgeInsets.symmetric(
-          horizontal: _parseSpacing(spacing['lg']) ?? 24.0,
-          vertical: _parseSpacing(spacing['md']) ?? 16.0,
+          horizontal: _parseSpacing(spacing['lg']),
+          vertical: _parseSpacing(spacing['md']),
         ),
       ),
     );
@@ -1055,11 +1082,11 @@ class ModularThemeService {
           width: 1.5,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_parseRadius(radius['lg']) ?? 12.0),
+          borderRadius: BorderRadius.circular(_parseRadius(radius['lg'])),
         ),
         padding: EdgeInsets.symmetric(
-          horizontal: _parseSpacing(spacing['lg']) ?? 24.0,
-          vertical: _parseSpacing(spacing['md']) ?? 16.0,
+          horizontal: _parseSpacing(spacing['lg']),
+          vertical: _parseSpacing(spacing['md']),
         ),
       ),
     );
@@ -1085,9 +1112,9 @@ class ModularThemeService {
       color: _parseColor(background['surface_medium']) ?? const Color(0xFF2A1810),
       elevation: 4,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_parseRadius(radius['md']) ?? 8.0),
+        borderRadius: BorderRadius.circular(_parseRadius(radius['md'])),
       ),
-      margin: EdgeInsets.all(_parseSpacing(spacing['sm']) ?? 8.0),
+      margin: EdgeInsets.all(_parseSpacing(spacing['sm'])),
     );
   }
 
@@ -1100,17 +1127,17 @@ class ModularThemeService {
       filled: true,
       fillColor: _parseColor(background['surface_light']) ?? const Color(0xFF3A2820),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(_parseRadius(radius['md']) ?? 8.0),
+        borderRadius: BorderRadius.circular(_parseRadius(radius['md'])),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(_parseRadius(radius['md']) ?? 8.0),
+        borderRadius: BorderRadius.circular(_parseRadius(radius['md'])),
         borderSide: BorderSide(
           color: _parseColor(primary['value']) ?? const Color(0xFF6366F1),
           width: 2,
         ),
       ),
-      contentPadding: EdgeInsets.all(_parseSpacing(spacing['md']) ?? 16.0),
+      contentPadding: EdgeInsets.all(_parseSpacing(spacing['md'])),
     );
   }
 
@@ -1153,7 +1180,7 @@ class ModularThemeService {
     return DialogThemeData(
       backgroundColor: _parseColor(background['surface_medium']) ?? const Color(0xFF2A1810),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_parseRadius(radius['lg']) ?? 12.0),
+        borderRadius: BorderRadius.circular(_parseRadius(radius['lg'])),
       ),
       titleTextStyle: textTheme.headlineLarge,
       contentTextStyle: textTheme.bodyMedium,
@@ -1168,7 +1195,7 @@ class ModularThemeService {
       backgroundColor: _parseColor(background['surface_medium']) ?? const Color(0xFF2A1810),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(_parseRadius(radius['lg']) ?? 12.0),
+          top: Radius.circular(_parseRadius(radius['lg'])),
         ),
       ),
     );

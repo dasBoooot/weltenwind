@@ -230,8 +230,7 @@ class _InviteStatusBannerState extends State<InviteStatusBanner> with TickerProv
 
     // Add glow effect for pending invites
     if (widget.glowEffect && 
-        widget.invite.status == InviteStatus.pending && 
-        _glowController != null) {
+        widget.invite.status == InviteStatus.pending) {
       banner = AnimatedBuilder(
         animation: _glowController,
         builder: (context, child) {

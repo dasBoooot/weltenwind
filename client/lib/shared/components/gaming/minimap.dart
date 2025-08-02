@@ -211,14 +211,12 @@ class _GameMinimapState extends State<GameMinimap> with TickerProviderStateMixin
 
   /// Background color from schema
   Color _getBackgroundColor(ThemeData theme) {
-    // Schema default: #00000080 (black with alpha)
-    return const Color(0x80000000);
+    return theme.colorScheme.surface.withValues(alpha: 0.8);
   }
 
   /// Border color from schema
   Color _getBorderColor(ThemeData theme) {
-    // Schema default: #7C6BAF (purple)
-    return const Color(0xFF7C6BAF);
+    return theme.colorScheme.primary;
   }
 
   /// Border radius from schema
@@ -327,7 +325,7 @@ class MinimapPainter extends CustomPainter {
       ..shader = RadialGradient(
         colors: [
           theme.colorScheme.primary.withValues(alpha: 0.3),
-          Colors.transparent,
+          theme.colorScheme.surface.withValues(alpha: 0.0),
         ],
         stops: const [0.0, 1.0],
       ).createShader(Rect.fromCircle(center: center, radius: size.width / 2))
@@ -446,7 +444,7 @@ class MinimapPainter extends CustomPainter {
 
   /// Player color from schema
   Color _getPlayerColor() {
-    return const Color(0xFFFFD700); // Schema default: gold
+    return theme.colorScheme.primary;
   }
 
   /// Player size from schema

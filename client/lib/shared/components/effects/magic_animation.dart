@@ -268,7 +268,7 @@ class _MagicAnimationState extends State<MagicAnimation> with TickerProviderStat
         break;
 
       case MagicAnimationType.shimmer:
-        animatedChild = _buildShimmerTransition(animatedChild);
+        animatedChild = _buildShimmerTransition(theme, animatedChild);
         break;
 
       case MagicAnimationType.breathe:
@@ -368,7 +368,7 @@ class _MagicAnimationState extends State<MagicAnimation> with TickerProviderStat
   }
 
   /// Build shimmer transition
-  Widget _buildShimmerTransition(Widget child) {
+  Widget _buildShimmerTransition(ThemeData theme, Widget child) {
     return ShaderMask(
       shaderCallback: (bounds) {
         return LinearGradient(
@@ -381,10 +381,10 @@ class _MagicAnimationState extends State<MagicAnimation> with TickerProviderStat
             1.0,
           ],
           colors: [
-            Colors.transparent,
-            Colors.white.withValues(alpha: 0.5 * widget.intensity),
-            Colors.white.withValues(alpha: 0.8 * widget.intensity),
-            Colors.transparent,
+            theme.colorScheme.surface.withValues(alpha: 0.0),
+            theme.colorScheme.onSurface.withValues(alpha: 0.5 * widget.intensity),
+            theme.colorScheme.onSurface.withValues(alpha: 0.8 * widget.intensity),
+            theme.colorScheme.surface.withValues(alpha: 0.0),
           ],
         ).createShader(bounds);
       },

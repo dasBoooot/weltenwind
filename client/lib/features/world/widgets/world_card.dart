@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/world.dart';
-import '../../../theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
 
 
 class WorldCard extends StatelessWidget {
   final World world;
+  final ThemeData? theme; // 🎨 World-spezifisches Theme!
   final bool isPreRegistered;
   final bool isJoined;
   final VoidCallback? onJoin;
@@ -19,6 +19,7 @@ class WorldCard extends StatelessWidget {
   const WorldCard({
     super.key,
     required this.world,
+    this.theme, // 🎨 Optional: World-spezifisches Theme
     this.isPreRegistered = false,
     this.isJoined = false,
     this.onJoin,
@@ -33,6 +34,11 @@ class WorldCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _buildCard(context);
+  }
+
+  // 🎨 Theme Helper: Stellt das effective theme für alle Methoden bereit
+  ThemeData _getEffectiveTheme(BuildContext context) {
+    return theme ?? Theme.of(context);
   }
 
   Widget _buildCard(BuildContext context) {
@@ -414,7 +420,7 @@ class WorldCard extends StatelessWidget {
               onPressed: onJoin,
               icon: Icons.play_arrow,
               label: AppLocalizations.of(context).worldJoinNowButton,
-              color: AppTheme.primaryColor,
+              color: _getEffectiveTheme(context).colorScheme.primary,
             ));
           }
         }

@@ -747,7 +747,7 @@ class _WorldsListSelectorState extends State<WorldsListSelector> {
                 if (world.isFavorite)
                   Icon(
                     Icons.favorite,
-                    color: Colors.red,
+                    color: theme.colorScheme.error,
                     size: 16,
                   ),
                 

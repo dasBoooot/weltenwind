@@ -245,13 +245,13 @@ class _GameBuffBarState extends State<GameBuffBar> with TickerProviderStateMixin
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.7),
+                      color: theme.colorScheme.surface.withValues(alpha: 0.7),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       '${buff.duration!.inSeconds}',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: theme.colorScheme.onSurface,
                         fontSize: 8,
                         fontWeight: FontWeight.bold,
                       ),
@@ -286,7 +286,7 @@ class _GameBuffBarState extends State<GameBuffBar> with TickerProviderStateMixin
     return Positioned.fill(
       child: CircularProgressIndicator(
         value: buff.remainingPercentage,
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.0),
         valueColor: AlwaysStoppedAnimation<Color>(
           _getBuffTypeColor(theme, buff.type).withValues(alpha: 0.3),
         ),

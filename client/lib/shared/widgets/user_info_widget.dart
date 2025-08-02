@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/services/auth_service.dart';
-
+import '../../core/providers/theme_context_provider.dart';
 import '../components/index.dart';
 import '../utils/dynamic_components.dart';
 import '../../main.dart';
@@ -90,11 +90,30 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
     final user = _authService.currentUser;
     if (user == null) return const SizedBox.shrink();
     
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // 🎯 MIXED-CONTEXT THEME: Universal Theme-Vererbung
+    return ThemeContextConsumer(
+      componentName: 'UserInfoWidget',
+      enableMixedContext: true,
+      contextOverrides: const {
+        'uiContext': 'user-info',
+        'context': 'inherit', // Erbt Theme vom Parent (Pre-Game oder World-themed)
+        'inherit': 'parent-theme',
+        'universalComponent': 'true', // Universelles UI-Element
+      },
+      fallbackTheme: 'pre_game_bundle',
+      builder: (context, theme, extensions) {
+        return _buildUserInfo(context, theme, extensions, user);
+      },
+    );
+  }
+
+  /// 🎨 User Info Build mit Theme
+  Widget _buildUserInfo(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions, user) {
+    final isDark = theme.brightness == Brightness.dark;
     
     return Positioned(
-              top: 24.0, // md
-        left: 24.0, // md
+      top: 24.0, // md
+      left: 24.0, // md
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: AnimatedContainer(
@@ -113,18 +132,18 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 👤 Compact Header
-                  _buildUserHeader(user, isDark),
+                  _buildUserHeader(user, isDark, theme),
                   
                   // 📋 Erweiterte Details
                   if (_isExpanded) ...[
                     const SizedBox(height: 16.0), // sm
                     Divider(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
                       height: 1,
                       thickness: 1,
                     ),
                     const SizedBox(height: 16.0), // sm
-                    _buildExpandedDetails(user, isDark),
+                    _buildExpandedDetails(user, theme),
                   ],
                 ],
               ),
@@ -136,7 +155,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
   }
   
   /// 👤 User Header (Avatar + Name + Status)
-  Widget _buildUserHeader(dynamic user, bool isDark) {
+  Widget _buildUserHeader(dynamic user, bool isDark, ThemeData theme) {
     return Row(
       children: [
         // 🎭 Avatar Circle
@@ -144,18 +163,18 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            color: theme.colorScheme.primary.withValues(alpha: 0.2),
             shape: BoxShape.circle,
             border: Border.all(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
               width: 2,
             ),
           ),
           child: Center(
             child: Text(
               user.username.substring(0, 1).toUpperCase(),
-                                style: theme.textTheme.headlineSmall?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                color: theme.colorScheme.primary,
               ),
             ),
           ),
@@ -177,7 +196,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
                   ),
                   if (user.isLocked ?? false) ...[
                     const SizedBox(width: 8.0), // xs
-                    const Icon(
+                    Icon(
                       Icons.lock,
                       color: theme.colorScheme.error,
                       size: 16,
@@ -188,7 +207,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
               if (!_isExpanded)
                 Text(
                   AppLocalizations.of(context).userInfoClickForDetails,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
@@ -206,7 +225,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
   }
   
   /// 📋 Erweiterte User-Details
-  Widget _buildExpandedDetails(dynamic user, bool isDark) {
+  Widget _buildExpandedDetails(dynamic user, ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -243,20 +262,20 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
               const SizedBox(width: 8.0), // xs
               Text(
                 AppLocalizations.of(context).userInfoRoles,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8.0), // xs
-          _buildRoleBadges(user.roles!),
+           _buildRoleBadges(user.roles!, theme),
           const SizedBox(height: 16.0), // sm
         ],
         
         // 🌟 Divider
         Divider(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+          color: theme.colorScheme.primary.withValues(alpha: 0.3),
           height: 1,
           thickness: 1,
         ),
@@ -282,7 +301,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
   }
   
   /// 🛡️ Rolle-Badges mit Fantasy-Theme-Colors
-  Widget _buildRoleBadges(List<dynamic> userRoles) {
+  Widget _buildRoleBadges(List<dynamic> userRoles, ThemeData theme) {
     return Wrap(
       spacing: 8.0, // xs
       runSpacing: 8.0, // xs

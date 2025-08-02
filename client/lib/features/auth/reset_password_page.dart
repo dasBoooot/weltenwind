@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
-import '../../theme/tokens/colors.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/tokens/typography.dart';
-import '../../shared/components/index.dart';
+import '../../core/providers/theme_context_provider.dart';
+import '../../shared/components/index.dart' hide ThemeSwitcher;
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
@@ -135,24 +133,40 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    
+    // 🎯 KONTEXTSENSITIVE THEME-BEREITSTELLUNG mit PRE-GAME BUNDLE
+    return ThemeContextConsumer(
+      componentName: 'ResetPasswordPage',
+      contextOverrides: const {
+        'uiContext': 'login',               // Aktiviert pre_game_bundle (reset password ist Teil des login flows)
+        'bundleType': 'pre_game_bundle',    // Explizite Bundle-Spezifikation
+        'pageType': 'auth',
+        'context': 'pre-game',             // Bundle-Context
+        'firstImpressionOptimized': 'true',
+        'welcomeAnimations': 'true',
+        'brandingElements': 'true',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildResetPasswordPage(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildResetPasswordPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Scaffold(
       body: Stack(
         children: [
           BackgroundWidget(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
+                padding: theme.cardTheme.margin ?? const EdgeInsets.all(24.0),
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 420),
                       child: _isSuccess
-                          ? _buildSuccessView(isDark)
-                          : _buildFormView(isDark),
+                          ? _buildSuccessView(theme)
+                          : _buildFormView(theme),
                     ),
                   ),
                 ),
@@ -168,16 +182,15 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary),
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                       strokeWidth: 3,
                     ),
-                    const SizedBox(height: AppSpacing.md),
+                    SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
                     Text(
                       AppLocalizations.of(context).authLoginLoading,
-                      style: AppTypography.bodyLarge(
+                      style: theme.textTheme.bodyLarge?.copyWith(
                         color: Colors.white,
-                        isDark: true,
                       ),
                     ),
                   ],
@@ -210,12 +223,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
     );
   }
 
-  Widget _buildFormView(bool isDark) {
+  Widget _buildFormView(ThemeData theme) {
     return DynamicComponents.authFrame(
       welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
       pageTitle: AppLocalizations.of(context).authResetPasswordTitle,
       subtitle: AppLocalizations.of(context).authResetPasswordDescription,
-      padding: const EdgeInsets.all(AppSpacing.sectionMedium),
+      padding: theme.dialogTheme.contentTextStyle != null 
+          ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
+          : const EdgeInsets.all(32.0),
       context: context,
       child: Form(
         key: _formKey,
@@ -241,7 +256,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context).authNewPasswordLabel,
                 helperText: AppLocalizations.of(context).authPasswordHelperText,
-                prefixIcon: const Icon(Icons.lock_outline, color: AppColors.secondary),
+                prefixIcon: Icon(Icons.lock_outline, color: theme.colorScheme.primary),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -266,7 +281,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                 return null;
               },
             ),
-            const SizedBox(height: AppSpacing.md),
+            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
             
             // 🔒 Confirm Password field
             TextFormField(
@@ -286,7 +301,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
               },
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context).authConfirmPasswordLabel,
-                prefixIcon: const Icon(Icons.lock, color: AppColors.secondary),
+                prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
@@ -308,17 +323,17 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                 return null;
               },
             ),
-            const SizedBox(height: AppSpacing.md),
+            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
             
             // 📋 Password Requirements
             if (_hasInteractedWithPassword)
               Container(
-                padding: const EdgeInsets.all(AppSpacing.sm),
+                padding: EdgeInsets.all(theme.textTheme.bodySmall?.fontSize ?? 8.0),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryAccent.withValues(alpha: 0.1),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: AppColors.primaryAccent.withValues(alpha: 0.3),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Column(
@@ -326,56 +341,55 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                   children: [
                     Text(
                       AppLocalizations.of(context).authPasswordRequirementsTitle,
-                      style: AppTypography.labelLarge(isDark: isDark),
+                      style: theme.textTheme.labelLarge,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    SizedBox(height: theme.textTheme.bodySmall?.fontSize ?? 4.0),
                     _buildRequirement(
                       AppLocalizations.of(context).authRequirementMinLength,
                       _passwordLengthValid,
-                      isDark,
+                      theme,
                     ),
                     _buildRequirement(
                       AppLocalizations.of(context).authRequirementNoSpaces,
                       _passwordHasNoSpaces,
-                      isDark,
+                      theme,
                     ),
                     _buildRequirement(
                       AppLocalizations.of(context).authRequirementPasswordsMatch,
                       _passwordsMatch,
-                      isDark,
+                      theme,
                     ),
                   ],
                 ),
               ),
-            const SizedBox(height: AppSpacing.lg),
+              SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
             
             // Error message
             if (_errorMessage != null)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                padding: EdgeInsets.all(theme.textTheme.bodySmall?.fontSize ?? 8.0),
+                margin: EdgeInsets.only(bottom: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
                 decoration: BoxDecoration(
-                  color: AppColors.error.withValues(alpha: 0.1),
+                  color: theme.colorScheme.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: AppColors.error.withValues(alpha: 0.3),
+                    color: theme.colorScheme.error.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline,
-                      color: AppColors.error,
+                      color: theme.colorScheme.error,
                       size: 20,
                     ),
-                    const SizedBox(width: AppSpacing.xs),
+                    SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 4.0),
                     Expanded(
                       child: Text(
                         _errorMessage!,
-                        style: AppTypography.bodySmall(
-                          color: AppColors.error,
-                          isDark: isDark,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.error,
                         ),
                       ),
                     ),
@@ -393,7 +407,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
                 icon: Icons.lock_reset_rounded,
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
+            SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
             
             // Back to Login
             DynamicComponents.tertiaryButton(
@@ -407,12 +421,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
     );
   }
 
-  Widget _buildSuccessView(bool isDark) {
+  Widget _buildSuccessView(ThemeData theme) {
     return DynamicComponents.authFrame(
       welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
       pageTitle: AppLocalizations.of(context).authResetPasswordTitle,
       subtitle: AppLocalizations.of(context).authBackToLogin,
-      padding: const EdgeInsets.all(AppSpacing.sectionMedium),
+      padding: theme.dialogTheme.contentTextStyle != null 
+          ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
+          : const EdgeInsets.all(32.0),
       context: context,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -429,40 +445,38 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
               );
             },
             child: Container(
-              padding: const EdgeInsets.all(AppSpacing.lg),
+              padding: EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 24.0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.success.withValues(alpha: 0.1),
+                color: theme.colorScheme.tertiary.withValues(alpha: 0.1),
                 border: Border.all(
-                  color: AppColors.success.withValues(alpha: 0.3),
+                  color: theme.colorScheme.tertiary.withValues(alpha: 0.3),
                   width: 2,
                 ),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.check_circle_rounded,
                 size: 48,
-                color: AppColors.success,
+                color: theme.colorScheme.tertiary,
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.lg),
+          SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
           
           // Success Message
           Text(
             AppLocalizations.of(context).authResetPasswordSuccessTitle,
-            style: AppTypography.h4(isDark: isDark),
+            style: theme.textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppSpacing.sm),
+          SizedBox(height: theme.textTheme.bodySmall?.fontSize ?? 8.0),
           Text(
             AppLocalizations.of(context).authResetPasswordSuccessMessage,
-            style: AppTypography.bodyMedium(isDark: isDark),
+            style: theme.textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppSpacing.sectionSmall),
-          
-
-          const SizedBox(height: AppSpacing.lg),
+          SizedBox(height: theme.textTheme.bodyLarge?.fontSize ?? 18.0),
+          SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
           
           // Manual redirect button
           SizedBox(
@@ -479,7 +493,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
     );
   }
 
-  Widget _buildRequirement(String text, bool isMet, bool isDark) {
+  Widget _buildRequirement(String text, bool isMet, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -487,15 +501,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
           Icon(
             isMet ? Icons.check_circle : Icons.circle_outlined,
             size: 16,
-            color: isMet ? AppColors.success : AppColors.textSecondary,
+            color: isMet ? theme.colorScheme.tertiary : theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
-          const SizedBox(width: AppSpacing.xs),
+          SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 4.0),
           Expanded(
             child: Text(
               text,
-              style: AppTypography.bodySmall(
-                color: isMet ? AppColors.success : AppColors.textSecondary,
-                isDark: isDark,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: isMet ? theme.colorScheme.tertiary : theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_theme.dart';
+import '../../core/providers/theme_context_provider.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/language_switcher.dart';
 import 'dart:math' as math;
@@ -114,6 +114,26 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    // 🎯 KONTEXTSENSITIVE THEME-BEREITSTELLUNG mit PRE-GAME BUNDLE
+    return ThemeContextConsumer(
+      componentName: 'LandingPage',
+      contextOverrides: const {
+        'uiContext': 'landing',              // Landing Page Kontext
+        'bundleType': 'pre_game_bundle',     // Explizite Bundle-Spezifikation
+        'pageType': 'landing',              // Landing Page spezifisch
+        'context': 'pre-game',              // Bundle-Context
+        'firstImpressionOptimized': 'true', // Optimiert für ersten Eindruck
+        'welcomeAnimations': 'true',        // Für die vielen Animationen
+        'brandingElements': 'true',         // Logo und Branding
+        'cleanUI': 'true',                  // Saubere Landing UI
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildLandingPage(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildLandingPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Scaffold(
       body: Stack(
         children: [
@@ -145,7 +165,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(24),
                                       side: BorderSide(
-                                        color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                                        color: theme.colorScheme.primary.withValues(alpha: 0.3),
                                         width: 1,
                                       ),
                                     ),
@@ -176,15 +196,15 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                     width: 140,
                                                     height: 140,
                                                     decoration: BoxDecoration(
-                                                      color: AppTheme.primaryColor.withValues(alpha: 0.15),
+                                                      color: theme.colorScheme.primary.withValues(alpha: 0.15),
                                                       borderRadius: BorderRadius.circular(35),
                                                       border: Border.all(
-                                                        color: AppTheme.primaryColor.withValues(alpha: 0.4),
+                                                        color: theme.colorScheme.primary.withValues(alpha: 0.4),
                                                         width: 2,
                                                       ),
                                                       boxShadow: [
                                                         BoxShadow(
-                                                          color: AppTheme.primaryColor.withValues(alpha: 0.4),
+                                                          color: theme.colorScheme.primary.withValues(alpha: 0.4),
                                                           blurRadius: 30,
                                                           spreadRadius: 10,
                                                         ),
@@ -193,10 +213,10 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                     child: Stack(
                                                       alignment: Alignment.center,
                                                       children: [
-                                                        const Icon(
+                                                        Icon(
                                                           Icons.public,
                                                           size: 70,
-                                                          color: AppTheme.primaryColor,
+                                                          color: theme.colorScheme.primary,
                                                         ),
                                                         // Orbit animation
                                                         ...List.generate(3, (index) {
@@ -213,11 +233,11 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                                   width: 8,
                                                                   height: 8,
                                                                   decoration: BoxDecoration(
-                                                                    color: AppTheme.primaryColor.withValues(alpha: 0.8),
+                                                                    color: theme.colorScheme.primary.withValues(alpha: 0.8),
                                                                     shape: BoxShape.circle,
-                                                                    boxShadow: const [
+                                                                    boxShadow: [
                                                                       BoxShadow(
-                                                                        color: AppTheme.primaryColor,
+                                                                        color: theme.colorScheme.primary,
                                                                         blurRadius: 4,
                                                                       ),
                                                                     ],
@@ -240,9 +260,9 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                             ShaderMask(
                                               shaderCallback: (bounds) => LinearGradient(
                                                 colors: [
-                                                  AppTheme.primaryColor,
-                                                  AppTheme.primaryColor.withBlue(255),
-                                                  AppTheme.primaryColor,
+                                                  theme.colorScheme.primary,
+                                                  theme.colorScheme.primary.withBlue(255),
+                                                  theme.colorScheme.primary,
                                                 ],
                                                 stops: const [0.0, 0.5, 1.0],
                                               ).createShader(bounds),
@@ -255,7 +275,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                   letterSpacing: 3,
                                                   shadows: [
                                                     Shadow(
-                                                      color: AppTheme.primaryColor.withValues(alpha: 0.5),
+                                                      color: theme.colorScheme.primary.withValues(alpha: 0.5),
                                                       blurRadius: 20,
                                                     ),
                                                   ],
@@ -284,14 +304,14 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                                               decoration: BoxDecoration(
                                                 border: Border.all(
-                                                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                                                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
                                                 ),
                                                 borderRadius: BorderRadius.circular(20),
                                               ),
                                               child: Text(
                                                 AppLocalizations.of(context).landingTagline,
                                                 style: TextStyle(
-                                                  color: AppTheme.primaryColor.withValues(alpha: 0.9),
+                                                  color: theme.colorScheme.primary.withValues(alpha: 0.9),
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w500,
                                                 ),
@@ -313,14 +333,14 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                     decoration: BoxDecoration(
                                                       gradient: LinearGradient(
                                                         colors: [
-                                                          AppTheme.primaryColor,
-                                                          AppTheme.primaryColor.withBlue(255),
+                                                          theme.colorScheme.primary,
+                                                          theme.colorScheme.primary.withBlue(255),
                                                         ],
                                                       ),
                                                       borderRadius: BorderRadius.circular(16),
                                                       boxShadow: [
                                                         BoxShadow(
-                                                          color: AppTheme.primaryColor.withValues(alpha: 0.4),
+                                                          color: theme.colorScheme.primary.withValues(alpha: 0.4),
                                                           blurRadius: 20,
                                                           offset: const Offset(0, 8),
                                                         ),
@@ -380,20 +400,20 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                     color: const Color(0xFF2D2D2D),
                                                     borderRadius: BorderRadius.circular(16),
                                                     border: Border.all(
-                                                      color: AppTheme.primaryColor.withValues(alpha: 0.5),
+                                                      color: theme.colorScheme.primary.withValues(alpha: 0.5),
                                                       width: 2,
                                                     ),
                                                   ),
                                                   child: ElevatedButton.icon(
                                                     onPressed: () => context.goNamed('login'),
-                                                    icon: const Icon(
+                                                    icon: Icon(
                                                       Icons.login,
-                                                      color: AppTheme.primaryColor,
+                                                      color: theme.colorScheme.primary,
                                                     ),
                                                     label: Text(
                                                       AppLocalizations.of(context).landingLoginPrompt,
-                                                      style: const TextStyle(
-                                                        color: AppTheme.primaryColor,
+                                                      style: TextStyle(
+                                                        color: theme.colorScheme.primary,
                                                         fontSize: 16,
                                                         fontWeight: FontWeight.w600,
                                                       ),
@@ -416,19 +436,19 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                               children: [
-                                                _buildStatItem('500+', AppLocalizations.of(context).navWorldList),
+                                                _buildStatItem('500+', AppLocalizations.of(context).navWorldList, theme),
                                                 Container(
                                                   height: 40,
                                                   width: 1,
                                                   color: Colors.grey[700],
                                                 ),
-                                                _buildStatItem('1000+', AppLocalizations.of(context).landingStatsPlayers),
+                                                _buildStatItem('1000+', AppLocalizations.of(context).landingStatsPlayers, theme),
                                                 Container(
                                                   height: 40,
                                                   width: 1,
                                                   color: Colors.grey[700],
                                                 ),
-                                                _buildStatItem('24/7', AppLocalizations.of(context).landingStatsOnline),
+                                                _buildStatItem('24/7', AppLocalizations.of(context).landingStatsOnline, theme),
                                               ],
                                             ),
                                           ],
@@ -460,9 +480,9 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              const Icon(
+                              Icon(
                                 Icons.expand_more,
-                                color: AppTheme.primaryColor,
+                                color: theme.colorScheme.primary,
                                 size: 30,
                               ),
                             ],
@@ -560,13 +580,13 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      AppTheme.primaryColor.withValues(alpha: 0.1),
-                                      AppTheme.primaryColor.withValues(alpha: 0.05),
+                                      theme.colorScheme.primary.withValues(alpha: 0.1),
+                                      theme.colorScheme.primary.withValues(alpha: 0.05),
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(24),
                                   border: Border.all(
-                                    color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
                                   ),
                                 ),
                                 child: Column(
@@ -594,7 +614,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                       child: ElevatedButton(
                                         onPressed: () => context.goNamed('register'),
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: AppTheme.primaryColor,
+                                          backgroundColor: theme.colorScheme.primary,
                                           padding: const EdgeInsets.symmetric(horizontal: 48),
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(12),
@@ -699,15 +719,15 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
     );
   }
       
-  Widget _buildStatItem(String value, String label) {
+  Widget _buildStatItem(String value, String label, ThemeData theme) {
     return Column(
       children: [
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: AppTheme.primaryColor,
+            color: theme.colorScheme.primary,
           ),
         ),
         Text(

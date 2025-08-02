@@ -257,7 +257,7 @@ class _ErrorMessageBoxState extends State<ErrorMessageBox> with TickerProviderSt
     );
 
     // Wrap with glow effect
-    if (widget.glowEffect && _glowController != null) {
+    if (widget.glowEffect) {
       errorBox = AnimatedBuilder(
         animation: _glowController,
         builder: (context, child) {
@@ -449,7 +449,7 @@ class ErrorHelpers {
           showClose: false,
           animateIn: false,
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.0),
         elevation: 0,
         behavior: SnackBarBehavior.floating,
       ),
@@ -465,7 +465,7 @@ class ErrorHelpers {
           showClose: false,
           animateIn: false,
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.0),
         elevation: 0,
         behavior: SnackBarBehavior.floating,
       ),
@@ -481,7 +481,7 @@ class ErrorHelpers {
           showClose: false,
           animateIn: false,
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.0),
         elevation: 0,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
@@ -498,7 +498,7 @@ class ErrorHelpers {
           showClose: false,
           animateIn: false,
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.0),
         elevation: 0,
         behavior: SnackBarBehavior.floating,
       ),

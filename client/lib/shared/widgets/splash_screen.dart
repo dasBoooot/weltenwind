@@ -138,9 +138,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   Widget _buildSplashScreen() {
     final initSteps = widget.initSteps;
     final loadingText = widget.loadingText;
+    final colorScheme = Theme.of(context).colorScheme;
     
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: colorScheme.primary,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -150,20 +151,20 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: colorScheme.shadow.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.public,
                 size: 60,
-                color: Colors.blue,
+                color: colorScheme.primary,
               ),
             ),
             
@@ -172,10 +173,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
             // App Name
             Text(
               widget.appName ?? 'App',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: colorScheme.onPrimary,
               ),
             ),
             
@@ -188,7 +189,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                 width: 200,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.3),
+                  color: colorScheme.onPrimary.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: FractionallySizedBox(
@@ -196,7 +197,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   widthFactor: (_currentStepIndex + 1) / initSteps.length,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: colorScheme.onPrimary,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -209,17 +210,17 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               if (_currentStepName != null)
                 Text(
                   _currentStepName ?? 'Initialisiere...',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white70,
+                    color: colorScheme.onPrimary.withValues(alpha: 0.7),
                   ),
                 ),
               
               const SizedBox(height: 20),
             ] else ...[
               // Standard Loading Indicator
-              const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimary),
               ),
             ],
             
@@ -227,9 +228,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               const SizedBox(height: 20),
               Text(
                 loadingText,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white70,
+                  color: colorScheme.onPrimary.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -240,15 +241,15 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.2),
+                  color: colorScheme.tertiary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
+                  border: Border.all(color: colorScheme.tertiary.withValues(alpha: 0.5)),
                 ),
-                child: const Text(
+                child: Text(
                   'Initialisierung dauert länger als erwartet...',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.orange,
+                    color: colorScheme.tertiary,
                   ),
                 ),
               ),
@@ -260,8 +261,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   }
 
   Widget _buildErrorScreen() {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Scaffold(
-      backgroundColor: Colors.red.shade50,
+      backgroundColor: colorScheme.errorContainer,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -271,7 +274,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               Icon(
                 Icons.error_outline,
                 size: 80,
-                color: Colors.red.shade400,
+                color: colorScheme.error,
               ),
               
               const SizedBox(height: 20),
@@ -289,9 +292,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               Text(
                 _error ?? 'Unbekannter Fehler',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               

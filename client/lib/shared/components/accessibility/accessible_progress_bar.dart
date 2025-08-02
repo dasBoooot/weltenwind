@@ -359,12 +359,12 @@ class ProgressPatternPainter extends CustomPainter {
         
         canvas.drawLine(
           Offset(
-            x + starSize * angle1.cos(),
-            centerY + starSize * angle1.sin(),
+            x + starSize * math.cos(angle1),
+            centerY + starSize * math.sin(angle1),
           ),
           Offset(
-            x + starSize * angle2.cos(),
-            centerY + starSize * angle2.sin(),
+            x + starSize * math.cos(angle2),
+            centerY + starSize * math.sin(angle2),
           ),
           paint,
         );

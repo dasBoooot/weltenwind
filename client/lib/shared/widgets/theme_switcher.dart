@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/providers/theme_provider.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 🎨 Theme-Switcher für Weltenwind
 /// 
@@ -66,7 +67,26 @@ class _ThemeSwitcherState extends State<ThemeSwitcher>
 
   @override
   Widget build(BuildContext context) {
-    theme = Theme.of(context);
+    // 🎯 MIXED-CONTEXT THEME: Universal Theme Switcher
+    return ThemeContextConsumer(
+      componentName: 'ThemeSwitcher',
+      enableMixedContext: true,
+      contextOverrides: const {
+        'uiContext': 'theme-switcher',
+        'context': 'inherit', // Erbt Theme vom Parent (Pre-Game oder World-themed)
+        'inherit': 'parent-theme',
+        'universalComponent': 'true', // Universelles UI-Element
+      },
+      fallbackTheme: 'pre_game_bundle',
+      builder: (context, theme, extensions) {
+        return _buildThemeSwitcher(context, theme, extensions);
+      },
+    );
+  }
+
+  /// 🎨 Theme Switcher Build mit Theme
+  Widget _buildThemeSwitcher(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
+    this.theme = theme; // Update das lokale theme field
     final isDark = theme.brightness == Brightness.dark;
     
     if (widget.isFloating) {
@@ -446,7 +466,7 @@ class _ThemeSwitcherState extends State<ThemeSwitcher>
         title: const Text('Theme Settings'),
         content: SizedBox(
           width: 400,
-          child: _buildFullSwitcher(Theme.of(context).brightness == Brightness.dark),
+          child: _buildFullSwitcher(theme.brightness == Brightness.dark),
         ),
         actions: [
           TextButton(

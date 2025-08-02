@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../theme/app_theme.dart';
+import '../../../core/providers/theme_context_provider.dart';
 import '../../../l10n/app_localizations.dart';
 
 class WorldListHeader extends StatelessWidget {
@@ -16,6 +16,22 @@ class WorldListHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 🎨 STATIC AREA: Header verwendet pre-game Theme (Teil des Mixed-Context Systems)
+    return ThemeContextConsumer(
+      componentName: 'WorldListHeader',
+      contextOverrides: const {
+        'uiContext': 'world-list-header',
+        'componentType': 'header',
+        'context': 'pre-game',
+        'staticArea': 'true',
+      },
+      builder: (context, theme, extensions) {
+        return _buildHeader(context, theme);
+      },
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, ThemeData theme) {
     return Column(
       children: [
         // Logo
@@ -23,17 +39,17 @@ class WorldListHeader extends StatelessWidget {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withValues(alpha: 0.2),
+            color: theme.colorScheme.primary.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: AppTheme.primaryColor.withValues(alpha: 0.5),
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
               width: 2,
             ),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.public,
             size: 40,
-            color: AppTheme.primaryColor,
+            color: theme.colorScheme.primary,
           ),
         ),
         const SizedBox(height: 24),
@@ -76,7 +92,7 @@ class WorldListHeader extends StatelessWidget {
           icon: const Icon(Icons.refresh, size: 18),
           label: Text(AppLocalizations.of(context).worldListRefreshButton),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             shape: RoundedRectangleBorder(

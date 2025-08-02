@@ -355,7 +355,7 @@ class _AppIconButtonState extends State<AppIconButton> with TickerProviderStateM
     );
 
     // Add glow effect
-    if (widget.glowOnHover && _isHovered && _glowController != null) {
+    if (widget.glowOnHover && _isHovered) {
       iconButton = AnimatedBuilder(
         animation: _glowController,
         builder: (context, child) {
@@ -450,7 +450,6 @@ class _AppIconButtonState extends State<AppIconButton> with TickerProviderStateM
         break;
       
       case AppIconButtonVariant.ghost:
-      default:
         backgroundColor = _isHovered 
             ? (widget.hoverColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.1))
             : Colors.transparent;
@@ -487,7 +486,6 @@ class _AppIconButtonState extends State<AppIconButton> with TickerProviderStateM
         return _getPrimaryColor(theme, extensions);
       
       case AppIconButtonVariant.ghost:
-      default:
         return theme.colorScheme.onSurface;
     }
   }

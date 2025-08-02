@@ -359,9 +359,9 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
       hint: _getSemanticHint(),
       button: true,
       enabled: widget.enabled,
-      child: RawKeyboardListener(
+      child: KeyboardListener(
         focusNode: _focusNode,
-        onKey: (event) {
+        onKeyEvent: (event) {
           _handleKeyEvent(event);
         },
         child: Column(
@@ -381,7 +381,7 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
         ],
         
         // Dropdown button
-        Container(
+        SizedBox(
           width: widget.width,
           child: _buildDropdownButton(theme, extensions),
         ),
@@ -841,11 +841,11 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
   Duration _getAnimationDuration() => const Duration(milliseconds: 200); // Schema default
 
   /// 🦾 ACCESSIBILITY FIX: Handle keyboard navigation
-  void _handleKeyEvent(RawKeyEvent event) {
+  void _handleKeyEvent(KeyEvent event) {
     if (!_isOpen || _filteredOptions.isEmpty) return;
     
-    if (event is RawKeyDownEvent) {
-      switch (event.data.logicalKey) {
+    if (event is KeyDownEvent) {
+      switch (event.logicalKey) {
         case LogicalKeyboardKey.arrowDown:
           _highlightNext();
           break;

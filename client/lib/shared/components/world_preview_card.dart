@@ -364,8 +364,8 @@ class _WorldPreviewCardState extends State<WorldPreviewCard> with TickerProvider
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.3),
+                    theme.colorScheme.surface.withValues(alpha: 0.0),
+                    theme.colorScheme.shadow.withValues(alpha: 0.3),
                   ],
                 ),
               ),
@@ -403,7 +403,7 @@ class _WorldPreviewCardState extends State<WorldPreviewCard> with TickerProvider
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: theme.colorScheme.shadow.withValues(alpha: 0.2),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -424,7 +424,7 @@ class _WorldPreviewCardState extends State<WorldPreviewCard> with TickerProvider
           Text(
             _getStatusText(),
             style: theme.textTheme.bodySmall?.copyWith(
-              color: Colors.white,
+              color: theme.colorScheme.onPrimary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -452,7 +452,7 @@ class _WorldPreviewCardState extends State<WorldPreviewCard> with TickerProvider
             onPressed: widget.onFavorite,
             icon: Icon(
               widget.world.isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: widget.world.isFavorite ? Colors.red : theme.colorScheme.onSurfaceVariant,
+              color: widget.world.isFavorite ? theme.colorScheme.error : theme.colorScheme.onSurfaceVariant,
               size: 20,
             ),
             visualDensity: VisualDensity.compact,
@@ -549,15 +549,17 @@ class _WorldPreviewCardState extends State<WorldPreviewCard> with TickerProvider
 
   /// Get status color based on world status
   Color _getStatusColor() {
+    // Note: These are intentionally distinct status colors for gaming UX
+    // They maintain consistent meaning across all themes (Online=Green, etc.)
     switch (widget.world.status) {
       case WorldStatus.online:
-        return const Color(0xFF22C55E); // Schema default: green
+        return const Color(0xFF22C55E); // Gaming convention: green for online
       case WorldStatus.offline:
-        return const Color(0xFFEF4444); // Schema default: red
+        return const Color(0xFFEF4444); // Gaming convention: red for offline
       case WorldStatus.maintenance:
-        return const Color(0xFFF59E0B); // Schema default: amber
+        return const Color(0xFFF59E0B); // Gaming convention: amber for maintenance
       case WorldStatus.full:
-        return const Color(0xFF8B5CF6); // Schema default: violet
+        return const Color(0xFF8B5CF6); // Gaming convention: violet for full
     }
   }
 

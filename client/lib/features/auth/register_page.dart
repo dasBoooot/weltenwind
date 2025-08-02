@@ -4,10 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
-import '../../theme/tokens/colors.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/tokens/typography.dart';
-import '../../shared/components/index.dart';
+import '../../core/providers/theme_context_provider.dart';
+import '../../shared/components/index.dart' hide ThemeSwitcher;
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
@@ -231,16 +229,32 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    
+    // 🎯 KONTEXTSENSITIVE THEME-BEREITSTELLUNG mit PRE-GAME BUNDLE
+    return ThemeContextConsumer(
+      componentName: 'RegisterPage',
+      contextOverrides: const {
+        'uiContext': 'register',            // Aktiviert pre_game_bundle
+        'bundleType': 'pre_game_bundle',    // Explizite Bundle-Spezifikation
+        'pageType': 'auth',
+        'context': 'pre-game',             // Bundle-Context
+        'firstImpressionOptimized': 'true',
+        'welcomeAnimations': 'true',
+        'brandingElements': 'true',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildRegisterPage(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildRegisterPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Scaffold(
       body: Stack(
         children: [
           BackgroundWidget(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
+                padding: theme.cardTheme.margin ?? const EdgeInsets.all(24.0),
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: Center(
@@ -250,7 +264,9 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                         welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
                         pageTitle: AppLocalizations.of(context).authRegisterTitle,
                         subtitle: AppLocalizations.of(context).authRegisterSubtitle,
-                        padding: const EdgeInsets.all(AppSpacing.sectionMedium),
+                        padding: theme.dialogTheme.contentTextStyle != null 
+                          ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
+                          : const EdgeInsets.all(32.0),
                         context: context,
                         child: Form(
                           key: _formKey,
@@ -272,7 +288,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authUsernameLabel,
-                                  prefixIcon: const Icon(Icons.person, color: AppColors.secondary),
+                                  prefixIcon: Icon(Icons.person, color: theme.colorScheme.primary),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
@@ -284,7 +300,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: AppSpacing.md),
+                              SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
                               
                               // 📧 Email field
                               TextFormField(
@@ -301,7 +317,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authEmailLabel,
-                                  prefixIcon: const Icon(Icons.email, color: AppColors.secondary),
+                                  prefixIcon: Icon(Icons.email, color: theme.colorScheme.primary),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
@@ -313,7 +329,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: AppSpacing.md),
+                              SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
                               
                               // 🔒 Password field
                               TextFormField(
@@ -331,7 +347,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authPasswordLabel,
-                                  prefixIcon: const Icon(Icons.lock, color: AppColors.secondary),
+                                  prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary),
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -353,35 +369,34 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: AppSpacing.lg),
+                              SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
                               
                               // Error message
                               if (_registerError != null)
                                 Container(
                                   width: double.infinity,
-                                  padding: const EdgeInsets.all(AppSpacing.sm),
-                                  margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                                  padding: EdgeInsets.all(theme.textTheme.bodySmall?.fontSize ?? 8.0),
+                                  margin: EdgeInsets.only(bottom: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
                                   decoration: BoxDecoration(
-                                    color: AppColors.error.withValues(alpha: 0.1),
+                                    color: theme.colorScheme.error.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: AppColors.error.withValues(alpha: 0.3),
+                                      color: theme.colorScheme.error.withValues(alpha: 0.3),
                                     ),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.error_outline,
-                                        color: AppColors.error,
+                                        color: theme.colorScheme.error,
                                         size: 20,
                                       ),
-                                      const SizedBox(width: AppSpacing.xs),
+                                      SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 4.0),
                                       Expanded(
                                         child: Text(
                                           _registerError!,
-                                          style: AppTypography.bodySmall(
-                                            color: AppColors.error,
-                                            isDark: isDark,
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: theme.colorScheme.error,
                                           ),
                                         ),
                                       ),
@@ -399,7 +414,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                   icon: Icons.person_add_rounded,
                                 ),
                               ),
-                              const SizedBox(height: AppSpacing.lg),
+                              SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
                               
                               // Login-Link
                               Row(
@@ -407,9 +422,9 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 children: [
                                   Text(
                                     AppLocalizations.of(context).authHaveAccount,
-                                    style: AppTypography.bodyMedium(isDark: isDark),
+                                    style: theme.textTheme.bodyMedium,
                                   ),
-                                  const SizedBox(width: AppSpacing.sm),
+                                  SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 8.0),
                                   DynamicComponents.secondaryButton(
                                     text: AppLocalizations.of(context).authLoginButton,
                                     onPressed: () => context.goNamed('login'),
@@ -436,16 +451,15 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary),
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                       strokeWidth: 3,
                     ),
-                    const SizedBox(height: AppSpacing.md),
+                    SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
                     Text(
                       AppLocalizations.of(context).authLoginLoading,
-                      style: AppTypography.bodyLarge(
+                      style: theme.textTheme.bodyLarge?.copyWith(
                         color: Colors.white,
-                        isDark: true,
                       ),
                     ),
                   ],

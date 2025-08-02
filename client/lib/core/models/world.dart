@@ -26,6 +26,12 @@ class World {
   final String? description;
   final WorldCategory category;
   final int playerCount;
+  
+  // 🎨 THEME INTEGRATION - World-spezifische Themes
+  final String? themeBundle;
+  final String? parentTheme;
+  final Map<String, dynamic>? themeOverrides;
+  final String? themeVariant;
 
   World({
     required this.id,
@@ -37,6 +43,12 @@ class World {
     this.description,
     this.category = WorldCategory.classic,
     this.playerCount = 0,
+    
+    // 🎨 THEME FIELDS
+    this.themeBundle,
+    this.parentTheme,
+    this.themeOverrides,
+    this.themeVariant,
   });
 
   factory World.fromJson(Map<String, dynamic> json) {
@@ -58,6 +70,12 @@ class World {
           )
         : WorldCategory.classic,
       playerCount: json['playerCount'] ?? 0,
+      
+      // 🎨 THEME FIELDS FROM DB
+      themeBundle: json['themeBundle'] ?? json['theme_bundle'],
+      parentTheme: json['parentTheme'] ?? json['parent_theme'],
+      themeOverrides: json['themeOverrides'] ?? json['theme_overrides'],
+      themeVariant: json['themeVariant'] ?? json['theme_variant'],
     );
   }
 
@@ -72,6 +90,12 @@ class World {
       'description': description,
       'category': category.toString().split('.').last,
       'playerCount': playerCount,
+      
+      // 🎨 THEME FIELDS  
+      'themeBundle': themeBundle,
+      'parentTheme': parentTheme,
+      'themeOverrides': themeOverrides,
+      'themeVariant': themeVariant,
     };
   }
 

@@ -39,7 +39,8 @@ class AccessibleRarityIndicator extends StatelessWidget {
           return _buildDefaultIndicator(contextTheme);
         }
         
-        final settings = accessibilityProvider.settings;
+        // Access settings for context awareness
+        accessibilityProvider.settings;
         
         return Container(
           width: size,
@@ -255,8 +256,8 @@ class RarityPatternPainter extends CustomPainter {
       canvas.drawLine(
         center,
         Offset(
-          center.dx + radius * 0.5 * (i % 2 == 0 ? 1 : 0.5) * (angle).cos(),
-          center.dy + radius * 0.5 * (i % 2 == 0 ? 1 : 0.5) * (angle).sin(),
+          center.dx + radius * 0.5 * (i % 2 == 0 ? 1 : 0.5) * math.cos(angle),
+          center.dy + radius * 0.5 * (i % 2 == 0 ? 1 : 0.5) * math.sin(angle),
         ),
         paint,
       );
@@ -269,8 +270,8 @@ class RarityPatternPainter extends CustomPainter {
     
     for (double t = 0; t < 6.28; t += 0.2) {
       final radius = (t / 6.28) * (size.width / 4);
-      final x = center.dx + radius * t.cos();
-      final y = center.dy + radius * t.sin();
+      final x = center.dx + radius * math.cos(t);
+      final y = center.dy + radius * math.sin(t);
       
       if (t == 0) {
         path.moveTo(x, y);

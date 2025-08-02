@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import '../services/theme_context_manager.dart';
 import '../services/modular_theme_service.dart';
 import '../../config/logger.dart';
@@ -137,6 +136,81 @@ class ThemeContextProvider extends ChangeNotifier {
     return Map<String, dynamic>.from(_currentExtensions!);
   }
 
+  // 🔥 HYBRID-SYSTEM: New Methods for Mixed-Context Support
+
+  /// 🌍 Get World-specific Theme from themeBundle (synchron mit Cache)
+  ThemeData? getWorldTheme(String worldThemeBundle) {
+    try {
+      // Verwende gecachtes Theme falls verfügbar
+      final cachedTheme = _themeService.getCachedTheme(worldThemeBundle, isDark: _isDarkMode);
+      
+      if (cachedTheme != null) {
+        return cachedTheme;
+      }
+      
+      // Fallback zu aktuellem Theme
+      return _currentTheme;
+    } catch (e) {
+      AppLogger.app.e('❌ Error loading world theme: $worldThemeBundle', error: e);
+      return _currentTheme;
+    }
+  }
+
+  /// 🌍 Get World-specific Extensions
+  Map<String, dynamic>? getWorldExtensions(String worldThemeBundle) {
+    try {
+      return _themeService.getBundleExtensions(worldThemeBundle);
+    } catch (e) {
+      AppLogger.app.e('❌ Error loading world extensions: $worldThemeBundle', error: e);
+      return null;
+    }
+  }
+
+  /// 🗺️ Get Theme for specific Area from staticAreas mapping
+  ThemeData? getThemeForArea(String componentName, Map<String, String> staticAreas) {
+    final areaTheme = staticAreas[componentName];
+    if (areaTheme != null) {
+      return getThemeFromBundle(areaTheme);
+    }
+    
+    // Check for wildcard or parent area mappings
+    for (final entry in staticAreas.entries) {
+      if (componentName.startsWith(entry.key) || entry.key == '*') {
+        return getThemeFromBundle(entry.value);
+      }
+    }
+    
+    return _currentTheme;
+  }
+
+  /// 🗺️ Get Extensions for specific Area
+  Map<String, dynamic>? getExtensionsForArea(String componentName, Map<String, String> staticAreas) {
+    final areaTheme = staticAreas[componentName];
+    if (areaTheme != null) {
+      return _themeService.getBundleExtensions(areaTheme);
+    }
+    
+    return _currentExtensions;
+  }
+
+  /// 📦 Get Theme from specific Bundle (synchron mit Cache)
+  ThemeData? getThemeFromBundle(String bundleId) {
+    try {
+      // Verwende gecachtes Theme falls verfügbar
+      final cachedTheme = _themeService.getCachedTheme(bundleId, isDark: _isDarkMode);
+      
+      if (cachedTheme != null) {
+        return cachedTheme;
+      }
+      
+      // Fallback zu aktuellem Theme
+      return _currentTheme;
+    } catch (e) {
+      AppLogger.app.e('❌ Error loading theme from bundle: $bundleId', error: e);
+      return _currentTheme;
+    }
+  }
+
   /// 📊 Get Context Debug Info
   Map<String, dynamic> getDebugInfo() {
     return {
@@ -214,7 +288,7 @@ class ThemeContextProvider extends ChangeNotifier {
       return switch (variant) {
         'magic' => theme.copyWith(
           elevatedButtonTheme: ElevatedButtonThemeData(
-            style: theme.elevatedButton.style?.copyWith(
+            style: theme.elevatedButtonTheme.style?.copyWith(
               backgroundColor: WidgetStateProperty.all(
                 _blendMagicColor(theme.colorScheme.primary)
               ),
@@ -223,7 +297,7 @@ class ThemeContextProvider extends ChangeNotifier {
         ),
         'portal' => theme.copyWith(
           elevatedButtonTheme: ElevatedButtonThemeData(
-            style: theme.elevatedButton.style?.copyWith(
+            style: theme.elevatedButtonTheme.style?.copyWith(
               backgroundColor: WidgetStateProperty.all(
                 _blendPortalColor(theme.colorScheme.secondary)
               ),
@@ -295,17 +369,31 @@ class ThemeContextProvider extends ChangeNotifier {
   }
 }
 
-/// 🎭 Context-Sensitive Theme Consumer Widget
+/// 🎭 Context-Sensitive Theme Consumer Widget with Hybrid-System Support
 class ThemeContextConsumer extends StatelessWidget {
   final String componentName;
   final Map<String, dynamic>? contextOverrides;
   final Widget Function(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) builder;
+  
+  // 🔥 HYBRID-SYSTEM: Mixed-Context Support
+  final bool enableMixedContext;
+  final Map<String, String>? staticAreas;      // Page-Level Area-Mappings
+  final Map<String, String>? dynamicAreas;    // Component-Level Area-Mappings
+  final String? fallbackTheme;
+  final String? worldThemeOverride;            // Für World-spezifische Themes
 
   const ThemeContextConsumer({
     super.key,
     required this.componentName,
     required this.builder,
     this.contextOverrides,
+    
+    // 🎨 HYBRID-SYSTEM PARAMETERS
+    this.enableMixedContext = false,
+    this.staticAreas,
+    this.dynamicAreas, 
+    this.fallbackTheme,
+    this.worldThemeOverride,
   });
 
   @override
@@ -314,15 +402,34 @@ class ThemeContextConsumer extends StatelessWidget {
       listenable: ThemeContextProvider(),
       builder: (context, child) {
         final provider = ThemeContextProvider();
-        final theme = provider.getThemeForComponent(componentName, contextOverrides: contextOverrides);
-        final extensions = provider.getExtensionsForComponent(componentName);
-        
-        if (theme == null) {
-          // Fallback to standard theme
-          return builder(context, Theme.of(context), extensions);
+
+        // 🎯 HYBRID-SYSTEM: Mixed-Context Theme Resolution
+        ThemeData? resolvedTheme;
+        Map<String, dynamic>? resolvedExtensions;
+
+        if (enableMixedContext && worldThemeOverride != null) {
+          // 🌍 WORLD-SPECIFIC THEME für dynamische Inhalte
+          resolvedTheme = provider.getWorldTheme(worldThemeOverride!);
+          resolvedExtensions = provider.getWorldExtensions(worldThemeOverride!);
+        } else if (enableMixedContext && staticAreas != null) {
+          // 🗺️ STATIC AREA MAPPING für Page-Level Bereiche
+          resolvedTheme = provider.getThemeForArea(componentName, staticAreas!);
+          resolvedExtensions = provider.getExtensionsForArea(componentName, staticAreas!);
+        } else {
+          // 🎨 STANDARD Theme Resolution
+          resolvedTheme = provider.getThemeForComponent(componentName, contextOverrides: contextOverrides);
+          resolvedExtensions = provider.getExtensionsForComponent(componentName);
         }
-        
-        return builder(context, theme, extensions);
+
+        // 🔄 FALLBACK Handling
+        if (resolvedTheme == null) {
+          if (fallbackTheme != null) {
+            resolvedTheme = provider.getThemeFromBundle(fallbackTheme!);
+          }
+          resolvedTheme ??= Theme.of(context);
+        }
+
+        return builder(context, resolvedTheme, resolvedExtensions);
       },
     );
   }

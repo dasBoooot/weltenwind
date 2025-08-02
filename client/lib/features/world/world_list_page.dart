@@ -4,13 +4,12 @@ import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/world_service.dart';
 import '../../core/models/world.dart';
-import '../../theme/app_theme.dart';
+import '../../core/providers/theme_context_provider.dart';
 import '../../theme/background_widget.dart';
 import '../../routing/app_router.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
 import '../../shared/widgets/language_switcher.dart';
-import '../../theme/tokens/spacing.dart';
 import './widgets/world_card.dart';
 import './widgets/world_filters.dart';
 import '../invite/widgets/invite_widget.dart';
@@ -113,7 +112,7 @@ class _WorldListPageState extends State<WorldListPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).worldListLoadingError(e.toString())),
-              backgroundColor: AppTheme.errorColor,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         } else {
@@ -312,7 +311,7 @@ class _WorldListPageState extends State<WorldListPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(errorMessage),
-              backgroundColor: AppTheme.errorColor,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -350,7 +349,7 @@ class _WorldListPageState extends State<WorldListPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(errorMessage),
-              backgroundColor: AppTheme.errorColor,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -412,7 +411,7 @@ class _WorldListPageState extends State<WorldListPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(errorMessage),
-              backgroundColor: AppTheme.errorColor,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -451,7 +450,7 @@ class _WorldListPageState extends State<WorldListPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(errorMessage),
-              backgroundColor: AppTheme.errorColor,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -473,6 +472,35 @@ class _WorldListPageState extends State<WorldListPage> {
 
   @override
   Widget build(BuildContext context) {
+    // 🎯 MIXED-CONTEXT THEME SYSTEM: Das erste echte Demo!
+    return ThemeContextConsumer(
+      componentName: 'WorldListPage',
+      enableMixedContext: true,
+      staticAreas: const {
+        'pageLayout': 'pre_game_bundle',      // 🎨 Basis-Layout: pre-game Theme
+        'navigation': 'pre_game_bundle',      // 🎨 Navigation: pre-game Theme  
+        'userControls': 'pre_game_bundle',    // 🎨 User-Info: pre-game Theme
+        'header': 'pre_game_bundle',          // 🎨 Header/Logo: pre-game Theme
+        'filters': 'pre_game_bundle',         // 🎨 Filter-Controls: pre-game Theme
+      },
+      dynamicAreas: const {
+        'worldCards': 'world_specific',       // 🌍 World Cards: World-spezifische Themes!
+      },
+      fallbackTheme: 'pre_game_bundle',
+      contextOverrides: {
+        'uiContext': 'world-list',
+        'pageType': 'mixed-context',
+        'context': 'pre-game-with-worlds',
+        'mixedContext': 'true',
+        'brandingElements': 'true',
+      },
+      builder: (context, theme, extensions) {
+        return _buildWorldListPage(context, theme, extensions);
+      },
+    );
+  }
+
+  Widget _buildWorldListPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Scaffold(
       body: BackgroundWidget(
         child: Stack(
@@ -490,7 +518,7 @@ class _WorldListPageState extends State<WorldListPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                         side: BorderSide(
-                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -516,17 +544,17 @@ class _WorldListPageState extends State<WorldListPage> {
                                 width: 80,
                                 height: 80,
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: AppTheme.primaryColor.withValues(alpha: 0.5),
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
                                     width: 2,
                                   ),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.public,
                                   size: 40,
-                                  color: AppTheme.primaryColor,
+                                  color: theme.colorScheme.primary,
                                 ),
                               ),
                               const SizedBox(height: 24),
@@ -597,9 +625,9 @@ class _WorldListPageState extends State<WorldListPage> {
                               
                               // World list
                               if (_isLoading)
-                                const Center(
+                                Center(
                                   child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                                    valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                                   ),
                                 )
                               else if (_error != null)
@@ -645,7 +673,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                     color: const Color(0xFF2D2D2D),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
                                     ),
                                   ),
                                   child: Column(
@@ -653,7 +681,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       Icon(
                                         Icons.filter_list,
                                         size: 48,
-                                        color: AppTheme.primaryColor.withValues(alpha: 0.7),
+                                        color: theme.colorScheme.primary.withValues(alpha: 0.7),
                                       ),
                                       const SizedBox(height: 16),
                                       Text(
@@ -676,32 +704,51 @@ class _WorldListPageState extends State<WorldListPage> {
                                 )
                               else
                                 Column(
-                                  children: _filteredWorlds.map((world) => WorldCard(
-                                    world: world,
-                                    isPreRegistered: _preRegisteredWorlds[world.id] ?? false,
-                                    isJoined: _joinedWorlds[world.id] ?? false,
-                                    onJoin: world.canJoin && !(_joinedWorlds[world.id] ?? false) 
-                                      ? () => _joinWorld(world) 
-                                      : null,
-                                    onLeave: (_joinedWorlds[world.id] ?? false)
-                                      ? () => _leaveWorld(world)
-                                      : null,
-                                    onPlay: (_joinedWorlds[world.id] ?? false) && 
-                                            (world.status == WorldStatus.open || world.status == WorldStatus.running)
-                                      ? () => _playWorld(world)
-                                      : null,
-                                    onPreRegister: world.canPreRegister && !(_preRegisteredWorlds[world.id] ?? false)
-                                      ? () => _preRegisterWorld(world)
-                                      : null,
-                                    onCancelPreRegistration: (_preRegisteredWorlds[world.id] ?? false)
-                                      ? () => _cancelPreRegistration(world)
-                                      : null,
-                                    onInvite: ((_joinedWorlds[world.id] ?? false) || (_preRegisteredWorlds[world.id] ?? false)) &&
-                                             (world.status != WorldStatus.closed && world.status != WorldStatus.archived)
-                                        ? () => _inviteToWorld(world)
-                                        : null,
-                                    onTap: () => _navigateToWorldJoin(world),
-                                  )).toList(),
+                                  children: _filteredWorlds.map((world) => 
+                                    // 🌍 WORLD-SPECIFIC THEME: Jede World Card in ihrem eigenen Theme!
+                                    ThemeContextConsumer(
+                                      componentName: 'WorldCard_${world.id}',
+                                      enableMixedContext: true,
+                                      worldThemeOverride: world.themeBundle ?? 'default_world_bundle',
+                                      fallbackTheme: 'default_world_bundle',
+                                      contextOverrides: {
+                                        'uiContext': 'world-card',
+                                        'componentType': 'world-card',
+                                        'context': 'world-themed',
+                                        'worldId': world.id.toString(),
+                                        'immersiveExperience': 'true',
+                                      },
+                                      builder: (cardContext, worldTheme, worldExtensions) {
+                                        return WorldCard(
+                                          world: world,
+                                          theme: worldTheme, // 🎨 World-spezifisches Theme!
+                                          isPreRegistered: _preRegisteredWorlds[world.id] ?? false,
+                                          isJoined: _joinedWorlds[world.id] ?? false,
+                                          onJoin: world.canJoin && !(_joinedWorlds[world.id] ?? false) 
+                                            ? () => _joinWorld(world) 
+                                            : null,
+                                          onLeave: (_joinedWorlds[world.id] ?? false)
+                                            ? () => _leaveWorld(world)
+                                            : null,  
+                                          onPlay: (_joinedWorlds[world.id] ?? false) && 
+                                                  (world.status == WorldStatus.open || world.status == WorldStatus.running)
+                                            ? () => _playWorld(world)
+                                            : null,
+                                          onPreRegister: world.canPreRegister && !(_preRegisteredWorlds[world.id] ?? false)
+                                            ? () => _preRegisterWorld(world)
+                                            : null,
+                                          onCancelPreRegistration: (_preRegisteredWorlds[world.id] ?? false)
+                                            ? () => _cancelPreRegistration(world)
+                                            : null,
+                                          onInvite: ((_joinedWorlds[world.id] ?? false) || (_preRegisteredWorlds[world.id] ?? false)) &&
+                                                   (world.status != WorldStatus.closed && world.status != WorldStatus.archived)
+                                              ? () => _inviteToWorld(world)
+                                              : null,
+                                          onTap: () => _navigateToWorldJoin(world),
+                                        );
+                                      },
+                                    )
+                                  ).toList(),
                                 ),
                               
                               const SizedBox(height: 24),
@@ -717,7 +764,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       icon: const Icon(Icons.refresh),
                                       label: Text(AppLocalizations.of(context).worldListRefreshButton),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppTheme.primaryColor,
+                                        backgroundColor: theme.colorScheme.primary,
                                         foregroundColor: Colors.white,
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 24,
@@ -744,10 +791,10 @@ class _WorldListPageState extends State<WorldListPage> {
             const UserInfoWidget(),
             // Language switcher in top-right corner (NavigationWidget is hidden on world-list)
             const Positioned(
-              top: AppSpacing.md,
+              top: 16.0, // Fixed value since theme is not available in const context
               right: 96, // 20px Abstand vom NavigationWidget (76 + 20)
               child: SafeArea(
-                child: LanguageSwitcher(),
+              child: LanguageSwitcher(),
               ),
             ),
             // Navigation widget in top-right corner

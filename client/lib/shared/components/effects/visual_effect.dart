@@ -242,10 +242,10 @@ class _VisualEffectState extends State<VisualEffect> with TickerProviderStateMix
             1.0,
           ],
           colors: [
-            Colors.transparent,
-            Colors.white.withValues(alpha: 0.3 * widget.intensity),
-            Colors.white.withValues(alpha: 0.6 * widget.intensity),
-            Colors.transparent,
+            theme.colorScheme.surface.withValues(alpha: 0.0),
+            theme.colorScheme.onSurface.withValues(alpha: 0.3 * widget.intensity),
+            theme.colorScheme.onSurface.withValues(alpha: 0.6 * widget.intensity),
+            theme.colorScheme.surface.withValues(alpha: 0.0),
           ],
         ).createShader(bounds);
       },
@@ -292,12 +292,12 @@ class _VisualEffectState extends State<VisualEffect> with TickerProviderStateMix
       }
     }
 
-    // Schema defaults
+    // Theme-based defaults
     switch (gradientType) {
       case 'magic':
-        return [const Color(0xFF7C6BAF), const Color(0xFFA594D1)]; // Schema default
+        return [theme.colorScheme.primary, theme.colorScheme.primaryContainer];
       case 'portal':
-        return [const Color(0xFF4A90E2), const Color(0xFF7C6BAF)]; // Schema default
+        return [theme.colorScheme.secondary, theme.colorScheme.primary];
       default:
         return [theme.colorScheme.primary, theme.colorScheme.primaryContainer];
     }

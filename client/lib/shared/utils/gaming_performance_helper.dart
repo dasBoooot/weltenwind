@@ -53,7 +53,7 @@ class GamingPerformanceHelper {
   }) {
     return _OptimizedGamePainter(
       paintFunction: paintFunction,
-      shouldRepaint: repaint,
+      forceRepaint: repaint,
     );
   }
 
@@ -97,19 +97,25 @@ class GamingPerformanceHelper {
   }
 
   /// Optimized color interpolation for health bars, mana bars
-  static Color interpolateHealthColor(double healthPercentage) {
+  static Color interpolateHealthColor(double healthPercentage, ColorScheme colorScheme) {
+    // Use theme-based colors for health state
+    final healthyColor = colorScheme.primary;
+    final warningColor = colorScheme.tertiary;
+    final criticalColor = colorScheme.secondary;
+    final dangerColor = colorScheme.error;
+    
     if (healthPercentage >= 0.6) {
-      // Green to Yellow (100% to 60%)
+      // Healthy to Warning (100% to 60%)
       final t = (1.0 - healthPercentage) / 0.4;
-      return Color.lerp(Colors.green, Colors.yellow, t)!;
+      return Color.lerp(healthyColor, warningColor, t)!;
     } else if (healthPercentage >= 0.3) {
-      // Yellow to Orange (60% to 30%)
+      // Warning to Critical (60% to 30%)
       final t = (0.6 - healthPercentage) / 0.3;
-      return Color.lerp(Colors.yellow, Colors.orange, t)!;
+      return Color.lerp(warningColor, criticalColor, t)!;
     } else {
-      // Orange to Red (30% to 0%)
+      // Critical to Danger (30% to 0%)
       final t = (0.3 - healthPercentage) / 0.3;
-      return Color.lerp(Colors.orange, Colors.red, t)!;
+      return Color.lerp(criticalColor, dangerColor, t)!;
     }
   }
 
@@ -140,11 +146,11 @@ class GamingPerformanceHelper {
 /// Optimized custom painter for gaming elements
 class _OptimizedGamePainter extends CustomPainter {
   final void Function(Canvas canvas, Size size) paintFunction;
-  final bool shouldRepaint;
+  final bool forceRepaint;
 
   _OptimizedGamePainter({
     required this.paintFunction,
-    this.shouldRepaint = false,
+    this.forceRepaint = false,
   });
 
   @override
@@ -154,7 +160,7 @@ class _OptimizedGamePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return shouldRepaint;
+    return forceRepaint;
   }
 }
 

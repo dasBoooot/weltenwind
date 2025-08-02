@@ -327,14 +327,6 @@ class _AppTooltipState extends State<AppTooltip> with SingleTickerProviderStateM
     return 12.0;
   }
 
-  /// Get max width from schema
-  double? _getMaxWidth() {
-    if (widget.maxWidth != null) return widget.maxWidth!;
-    
-    // Schema default: 200
-    return 200.0;
-  }
-
   /// Get glow color for magic tooltips
   Color _getGlowColor(ThemeData theme, Map<String, dynamic>? extensions) {
     // Try to get magic gradient color from extensions
