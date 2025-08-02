@@ -148,8 +148,16 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     
     // 🌍 WORLD-SPECIFIC THEME: Verwende World-Theme wenn verfügbar
     String? worldTheme;
-    if (_inviteData != null && _inviteData!['world'] != null) {
-      worldTheme = _inviteData!['world']['themeBundle'] as String?;
+    print('🔍 [INVITE-DEBUG] _inviteData: ${_inviteData != null ? 'EXISTS' : 'NULL'}');
+    if (_inviteData != null) {
+      print('🔍 [INVITE-DEBUG] _inviteData.keys: ${_inviteData!.keys}');
+      if (_inviteData!['world'] != null) {
+        worldTheme = _inviteData!['world']['themeBundle'] as String?;
+        print('🔍 [INVITE-DEBUG] Found worldTheme: "$worldTheme"');
+        print('🔍 [INVITE-DEBUG] World data: ${_inviteData!['world']}');
+      } else {
+        print('🔍 [INVITE-DEBUG] No world data in _inviteData');
+      }
     }
     
     // 🔻 MIXED CONTEXT: Pre-game Basis mit World-spezifischen Overrides
@@ -162,13 +170,13 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
         worldThemeOverride: worldTheme, // 🌍 Component-Level Override - async loading in ThemeContextConsumer
         fallbackBundle: 'pre-game-minimal', // 🎨 Fallback für Loading/Error States
         builder: (context, theme, extensions) {
-          return _buildInvitePage(context, theme, extensions, l10n);
+          return _buildInvitePage(context, theme, extensions, l10n, worldTheme);
         },
       ),
     );
   }
 
-  Widget _buildInvitePage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions, AppLocalizations l10n) {
+  Widget _buildInvitePage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions, AppLocalizations l10n, String? worldTheme) {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.invitePageTitle),
@@ -183,6 +191,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
         ],
       ),
       body: BackgroundWidget(
+        worldTheme: worldTheme,  // 🌍 World-specific background
         child: Center(
           child: Container(
             constraints: BoxConstraints(

@@ -505,8 +505,11 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
   }
 
   Widget _buildWorldJoinPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
+    final worldTheme = _getWorldTheme();
+    
     return Scaffold(
       body: BackgroundWidget(
+        worldTheme: worldTheme,  // 🌍 World-specific background
         child: Stack(
           children: [
             // Main content
@@ -948,7 +951,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 icon: const Icon(Icons.cancel),
                 label: Text(_isPreRegistering ? AppLocalizations.of(context).worldJoinCancelPreRegistrationInProgress : AppLocalizations.of(context).worldJoinCancelPreRegistrationButton),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[600],
+                  backgroundColor: theme.colorScheme.error,  // World-theme based cancel color
                   foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
@@ -965,7 +968,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 icon: const Icon(Icons.person_add),
                 label: Text(AppLocalizations.of(context).worldInviteButton),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[600],
+                  backgroundColor: theme.colorScheme.tertiary,  // World-theme based invite color
                   foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
@@ -981,7 +984,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 icon: const Icon(Icons.how_to_reg),
                 label: Text(_isPreRegistering ? AppLocalizations.of(context).worldJoinPreRegisterInProgress : AppLocalizations.of(context).worldJoinPreRegisterButton),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange[600],
+                  backgroundColor: theme.colorScheme.secondary,  // World-theme based preregister color
                   foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
@@ -1004,7 +1007,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 icon: const Icon(Icons.play_circle_filled),
                 label: Text(AppLocalizations.of(context).worldPlayButton),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
+                  backgroundColor: theme.colorScheme.secondary,  // World-theme based play color
                   foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
@@ -1021,7 +1024,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 icon: const Icon(Icons.exit_to_app),
                 label: Text(_isJoining ? AppLocalizations.of(context).worldJoinLeaveInProgress : AppLocalizations.of(context).worldLeaveButton),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[600],
+                  backgroundColor: theme.colorScheme.error,  // World-theme based leave color
                   foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
@@ -1038,7 +1041,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 icon: const Icon(Icons.person_add),
                 label: Text(AppLocalizations.of(context).worldInviteButton),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[600],
+                  backgroundColor: theme.colorScheme.tertiary,  // World-theme based invite color
                   foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
@@ -1084,7 +1087,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
               children: [
                 Icon(
                   Icons.lock_outline,
-                  color: Colors.grey[600],
+                  color: theme.colorScheme.outline,  // World-theme based disabled icon color
                   size: 32,
                 ),
                 const SizedBox(height: 8),

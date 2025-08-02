@@ -361,7 +361,7 @@ class WorldCard extends StatelessWidget {
               onPressed: onCancelPreRegistration,
               icon: Icons.cancel,
               label: AppLocalizations.of(context).worldLeaveButton,
-              color: Colors.red[600],
+              color: _getButtonColor('leave', theme),
               theme: theme,
             ));
           }
@@ -371,7 +371,7 @@ class WorldCard extends StatelessWidget {
               onPressed: onInvite,
               icon: Icons.person_add,
               label: AppLocalizations.of(context).worldInviteButton,
-              color: Colors.blue[600],
+              color: _getButtonColor('invite', theme),
               theme: theme,
             ));
           }
@@ -381,7 +381,7 @@ class WorldCard extends StatelessWidget {
               onPressed: onPreRegister,
               icon: Icons.how_to_reg,
               label: AppLocalizations.of(context).worldPreRegisterButton,
-              color: Colors.orange[600],
+              color: _getButtonColor('preregister', theme),
               theme: theme,
             ));
           }
@@ -398,7 +398,7 @@ class WorldCard extends StatelessWidget {
               onPressed: onPlay,
               icon: Icons.play_circle_filled,
               label: AppLocalizations.of(context).worldPlayButton,
-              color: Colors.green[600],
+              color: _getButtonColor('play', theme),
               theme: theme,
             ));
           }
@@ -408,7 +408,7 @@ class WorldCard extends StatelessWidget {
               onPressed: onLeave,
               icon: Icons.exit_to_app,
               label: AppLocalizations.of(context).worldLeaveButton,
-              color: Colors.red[600],
+              color: _getButtonColor('leave', theme),
               theme: theme,
             ));
           }
@@ -418,7 +418,7 @@ class WorldCard extends StatelessWidget {
               onPressed: onInvite,
               icon: Icons.person_add,
               label: AppLocalizations.of(context).worldInviteButton,
-              color: Colors.blue[600],
+              color: _getButtonColor('invite', theme),
               theme: theme,
             ));
           }
@@ -428,7 +428,7 @@ class WorldCard extends StatelessWidget {
               onPressed: onJoin,
               icon: Icons.play_arrow,
               label: AppLocalizations.of(context).worldJoinNowButton,
-              color: theme.colorScheme.primary,
+              color: _getButtonColor('join', theme),
               theme: theme,
             ));
           }
@@ -500,5 +500,23 @@ class WorldCard extends StatelessWidget {
     }
     
     return button;
+  }
+
+  /// Get theme-based button color for different actions
+  Color _getButtonColor(String action, ThemeData theme) {
+    switch (action) {
+      case 'join':
+        return theme.colorScheme.primary;        // Most important action - primary color
+      case 'play':
+        return theme.colorScheme.secondary;      // Positive action - secondary color
+      case 'invite':
+        return theme.colorScheme.tertiary;       // Social action - tertiary color
+      case 'preregister':
+        return theme.colorScheme.secondary;      // Future action - secondary color
+      case 'leave':
+        return theme.colorScheme.error;          // Destructive action - error color
+      default:
+        return theme.colorScheme.primary;        // Fallback
+    }
   }
 } 

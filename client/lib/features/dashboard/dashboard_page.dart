@@ -67,6 +67,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildDashboard(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Scaffold(
       body: BackgroundWidget(
+        worldTheme: _worldTheme,  // 🌍 World-specific background
         child: Stack(
           children: [
             // Main content
