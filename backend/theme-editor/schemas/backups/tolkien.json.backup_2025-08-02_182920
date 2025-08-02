@@ -1,0 +1,293 @@
+{
+  "$schema": "./main.schema.json",
+  "name": "Weltenwind - Mittelerde",
+  "filename": "tolkien",
+  "version": "1.0.0",
+  "description": "Ein naturverbundenes, geheimnisvolles Theme inspiriert von Tolkiens Mittelerde – ideal für immersive Fantasy-Welten",
+  "category": "fantasy",
+  "author": "Weltenwind Team",
+  "bundle": {
+    "name": "full-gaming",
+    "type": "fantasy_world_bundle",
+    "context": "world-fantasy",
+    "modules": [
+      "colors",
+      "typography",
+      "spacing",
+      "radius",
+      "effects.visual",
+      "effects.animations",
+      "gaming.inventory",
+      "gaming.progress",
+      "gaming.hud"
+    ]
+  },
+  "colors": {
+    "primary": {
+      "value": "#8B4513",
+      "description": "Tiefe Waldgrün als Hauptton",
+      "main": "#3C5233",
+      "light": "#5F7A4D",
+      "dark": "#2B3D24",
+      "contrast": "#F8F8F5"
+    },
+    "secondary": {
+      "value": "#DAA520",
+      "description": "Mildes Pergament-Gold für Akzente",
+      "main": "#C2B280",
+      "light": "#DDD1A7",
+      "dark": "#A89C6A",
+      "contrast": "#1E1E1E"
+    },
+    "tertiary": {
+      "value": "#228B22",
+      "description": "Erdiger Akzent für Balance",
+      "main": "#4E342E",
+      "light": "#6D4C41",
+      "dark": "#2E1D18",
+      "contrast": "#FFFFFF"
+    },
+    "background": {
+      "surface_dark": "#2E342C",
+      "surface_medium": "#3D3D28",
+      "surface_light": "#3C4436",
+      "surface_lighter": "#575742",
+      "surface_gray": "#8B8B7A",
+      "primary": "#1B1F1A",
+      "secondary": "#252A22",
+      "overlay": "rgba(27, 31, 26, 0.8)",
+      "description": "Tiefdunkler, atmosphärischer Hintergrund"
+    },
+    "text": {
+      "primary": "#ECEBE6",
+      "secondary": "#BBB8AA",
+      "muted": "#7A7A6C",
+      "inverse": "#1B1F1A",
+      "link": "#C2B280",
+      "description": "Klares, leicht vergilbtes Textbild für Fantasy-Flair"
+    },
+    "accent": {
+      "success": "#32CD32",
+      "warning": "#FFD700",
+      "error": "#CD5C5C",
+      "info": "#4682B4"
+    },
+    "fantasy": {
+      "magic": "#9370DB",
+      "elvish": "#98FB98",
+      "dwarish": "#A0522D",
+      "hobbit": "#F4A460",
+      "wizard": "#483D8B"
+    },
+    "border": {
+      "primary": "#3E4539",
+      "secondary": "#2C3128",
+      "accent": "#5F7A4D",
+      "muted": "#7A7A6C",
+      "description": "Organische, subtile Rahmenfarben"
+    },
+    "interactive": {
+      "hover": "rgba(95, 122, 77, 0.15)",
+      "active": "rgba(95, 122, 77, 0.3)",
+      "focus": "rgba(95, 122, 77, 0.45)",
+      "disabled": "#5C5C52",
+      "description": "Interaktion mit natürlichen Feedbackfarben"
+    }
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Cinzel, serif",
+      "secondary": "Crimson Text, serif",
+      "fantasy": "UnifrakturMaguntia, fantasy",
+      "body": "Libre Baskerville, serif",
+      "ui": "Source Sans Pro, sans-serif"
+    },
+    "textStyles": {
+      "heading": {
+        "fontSize": 28,
+        "fontWeight": "bold",
+        "fontFamily": "Cinzel, serif",
+        "letterSpacing": 0.5,
+        "lineHeight": 1.2
+      },
+      "subheading": {
+        "fontSize": 20,
+        "fontWeight": "semi-bold",
+        "fontFamily": "Cinzel, serif",
+        "letterSpacing": 0.3,
+        "lineHeight": 1.3
+      },
+      "body": {
+        "fontSize": 16,
+        "fontWeight": "normal",
+        "fontFamily": "Libre Baskerville, serif",
+        "letterSpacing": 0.2,
+        "lineHeight": 1.5
+      },
+      "caption": {
+        "fontSize": 12,
+        "fontWeight": "normal",
+        "fontFamily": "Crimson Text, serif",
+        "letterSpacing": 0.1,
+        "lineHeight": 1.4
+      },
+      "fantasy": {
+        "fontSize": 24,
+        "fontWeight": "bold",
+        "fontFamily": "UnifrakturMaguntia, fantasy",
+        "letterSpacing": 1,
+        "lineHeight": 1.3
+      }
+    },
+    "primaryFont": {
+      "family": "Cinzel",
+      "fallback": "Georgia, serif",
+      "weights": [
+        400,
+        600,
+        700
+      ],
+      "description": "Serifenschrift mit epischem Flair für Weltenübersichten"
+    },
+    "secondaryFont": {
+      "family": "JetBrains Mono",
+      "fallback": "'Courier New', Consolas, monospace",
+      "weights": [
+        400,
+        500,
+        700
+      ],
+      "description": "Monospace-Schrift für technische Daten im Spiel"
+    }
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48,
+    "semantic": {
+      "padding": {
+        "small": 12,
+        "medium": 20,
+        "large": 32
+      },
+      "margin": {
+        "small": 8,
+        "medium": 16,
+        "large": 24
+      },
+      "fantasy": {
+        "tomeMargin": 32,
+        "scrollPadding": 24,
+        "runeSpacing": 16
+      }
+    }
+  },
+  "radius": {
+    "sm": 4,
+    "md": 8,
+    "lg": 12,
+    "xl": 16,
+    "round": 9999,
+    "fantasy": {
+      "scroll": 20,
+      "tome": 8,
+      "medallion": 50
+    }
+  },
+  "effects": {
+    "shadows": {
+      "small": "0 2px 4px rgba(139, 69, 19, 0.3)",
+      "medium": "0 4px 8px rgba(139, 69, 19, 0.4)",
+      "large": "0 8px 16px rgba(139, 69, 19, 0.5)",
+      "fantasy": "0 0 20px rgba(218, 165, 32, 0.6)"
+    },
+    "glows": {
+      "magic": "0 0 15px rgba(147, 112, 219, 0.7)",
+      "elven": "0 0 12px rgba(152, 251, 152, 0.6)",
+      "gold": "0 0 10px rgba(255, 215, 0, 0.8)"
+    },
+    "animations": {
+      "duration": {
+        "fast": 200,
+        "medium": 400,
+        "slow": 800,
+        "magical": 1200
+      },
+      "easing": {
+        "standard": "cubic-bezier(0.4, 0.0, 0.2, 1)",
+        "magical": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+      }
+    },
+    "particles": {
+      "sparkles": {
+        "color": "#FFD700",
+        "size": 2,
+        "density": 0.3,
+        "speed": 0.5
+      },
+      "leaves": {
+        "color": "#228B22",
+        "size": 4,
+        "density": 0.2,
+        "speed": 0.3
+      }
+    }
+  },
+  "gaming": {
+    "inventory": {
+      "slotSize": 56,
+      "slotSpacing": 4,
+      "backgroundColor": "#3D3D28",
+      "borderColor": "#8B4513",
+      "hoverColor": "#DAA520"
+    },
+    "progress": {
+      "barHeight": 8,
+      "backgroundColor": "#2F2F1B",
+      "fillColor": "#228B22",
+      "textColor": "#F5DEB3"
+    },
+    "hud": {
+      "backgroundColor": "rgba(47, 47, 27, 0.9)",
+      "borderColor": "#8B4513",
+      "textColor": "#F5DEB3",
+      "accentColor": "#DAA520"
+    }
+  },
+  "extensions": {
+    "worldTheme": {
+      "atmosphere": "mystical-forest",
+      "timeOfDay": "golden-hour",
+      "weather": "misty",
+      "ambientSound": "forest-whispers"
+    },
+    "fantasy": {
+      "races": {
+        "elves": {
+          "primaryColor": "#98FB98",
+          "accentColor": "#32CD32"
+        },
+        "dwarves": {
+          "primaryColor": "#A0522D",
+          "accentColor": "#CD853F"
+        },
+        "hobbits": {
+          "primaryColor": "#F4A460",
+          "accentColor": "#DEB887"
+        }
+      },
+      "magic": {
+        "spellGlow": "#9370DB",
+        "enchantmentShimmer": "#FFD700",
+        "potionBubble": "#4682B4"
+      }
+    }
+  },
+  "lastModified": "2025-08-02T18:28:30.846Z",
+  "modifiedBy": "👤 admin",
+  "updatedAt": "2025-08-02T18:28:30.846Z",
+  "updatedBy": "👤 admin"
+}

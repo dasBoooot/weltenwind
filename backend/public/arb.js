@@ -493,56 +493,19 @@ async function loadBackups() {
         
         const data = await response.json();
         
-        if (data.backups.length === 0) {
-            backupList.innerHTML = `
-                <div class="backup-empty">
-                    <p>📂 Keine Backups verfügbar</p>
-                    <small>Backups werden automatisch bei jeder Speicherung erstellt</small>
-                </div>
-            `;
-            return;
-        }
+        // Store data for new filter system
+        currentARBBackups = data.backups || [];
         
-        // Backup-Liste rendern
-        const backupItems = data.backups.map(backup => {
-            const typeIcon = backup.type === 'pre_restore' ? '🔄' : '💾';
-            const typeText = backup.type === 'pre_restore' ? 'Pre-Restore' : 'Speicherung';
-            
-            // Buttons basierend auf Permissions rendern
-            let restoreButton = '';
-            let deleteButton = '';
-            
-            if (hasPermission('arb.backup.restore')) {
-                restoreButton = `<button class="btn-success btn-small" onclick="restoreBackup('${backup.timestamp}')" title="Dieses Backup wiederherstellen">
-                    🔄 Wiederherstellen
-                </button>`;
-            }
-            
-            if (hasPermission('arb.backup.delete')) {
-                deleteButton = `<button class="btn-danger btn-small" onclick="deleteBackup('${backup.timestamp}', '${backup.displayName}')" title="Dieses Backup löschen">
-                    🗑️ Löschen
-                </button>`;
-            }
-            
-            return `
-                <div class="backup-item">
-                    <div class="backup-info-item">
-                        <div class="backup-timestamp">${backup.displayName}</div>
-                        <div class="backup-details">
-                            ${Math.round(backup.size / 1024)} KB • 
-                            von <strong>${backup.createdBy}</strong> • 
-                            ${typeIcon} ${typeText}
-                        </div>
-                    </div>
-                    <div class="backup-actions">
-                        ${restoreButton}
-                        ${deleteButton}
-                    </div>
-                </div>
-            `;
-        }).join('');
+        console.log('🗂️ ARB Backups loaded:', currentARBBackups.length, 'backups');
         
-        backupList.innerHTML = backupItems;
+        // Reset filter to 'all'
+        arbBackupFilter = 'all';
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        const allFilterBtn = document.querySelector('.filter-btn[onclick="filterARBBackups(\'all\')"]');
+        if (allFilterBtn) allFilterBtn.classList.add('active');
+        
+        // Use new render system
+        renderARBBackupList();
         
     } catch (error) {
         backupList.innerHTML = `
@@ -1705,4 +1668,249 @@ function updateUIBasedOnPermissions() {
     }
     
     console.log('🎨 UI wurde basierend auf Permissions angepasst');
+}
+
+// === ENHANCED BACKUP MANAGEMENT ===
+let currentARBBackups = [];
+let currentARBAuditTrail = [];
+let arbBackupFilter = 'all';
+
+function filterARBBackups(filter) {
+    arbBackupFilter = filter;
+    
+    // Update active filter button
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.filter-btn[onclick="filterARBBackups('${filter}')"]`).classList.add('active');
+    
+    renderARBBackupList();
+}
+
+function renderARBBackupList() {
+    const backupList = document.getElementById('backupList');
+    
+    if (currentARBBackups.length === 0) {
+        backupList.innerHTML = '<div class="no-backups">📭 Keine Backups gefunden</div>';
+        return;
+    }
+    
+    // Filter backups
+    const filteredBackups = currentARBBackups.filter(backup => {
+        if (arbBackupFilter === 'all') return true;
+        return backup.type === arbBackupFilter;
+    });
+    
+    if (filteredBackups.length === 0) {
+        backupList.innerHTML = '<div class="no-backups">📭 Keine Backups für diesen Filter</div>';
+        return;
+    }
+    
+    const backupHTML = filteredBackups.map(backup => {
+        const keysList = backup.keysModified && backup.keysModified.length > 0 
+            ? backup.keysModified.slice(0, 5).map(key => `<span class="key-tag">${key}</span>`).join('')
+            : '<span class="key-tag">ARB-Backup</span>';
+            
+        const moreKeys = backup.keysModified && backup.keysModified.length > 5 
+            ? `<span class="key-tag">+${backup.keysModified.length - 5} weitere</span>`
+            : '';
+            
+        const typeIcon = getARBBackupTypeIcon(backup.type);
+        const versionChange = backup.originalVersion && backup.newVersion && backup.originalVersion !== backup.newVersion 
+            ? `<span class="version-change">${backup.originalVersion} → ${backup.newVersion}</span>`
+            : backup.version ? `<span class="version-same">v${backup.version}</span>` : '';
+            
+        // Action buttons based on permissions
+        let actionButtons = '';
+        
+        if (hasPermission('arb.backup.restore')) {
+            actionButtons += `<button class="btn-success btn-small" onclick="restoreBackup('${backup.timestamp}')" title="Dieses Backup wiederherstellen">
+                🔄 Wiederherstellen
+            </button>`;
+        }
+        
+        if (hasPermission('arb.backup.delete')) {
+            actionButtons += `<button class="btn-danger btn-small" onclick="deleteBackup('${backup.timestamp}', '${backup.displayName}')" title="Dieses Backup löschen">
+                🗑️ Löschen
+            </button>`;
+        }
+            
+        return `
+            <div class="backup-item" data-type="${backup.type}">
+                <div class="backup-header">
+                    <div class="backup-info-section">
+                        <span class="backup-type">${typeIcon} ${getARBBackupTypeLabel(backup.type)}</span>
+                        <span class="backup-date">${backup.displayName}</span>
+                    </div>
+                    <div class="backup-meta">
+                        <span class="backup-user">👤 ${backup.createdBy}</span>
+                        <span class="backup-size">${formatARBFileSize(backup.size)}</span>
+                    </div>
+                </div>
+                <div class="backup-details">
+                    <div class="backup-keys">
+                        <strong>Backup-Info:</strong> ${keysList}${moreKeys}
+                    </div>
+                    ${versionChange ? `<div class="backup-version"><strong>Version:</strong> ${versionChange}</div>` : ''}
+                    ${actionButtons ? `<div class="backup-actions-new">${actionButtons}</div>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    backupList.innerHTML = backupHTML;
+}
+
+function getARBBackupTypeIcon(type) {
+    const icons = {
+        'manual_save': '💾',
+        'import': '📥',
+        'auto_backup': '⚡',
+        'pre_restore': '🔄'
+    };
+    return icons[type] || '📁';
+}
+
+function getARBBackupTypeLabel(type) {
+    const labels = {
+        'manual_save': 'Manueller Save',
+        'import': 'Import',
+        'auto_backup': 'Auto-Backup',
+        'pre_restore': 'Vor Wiederherstellung'
+    };
+    return labels[type] || 'Unbekannt';
+}
+
+function formatARBFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+// === ARB AUDIT TRAIL ===
+function showARBAuditDialog() {
+    const currentLang = availableLanguages.find(lang => lang.code === currentLanguage);
+    document.getElementById('auditLanguageName').textContent = currentLang ? `${currentLang.flag} ${currentLang.name}` : currentLanguage.toUpperCase();
+    document.getElementById('arbAuditDialog').classList.remove('hidden');
+    loadARBAuditTrail();
+}
+
+function closeARBAuditDialog() {
+    document.getElementById('arbAuditDialog').classList.add('hidden');
+}
+
+async function loadARBAuditTrail() {
+    if (!currentLanguage) return;
+    
+    const auditList = document.getElementById('arbAuditList');
+    auditList.innerHTML = '<div class="loading">⏳ Lade Audit-Trail...</div>';
+    
+    try {
+        const response = await fetch(`/api/arb/${currentLanguage}/audit`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.status === 401) {
+            logout();
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Fehler beim Laden des Audit-Trails');
+        }
+
+        const data = await response.json();
+        currentARBAuditTrail = data.auditTrail || [];
+        
+        // Update stats
+        document.getElementById('totalARBAuditEntries').textContent = data.totalEntries || 0;
+        document.getElementById('arbAuditKeyChanges').textContent = data.totalKeyChanges || 0;
+        
+        if (data.oldestEntry && data.newestEntry) {
+            const oldDate = new Date(data.oldestEntry).toLocaleDateString('de-DE');
+            const newDate = new Date(data.newestEntry).toLocaleDateString('de-DE');
+            document.getElementById('arbAuditDateRange').textContent = `${oldDate} - ${newDate}`;
+        } else {
+            document.getElementById('arbAuditDateRange').textContent = 'N/A';
+        }
+        
+        renderARBAuditTrail();
+        
+    } catch (error) {
+        console.error('❌ Error loading ARB audit trail:', error);
+        auditList.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+    }
+}
+
+function renderARBAuditTrail() {
+    const auditList = document.getElementById('arbAuditList');
+    
+    if (currentARBAuditTrail.length === 0) {
+        auditList.innerHTML = '<div class="no-audit">📭 Keine Audit-Einträge gefunden</div>';
+        return;
+    }
+    
+    const auditHTML = currentARBAuditTrail.map(entry => {
+        const date = new Date(entry.createdAt).toLocaleString('de-DE');
+        const typeIcon = getARBBackupTypeIcon(entry.type || entry.action);
+        const typeLabel = getARBBackupTypeLabel(entry.type || entry.action);
+        
+        let actionDetails = '';
+        if (entry.keysModified && entry.keysModified.length > 0) {
+            const keysList = entry.keysModified.slice(0, 3).map(key => `<span class="key-tag">${key}</span>`).join('');
+            const moreKeys = entry.keysModified.length > 3 ? ` (+${entry.keysModified.length - 3})` : '';
+            actionDetails += `<div><strong>Keys:</strong> ${keysList}${moreKeys}</div>`;
+        }
+        
+        if (entry.originalVersion && entry.newVersion && entry.originalVersion !== entry.newVersion) {
+            actionDetails += `<div><strong>Version:</strong> ${entry.originalVersion} → ${entry.newVersion}</div>`;
+        }
+        
+        if (entry.totalKeys) {
+            actionDetails += `<div><strong>Gesamt-Keys:</strong> ${entry.totalKeys}</div>`;
+        }
+        
+        return `
+            <div class="audit-item" data-action="${entry.action || entry.type}">
+                <div class="audit-header">
+                    <div class="audit-info">
+                        <span class="audit-type">${typeIcon} ${typeLabel}</span>
+                        <span class="audit-date">${date}</span>
+                    </div>
+                    <div class="audit-user">👤 ${entry.createdBy}</div>
+                </div>
+                ${actionDetails ? `<div class="audit-details">${actionDetails}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+    
+    auditList.innerHTML = auditHTML;
+}
+
+function exportARBAuditTrail() {
+    if (currentARBAuditTrail.length === 0) {
+        showMessage('❌ Keine Audit-Daten zum Exportieren vorhanden', 'error');
+        return;
+    }
+    
+    const currentLang = availableLanguages.find(lang => lang.code === currentLanguage);
+    const languageName = currentLang ? currentLang.name : currentLanguage.toUpperCase();
+    
+    const exportData = {
+        language: currentLanguage,
+        languageName: languageName,
+        exportDate: new Date().toISOString(),
+        totalEntries: currentARBAuditTrail.length,
+        auditTrail: currentARBAuditTrail
+    };
+    
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `${currentLanguage}-arb-audit-trail-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    
+    showMessage('✅ ARB-Audit-Trail erfolgreich exportiert!', 'success');
 }

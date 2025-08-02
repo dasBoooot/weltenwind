@@ -12,8 +12,8 @@ class ThemeProvider extends ChangeNotifier {
   static const String _bundleNameKey = 'bundle_name';
   
   ThemeMode _themeMode = ThemeMode.system;
-  String _currentTheme = 'weltenwind-default'; // Das neue Professional Gaming Theme
-  String _currentBundle = 'full-gaming';
+  String _currentTheme = 'default'; // Neutrales Default Theme als Standard
+  String _currentBundle = 'pre-game-minimal'; // Korrekte Bundle-Hyphen-Notation
   
   // 🚀 MODULARES SYSTEM - EINZIGES SYSTEM!
   final ModularThemeService _themeService = ModularThemeService();
@@ -94,7 +94,8 @@ class ThemeProvider extends ChangeNotifier {
   /// Lädt das aktuelle Theme
   Future<void> _loadCurrentTheme() async {
     try {
-      AppLogger.app.i('🎨 Lade aktuelles Theme: $_currentTheme mit Bundle: $_currentBundle');
+      AppLogger.app.i('🎨 [THEME-DEBUG] Global Theme Load: $_currentTheme + $_currentBundle');
+      print('🎨 [THEME-DEBUG] Global Theme Load: $_currentTheme + $_currentBundle');
       
       final lightTheme = await _themeService.loadThemeWithBundle(
         _currentTheme, 
@@ -112,13 +113,14 @@ class ThemeProvider extends ChangeNotifier {
         _lightTheme = lightTheme;
         _darkTheme = darkTheme;
         _performanceStats = _themeService.getPerformanceStats();
-        AppLogger.app.i('✅ Theme erfolgreich geladen: $_currentTheme');
+        AppLogger.app.i('✅ [THEME-DEBUG] Global Theme Applied: $_currentTheme + $_currentBundle');
+        print('✅ [THEME-DEBUG] Global Theme Applied: $_currentTheme + $_currentBundle');
         notifyListeners();
       } else {
-        AppLogger.app.e('❌ Theme konnte nicht geladen werden: $_currentTheme');
+        AppLogger.app.w('⚠️ [THEME-DEBUG] Global Theme FAILED: $_currentTheme + $_currentBundle');
       }
     } catch (e) {
-      AppLogger.app.e('❌ Fehler beim Laden des Themes', error: e);
+      AppLogger.app.e('❌ [THEME-DEBUG] Global Theme ERROR: $_currentTheme', error: e);
     }
   }
   
@@ -145,13 +147,18 @@ class ThemeProvider extends ChangeNotifier {
   Future<void> setTheme(String themeName) async {
     if (_currentTheme == themeName) return;
     
-    AppLogger.app.i('🎨 Setze Theme: $themeName');
+    AppLogger.app.i('🎨 [THEME-DEBUG] User Theme Switch: $themeName');
+    print('🎨 [THEME-DEBUG] User Theme Switch: $themeName');
     _currentTheme = themeName;
+    
+    // 🎯 Globalen Theme-State für Cross-Service-Kommunikation aktualisieren
+    GlobalThemeState.setCurrentTheme(themeName);
     
     await _loadCurrentTheme();
     await _saveSettings();
     
-    AppLogger.app.i('✅ Theme erfolgreich geändert zu: $themeName');
+    AppLogger.app.i('✅ [THEME-DEBUG] Theme erfolgreich geändert zu: $themeName (Bundle: $_currentBundle)');
+    print('✅ [THEME-DEBUG] Theme erfolgreich geändert zu: $themeName (Bundle: $_currentBundle)');
   }
   
   /// Bundle wechseln
@@ -197,8 +204,20 @@ class ThemeProvider extends ChangeNotifier {
       // Bundle laden
       final bundleString = prefs.getString(_bundleNameKey);
       if (bundleString != null) {
-        _currentBundle = bundleString;
+        // 🎯 CLEAN STATE: Nur autoritative Bundle-Namen akzeptieren
+        final validBundles = ['pre-game-minimal', 'world-preview', 'full-gaming', 'performance-optimized'];
+        if (validBundles.contains(bundleString)) {
+          _currentBundle = bundleString;
+        } else {
+          // Legacy Bundle gefunden → Clean State Reset
+          print('🧹 [THEME-DEBUG] Legacy Bundle found: $bundleString → Reset to Clean State');
+          await _resetToCleanState();
+          return; // Early return nach Reset
+        }
       }
+      
+      // 🎯 Globalen Theme-State für Cross-Service-Kommunikation aktualisieren
+      GlobalThemeState.setCurrentTheme(_currentTheme);
       
       AppLogger.app.i('🎨 Theme-Einstellungen geladen: ${_themeMode.name}, $_currentTheme, Bundle: $_currentBundle');
     } catch (e) {
@@ -217,6 +236,26 @@ class ThemeProvider extends ChangeNotifier {
       AppLogger.app.d('💾 Theme-Einstellungen gespeichert');
     } catch (e) {
       AppLogger.app.e('❌ Fehler beim Speichern der Einstellungen', error: e);
+    }
+  }
+
+  /// 🧹 Private: SharedPreferences Reset für Clean State
+  Future<void> _resetToCleanState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_bundleNameKey);
+      await prefs.remove(_currentThemeKey);
+      
+      // Clean State setzen
+      _currentTheme = 'default';
+      _currentBundle = 'pre-game-minimal';
+      
+      print('🧹 [THEME-DEBUG] Reset to Clean State: $_currentTheme + $_currentBundle');
+      AppLogger.app.i('🧹 Theme System auf Clean State zurückgesetzt');
+      
+      await _saveSettings();
+    } catch (e) {
+      AppLogger.app.e('❌ Fehler beim Reset zu Clean State', error: e);
     }
   }
 }

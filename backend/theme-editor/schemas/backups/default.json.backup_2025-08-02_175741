@@ -1,0 +1,193 @@
+{
+  "name": "Weltenwind Default",
+  "version": "1.0.0",
+  "description": "Das neutrale Standard-Theme für Weltenwind - optimiert für Pre-Game-Kontext und als universeller Fallback",
+  "category": "neutral",
+  "author": "Weltenwind Team",
+  "createdAt": "2025-08-02T11:00:00.000Z",
+  "bundle": {
+    "name": "pre-game-minimal",
+    "type": "minimal_bundle",
+    "context": "pre-game",
+    "compatibility": ["login", "setup", "loading", "fallback"],
+    "estimatedSize": "12KB",
+    "loadTime": "fast"
+  },
+  "colors": {
+    "primary": {
+      "main": "#4B3B79",
+      "light": "#6B5B99",
+      "dark": "#3B2B59",
+      "contrast": "#FFFFFF",
+      "description": "Elegantes Violett als Hauptfarbe"
+    },
+    "secondary": {
+      "main": "#D4AF37",
+      "light": "#E4BF47",
+      "dark": "#B49F27",
+      "contrast": "#000000",
+      "description": "Warmes Gold als Akzentfarbe"
+    },
+    "tertiary": {
+      "main": "#6B7280",
+      "light": "#9CA3AF",
+      "dark": "#4B5563",
+      "contrast": "#FFFFFF",
+      "description": "Neutrales Grau für UI-Elemente"
+    },
+    "background": {
+      "primary": "#0D1117",
+      "secondary": "#161B22",
+      "surface_dark": "#1E1E2E",
+      "surface_light": "#3A3A52",
+      "overlay": "rgba(13, 17, 23, 0.8)",
+      "description": "Dunkle, professionelle Hintergründe"
+    },
+    "text": {
+      "primary": "#E6EDF3",
+      "secondary": "#B0BEC5",
+      "muted": "#6B7280",
+      "inverse": "#0D1117",
+      "link": "#4B3B79",
+      "description": "Klare, gut lesbare Textfarben"
+    },
+    "status": {
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "error": "#EF4444",
+      "info": "#3B82F6",
+      "description": "Standard-Statusfarben für UI-Feedback"
+    },
+    "border": {
+      "primary": "#30363D",
+      "secondary": "#21262D",
+      "accent": "#4B3B79",
+      "muted": "#6B7280",
+      "description": "Subtile Rahmenfarben"
+    },
+    "interactive": {
+      "hover": "rgba(75, 59, 121, 0.1)",
+      "active": "rgba(75, 59, 121, 0.2)",
+      "focus": "rgba(75, 59, 121, 0.3)",
+      "disabled": "#6B7280",
+      "description": "Interaktive Zustandsfarben"
+    }
+  },
+  "typography": {
+    "primaryFont": {
+      "family": "Inter",
+      "fallback": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "weights": [300, 400, 500, 600, 700],
+      "description": "Moderne, lesbare Schrift für UI-Texte"
+    },
+    "secondaryFont": {
+      "family": "JetBrains Mono",
+      "fallback": "'Courier New', Consolas, monospace",
+      "weights": [400, 500, 700],
+      "description": "Monospace-Schrift für Code und Daten"
+    },
+    "headingSizes": {
+      "h1": "2.25rem",
+      "h2": "1.875rem", 
+      "h3": "1.5rem",
+      "h4": "1.25rem",
+      "h5": "1.125rem",
+      "h6": "1rem",
+      "description": "Klare Hierarchie für Überschriften"
+    },
+    "bodySizes": {
+      "large": "1.125rem",
+      "normal": "1rem",
+      "small": "0.875rem",
+      "tiny": "0.75rem",
+      "description": "Vielseitige Textgrößen"
+    },
+    "lineHeights": {
+      "tight": "1.25",
+      "normal": "1.5",
+      "relaxed": "1.75",
+      "description": "Optimierte Zeilenhöhen"
+    },
+    "fontWeights": {
+      "light": 300,
+      "normal": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700,
+      "description": "Ausgewogene Schriftgewichte"
+    },
+    "letterSpacing": {
+      "tight": "-0.025em",
+      "normal": "0em",
+      "wide": "0.025em",
+      "wider": "0.05em",
+      "description": "Subtile Zeichenabstände"
+    }
+  },
+  "spacing": {
+    "xs": "0.25rem",
+    "sm": "0.5rem",
+    "md": "1rem",
+    "lg": "1.5rem",
+    "xl": "2rem",
+    "xxl": "3rem",
+    "xxxl": "4rem",
+    "section": "6rem",
+    "description": "Konsistente Abstände für Layout-Harmonie"
+  },
+  "radius": {
+    "none": "0px",
+    "small": "6px",
+    "medium": "12px",
+    "large": "16px",
+    "xl": "24px",
+    "full": "9999px",
+    "description": "Moderne Rundungen für UI-Elemente"
+  },
+  "effects": {
+    "animations": {
+      "duration": {
+        "fast": "150ms",
+        "normal": "300ms",
+        "slow": "500ms",
+        "description": "Optimierte Animationsgeschwindigkeiten"
+      },
+      "easing": {
+        "linear": "linear",
+        "ease": "ease",
+        "ease_in": "cubic-bezier(0.4, 0, 1, 1)",
+        "ease_out": "cubic-bezier(0, 0, 0.2, 1)",
+        "ease_in_out": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "description": "Natürliche Bewegungskurven"
+      },
+      "scale": {
+        "hover": "1.05",
+        "active": "0.95",
+        "description": "Subtile Skalierungseffekte"
+      }
+    }
+  },
+  "metadata": {
+    "usage": {
+      "contexts": ["pre-game", "login", "setup", "loading"],
+      "platforms": ["web", "mobile", "desktop"],
+      "themes": ["default", "fallback", "neutral"]
+    },
+    "performance": {
+      "optimized": true,
+      "critical": true,
+      "cacheStrategy": "aggressive"
+    },
+    "accessibility": {
+      "wcag": "AA",
+      "highContrast": true,
+      "colorBlindFriendly": true,
+      "screenReaderOptimized": true
+    },
+    "maintenance": {
+      "stable": true,
+      "breaking_changes": false,
+      "deprecated_features": []
+    }
+  }
+}

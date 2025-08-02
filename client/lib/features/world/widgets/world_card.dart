@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/world.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../core/providers/theme_context_consumer.dart';
 
 
 class WorldCard extends StatelessWidget {
   final World world;
-  final ThemeData? theme; // 🎨 World-spezifisches Theme!
   final bool isPreRegistered;
   final bool isJoined;
   final VoidCallback? onJoin;
@@ -19,7 +19,6 @@ class WorldCard extends StatelessWidget {
   const WorldCard({
     super.key,
     required this.world,
-    this.theme, // 🎨 Optional: World-spezifisches Theme
     this.isPreRegistered = false,
     this.isJoined = false,
     this.onJoin,
@@ -33,33 +32,36 @@ class WorldCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildCard(context);
+    // 🎨 World-spezifisches Theme laden mit ThemeContextConsumer
+    return ThemeContextConsumer(
+      componentName: 'WorldCard',
+      worldThemeOverride: world.themeBundle, // Theme-Name aus DB
+      fallbackBundle: 'world-preview',
+      builder: (context, theme, extensions) {
+        return _buildCard(context, theme, extensions);
+      },
+    );
   }
 
-  // 🎨 Theme Helper: Stellt das effective theme für alle Methoden bereit
-  ThemeData _getEffectiveTheme(BuildContext context) {
-    return theme ?? Theme.of(context);
-  }
-
-  Widget _buildCard(BuildContext context) {
+  Widget _buildCard(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF1E1E1E),
-              Color(0xFF2A2A2A),
+              theme.colorScheme.surface,
+              theme.colorScheme.surface.withValues(alpha: 0.8),
             ],
           ),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: world.isActive
                 ? world.category.color.withValues(alpha: 0.5)
-                : Colors.grey.withValues(alpha: 0.3),
+                : theme.colorScheme.outline.withValues(alpha: 0.3),
             width: world.isActive ? 2 : 1,
           ),
           boxShadow: world.isActive
@@ -76,8 +78,8 @@ class WorldCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           child: Column(
             children: [
-              _buildHeader(context),
-              _buildContent(context),
+              _buildHeader(context, theme, extensions),
+              _buildContent(context, theme, extensions),
             ],
           ),
         ),
@@ -85,7 +87,7 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -104,15 +106,15 @@ class WorldCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildCategoryBadge(context),
-              _buildStatusBadge(context),
+              _buildCategoryBadge(context, theme),
+              _buildStatusBadge(context, theme),
             ],
           ),
           const SizedBox(height: 16),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildWorldIcon(),
+              _buildWorldIcon(theme),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -120,10 +122,10 @@ class WorldCard extends StatelessWidget {
                   children: [
                     Text(
                       world.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -133,7 +135,7 @@ class WorldCard extends StatelessWidget {
                           : AppLocalizations.of(context).worldDefaultDescription,
                         style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[300],
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -148,7 +150,7 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildWorldIcon() {
+  Widget _buildWorldIcon(ThemeData theme) {
     return Container(
       width: 48,
       height: 48,
@@ -167,7 +169,7 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryBadge(BuildContext context) {
+  Widget _buildCategoryBadge(BuildContext context, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -199,29 +201,29 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge(BuildContext context) {
+  Widget _buildStatusBadge(BuildContext context, ThemeData theme) {
     Color statusColor;
     IconData statusIcon;
     
     switch (world.status) {
       case WorldStatus.upcoming:
-        statusColor = Colors.orange;
+        statusColor = theme.colorScheme.secondary;
         statusIcon = Icons.schedule;
         break;
       case WorldStatus.open:
-        statusColor = Colors.green;
+        statusColor = theme.colorScheme.primary;
         statusIcon = Icons.lock_open;
         break;
       case WorldStatus.running:
-        statusColor = Colors.blue;
+        statusColor = theme.colorScheme.tertiary;
         statusIcon = Icons.play_circle;
         break;
       case WorldStatus.closed:
-        statusColor = Colors.red;
+        statusColor = theme.colorScheme.error;
         statusIcon = Icons.lock;
         break;
       case WorldStatus.archived:
-        statusColor = Colors.grey;
+        statusColor = theme.colorScheme.outline;
         statusIcon = Icons.archive;
         break;
     }
@@ -257,34 +259,34 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context) {
+  Widget _buildContent(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          _buildPlayerInfo(context),
+          _buildPlayerInfo(context, theme),
           const SizedBox(height: 16),
-          _buildDateInfo(context),
+          _buildDateInfo(context, theme),
           const SizedBox(height: 16),
-          _buildActionButtons(context),
+          _buildActionButtons(context, theme),
         ],
       ),
     );
   }
 
-  Widget _buildPlayerInfo(BuildContext context) {
+  Widget _buildPlayerInfo(BuildContext context, ThemeData theme) {
     return Row(
       children: [
         Icon(
           Icons.people,
           size: 16,
-          color: Colors.grey[400],
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
         ),
         const SizedBox(width: 4),
         Text(
           AppLocalizations.of(context).worldPlayersActive(world.playerCount),
           style: TextStyle(
-            color: Colors.grey[400],
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             fontSize: 14,
           ),
         ),
@@ -292,7 +294,7 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDateInfo(BuildContext context) {
+  Widget _buildDateInfo(BuildContext context, ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -301,13 +303,13 @@ class WorldCard extends StatelessWidget {
             Icon(
               Icons.calendar_today,
               size: 16,
-              color: Colors.grey[400],
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
             const SizedBox(width: 4),
             Text(
               AppLocalizations.of(context).worldStartDate('${world.startsAt.day}.${world.startsAt.month}.${world.startsAt.year}'),
               style: TextStyle(
-                color: Colors.grey[400],
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 fontSize: 14,
               ),
             ),
@@ -325,13 +327,13 @@ class WorldCard extends StatelessWidget {
                       Icon(
                         Icons.event_busy,
                         size: 16,
-                        color: Colors.grey[400],
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         AppLocalizations.of(context).worldEndDate('${endDate.day}.${endDate.month}.${endDate.year}'),
                         style: TextStyle(
-                          color: Colors.grey[400],
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           fontSize: 14,
                         ),
                       ),
@@ -346,7 +348,7 @@ class WorldCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
+  Widget _buildActionButtons(BuildContext context, ThemeData theme) {
     final List<Widget> buttons = [];
     
     // Status-basierte Button-Logik
@@ -360,6 +362,7 @@ class WorldCard extends StatelessWidget {
               icon: Icons.cancel,
               label: AppLocalizations.of(context).worldLeaveButton,
               color: Colors.red[600],
+              theme: theme,
             ));
           }
           // Invite Button als LETZTER Button für pre-registered users
@@ -369,6 +372,7 @@ class WorldCard extends StatelessWidget {
               icon: Icons.person_add,
               label: AppLocalizations.of(context).worldInviteButton,
               color: Colors.blue[600],
+              theme: theme,
             ));
           }
         } else {
@@ -378,6 +382,7 @@ class WorldCard extends StatelessWidget {
               icon: Icons.how_to_reg,
               label: AppLocalizations.of(context).worldPreRegisterButton,
               color: Colors.orange[600],
+              theme: theme,
             ));
           }
         }
@@ -394,6 +399,7 @@ class WorldCard extends StatelessWidget {
               icon: Icons.play_circle_filled,
               label: AppLocalizations.of(context).worldPlayButton,
               color: Colors.green[600],
+              theme: theme,
             ));
           }
           // Verlassen Button als zweite Option
@@ -403,6 +409,7 @@ class WorldCard extends StatelessWidget {
               icon: Icons.exit_to_app,
               label: AppLocalizations.of(context).worldLeaveButton,
               color: Colors.red[600],
+              theme: theme,
             ));
           }
           // Invite Button als LETZTER Button
@@ -412,6 +419,7 @@ class WorldCard extends StatelessWidget {
               icon: Icons.person_add,
               label: AppLocalizations.of(context).worldInviteButton,
               color: Colors.blue[600],
+              theme: theme,
             ));
           }
         } else {
@@ -420,7 +428,8 @@ class WorldCard extends StatelessWidget {
               onPressed: onJoin,
               icon: Icons.play_arrow,
               label: AppLocalizations.of(context).worldJoinNowButton,
-              color: _getEffectiveTheme(context).colorScheme.primary,
+              color: theme.colorScheme.primary,
+              theme: theme,
             ));
           }
         }
@@ -429,12 +438,12 @@ class WorldCard extends StatelessWidget {
       case WorldStatus.closed:
       case WorldStatus.archived:
         // Keine Aktions-Buttons bei geschlossenen/archivierten Welten
-        return _buildStatusBadge(context);
+        return _buildStatusBadge(context, theme);
     }
     
     // Wenn keine Buttons verfügbar sind
     if (buttons.isEmpty) {
-      return _buildStatusBadge(context);
+      return _buildStatusBadge(context, theme);
     }
     
     return Wrap(
@@ -449,6 +458,7 @@ class WorldCard extends StatelessWidget {
     required IconData icon,
     required String? label,
     required Color? color,
+    required ThemeData theme,
     bool iconOnly = false,
     String? tooltip,
   }) {
@@ -459,7 +469,7 @@ class WorldCard extends StatelessWidget {
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: color,
-              foregroundColor: Colors.white,
+              foregroundColor: theme.colorScheme.onPrimary,
               padding: const EdgeInsets.all(8),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -473,7 +483,7 @@ class WorldCard extends StatelessWidget {
             label: Text(label ?? ''),
             style: ElevatedButton.styleFrom(
               backgroundColor: color,
-              foregroundColor: Colors.white,
+              foregroundColor: theme.colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),

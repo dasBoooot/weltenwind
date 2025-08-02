@@ -6,7 +6,7 @@ import '../../../config/logger.dart';
 import '../../../config/env.dart';
 import '../../../core/services/api_service.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../core/providers/theme_context_provider.dart';
+import '../../../core/theme/index.dart';
 import '../../../main.dart';
 
 /// Modulares Widget zum Versenden von Einladungen

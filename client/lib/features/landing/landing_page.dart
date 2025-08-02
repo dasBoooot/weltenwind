@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
-import '../../core/providers/theme_context_provider.dart';
+import '../../core/theme/index.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/language_switcher.dart';
 import 'dart:math' as math;
@@ -114,22 +114,16 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 KONTEXTSENSITIVE THEME-BEREITSTELLUNG mit PRE-GAME BUNDLE
-    return ThemeContextConsumer(
-      componentName: 'LandingPage',
-      contextOverrides: const {
-        'uiContext': 'landing',              // Landing Page Kontext
-        'bundleType': 'pre_game_bundle',     // Explizite Bundle-Spezifikation
-        'pageType': 'landing',              // Landing Page spezifisch
-        'context': 'pre-game',              // Bundle-Context
-        'firstImpressionOptimized': 'true', // Optimiert für ersten Eindruck
-        'welcomeAnimations': 'true',        // Für die vielen Animationen
-        'brandingElements': 'true',         // Logo und Branding
-        'cleanUI': 'true',                  // Saubere Landing UI
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildLandingPage(context, contextTheme, extensions);
-      },
+    // 🎯 SCOPED CONTEXT: Landing Page mit pre-game Context
+    return ThemePageProvider(
+      contextId: 'pre-game',
+      bundleId: 'pre-game-minimal',
+      child: ThemeContextConsumer(
+        componentName: 'LandingPage',
+        builder: (context, theme, extensions) {
+          return _buildLandingPage(context, theme, extensions);
+        },
+      ),
     );
   }
 
@@ -271,7 +265,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                 style: TextStyle(
                                                   fontSize: 56,
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
+                                                  color: theme.colorScheme.onPrimary,
                                                   letterSpacing: 3,
                                                   shadows: [
                                                     Shadow(
@@ -289,7 +283,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                             Text(
                                               AppLocalizations.of(context).landingSubtitle,
                                               style: TextStyle(
-                                                color: Colors.grey[200],
+                                                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                                                 fontSize: 22,
                                                 fontWeight: FontWeight.w300,
                                                 letterSpacing: 1,
@@ -358,9 +352,9 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                       child: Row(
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
-                                                          const Icon(
+                                                          Icon(
                                                             Icons.rocket_launch,
-                                                            color: Colors.white,
+                                                            color: theme.colorScheme.onPrimary,
                                                             size: 24,
                                                           ),
                                                           const SizedBox(width: 12),
@@ -369,8 +363,8 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                             children: [
                                                               Text(
                                                                 AppLocalizations.of(context).landingStartButton,
-                                                                style: const TextStyle(
-                                                                  color: Colors.white,
+                                                                style: TextStyle(
+                                                                  color: theme.colorScheme.onPrimary,
                                                                   fontSize: 18,
                                                                   fontWeight: FontWeight.bold,
                                                                 ),
@@ -378,7 +372,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                               Text(
                                                                 AppLocalizations.of(context).landingNoCreditCard,
                                                                 style: TextStyle(
-                                                                  color: Colors.white.withValues(alpha: 0.8),
+                                                                  color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
                                                                   fontSize: 12,
                                                                 ),
                                                               ),
@@ -440,13 +434,13 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                 Container(
                                                   height: 40,
                                                   width: 1,
-                                                  color: Colors.grey[700],
+                                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                                                 ),
                                                 _buildStatItem('1000+', AppLocalizations.of(context).landingStatsPlayers, theme),
                                                 Container(
                                                   height: 40,
                                                   width: 1,
-                                                  color: Colors.grey[700],
+                                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                                                 ),
                                                 _buildStatItem('24/7', AppLocalizations.of(context).landingStatsOnline, theme),
                                               ],
@@ -475,7 +469,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                               Text(
                                 AppLocalizations.of(context).landingDiscoverMore,
                                 style: TextStyle(
-                                  color: Colors.grey[400],
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                   fontSize: 14,
                                 ),
                               ),
@@ -503,7 +497,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                 style: const TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: Colors.white, // Hardcoded in secondary button
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -512,7 +506,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                 AppLocalizations.of(context).landingFeaturesSubtitle,
                                 style: TextStyle(
                                   fontSize: 18,
-                                  color: Colors.grey[300],
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -596,7 +590,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                       style: const TextStyle(
                                         fontSize: 28,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                        color: Colors.white, // Hardcoded in tertiary button
                                       ),
                                     ),
                                     const SizedBox(height: 16),
@@ -604,7 +598,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                       AppLocalizations.of(context).landingCtaSubtitle,
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors.grey[300],
+                                        color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                                       ),
                                       textAlign: TextAlign.center,
                                     ),
@@ -645,7 +639,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                         color: const Color(0xFF0A0A0A),
                         border: Border(
                           top: BorderSide(
-                            color: Colors.grey[800] ?? Colors.grey,
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                             width: 1,
                           ),
                         ),
@@ -655,7 +649,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                           Text(
                             AppLocalizations.of(context).footerCopyright,
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                               fontSize: 14,
                             ),
                           ),
@@ -668,7 +662,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                 child: Text(
                                   AppLocalizations.of(context).footerPrivacy,
                                   style: TextStyle(
-                                    color: Colors.grey[400],
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                     fontSize: 14,
                                   ),
                                 ),
@@ -679,7 +673,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                 child: Text(
                                   AppLocalizations.of(context).footerLegal,
                                   style: TextStyle(
-                                    color: Colors.grey[400],
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                     fontSize: 14,
                                   ),
                                 ),
@@ -690,7 +684,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                 child: Text(
                                   AppLocalizations.of(context).footerSupport,
                                   style: TextStyle(
-                                    color: Colors.grey[400],
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                     fontSize: 14,
                                   ),
                                 ),
@@ -788,7 +782,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Colors.white, // _buildFeatureCard hat keinen Theme-Zugriff
               ),
               textAlign: TextAlign.center,
             ),
@@ -797,7 +791,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
               description,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey[400],
+                color: Colors.grey[400], // _buildFeatureCard hat keinen Theme-Zugriff
                 height: 1.5,
               ),
               textAlign: TextAlign.center,

@@ -8,6 +8,13 @@ import 'api_service.dart';
 import 'theme_context_manager.dart';
 
 
+/// 🎯 Global Theme State Manager (für Cross-Service-Kommunikation)
+class GlobalThemeState {
+  static String _currentTheme = 'default';
+  static String get currentTheme => _currentTheme;
+  static void setCurrentTheme(String theme) => _currentTheme = theme;
+}
+
 /// 🚀 Modular Theme Service für Bundle-basiertes Theme Loading
 /// 
 /// Erweitert den bestehenden ThemeService um:
@@ -679,22 +686,22 @@ class ModularThemeService {
     final availableBundles = <String>[];
     
     // Basis-Bundles
-    availableBundles.addAll(['minimal_bundle', 'universal_bundle']);
+    availableBundles.addAll(['performance-optimized', 'pre-game-minimal']);
     
     // UI-Context-spezifische Bundles
     switch (context.uiContext) {
       case UIContext.login:
       case UIContext.register:
-        availableBundles.add('pre_game_bundle');
+        availableBundles.add('pre-game-minimal');
         break;
       case UIContext.worldSelection:
-        availableBundles.add('world_preview_bundle');
+        availableBundles.add('world-preview');
         break;
       case UIContext.inGame:
-        availableBundles.add('full_gaming_bundle');
+        availableBundles.add('full-gaming');
         break;
       case UIContext.debug:
-        availableBundles.add('debug_bundle');
+        availableBundles.add('pre-game-minimal');
         break;
       default:
         break;
@@ -702,8 +709,7 @@ class ModularThemeService {
     
     // Welt-spezifische Bundles
     if (context.worldContext != null) {
-      final worldType = context.worldContext!.worldType;
-      availableBundles.add('world_${worldType.name}_bundle');
+      availableBundles.add('full-gaming');
     }
     
     return availableBundles;
@@ -722,61 +728,84 @@ class ModularThemeService {
     switch (context.uiContext) {
       case UIContext.login:
       case UIContext.register:
-        return 'pre_game_bundle';
+        return 'pre-game-minimal';
       case UIContext.worldSelection:
-        return 'world_preview_bundle';
+        return 'world-preview';
       case UIContext.inGame:
-        return 'full_gaming_bundle';
+        return 'full-gaming';
       case UIContext.modal:
       case UIContext.overlay:
       case UIContext.dialog:
-        return 'minimal_bundle';
+        return 'performance-optimized';
       case UIContext.debug:
-        return 'debug_bundle';
+        return 'pre-game-minimal';
       case UIContext.settings:
-        return 'settings_bundle';
+        return 'pre-game-minimal';
       case UIContext.main:
-        return 'universal_bundle';
+        return 'pre-game-minimal';
     }
   }
 
   /// 🎨 Private: Theme Name aus Kontext bestimmen
   String _getThemeNameFromContext(ThemeContext context) {
-    // Welt-spezifische Themes
+    // 🎯 PRIORITY 1: Welt-spezifische Themes (für World-Seiten)
     if (context.worldContext != null) {
       final worldType = context.worldContext!.worldType;
-      return switch (worldType) {
-        WorldType.fantasy => 'mystical-fantasy',
-        WorldType.scifi => 'cyber-tech',
-        WorldType.medieval => 'ancient-stone',
-        WorldType.modern => 'clean-modern',
-        WorldType.horror => 'dark-horror',
-        WorldType.cyberpunk => 'neon-cyber',
-        WorldType.steampunk => 'brass-steam',
-        WorldType.nature => 'forest-nature',
+      final worldTheme = switch (worldType) {
+        WorldType.fantasy => 'tolkien',
+        WorldType.scifi => 'space',
+        WorldType.medieval => 'roman',
+        WorldType.modern => 'default',
+        WorldType.horror => 'cyberpunk',
+        WorldType.cyberpunk => 'cyberpunk',
+        WorldType.steampunk => 'roman',
+        WorldType.nature => 'nature',
       };
+      AppLogger.app.i('🌍 [THEME-DEBUG] World Theme: $worldTheme (WorldType: $worldType)');
+      print('🌍 [THEME-DEBUG] World Theme: $worldTheme (WorldType: $worldType)');
+      return worldTheme;
     }
     
-    // Visual Mode bestimmt Theme-Variante
-    switch (context.visualModeContext) {
-      case VisualModeContext.highContrast:
-        return 'high-contrast';
-      case VisualModeContext.colorBlind:
-        return 'accessible-colors';
-      default:
-        return 'mystical-fantasy'; // Standard Fantasy Theme
+    // 🎯 PRIORITY 2: Globales Theme vom User verwenden
+    final globalTheme = GlobalThemeState.currentTheme;
+    if (globalTheme.isNotEmpty && globalTheme != 'default') {
+      AppLogger.app.i('👤 [THEME-DEBUG] User Theme: $globalTheme (from GlobalState)');
+      print('👤 [THEME-DEBUG] User Theme: $globalTheme (from GlobalState)');
+      return globalTheme; // Verwende das vom User gewählte Theme!
     }
+    
+    // 🎯 PRIORITY 3: Visual Mode Fallbacks
+    final fallbackTheme = switch (context.visualModeContext) {
+      VisualModeContext.highContrast => 'default',
+      VisualModeContext.colorBlind => 'default',
+      _ => 'default', // Letzter Fallback
+    };
+    AppLogger.app.i('🔄 [THEME-DEBUG] Fallback Theme: $fallbackTheme (VisualMode: ${context.visualModeContext})');
+    print('🔄 [THEME-DEBUG] Fallback Theme: $fallbackTheme (VisualMode: ${context.visualModeContext})');
+    return fallbackTheme;
   }
 
   /// 📦 Private: Standard-Theme für Bundle
   String _getDefaultThemeForBundle(String bundleId) {
-    return switch (bundleId) {
-      'pre_game_bundle' => 'clean-login',
-      'world_preview_bundle' => 'world-preview',
-      'full_gaming_bundle' => 'mystical-fantasy',
-      'debug_bundle' => 'developer-debug',
-      _ => 'mystical-fantasy',
+    // 🎯 PRIORITY 1: Verwende globales Theme vom User
+    final globalTheme = GlobalThemeState.currentTheme;
+    if (globalTheme.isNotEmpty && globalTheme != 'default') {
+      AppLogger.app.i('👤 [THEME-DEBUG] Bundle uses User Theme: $globalTheme (Bundle: $bundleId)');
+      print('👤 [THEME-DEBUG] Bundle uses User Theme: $globalTheme (Bundle: $bundleId)');
+      return globalTheme; // Verwende das vom User gewählte Theme!
+    }
+    
+    // 🎯 PRIORITY 2: Bundle-spezifische Fallbacks (ALLE AUF DEFAULT)
+    final bundleTheme = switch (bundleId) {
+      'pre-game-minimal' => 'default',
+      'world-preview' => 'default', 
+      'full-gaming' => 'default', // ✅ CLEAN: Auch Gaming startet neutral
+      'performance-optimized' => 'default',
+      _ => 'default',
     };
+    AppLogger.app.i('📦 [THEME-DEBUG] Bundle Default Theme: $bundleTheme (Bundle: $bundleId)');
+    print('📦 [THEME-DEBUG] Bundle Default Theme: $bundleTheme (Bundle: $bundleId)');
+    return bundleTheme;
   }
 
   /// 🎭 Private: Kontext-spezifische Theme-Modifikationen anwenden
@@ -926,12 +955,15 @@ class ModularThemeService {
     final text = colors['text'] as Map<String, dynamic>? ?? {};
     
     // Farben extrahieren mit Fallbacks
-    final primaryColor = _parseColor(primary['value']) ?? const Color(0xFF6366F1);
-    final secondaryColor = _parseColor(secondary['value']) ?? const Color(0xFF8B5CF6);
-    final tertiaryColor = _parseColor(tertiary['value']) ?? const Color(0xFFD4AF37);
+    final primaryColor = _parseColor(primary['main'] ?? primary['value']) ?? const Color(0xFF6366F1);
+    final secondaryColor = _parseColor(secondary['main'] ?? secondary['value']) ?? const Color(0xFF8B5CF6);
+    final tertiaryColor = _parseColor(tertiary['main'] ?? tertiary['value']) ?? const Color(0xFFD4AF37);
     
-    final surfaceColor = _parseColor(background['surface_dark']) ?? 
-                        (isDark ? const Color(0xFF1A1A1A) : const Color(0xFFFAFAFA));
+    final surfaceColor = _parseColor(
+      background['surface_dark'] ?? 
+      background['primary'] ?? 
+      background['main']
+    ) ?? (isDark ? const Color(0xFF1A1A1A) : const Color(0xFFFAFAFA));
     
     return ColorScheme.fromSeed(
       seedColor: primaryColor,
@@ -940,9 +972,9 @@ class ModularThemeService {
       secondary: secondaryColor,
       tertiary: tertiaryColor,
       surface: surfaceColor,
-      onPrimary: _parseColor(text['primary']) ?? (isDark ? Colors.white : Colors.black),
-      onSecondary: _parseColor(text['secondary']) ?? (isDark ? Colors.white70 : Colors.black87),
-      onSurface: _parseColor(text['primary']) ?? (isDark ? Colors.white : Colors.black),
+      onPrimary: _parseColor(text['primary'] ?? text['main']) ?? (isDark ? Colors.white : Colors.black),
+      onSecondary: _parseColor(text['secondary'] ?? text['light']) ?? (isDark ? Colors.white70 : Colors.black87),
+      onSurface: _parseColor(text['primary'] ?? text['main']) ?? (isDark ? Colors.white : Colors.black),
     );
   }
 

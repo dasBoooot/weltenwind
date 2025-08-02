@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
-import '../../core/providers/theme_context_provider.dart';
+import '../../core/theme/index.dart';
 import '../../shared/components/index.dart' hide ThemeSwitcher;
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
@@ -192,7 +192,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Erfolgreich der Welt "$worldName" beigetreten!'),
-                  backgroundColor: Colors.green,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                 ),
               );
               
@@ -224,21 +224,16 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 KONTEXTSENSITIVE THEME-BEREITSTELLUNG mit PRE-GAME BUNDLE
-    return ThemeContextConsumer(
-      componentName: 'LoginPage',
-      contextOverrides: const {
-        'uiContext': 'login',           // Aktiviert pre_game_bundle
-        'bundleType': 'pre_game_bundle', // Explizite Bundle-Spezifikation
-        'pageType': 'auth',
-        'context': 'pre-game',          // Bundle-Context
-        'firstImpressionOptimized': 'true',
-        'welcomeAnimations': 'true',
-        'brandingElements': 'true',
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildLoginPage(context, contextTheme, extensions);
-      },
+    // 🎯 SCOPED CONTEXT: Login Page mit pre-game Context
+    return ThemePageProvider(
+      contextId: 'pre-game',
+      bundleId: 'pre-game-minimal',
+      child: ThemeContextConsumer(
+        componentName: 'LoginPage', 
+        builder: (context, theme, extensions) {
+          return _buildLoginPage(context, theme, extensions);
+        },
+      ),
     );
   }
 
@@ -380,25 +375,25 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   padding: const EdgeInsets.all(kTextTabBarHeight / 3),
                                   margin: const EdgeInsets.only(bottom: kTextTabBarHeight / 2),
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+                                    color: theme.colorScheme.error.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
+                                      color: theme.colorScheme.error.withValues(alpha: 0.3),
                                     ),
                                   ),
                                   child: Row(
                                     children: [
                                       Icon(
                                         Icons.error_outline,
-                                        color: Theme.of(context).colorScheme.error,
+                                        color: theme.colorScheme.error,
                                         size: 20,
                                       ),
                                       const SizedBox(width: kTextTabBarHeight / 6),
                                       Expanded(
                                         child: Text(
                                           _loginError!,
-                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                            color: Theme.of(context).colorScheme.error,
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: theme.colorScheme.error,
                                           ),
                                         ),
                                       ),
@@ -448,7 +443,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           // Loading Overlay
           if (_isLoading)
             Container(
-              color: Colors.black.withValues(alpha: 0.7),
+              color: theme.colorScheme.surface.withValues(alpha: 0.9),
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -461,7 +456,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     Text(
                       AppLocalizations.of(context).authLoginLoading,
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: Colors.white,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                   ],

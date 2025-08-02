@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/providers/theme_context_provider.dart';
+import '../../../core/theme/index.dart';
 import '../../../l10n/app_localizations.dart';
 
 class WorldListHeader extends StatelessWidget {
@@ -57,8 +57,8 @@ class WorldListHeader extends StatelessWidget {
         // Title
         Text(
           AppLocalizations.of(context).appTitle,
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-            color: Colors.white,
+          style: theme.textTheme.headlineLarge?.copyWith(
+            color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
             fontSize: 36,
           ),
@@ -68,8 +68,8 @@ class WorldListHeader extends StatelessWidget {
         // Subtitle
         Text(
           AppLocalizations.of(context).worldListTitle,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: Colors.grey[300],
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             fontSize: 18,
           ),
           textAlign: TextAlign.center,
@@ -77,12 +77,12 @@ class WorldListHeader extends StatelessWidget {
         const SizedBox(height: 24),
         
         // Action Buttons
-        _buildActionButtons(context),
+        _buildActionButtons(context, theme),
       ],
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
+  Widget _buildActionButtons(BuildContext context, ThemeData theme) {
     final buttons = <Widget>[];
 
     if (onRefresh != null) {
@@ -92,8 +92,8 @@ class WorldListHeader extends StatelessWidget {
           icon: const Icon(Icons.refresh, size: 18),
           label: Text(AppLocalizations.of(context).worldListRefreshButton),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Colors.white,
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: theme.colorScheme.onPrimary,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -110,8 +110,8 @@ class WorldListHeader extends StatelessWidget {
           icon: const Icon(Icons.add, size: 18),
           label: Text(AppLocalizations.of(context).worldListCreateButton),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green[600],
-            foregroundColor: Colors.white,
+            backgroundColor: theme.colorScheme.secondary,
+            foregroundColor: theme.colorScheme.onSecondary,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),

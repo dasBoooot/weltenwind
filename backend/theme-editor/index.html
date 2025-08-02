@@ -45,8 +45,20 @@
                     <div class="stat-label">Version</div>
                 </div>
                 <div class="stat">
+                    <div class="stat-value" id="bundleType">-</div>
+                    <div class="stat-label">Bundle Name</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="bundleContext">-</div>
+                    <div class="stat-label">Context</div>
+                </div>
+                <div class="stat">
                     <div class="stat-value" id="colorCount">-</div>
                     <div class="stat-label">Farben</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="moduleCount">-</div>
+                    <div class="stat-label">Module</div>
                 </div>
             </div>
         </div>
@@ -58,10 +70,12 @@
                         <option value="">🎨 Theme wählen...</option>
                     </select>
                     <button class="btn-secondary" onclick="showCloneDialog()" id="cloneButton" disabled>📋 Klonen</button>
+                    <button class="btn-secondary" onclick="showImportDialog()" id="importButton">📥 Importieren</button>
                 </div>
                 <div class="actions">
                     <button class="btn-success" onclick="showSaveConfirmDialog()" id="saveButton" disabled>💾 Speichern</button>
                     <button class="btn-secondary" onclick="showExportDialog()" id="exportButton" disabled>📤 Export JSON</button>
+                    <button class="btn-secondary" onclick="showBackupDialog()" id="backupButton" disabled>📋 Backups</button>
                     <button class="btn-secondary" onclick="resetTheme()" id="resetButton" disabled>🔄 Zurücksetzen</button>
                     <button onclick="togglePreview()" id="previewButton" disabled>👀 Live-Preview</button>
                 </div>
@@ -70,13 +84,28 @@
 
         <!-- Main Editor Layout -->
         <div class="editor-layout">
-            <!-- Color Editor Panel -->
+            <!-- Modular Editor Panel -->
             <div class="editor-panel">
-                <h3>🎨 Farben bearbeiten</h3>
-                <div id="colorEditor" class="color-editor">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <div>Theme laden...</div>
+                <h3>🎨 Theme Module bearbeiten</h3>
+                
+                <!-- Tab Navigation -->
+                <div class="editor-tabs" id="editorTabs">
+                    <button class="editor-tab active" data-tab="colors">🎨 Farben</button>
+                    <button class="editor-tab" data-tab="typography">📝 Typography</button>
+                    <button class="editor-tab" data-tab="spacing">📏 Spacing</button>
+                    <button class="editor-tab" data-tab="radius">🔲 Radius</button>
+                    <button class="editor-tab" data-tab="gaming">🎮 Gaming</button>
+                    <button class="editor-tab" data-tab="effects">✨ Effects</button>
+                    <button class="editor-tab" data-tab="bundle">📦 Bundle</button>
+                </div>
+                
+                <!-- Tab Content -->
+                <div id="editorContent" class="editor-content">
+                    <div id="colorEditor" class="color-editor">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <div>Theme laden...</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -115,6 +144,96 @@
                             </div>
                             <div class="preview-surface-light">
                                 <p>Surface Light</p>
+                            </div>
+                        </div>
+
+                        <!-- Typography Preview -->
+                        <div class="preview-card" id="typographyPreview">
+                            <h4>Typography</h4>
+                            <div class="typography-preview">
+                                <h1 class="preview-h1">Heading 1 - Fantasy Title</h1>
+                                <h2 class="preview-h2">Heading 2 - Chapter</h2>
+                                <h3 class="preview-h3">Heading 3 - Section</h3>
+                                <p class="preview-body">Body Text - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mysticum.</p>
+                                <p class="preview-caption">Caption - Small descriptive text</p>
+                            </div>
+                        </div>
+
+                        <!-- Spacing Preview -->
+                        <div class="preview-card" id="spacingPreview">
+                            <h4>Spacing & Layout</h4>
+                            <div class="spacing-preview">
+                                <div class="spacing-demo spacing-xs">XS</div>
+                                <div class="spacing-demo spacing-sm">SM</div>
+                                <div class="spacing-demo spacing-md">MD</div>
+                                <div class="spacing-demo spacing-lg">LG</div>
+                                <div class="spacing-demo spacing-xl">XL</div>
+                            </div>
+                        </div>
+
+                        <!-- Radius Preview -->
+                        <div class="preview-card" id="radiusPreview">
+                            <h4>Border Radius</h4>
+                            <div class="radius-preview">
+                                <div class="radius-demo radius-small">Small</div>
+                                <div class="radius-demo radius-medium">Medium</div>
+                                <div class="radius-demo radius-large">Large</div>
+                                <div class="radius-demo radius-xl">XL</div>
+                            </div>
+                        </div>
+
+                        <!-- Gaming Elements Preview -->
+                        <div class="preview-card" id="gamingPreview">
+                            <h4>Gaming Elements</h4>
+                            <div class="gaming-preview">
+                                <!-- Inventory Slots -->
+                                <div class="gaming-section">
+                                    <h5>Inventory</h5>
+                                    <div class="inventory-grid">
+                                        <div class="inventory-slot filled">⚔️</div>
+                                        <div class="inventory-slot filled">🛡️</div>
+                                        <div class="inventory-slot filled">💎</div>
+                                        <div class="inventory-slot empty"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Progress Bars -->
+                                <div class="gaming-section">
+                                    <h5>Progress</h5>
+                                    <div class="progress-bar health">
+                                        <div class="progress-fill" style="width: 85%">Health 85%</div>
+                                    </div>
+                                    <div class="progress-bar mana">
+                                        <div class="progress-fill" style="width: 60%">Mana 60%</div>
+                                    </div>
+                                    <div class="progress-bar experience">
+                                        <div class="progress-fill" style="width: 30%">XP 30%</div>
+                                    </div>
+                                </div>
+
+                                <!-- HUD Elements -->
+                                <div class="gaming-section">
+                                    <h5>HUD Elements</h5>
+                                    <div class="hud-element">
+                                        <span class="hud-label">Gold:</span>
+                                        <span class="hud-value">1,247</span>
+                                    </div>
+                                    <div class="hud-element">
+                                        <span class="hud-label">Level:</span>
+                                        <span class="hud-value">42</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Effects Preview -->
+                        <div class="preview-card" id="effectsPreview">
+                            <h4>Visual Effects</h4>
+                            <div class="effects-preview">
+                                <div class="effect-demo glow-effect">Glow Effect</div>
+                                <div class="effect-demo shimmer-effect">Shimmer Effect</div>
+                                <div class="effect-demo glass-effect">Glass Effect</div>
+                                <div class="effect-demo pulse-effect">Pulse Animation</div>
                             </div>
                         </div>
                     </div>
@@ -206,6 +325,121 @@
                 <div class="dialog-buttons">
                     <button class="btn-secondary" onclick="closeSaveConfirmDialog()">❌ Abbrechen</button>
                     <button class="btn-success" onclick="confirmSave()">✅ Jetzt speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup Management Dialog -->
+    <div id="backupDialog" class="hidden">
+        <div class="dialog-overlay">
+            <div class="dialog-content backup-dialog">
+                <h3>💾 Theme-Backup-Historie</h3>
+                <p><strong>🎨 Theme:</strong> <span id="backupThemeName">-</span></p>
+                
+                <div class="backup-filters">
+                    <button class="filter-btn active" onclick="filterBackups('all')">Alle</button>
+                    <button class="filter-btn" onclick="filterBackups('manual_save')">Speicherungen</button>
+                    <button class="filter-btn" onclick="filterBackups('theme_clone')">Klonungen</button>
+                </div>
+                
+                <div id="backupList" class="backup-list">
+                    <div class="loading">⏳ Lade Backups...</div>
+                </div>
+                
+                <div class="dialog-buttons">
+                    <button class="btn-secondary" onclick="closeBackupDialog()">❌ Schließen</button>
+                    <button class="btn-primary" onclick="showAuditDialog()" id="auditButton">📊 Vollständiger Audit-Trail</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Trail Dialog -->
+    <div id="auditDialog" class="hidden">
+        <div class="dialog-overlay">
+            <div class="dialog-content audit-dialog">
+                <h3>📊 Theme-Audit-Trail</h3>
+                <p><strong>🎨 Theme:</strong> <span id="auditThemeName">-</span></p>
+                
+                <div class="audit-stats" id="auditStats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalAuditEntries">-</div>
+                        <div class="stat-label">Gesamt</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="auditDateRange">-</div>
+                        <div class="stat-label">Zeitraum</div>
+                    </div>
+                </div>
+                
+                <div id="auditList" class="audit-list">
+                    <div class="loading">⏳ Lade Audit-Trail...</div>
+                </div>
+                
+                <div class="dialog-buttons">
+                    <button class="btn-secondary" onclick="closeAuditDialog()">❌ Schließen</button>
+                    <button class="btn-primary" onclick="exportAuditTrail()">📤 Audit-Trail exportieren</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Theme Dialog -->
+    <div id="importDialog" class="hidden">
+        <div class="dialog-overlay">
+            <div class="dialog-content">
+                <h3>📥 Theme importieren</h3>
+                <p>Importiere ein Theme aus einer JSON-Datei oder füge JSON-Code direkt ein.</p>
+                
+                <div class="import-mode-selection">
+                    <h4>🎯 Import-Modus</h4>
+                    <div class="import-mode-options">
+                        <label class="import-mode-option">
+                            <input type="radio" name="importMode" value="new" checked onchange="toggleImportMode()">
+                            <span>📝 Neues Theme erstellen</span>
+                        </label>
+                        <label class="import-mode-option">
+                            <input type="radio" name="importMode" value="update" onchange="toggleImportMode()">
+                            <span>🔄 Bestehendes Theme aktualisieren</span>
+                        </label>
+                    </div>
+                    
+                    <div id="existingThemeSelector" class="existing-theme-selector hidden">
+                        <label for="targetTheme">🎨 Ziel-Theme auswählen:</label>
+                        <select id="targetTheme" style="width: 100%; margin-top: 5px;">
+                            <option value="">Theme auswählen...</option>
+                        </select>
+                        <p class="import-note">⚠️ Bundle-Konfiguration wird beibehalten, nur Inhalte werden aktualisiert</p>
+                    </div>
+                </div>
+
+                <div class="import-options">
+                    <div class="import-method">
+                        <h4>📄 Datei hochladen</h4>
+                        <input type="file" id="importFile" accept=".json" style="width: 100%; margin-bottom: 10px;">
+                        <button class="btn-secondary" onclick="loadFileContent()" style="width: 100%;">📂 Datei laden</button>
+                    </div>
+                    
+                    <div class="import-divider">
+                        <span>oder</span>
+                    </div>
+                    
+                    <div class="import-method">
+                        <h4>📝 JSON-Code einfügen</h4>
+                        <textarea id="importJson" placeholder='{\n  "name": "Mein Theme",\n  "version": "1.0.0",\n  ...\n}' rows="8" style="width: 100%; font-family: monospace; resize: vertical;"></textarea>
+                    </div>
+                </div>
+                
+                <div id="importValidation" class="import-validation hidden">
+                    <h4>✅ Validierung</h4>
+                    <div id="validationResults"></div>
+                </div>
+                
+                <div class="dialog-buttons">
+                    <button class="btn-secondary" onclick="closeImportDialog()">❌ Abbrechen</button>
+                    <button class="btn-primary" onclick="validateImport()" id="validateButton">🔍 Validieren</button>
+                    <button class="btn-success" onclick="executeImport()" id="importExecuteButton" disabled>📥 Importieren</button>
                 </div>
             </div>
         </div>

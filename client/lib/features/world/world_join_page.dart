@@ -4,7 +4,7 @@ import '../../config/logger.dart';
 import '../../core/models/world.dart';
 import '../../core/services/world_service.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/providers/theme_context_provider.dart';
+import '../../core/theme/index.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
@@ -65,6 +65,55 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     super.didChangeDependencies();
     // Authentication-Status bei Kontext-Änderungen prüfen
     _checkAuthenticationStatus();
+  }
+
+  /// 🎯 Theme Early Detection: Bestimme Theme schon vor API-Load
+  String _getWorldTheme() {
+    // 1. Wenn World bereits geladen → verwende themeBundle aber korrigiere Bundle-zu-Theme
+    if (_world != null) {
+      final worldBundle = _world!.themeBundle ?? 'world-preview';
+      print('🔍 [THEME-DEBUG] World loaded: themeBundle = $worldBundle');
+      
+      // 🛡️ BUNDLE-zu-THEME Korrektur (falls DB Bundle-Namen statt Theme-Namen hat)
+      final correctedTheme = _correctBundleToTheme(worldBundle);
+      print('🔄 [THEME-DEBUG] Bundle corrected: $worldBundle → $correctedTheme');
+      return correctedTheme;
+    }
+    
+    // 2. Early Detection basierend auf World-ID (Demo Worlds haben bekannte IDs)
+    final worldId = int.tryParse(widget.worldId) ?? 0;
+    final earlyTheme = switch (worldId) {
+      6 => 'tolkien',     // Mittelerde
+      7 => 'space',       // Galactic Empire
+      8 => 'roman',       // Römisches Reich
+      9 => 'nature',      // Waldreich
+      10 => 'cyberpunk',  // Neo Tokyo
+      _ => 'world-preview', // Fallback
+    };
+    print('🎯 [THEME-DEBUG] Early detection for ID $worldId: $earlyTheme');
+    return earlyTheme;
+  }
+
+  /// 🛡️ Helper: Bundle-Name zu Theme-Name Korrektur
+  String _correctBundleToTheme(String bundleOrTheme) {
+    // Falls die DB Bundle-Namen statt Theme-Namen gespeichert hat
+    switch (bundleOrTheme) {
+      case 'full-gaming': 
+        // ✅ KORREKT: full-gaming Bundle kann verschiedene Themes haben
+        // Hier sollten wir die World-ID berücksichtigen, nicht pauschal tolkien
+        final worldId = int.tryParse(widget.worldId) ?? 0;
+        switch (worldId) {
+          case 6: return 'tolkien';    // Mittelerde
+          case 7: return 'space';      // Galactic Empire  
+          case 8: return 'roman';      // Römisches Reich
+          case 9: return 'nature';     // Waldreich
+          case 10: return 'cyberpunk'; // Neo Tokyo
+          default: return 'default';   // Fallback für unbekannte Welten
+        }
+      case 'world-preview': return 'default'; // ✅ KORREKTUR: Neutrales Preview-Theme
+      case 'pre-game-minimal': return 'default';
+      default: return bundleOrTheme; // Assume it's already a theme name
+    }
   }
 
   void _initializeServices() {
@@ -196,7 +245,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Fehler beim Öffnen des Einladungs-Dialogs: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -224,7 +273,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).worldJoinSuccess(_world!.name)),
-              backgroundColor: Colors.green,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               duration: const Duration(seconds: 3),
             ),
           );
@@ -271,7 +320,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).worldPreRegisterSuccessful(world.name)),
-              backgroundColor: Colors.green,
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
         }
@@ -313,7 +362,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).worldPreRegisterCancelled(world.name)),
-              backgroundColor: Colors.orange,
+              backgroundColor: Theme.of(context).colorScheme.tertiary,
             ),
           );
         }
@@ -378,7 +427,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).worldLeaveSuccessful(world.name)),
-            backgroundColor: Colors.orange,
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
           ),
         );
       }
@@ -434,30 +483,24 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     await _loadWorldData();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    // 🌍 WORLD-SPECIFIC THEME: Komplette Page im World-Theme!
-    final worldTheme = _world?.themeBundle ?? 'default_world_bundle';
+    // 🌍 WORLD-SPECIFIC THEME: Mit bestehender Architektur
+    final worldTheme = _getWorldTheme();
     
-    // 🎯 WORLD-THEMED EXPERIENCE: Komplett immersive World-spezifische Page
-    return ThemeContextConsumer(
-      componentName: 'WorldJoinPage',
-      enableMixedContext: true,
-      worldThemeOverride: worldTheme,
-      fallbackTheme: 'default_world_bundle', // Fallback während Loading
-      contextOverrides: {
-        'uiContext': 'world-join',
-        'pageType': 'world-join',
-        'context': 'world-themed',
-        'worldId': widget.worldId,
-        'immersiveExperience': 'true',
-        'brandingElements': 'true',
-      },
-      builder: (context, theme, extensions) {
-        return _buildWorldJoinPage(context, theme, extensions);
-      },
+    // 🔸 SCOPED CONTEXT: World Join Page mit world-spezifischem Theme
+    return ThemePageProvider(
+      contextId: 'world-join',
+      bundleId: 'world-preview', // Base bundle für World Join
+      worldTheme: worldTheme, // 🌍 World-spezifisches Theme
+      child: ThemeContextConsumer(
+        componentName: 'WorldJoinPage',
+        worldThemeOverride: worldTheme, // 🌍 Component-Level Override - async loading in ThemeContextConsumer
+        fallbackBundle: 'world-preview', // Fallback während Loading
+        builder: (context, theme, extensions) {
+          return _buildWorldJoinPage(context, theme, extensions);
+        },
+      ),
     );
   }
 
@@ -517,7 +560,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
             constraints: const BoxConstraints(maxWidth: 500),
             child: Card(
               elevation: 12,
-              color: const Color(0xFF1A1A1A), // Dunkle Karte
+              color: theme.colorScheme.surface, // Dunkle Karte
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
@@ -551,7 +594,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                       Text(
                         AppLocalizations.of(context).worldLoadingError,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
+                          color: theme.colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -559,7 +602,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                       Text(
                         _errorMessage ?? AppLocalizations.of(context).worldJoinUnknownError,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.grey[300],
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -575,7 +618,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                           label: Text(AppLocalizations.of(context).buttonRetry),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: theme.colorScheme.primary,
-                            foregroundColor: Colors.white,
+                            foregroundColor: theme.colorScheme.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -615,7 +658,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
             constraints: const BoxConstraints(maxWidth: 500),
             child: Card(
               elevation: 12,
-              color: const Color(0xFF1A1A1A), // Dunkle Karte
+              color: theme.colorScheme.surface, // Dunkle Karte
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
@@ -649,7 +692,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                       Text(
                         AppLocalizations.of(context).worldNotFoundTitle,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
+                          color: theme.colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -657,7 +700,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                       Text(
                         AppLocalizations.of(context).worldNotFoundMessage,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.grey[300],
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -669,7 +712,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                           onPressed: () => context.goNamed('world-list'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: theme.colorScheme.primary,
-                            foregroundColor: Colors.white,
+                            foregroundColor: theme.colorScheme.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -695,7 +738,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
         margin: const EdgeInsets.all(24),
         child: Card(
           elevation: 16,
-          color: const Color(0xFF1A1A1A),
+          color: theme.colorScheme.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
             side: BorderSide(
@@ -735,7 +778,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                               Text(
                                 _world?.name ?? AppLocalizations.of(context).worldJoinUnknownWorldName,
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onSurface,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -906,7 +949,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 label: Text(_isPreRegistering ? AppLocalizations.of(context).worldJoinCancelPreRegistrationInProgress : AppLocalizations.of(context).worldJoinCancelPreRegistrationButton),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red[600],
-                  foregroundColor: Colors.white,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -923,7 +966,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 label: Text(AppLocalizations.of(context).worldInviteButton),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[600],
-                  foregroundColor: Colors.white,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -939,7 +982,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 label: Text(_isPreRegistering ? AppLocalizations.of(context).worldJoinPreRegisterInProgress : AppLocalizations.of(context).worldJoinPreRegisterButton),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange[600],
-                  foregroundColor: Colors.white,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -962,7 +1005,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 label: Text(AppLocalizations.of(context).worldPlayButton),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[600],
-                  foregroundColor: Colors.white,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -979,7 +1022,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 label: Text(_isJoining ? AppLocalizations.of(context).worldJoinLeaveInProgress : AppLocalizations.of(context).worldLeaveButton),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red[600],
-                  foregroundColor: Colors.white,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -996,7 +1039,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 label: Text(AppLocalizations.of(context).worldInviteButton),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[600],
-                  foregroundColor: Colors.white,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -1013,7 +1056,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 label: Text(_isJoining ? AppLocalizations.of(context).worldJoinInProgress : AppLocalizations.of(context).worldJoinNowButton),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

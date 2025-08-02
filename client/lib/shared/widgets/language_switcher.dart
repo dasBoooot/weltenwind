@@ -70,7 +70,7 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
         'inherit': 'parent-theme',
         'universalComponent': 'true', // Universelles UI-Element
       },
-      fallbackTheme: 'pre_game_bundle',
+      fallbackTheme: 'pre-game-minimal',
       builder: (context, theme, extensions) {
         return _buildLanguageSwitcher(context, theme);
       },

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/providers/theme_context_provider.dart';
+import '../../core/theme/index.dart';
 import '../components/index.dart';
 import '../utils/dynamic_components.dart';
 import '../../main.dart';
@@ -72,16 +72,16 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
       case 'admin':
         return theme.colorScheme.error; // 🔴 Admin = Rot
       case 'developer':
-        return const Color(0xFF9D4EDD); // 🔮 Developer = Magisches Lila
+        return theme.colorScheme.secondary; // 🔮 Developer = Secondary Theme
       case 'support':
         return theme.colorScheme.tertiary; // 🔵 Support = Blau
       case 'mod':
-        return const Color(0xFFF77F00); // 🟠 Mod = Orange
+        return theme.colorScheme.tertiary; // 🟠 Mod = Tertiary Theme
       case 'world-admin':
         return theme.colorScheme.primary; // 🟣 World-Admin = Primary
       case 'user':
       default:
-        return const Color(0xFF52B788); // 🟢 User = Grün
+        return theme.colorScheme.primary; // 🟢 User = Primary Theme
     }
   }
   
@@ -90,17 +90,12 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
     final user = _authService.currentUser;
     if (user == null) return const SizedBox.shrink();
     
-    // 🎯 MIXED-CONTEXT THEME: Universal Theme-Vererbung
+    // 🎯 PARENT-THEME INHERITANCE: Erbt automatisch das Theme der umgebenden Seite
+    // WorldListPage → world-preview | WorldJoinPage → tolkien | DashboardPage → tolkien
     return ThemeContextConsumer(
       componentName: 'UserInfoWidget',
-      enableMixedContext: true,
-      contextOverrides: const {
-        'uiContext': 'user-info',
-        'context': 'inherit', // Erbt Theme vom Parent (Pre-Game oder World-themed)
-        'inherit': 'parent-theme',
-        'universalComponent': 'true', // Universelles UI-Element
-      },
-      fallbackTheme: 'pre_game_bundle',
+      // Keine worldThemeOverride → erbt Parent-Theme automatisch
+      fallbackBundle: 'pre-game-minimal', // Nur als Sicherheitsnetz
       builder: (context, theme, extensions) {
         return _buildUserInfo(context, theme, extensions, user);
       },

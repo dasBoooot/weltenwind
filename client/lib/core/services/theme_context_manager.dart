@@ -154,14 +154,14 @@ class ThemeContextManager extends ChangeNotifier {
     }
     
     return switch (_uiContext) {
-      UIContext.login => 'pre_game_bundle',
-      UIContext.worldSelection => 'world_preview_bundle', 
-      UIContext.inGame => 'full_gaming_bundle',
-      UIContext.modal => 'minimal_bundle',
-      UIContext.overlay => 'minimal_bundle',
-      UIContext.dialog => 'minimal_bundle',
-      UIContext.debug => 'debug_bundle',
-      _ => 'universal_bundle',
+      UIContext.login => 'pre-game-minimal',
+      UIContext.worldSelection => 'world-preview', 
+      UIContext.inGame => 'full-gaming',
+      UIContext.modal => 'performance-optimized',
+      UIContext.overlay => 'performance-optimized',
+      UIContext.dialog => 'performance-optimized',
+      UIContext.debug => 'pre-game-minimal',
+      _ => 'pre-game-minimal',
     };
   }
 
@@ -241,11 +241,11 @@ class ThemeContextManager extends ChangeNotifier {
     final type = worldType ?? WorldType.fantasy;
     
     return switch (type) {
-      WorldType.fantasy => 'world_fantasy_bundle',
-      WorldType.scifi => 'world_scifi_bundle', 
-      WorldType.medieval => 'world_medieval_bundle',
-      WorldType.modern => 'world_modern_bundle',
-      _ => 'world_${worldId.toLowerCase()}_bundle',
+            WorldType.fantasy => 'full-gaming',
+      WorldType.scifi => 'full-gaming',
+      WorldType.medieval => 'full-gaming',
+      WorldType.modern => 'full-gaming',
+      _ => 'full-gaming',
     };
   }
 

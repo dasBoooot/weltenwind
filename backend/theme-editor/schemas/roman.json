@@ -1,0 +1,269 @@
+{
+  "$schema": "./main.schema.json",
+  "name": "Ancient Roman Theme",
+  "filename": "roman",
+  "version": "1.0.0",
+  "description": "Klassisches römisches Theme mit Marmor-Texturen, Gold-Akzenten und antiker Eleganz",
+  "category": "ancient",
+  "author": "Weltenwind Team",
+  "bundle": {
+    "name": "full-gaming",
+    "type": "ancient_world_bundle",
+    "context": "world-ancient",
+    "modules": ["colors", "typography", "spacing", "radius", "effects.animations", "gaming.inventory", "gaming.progress", "gaming.hud"]
+  },
+  "colors": {
+    "primary": {
+      "value": "#800020",
+      "description": "Tiefes Bordeaux-Rot der römischen Toga"
+    },
+    "secondary": {
+      "value": "#FFD700",
+      "description": "Goldgelb für kaiserliche Akzente"
+    },
+    "tertiary": {
+      "value": "#CD853F",
+      "description": "Warmes Bronze für Details"
+    },
+    "background": {
+      "surface_dark": "#F5F5DC",
+      "surface_medium": "#DDBEA9",
+      "surface_light": "#F0E68C",
+      "surface_lighter": "#FFF8DC",
+      "surface_gray": "#D2B48C"
+    },
+    "text": {
+      "primary": "#2F4F4F",
+      "secondary": "#708090",
+      "muted": "#A0A0A0",
+      "inverse": "#FFFFFF"
+    },
+    "accent": {
+      "success": "#228B22",
+      "warning": "#DAA520",
+      "error": "#B22222",
+      "info": "#4682B4"
+    },
+    "roman": {
+      "imperial": "#800020",
+      "gold": "#FFD700",
+      "bronze": "#CD7F32",
+      "marble": "#F8F8FF",
+      "ivory": "#FFFFF0",
+      "crimson": "#DC143C"
+    },
+    "elements": {
+      "column": "#F5F5DC",
+      "fresco": "#DEB887",
+      "mosaic": "#CD853F",
+      "laurel": "#228B22"
+    }
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Trajan Pro, serif",
+      "secondary": "Minion Pro, serif",
+      "inscription": "Optima, sans-serif",
+      "body": "Sabon, serif",
+      "ui": "Lato, sans-serif"
+    },
+    "textStyles": {
+      "heading": {
+        "fontSize": 32,
+        "fontWeight": "bold",
+        "fontFamily": "Trajan Pro, serif",
+        "letterSpacing": 3.0,
+        "lineHeight": 1.1,
+        "textTransform": "uppercase"
+      },
+      "subheading": {
+        "fontSize": 24,
+        "fontWeight": "semi-bold",
+        "fontFamily": "Optima, sans-serif",
+        "letterSpacing": 1.5,
+        "lineHeight": 1.2
+      },
+      "body": {
+        "fontSize": 16,
+        "fontWeight": "normal",
+        "fontFamily": "Sabon, serif",
+        "letterSpacing": 0.3,
+        "lineHeight": 1.6
+      },
+      "caption": {
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "fontFamily": "Minion Pro, serif",
+        "letterSpacing": 0.2,
+        "lineHeight": 1.4
+      },
+      "inscription": {
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "fontFamily": "Trajan Pro, serif",
+        "letterSpacing": 2.0,
+        "lineHeight": 1.3,
+        "textTransform": "uppercase"
+      }
+    }
+  },
+  "spacing": {
+    "xs": 6,
+    "sm": 12,
+    "md": 20,
+    "lg": 32,
+    "xl": 48,
+    "xxl": 64,
+    "semantic": {
+      "padding": {
+        "small": 16,
+        "medium": 24,
+        "large": 40
+      },
+      "margin": {
+        "small": 12,
+        "medium": 20,
+        "large": 32
+      },
+      "classical": {
+        "columnSpacing": 48,
+        "frieze": 24,
+        "pedestal": 16
+      }
+    }
+  },
+  "radius": {
+    "sm": 2,
+    "md": 4,
+    "lg": 6,
+    "xl": 8,
+    "round": 9999,
+    "classical": {
+      "arch": 16,
+      "medallion": 9999,
+      "tablet": 4,
+      "column": 2
+    }
+  },
+  "effects": {
+    "shadows": {
+      "small": "0 2px 4px rgba(128, 0, 32, 0.2)",
+      "medium": "0 4px 8px rgba(128, 0, 32, 0.3)",
+      "large": "0 8px 16px rgba(128, 0, 32, 0.4)",
+      "marble": "inset 0 1px 3px rgba(255, 255, 255, 0.6), 0 1px 2px rgba(0, 0, 0, 0.1)"
+    },
+    "glows": {
+      "gold": "0 0 12px rgba(255, 215, 0, 0.6)",
+      "imperial": "0 0 15px rgba(128, 0, 32, 0.5)",
+      "bronze": "0 0 10px rgba(205, 127, 50, 0.7)"
+    },
+    "animations": {
+      "duration": {
+        "fast": 300,
+        "medium": 600,
+        "slow": 1000,
+        "stately": 1500
+      },
+      "easing": {
+        "standard": "cubic-bezier(0.4, 0.0, 0.2, 1)",
+        "classical": "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        "imperial": "cubic-bezier(0.215, 0.61, 0.355, 1)"
+      }
+    },
+    "textures": {
+      "marble": {
+        "pattern": "veined",
+        "opacity": 0.1,
+        "scale": 1.2
+      },
+      "bronze": {
+        "pattern": "oxidized",
+        "opacity": 0.2,
+        "scale": 0.8
+      },
+      "fresco": {
+        "pattern": "aged",
+        "opacity": 0.15,
+        "scale": 1.5
+      }
+    }
+  },
+  "gaming": {
+    "inventory": {
+      "slotSize": 60,
+      "slotSpacing": 8,
+      "backgroundColor": "#F5F5DC",
+      "borderColor": "#CD853F",
+      "hoverColor": "#FFD700",
+      "marbleTexture": true
+    },
+    "progress": {
+      "barHeight": 12,
+      "backgroundColor": "#DDBEA9",
+      "fillColor": "#800020",
+      "textColor": "#2F4F4F",
+      "goldTrim": true
+    },
+    "hud": {
+      "backgroundColor": "rgba(245, 245, 220, 0.95)",
+      "borderColor": "#CD853F",
+      "textColor": "#2F4F4F",
+      "accentColor": "#FFD700",
+      "marbleEffect": true
+    }
+  },
+  "extensions": {
+    "worldTheme": {
+      "atmosphere": "golden-forum",
+      "timeOfDay": "midday-sun",
+      "weather": "clear-mediterranean",
+      "ambientSound": "forum-chatter"
+    },
+    "roman": {
+      "ranks": {
+        "senator": {
+          "primaryColor": "#800020",
+          "accentColor": "#FFD700"
+        },
+        "centurion": {
+          "primaryColor": "#B22222",
+          "accentColor": "#CD853F"
+        },
+        "citizen": {
+          "primaryColor": "#708090",
+          "accentColor": "#D2B48C"
+        },
+        "slave": {
+          "primaryColor": "#A0A0A0",
+          "accentColor": "#D3D3D3"
+        }
+      },
+      "architecture": {
+        "column": "#F5F5DC",
+        "arch": "#DDBEA9",
+        "dome": "#F0E68C",
+        "fresco": "#DEB887"
+      },
+      "military": {
+        "legion": "#800020",
+        "aquila": "#FFD700",
+        "scutum": "#8B4513",
+        "gladius": "#C0C0C0"
+      }
+    },
+    "classical": {
+      "gods": {
+        "jupiter": "#191970",
+        "mars": "#B22222",
+        "venus": "#FFB6C1",
+        "minerva": "#2E8B57"
+      },
+      "virtues": {
+        "virtus": "#800020",
+        "honor": "#FFD700",
+        "pietas": "#4682B4",
+        "gravitas": "#2F4F4F"
+      }
+    }
+  }
+}

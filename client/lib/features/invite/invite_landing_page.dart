@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
-import '../../core/providers/theme_context_provider.dart';
+import '../../core/theme/index.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
 import '../../theme/background_widget.dart';
@@ -152,22 +152,19 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
       worldTheme = _inviteData!['world']['themeBundle'] as String?;
     }
     
-    // 🎯 THEME CONTEXT CONSUMER: World-spezifisches Theme für Invite
-    return ThemeContextConsumer(
-      componentName: 'InviteLandingPage',
-      enableMixedContext: true,
-      worldThemeOverride: worldTheme, // 🌍 World-spezifisches Theme
-      fallbackTheme: 'pre_game_bundle', // 🎨 Fallback für Loading/Error States
-      contextOverrides: {
-        'uiContext': 'invite-landing',
-        'pageType': 'invite',
-        'context': worldTheme != null ? 'world-themed' : 'pre-game',
-        'immersiveExperience': 'true',
-        'brandingElements': 'true',
-      },
-      builder: (context, theme, extensions) {
-        return _buildInvitePage(context, theme, extensions, l10n);
-      },
+    // 🔻 MIXED CONTEXT: Pre-game Basis mit World-spezifischen Overrides
+    return ThemePageProvider(
+      contextId: 'pre-game',
+      bundleId: 'pre-game-minimal',
+      worldTheme: worldTheme, // 🌍 World-Override wenn verfügbar
+      child: ThemeContextConsumer(
+        componentName: 'InviteLandingPage',
+        worldThemeOverride: worldTheme, // 🌍 Component-Level Override - async loading in ThemeContextConsumer
+        fallbackBundle: 'pre-game-minimal', // 🎨 Fallback für Loading/Error States
+        builder: (context, theme, extensions) {
+          return _buildInvitePage(context, theme, extensions, l10n);
+        },
+      ),
     );
   }
 

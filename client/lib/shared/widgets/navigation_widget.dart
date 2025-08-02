@@ -206,7 +206,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
       componentName: 'NavigationWidget',
       enableMixedContext: true,
       contextOverrides: _getContextOverrides(),
-      fallbackTheme: 'pre_game_bundle',
+      fallbackTheme: 'pre-game-minimal',
       builder: (context, theme, extensions) {
         return _buildNavigation(context, theme, extensions);
       },
@@ -250,7 +250,7 @@ class _NavigationWidgetState extends State<NavigationWidget> with SingleTickerPr
         return {
           'uiContext': 'navigation-pre-game',
           'context': 'pre-game',
-          'bundleType': 'pre_game_bundle',
+          'bundleType': 'pre-game-minimal',
         };
     }
   }

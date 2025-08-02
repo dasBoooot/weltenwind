@@ -77,7 +77,7 @@ class _ThemeSwitcherState extends State<ThemeSwitcher>
         'inherit': 'parent-theme',
         'universalComponent': 'true', // Universelles UI-Element
       },
-      fallbackTheme: 'pre_game_bundle',
+      fallbackTheme: 'pre-game-minimal',
       builder: (context, theme, extensions) {
         return _buildThemeSwitcher(context, theme, extensions);
       },

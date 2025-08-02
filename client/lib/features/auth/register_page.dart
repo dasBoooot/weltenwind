@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
-import '../../core/providers/theme_context_provider.dart';
+import '../../core/theme/index.dart';
 import '../../shared/components/index.dart' hide ThemeSwitcher;
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
@@ -197,7 +197,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Erfolgreich der Welt "$worldName" beigetreten!'),
-                  backgroundColor: Colors.green,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                 ),
               );
               
@@ -229,21 +229,16 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 KONTEXTSENSITIVE THEME-BEREITSTELLUNG mit PRE-GAME BUNDLE
-    return ThemeContextConsumer(
-      componentName: 'RegisterPage',
-      contextOverrides: const {
-        'uiContext': 'register',            // Aktiviert pre_game_bundle
-        'bundleType': 'pre_game_bundle',    // Explizite Bundle-Spezifikation
-        'pageType': 'auth',
-        'context': 'pre-game',             // Bundle-Context
-        'firstImpressionOptimized': 'true',
-        'welcomeAnimations': 'true',
-        'brandingElements': 'true',
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildRegisterPage(context, contextTheme, extensions);
-      },
+    // 🎯 SCOPED CONTEXT: Register Page mit pre-game Context
+    return ThemePageProvider(
+      contextId: 'pre-game',
+      bundleId: 'pre-game-minimal',
+      child: ThemeContextConsumer(
+        componentName: 'RegisterPage',
+        builder: (context, theme, extensions) {
+          return _buildRegisterPage(context, theme, extensions);
+        },
+      ),
     );
   }
 
@@ -446,7 +441,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           // Loading Overlay
           if (_isLoading)
             Container(
-              color: Colors.black.withValues(alpha: 0.7),
+              color: theme.colorScheme.surface.withValues(alpha: 0.9),
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -459,7 +454,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                     Text(
                       AppLocalizations.of(context).authLoginLoading,
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: Colors.white,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                   ],

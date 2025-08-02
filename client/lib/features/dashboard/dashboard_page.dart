@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/providers/theme_context_provider.dart';
+import '../../core/theme/index.dart';
 import '../../core/services/world_service.dart';
 import '../../core/models/world.dart';
 import '../../theme/background_widget.dart';
@@ -35,12 +35,12 @@ class _DashboardPageState extends State<DashboardPage> {
       
       setState(() {
         _world = world;
-        _worldTheme = world.themeBundle ?? 'default_world_bundle';
+        _worldTheme = world.themeBundle ?? 'default'; // ✅ Theme-Name, nicht Bundle-Name
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _worldTheme = 'default_world_bundle'; // Fallback
+        _worldTheme = 'default'; // ✅ Theme-Name Fallback
         _isLoading = false;
       });
     }
@@ -48,24 +48,19 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🌍 WORLD-DASHBOARD: Finaler Einstiegspunkt im World-Theme!
-    return ThemeContextConsumer(
-      componentName: 'WorldDashboard',
-      enableMixedContext: true,
-      worldThemeOverride: _worldTheme ?? 'default_world_bundle',
-      fallbackTheme: 'default_world_bundle',
-      contextOverrides: {
-        'uiContext': 'world-dashboard',
-        'pageType': 'dashboard',
-        'context': 'world-themed',
-        'worldId': widget.worldId,
-        'immersiveExperience': 'true',
-        'brandingElements': 'true',
-        'finalEntry': 'true', // Finaler Welten-Einstieg
-      },
-      builder: (context, theme, extensions) {
-        return _buildDashboard(context, theme, extensions);
-      },
+    // 🔸 SCOPED CONTEXT: In-game Dashboard mit full-gaming Context
+    return ThemePageProvider(
+      contextId: 'in-game', 
+      bundleId: 'full-gaming',
+      worldTheme: _worldTheme, // 🌍 World-spezifisches Theme wenn verfügbar
+      child: ThemeContextConsumer(
+        componentName: 'WorldDashboard',
+        worldThemeOverride: _worldTheme, // 🌍 Component-Level Override - async loading in ThemeContextConsumer
+        fallbackBundle: 'full-gaming', // 🎮 Gaming Bundle als Fallback
+        builder: (context, theme, extensions) {
+          return _buildDashboard(context, theme, extensions);
+        },
+      ),
     );
   }
 

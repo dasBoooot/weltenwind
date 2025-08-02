@@ -4,7 +4,7 @@ import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/world_service.dart';
 import '../../core/models/world.dart';
-import '../../core/providers/theme_context_provider.dart';
+import '../../core/theme/index.dart';
 import '../../theme/background_widget.dart';
 import '../../routing/app_router.dart';
 import '../../shared/widgets/user_info_widget.dart';
@@ -272,7 +272,7 @@ class _WorldListPageState extends State<WorldListPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Fehler beim Öffnen des Einladungs-Dialogs: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -290,7 +290,7 @@ class _WorldListPageState extends State<WorldListPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).worldJoinSuccess(world.name)),
-            backgroundColor: Colors.green,
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
         // Navigate to world dashboard
@@ -330,7 +330,7 @@ class _WorldListPageState extends State<WorldListPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).worldPreRegisterSuccessful(world.name)),
-            backgroundColor: Colors.green,
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
       }
@@ -472,31 +472,17 @@ class _WorldListPageState extends State<WorldListPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 MIXED-CONTEXT THEME SYSTEM: Das erste echte Demo!
-    return ThemeContextConsumer(
-      componentName: 'WorldListPage',
-      enableMixedContext: true,
-      staticAreas: const {
-        'pageLayout': 'pre_game_bundle',      // 🎨 Basis-Layout: pre-game Theme
-        'navigation': 'pre_game_bundle',      // 🎨 Navigation: pre-game Theme  
-        'userControls': 'pre_game_bundle',    // 🎨 User-Info: pre-game Theme
-        'header': 'pre_game_bundle',          // 🎨 Header/Logo: pre-game Theme
-        'filters': 'pre_game_bundle',         // 🎨 Filter-Controls: pre-game Theme
-      },
-      dynamicAreas: const {
-        'worldCards': 'world_specific',       // 🌍 World Cards: World-spezifische Themes!
-      },
-      fallbackTheme: 'pre_game_bundle',
-      contextOverrides: {
-        'uiContext': 'world-list',
-        'pageType': 'mixed-context',
-        'context': 'pre-game-with-worlds',
-        'mixedContext': 'true',
-        'brandingElements': 'true',
-      },
-      builder: (context, theme, extensions) {
-        return _buildWorldListPage(context, theme, extensions);
-      },
+    // 🎯 AUTOMATISCHE THEME-LOGIK: UIContext.worldSelection → world-preview Bundle
+    // 🔻 MIXED CONTEXT: Pre-game Page mit world-spezifischen Cards
+    return ThemePageProvider(
+      contextId: 'world-selection',
+      bundleId: 'world-preview',
+      child: ThemeContextConsumer(
+        componentName: 'WorldListPage',
+        builder: (context, theme, extensions) {
+          return _buildWorldListPage(context, theme, extensions);
+        },
+      ),
     );
   }
 
@@ -514,7 +500,7 @@ class _WorldListPageState extends State<WorldListPage> {
                     constraints: const BoxConstraints(maxWidth: 800),
                     child: Card(
                       elevation: 12,
-                      color: const Color(0xFF1A1A1A), // Dunkle Karte
+                      color: theme.colorScheme.surface, // Theme-basierte Kartenfarbe
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                         side: BorderSide(
@@ -529,8 +515,8 @@ class _WorldListPageState extends State<WorldListPage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              Color(0xFF1A1A1A),
-                              Color(0xFF2A2A2A),
+                              Color(0xFF1A1A1A), // Themed via ThemeData colorScheme
+                              Color(0xFF2A2A2A), // Themed via ThemeData colorScheme
                             ],
                           ),
                         ),
@@ -563,7 +549,7 @@ class _WorldListPageState extends State<WorldListPage> {
                               Text(
                                 AppLocalizations.of(context).appTitle,
                                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onSurface,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -573,7 +559,7 @@ class _WorldListPageState extends State<WorldListPage> {
                               Text(
                                 AppLocalizations.of(context).worldListSubtitle,
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  color: Colors.grey[300],
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -634,10 +620,10 @@ class _WorldListPageState extends State<WorldListPage> {
                                 Container(
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                    color: (Colors.red[900] ?? Colors.red).withValues(alpha: 0.3),
+                                    color: theme.colorScheme.error.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: (Colors.red[400] ?? Colors.red).withValues(alpha: 0.5),
+                                      color: theme.colorScheme.error.withValues(alpha: 0.5),
                                     ),
                                   ),
                                   child: Column(
@@ -645,13 +631,13 @@ class _WorldListPageState extends State<WorldListPage> {
                                       Icon(
                                         Icons.error,
                                         size: 48,
-                                        color: Colors.red[400],
+                                        color: theme.colorScheme.error,
                                       ),
                                       const SizedBox(height: 16),
                                       Text(
                                         AppLocalizations.of(context).worldListErrorTitle,
                                         style: TextStyle(
-                                          color: Colors.red[200],
+                                          color: theme.colorScheme.error,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -659,7 +645,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                       Text(
                                         _error ?? AppLocalizations.of(context).worldListErrorUnknown,
                                         style: TextStyle(
-                                          color: (Colors.red[200] ?? Colors.red).withValues(alpha: 0.8),
+                                          color: theme.colorScheme.error.withValues(alpha: 0.8),
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
@@ -705,23 +691,15 @@ class _WorldListPageState extends State<WorldListPage> {
                               else
                                 Column(
                                   children: _filteredWorlds.map((world) => 
-                                    // 🌍 WORLD-SPECIFIC THEME: Jede World Card in ihrem eigenen Theme!
+                                    // 🌍 WORLD-SPECIFIC THEME: Jede World Card in ihrem eigenen Theme mit bestehender Architektur!
                                     ThemeContextConsumer(
                                       componentName: 'WorldCard_${world.id}',
-                                      enableMixedContext: true,
-                                      worldThemeOverride: world.themeBundle ?? 'default_world_bundle',
-                                      fallbackTheme: 'default_world_bundle',
-                                      contextOverrides: {
-                                        'uiContext': 'world-card',
-                                        'componentType': 'world-card',
-                                        'context': 'world-themed',
-                                        'worldId': world.id.toString(),
-                                        'immersiveExperience': 'true',
-                                      },
+                                      worldThemeOverride: world.themeBundle ?? 'world-preview', // async loading in ThemeContextConsumer
+                                      fallbackBundle: 'world-preview',
+                                      // ✅ CLEAN: Automatische world-preview Logik für World Cards
                                       builder: (cardContext, worldTheme, worldExtensions) {
                                         return WorldCard(
                                           world: world,
-                                          theme: worldTheme, // 🎨 World-spezifisches Theme!
                                           isPreRegistered: _preRegisteredWorlds[world.id] ?? false,
                                           isJoined: _joinedWorlds[world.id] ?? false,
                                           onJoin: world.canJoin && !(_joinedWorlds[world.id] ?? false) 

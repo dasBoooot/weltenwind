@@ -907,4 +907,101 @@ router.delete('/:language/backups/:timestamp', authenticate, async (req: Authent
   }
 });
 
+// === ARB AUDIT TRAIL ===
+
+/**
+ * GET /api/arb/:language/audit
+ * Vollständiger Audit-Trail für eine ARB-Sprache (Backups + Änderungshistorie)
+ */
+router.get('/:language/audit', authenticate, async (req: AuthenticatedRequest, res) => {
+  try {
+    const { language } = req.params;
+    
+    // Validiere Sprachcode
+    if (!validateLanguageCode(language)) {
+      return res.status(400).json({ 
+        error: 'Ungültiger Sprachcode',
+        supportedLanguages: SUPPORTED_LANGUAGES 
+      });
+    }
+
+    // Prüfe Berechtigung für ARB-Audit-Anzeige
+    const canViewAudit = await hasPermission(req.user!.id, 'arb.backup.view', { type: 'global', objectId: 'global' });
+    
+    if (!canViewAudit) {
+      return res.status(403).json({ 
+        error: 'Keine Berechtigung für ARB-Audit-Anzeige' 
+      });
+    }
+
+    const backupsDir = path.join(ARB_PATH, 'backups');
+    const auditTrail: any[] = [];
+    let totalKeyChanges = 0;
+    
+    if (fs.existsSync(backupsDir)) {
+      // Lade alle Backup-Metadaten für die Sprache
+      const backupMetaPattern = new RegExp(`^app_${language}\\.arb\\.backup_\\d{4}-\\d{2}-\\d{2}_(\\d{2}|\\d{6})\\.meta\\.json$`);
+      
+      const metaFiles = fs.readdirSync(backupsDir)
+        .filter(file => backupMetaPattern.test(file));
+      
+      for (const metaFile of metaFiles) {
+        try {
+          const metaPath = path.join(backupsDir, metaFile);
+          const metadata = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+          
+          // Zähle Key-Änderungen
+          if (metadata.keysAdded) totalKeyChanges += metadata.keysAdded;
+          if (metadata.keysModified) totalKeyChanges += metadata.keysModified;
+          if (metadata.keysRemoved) totalKeyChanges += metadata.keysRemoved;
+          
+          auditTrail.push({
+            ...metadata,
+            metaFile,
+            sortDate: new Date(metadata.createdAt).getTime(),
+            action: metadata.type || 'manual_save',
+            type: metadata.type || 'manual_save'
+          });
+        } catch (e) {
+          arbLogger.warn('Error loading ARB audit metadata', { 
+            language, 
+            metaFile, 
+            error: e 
+          });
+        }
+      }
+    }
+    
+    // Sortiere nach Datum (neueste zuerst)
+    auditTrail.sort((a, b) => b.sortDate - a.sortDate);
+    
+    arbLogger.info('ARB audit trail loaded', { 
+      language,
+      userId: req.user!.id,
+      auditEntries: auditTrail.length,
+      totalKeyChanges
+    });
+
+    res.json({ 
+      success: true, 
+      language,
+      auditTrail,
+      totalEntries: auditTrail.length,
+      totalKeyChanges,
+      oldestEntry: auditTrail.length > 0 ? auditTrail[auditTrail.length - 1].createdAt : null,
+      newestEntry: auditTrail.length > 0 ? auditTrail[0].createdAt : null
+    });
+
+  } catch (error) {
+    arbLogger.error('Error loading ARB audit trail', {
+      language: req.params.language,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      userId: req.user?.id
+    });
+    res.status(500).json({ 
+      error: 'Fehler beim Laden des ARB-Audit-Trails' 
+    });
+  }
+});
+
 export default router;

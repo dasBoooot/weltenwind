@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/world.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../core/providers/theme_context_consumer.dart';
 
 class WorldFilters extends StatelessWidget {
   final WorldStatus? statusFilter;
@@ -28,29 +29,39 @@ class WorldFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ThemeContextConsumer(
+      componentName: 'WorldFilters',
+      fallbackBundle: 'world-preview',
+      builder: (context, theme, extensions) {
+        return _buildFilters(context, theme);
+      },
+    );
+  }
+
+  Widget _buildFilters(BuildContext context, ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Status Filter
-        _buildStatusFilter(context),
+        _buildStatusFilter(context, theme),
         const SizedBox(height: 12),
         
         // Category Filter
-        _buildCategoryFilter(context),
+        _buildCategoryFilter(context, theme),
         const SizedBox(height: 12),
         
         // Sort Options
-        _buildSortOptions(context),
+        _buildSortOptions(context, theme),
         const SizedBox(height: 12),
         
         // Active Filters & Reset
         if (statusFilter != null || categoryFilter != null)
-          _buildActiveFilters(context),
+          _buildActiveFilters(context, theme),
       ],
     );
   }
 
-  Widget _buildStatusFilter(BuildContext context) {
+  Widget _buildStatusFilter(BuildContext context, ThemeData theme) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -59,7 +70,7 @@ class WorldFilters extends StatelessWidget {
           Text(
             AppLocalizations.of(context).worldFiltersStatus,
             style: TextStyle(
-              color: Colors.grey[300],
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -74,23 +85,23 @@ class WorldFilters extends StatelessWidget {
                   builder: (context) => Text(
                     _getStatusLabel(status, context),
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.grey[300],
+                      color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface.withValues(alpha: 0.8),
                     ),
                   ),
                 ),
                 avatar: Icon(
                   _getStatusIcon(status),
                   size: 16,
-                  color: isSelected ? Colors.white : _getStatusColor(status),
+                  color: isSelected ? theme.colorScheme.onPrimary : _getStatusColor(status, theme),
                 ),
                 onSelected: (selected) {
                   onStatusChanged(selected ? status : null);
                 },
-                backgroundColor: const Color(0xFF2D2D2D),
-                selectedColor: _getStatusColor(status).withValues(alpha: 0.3),
-                checkmarkColor: Colors.white,
+                backgroundColor: theme.colorScheme.surface,
+                selectedColor: _getStatusColor(status, theme).withValues(alpha: 0.3),
+                checkmarkColor: theme.colorScheme.onPrimary,
                 side: BorderSide(
-                  color: isSelected ? _getStatusColor(status) : Colors.grey[600]!,
+                  color: isSelected ? _getStatusColor(status, theme) : theme.colorScheme.outline,
                 ),
               ),
             );
@@ -100,7 +111,7 @@ class WorldFilters extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryFilter(BuildContext context) {
+  Widget _buildCategoryFilter(BuildContext context, ThemeData theme) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -109,7 +120,7 @@ class WorldFilters extends StatelessWidget {
           Text(
             AppLocalizations.of(context).worldFiltersCategory,
             style: TextStyle(
-              color: Colors.grey[300],
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -126,14 +137,14 @@ class WorldFilters extends StatelessWidget {
                     Icon(
                       _getCategoryIcon(category),
                       size: 16,
-                      color: isSelected ? Colors.white : _getCategoryColor(category),
+                      color: isSelected ? theme.colorScheme.onPrimary : _getCategoryColor(category, theme),
                     ),
                     const SizedBox(width: 4),
                     Builder(
                       builder: (context) => Text(
                         _getCategoryLabel(category, context),
                         style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.grey[300],
+                          color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface.withValues(alpha: 0.8),
                         ),
                       ),
                     ),
@@ -142,11 +153,11 @@ class WorldFilters extends StatelessWidget {
                 onSelected: (selected) {
                   onCategoryChanged(selected ? category : null);
                 },
-                backgroundColor: const Color(0xFF2D2D2D),
-                selectedColor: _getCategoryColor(category).withValues(alpha: 0.3),
-                checkmarkColor: Colors.white,
+                backgroundColor: theme.colorScheme.surface,
+                selectedColor: _getCategoryColor(category, theme).withValues(alpha: 0.3),
+                checkmarkColor: theme.colorScheme.onPrimary,
                 side: BorderSide(
-                  color: isSelected ? _getCategoryColor(category) : Colors.grey[600]!,
+                  color: isSelected ? _getCategoryColor(category, theme) : theme.colorScheme.outline,
                 ),
               ),
             );
@@ -156,7 +167,7 @@ class WorldFilters extends StatelessWidget {
     );
   }
 
-  Widget _buildSortOptions(BuildContext context) {
+  Widget _buildSortOptions(BuildContext context, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -164,7 +175,7 @@ class WorldFilters extends StatelessWidget {
           Text(
             AppLocalizations.of(context).worldFiltersSortBy,
             style: TextStyle(
-              color: Colors.grey[300],
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -173,16 +184,16 @@ class WorldFilters extends StatelessWidget {
             height: 40,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFF2D2D2D),
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[600]!),
+              border: Border.all(color: theme.colorScheme.outline),
             ),
             child: DropdownButton<String>(
               value: sortBy,
-              dropdownColor: const Color(0xFF2D2D2D),
-              style: const TextStyle(color: Colors.white),
+              dropdownColor: theme.colorScheme.surface,
+              style: TextStyle(color: theme.colorScheme.onPrimary),
               underline: Container(),
-              icon: Icon(Icons.arrow_drop_down, color: Colors.grey[300]),
+              icon: Icon(Icons.arrow_drop_down, color: theme.colorScheme.onSurface.withValues(alpha: 0.8)),
               items: [
                 DropdownMenuItem(
                   value: 'startDate',
@@ -212,14 +223,14 @@ class WorldFilters extends StatelessWidget {
           Container(
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFF2D2D2D),
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[600]!),
+              border: Border.all(color: theme.colorScheme.outline),
             ),
             child: IconButton(
               icon: Icon(
                 sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
-                color: Colors.grey[300],
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                 size: 20,
               ),
               onPressed: onSortOrderChanged,
@@ -231,7 +242,7 @@ class WorldFilters extends StatelessWidget {
     );
   }
 
-  Widget _buildActiveFilters(BuildContext context) {
+  Widget _buildActiveFilters(BuildContext context, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -239,7 +250,7 @@ class WorldFilters extends StatelessWidget {
           Text(
             'Aktive Filter: ',
             style: TextStyle(
-              color: Colors.grey[400],
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               fontSize: 12,
             ),
           ),
@@ -255,11 +266,11 @@ class WorldFilters extends StatelessWidget {
                       _getStatusLabel(filter, context),
                       style: const TextStyle(fontSize: 12),
                     ),
-                    backgroundColor: _getStatusColor(filter).withValues(alpha: 0.2),
+                    backgroundColor: _getStatusColor(filter, theme).withValues(alpha: 0.2),
                     deleteIcon: const Icon(Icons.close, size: 16),
                     onDeleted: () => onStatusChanged(null),
                     side: BorderSide(
-                      color: _getStatusColor(filter).withValues(alpha: 0.5),
+                      color: _getStatusColor(filter, theme).withValues(alpha: 0.5),
                     ),
                   ),
                 );
@@ -276,11 +287,11 @@ class WorldFilters extends StatelessWidget {
                       _getCategoryLabel(filter, context),
                       style: const TextStyle(fontSize: 12),
                     ),
-                    backgroundColor: _getCategoryColor(filter).withValues(alpha: 0.2),
+                    backgroundColor: _getCategoryColor(filter, theme).withValues(alpha: 0.2),
                     deleteIcon: const Icon(Icons.close, size: 16),
                     onDeleted: () => onCategoryChanged(null),
                     side: BorderSide(
-                      color: _getCategoryColor(filter).withValues(alpha: 0.5),
+                      color: _getCategoryColor(filter, theme).withValues(alpha: 0.5),
                     ),
                   ),
                 );
@@ -292,7 +303,7 @@ class WorldFilters extends StatelessWidget {
             icon: const Icon(Icons.clear_all, size: 16),
             label: const Text('Alle zurücksetzen'),
             style: TextButton.styleFrom(
-              foregroundColor: Colors.grey[400],
+              foregroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -319,18 +330,18 @@ class WorldFilters extends StatelessWidget {
     }
   }
 
-  Color _getStatusColor(WorldStatus status) {
+  Color _getStatusColor(WorldStatus status, ThemeData theme) {
     switch (status) {
       case WorldStatus.upcoming:
-        return Colors.orange;
+        return theme.colorScheme.secondary;
       case WorldStatus.open:
-        return Colors.green;
+        return theme.colorScheme.primary;
       case WorldStatus.running:
-        return Colors.blue;
+        return theme.colorScheme.tertiary;
       case WorldStatus.closed:
-        return Colors.red;
+        return theme.colorScheme.error;
       case WorldStatus.archived:
-        return Colors.grey;
+        return theme.colorScheme.outline;
     }
   }
 
@@ -351,16 +362,16 @@ class WorldFilters extends StatelessWidget {
     }
   }
 
-  Color _getCategoryColor(WorldCategory category) {
+  Color _getCategoryColor(WorldCategory category, ThemeData theme) {
     switch (category) {
       case WorldCategory.classic:
-        return Colors.blue;
+        return theme.colorScheme.primary;
       case WorldCategory.pvp:
-        return Colors.red;
+        return theme.colorScheme.error;
       case WorldCategory.event:
-        return Colors.purple;
+        return theme.colorScheme.tertiary;
       case WorldCategory.experimental:
-        return Colors.orange;
+        return theme.colorScheme.secondary;
     }
   }
 } 

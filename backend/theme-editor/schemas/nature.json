@@ -1,0 +1,306 @@
+{
+  "$schema": "./main.schema.json",
+  "name": "Mystical Nature Theme",
+  "filename": "nature",
+  "version": "1.0.0",
+  "description": "Magisches Waldtheme mit natürlichen Grüntönen, Baumtexturen und verwunschenen Effekten",
+  "category": "fantasy",
+  "author": "Weltenwind Team",
+  "bundle": {
+    "name": "full-gaming",
+    "type": "fantasy_world_bundle",
+    "context": "world-fantasy",
+    "modules": ["colors", "typography", "spacing", "radius", "effects.visual", "effects.animations", "gaming.inventory", "gaming.progress", "gaming.hud"]
+  },
+  "colors": {
+    "primary": {
+      "value": "#228B22",
+      "description": "Tiefes Waldgrün für primäre Elemente"
+    },
+    "secondary": {
+      "value": "#32CD32",
+      "description": "Helles Laubgrün für Akzente"
+    },
+    "tertiary": {
+      "value": "#9ACD32",
+      "description": "Frisches Frühlingsgrün"
+    },
+    "background": {
+      "surface_dark": "#0F2A0F",
+      "surface_medium": "#1B4A1B",
+      "surface_light": "#2E7D2E",
+      "surface_lighter": "#3CB371",
+      "surface_gray": "#556B2F"
+    },
+    "text": {
+      "primary": "#F0FFF0",
+      "secondary": "#E0FFE0",
+      "muted": "#90EE90",
+      "inverse": "#0F2A0F"
+    },
+    "accent": {
+      "success": "#00FF7F",
+      "warning": "#FFD700",
+      "error": "#DC143C",
+      "info": "#4682B4"
+    },
+    "nature": {
+      "forest": "#228B22",
+      "moss": "#9ACD32",
+      "fern": "#32CD32",
+      "bark": "#8B4513",
+      "flower": "#FF69B4",
+      "mushroom": "#DDA0DD",
+      "dew": "#B0E0E6"
+    },
+    "mystical": {
+      "moonlight": "#F0F8FF",
+      "starlight": "#FFFACD",
+      "firefly": "#FFFF00",
+      "wisp": "#98FB98",
+      "enchantment": "#DDA0DD"
+    }
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Marcellus, serif",
+      "secondary": "Libre Baskerville, serif",
+      "fantasy": "Kalam, cursive",
+      "nature": "Dancing Script, cursive",
+      "ui": "Open Sans, sans-serif"
+    },
+    "textStyles": {
+      "heading": {
+        "fontSize": 28,
+        "fontWeight": "bold",
+        "fontFamily": "Marcellus, serif",
+        "letterSpacing": 1.0,
+        "lineHeight": 1.2
+      },
+      "subheading": {
+        "fontSize": 22,
+        "fontWeight": "semi-bold",
+        "fontFamily": "Libre Baskerville, serif",
+        "letterSpacing": 0.8,
+        "lineHeight": 1.3
+      },
+      "body": {
+        "fontSize": 16,
+        "fontWeight": "normal",
+        "fontFamily": "Libre Baskerville, serif",
+        "letterSpacing": 0.3,
+        "lineHeight": 1.5
+      },
+      "caption": {
+        "fontSize": 13,
+        "fontWeight": "normal",
+        "fontFamily": "Open Sans, sans-serif",
+        "letterSpacing": 0.2,
+        "lineHeight": 1.4
+      },
+      "mystical": {
+        "fontSize": 20,
+        "fontWeight": "normal",
+        "fontFamily": "Dancing Script, cursive",
+        "letterSpacing": 0.5,
+        "lineHeight": 1.4
+      }
+    }
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48,
+    "semantic": {
+      "padding": {
+        "small": 12,
+        "medium": 20,
+        "large": 32
+      },
+      "margin": {
+        "small": 8,
+        "medium": 16,
+        "large": 24
+      },
+      "nature": {
+        "treeSpacing": 40,
+        "groveMargin": 32,
+        "leafPadding": 16,
+        "branchGap": 12
+      }
+    }
+  },
+  "radius": {
+    "sm": 6,
+    "md": 12,
+    "lg": 18,
+    "xl": 24,
+    "round": 9999,
+    "organic": {
+      "leaf": 20,
+      "stone": 8,
+      "root": 16,
+      "flower": 50
+    }
+  },
+  "effects": {
+    "shadows": {
+      "small": "0 2px 4px rgba(34, 139, 34, 0.3)",
+      "medium": "0 4px 8px rgba(34, 139, 34, 0.4)",
+      "large": "0 8px 16px rgba(34, 139, 34, 0.5)",
+      "mystical": "0 0 20px rgba(152, 251, 152, 0.6)"
+    },
+    "glows": {
+      "forest": "0 0 15px rgba(34, 139, 34, 0.7)",
+      "moonbeam": "0 0 20px rgba(240, 248, 255, 0.8)",
+      "firefly": "0 0 10px rgba(255, 255, 0, 0.9)",
+      "wisp": "0 0 12px rgba(152, 251, 152, 0.8)"
+    },
+    "animations": {
+      "duration": {
+        "fast": 250,
+        "medium": 500,
+        "slow": 1000,
+        "breeze": 3000,
+        "seasons": 8000
+      },
+      "easing": {
+        "standard": "cubic-bezier(0.4, 0.0, 0.2, 1)",
+        "organic": "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        "breeze": "cubic-bezier(0.42, 0, 0.58, 1)"
+      }
+    },
+    "particles": {
+      "leaves": {
+        "color": "#32CD32",
+        "size": 4,
+        "density": 0.4,
+        "speed": 0.8,
+        "movement": "falling"
+      },
+      "fireflies": {
+        "color": "#FFFF00",
+        "size": 2,
+        "density": 0.2,
+        "speed": 0.5,
+        "movement": "floating"
+      },
+      "pollen": {
+        "color": "#FFD700",
+        "size": 1,
+        "density": 0.6,
+        "speed": 0.3,
+        "movement": "drifting"
+      },
+      "wisps": {
+        "color": "#98FB98",
+        "size": 6,
+        "density": 0.1,
+        "speed": 0.4,
+        "movement": "ethereal"
+      }
+    }
+  },
+  "gaming": {
+    "inventory": {
+      "slotSize": 56,
+      "slotSpacing": 6,
+      "backgroundColor": "#1B4A1B",
+      "borderColor": "#228B22",
+      "hoverColor": "#32CD32",
+      "naturalTexture": true
+    },
+    "progress": {
+      "barHeight": 10,
+      "backgroundColor": "#0F2A0F",
+      "fillColor": "#32CD32",
+      "textColor": "#F0FFF0",
+      "organicShape": true,
+      "growthAnimation": true
+    },
+    "hud": {
+      "backgroundColor": "rgba(15, 42, 15, 0.9)",
+      "borderColor": "#228B22",
+      "textColor": "#F0FFF0",
+      "accentColor": "#32CD32",
+      "vineFrame": true,
+      "leafAccents": true
+    }
+  },
+  "extensions": {
+    "worldTheme": {
+      "atmosphere": "enchanted-grove",
+      "timeOfDay": "dappled-sunlight",
+      "weather": "gentle-mist",
+      "ambientSound": "forest-whispers"
+    },
+    "nature": {
+      "seasons": {
+        "spring": {
+          "primaryColor": "#9ACD32",
+          "accentColor": "#FF69B4"
+        },
+        "summer": {
+          "primaryColor": "#228B22",
+          "accentColor": "#FFD700"
+        },
+        "autumn": {
+          "primaryColor": "#FF8C00",
+          "accentColor": "#DC143C"
+        },
+        "winter": {
+          "primaryColor": "#2F4F4F",
+          "accentColor": "#B0E0E6"
+        }
+      },
+      "biomes": {
+        "deepwood": {
+          "primaryColor": "#0F2A0F",
+          "accentColor": "#228B22"
+        },
+        "meadow": {
+          "primaryColor": "#9ACD32",
+          "accentColor": "#FFB6C1"
+        },
+        "grove": {
+          "primaryColor": "#32CD32",
+          "accentColor": "#98FB98"
+        },
+        "swamp": {
+          "primaryColor": "#556B2F",
+          "accentColor": "#6B8E23"
+        }
+      }
+    },
+    "mystical": {
+      "creatures": {
+        "dryad": {
+          "primaryColor": "#228B22",
+          "accentColor": "#98FB98"
+        },
+        "unicorn": {
+          "primaryColor": "#F0F8FF",
+          "accentColor": "#DDA0DD"
+        },
+        "phoenix": {
+          "primaryColor": "#FF4500",
+          "accentColor": "#FFD700"
+        },
+        "dragon": {
+          "primaryColor": "#0F2A0F",
+          "accentColor": "#32CD32"
+        }
+      },
+      "magic": {
+        "healing": "#32CD32",
+        "growth": "#9ACD32",
+        "protection": "#228B22",
+        "illusion": "#DDA0DD",
+        "communion": "#98FB98"
+      }
+    }
+  }
+}

@@ -198,22 +198,61 @@
     <div id="backupDialog" class="hidden">
         <div class="dialog-overlay">
             <div class="dialog-content backup-dialog">
-                <h3>🗂️ Backup-Verwaltung</h3>
-                <p>Verfügbare Backups für <strong id="backupLanguageName">-</strong>:</p>
+                <h3>🗂️ ARB-Backup-Historie</h3>
+                <p><strong>🌐 Sprache:</strong> <span id="backupLanguageName">-</span></p>
+                
+                <div class="backup-filters">
+                    <button class="filter-btn active" onclick="filterARBBackups('all')">Alle</button>
+                    <button class="filter-btn" onclick="filterARBBackups('manual_save')">Speicherungen</button>
+                    <button class="filter-btn" onclick="filterARBBackups('import')">Imports</button>
+                    <button class="filter-btn" onclick="filterARBBackups('auto_backup')">Auto-Backups</button>
+                </div>
                 
                 <div id="backupList" class="backup-list">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <div>Lade Backups...</div>
-                    </div>
+                    <div class="loading">⏳ Lade Backups...</div>
                 </div>
                 
                 <div class="backup-info">
-                    <small>💡 Nur die letzten 10 Backups werden aufbewahrt. Bei Wiederherstellung wird automatisch ein Backup der aktuellen Version erstellt.</small>
+                    <small>💡 Die letzten 15 Backups werden aufbewahrt. Bei Wiederherstellung wird ein Backup der aktuellen Version erstellt.</small>
                 </div>
                 
                 <div class="dialog-buttons">
-                    <button class="btn-secondary" onclick="closeBackupDialog()">Abbrechen</button>
+                    <button class="btn-secondary" onclick="closeBackupDialog()">❌ Schließen</button>
+                    <button class="btn-primary" onclick="showARBAuditDialog()" id="arbAuditButton">📊 Vollständiger Audit-Trail</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ARB Audit Trail Dialog -->
+    <div id="arbAuditDialog" class="hidden">
+        <div class="dialog-overlay">
+            <div class="dialog-content audit-dialog">
+                <h3>📊 ARB-Audit-Trail</h3>
+                <p><strong>🌐 Sprache:</strong> <span id="auditLanguageName">-</span></p>
+                
+                <div class="audit-stats" id="arbAuditStats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalARBAuditEntries">-</div>
+                        <div class="stat-label">Gesamt</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="arbAuditDateRange">-</div>
+                        <div class="stat-label">Zeitraum</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="arbAuditKeyChanges">-</div>
+                        <div class="stat-label">Key-Änderungen</div>
+                    </div>
+                </div>
+                
+                <div id="arbAuditList" class="audit-list">
+                    <div class="loading">⏳ Lade Audit-Trail...</div>
+                </div>
+                
+                <div class="dialog-buttons">
+                    <button class="btn-secondary" onclick="closeARBAuditDialog()">❌ Schließen</button>
+                    <button class="btn-primary" onclick="exportARBAuditTrail()">📤 Audit-Trail exportieren</button>
                 </div>
             </div>
         </div>

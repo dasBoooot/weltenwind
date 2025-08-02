@@ -11,6 +11,7 @@ import 'core/services/world_service.dart';
 import 'core/services/invite_service.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/providers/theme_provider.dart';
+import 'core/providers/theme_root_provider.dart';
 import 'l10n/app_localizations.dart';
 
 class WeltenwindApp extends StatefulWidget {
@@ -68,26 +69,30 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
         'Bereit!',
       ],
       appName: Env.appName,
-      child: MaterialApp.router(
-        title: Env.appName,
-        theme: _themeProvider.currentLightTheme, // Unterstützt Fantasy & Custom Themes
-        darkTheme: _themeProvider.currentDarkTheme, // Unterstützt Fantasy & Custom Themes  
-        themeMode: _themeProvider.themeMode, // Dynamisch basierend auf ThemeProvider
-        routerConfig: AppRouter.router,
-        debugShowCheckedModeBanner: false,
-        
-        // Lokalisierungs-Konfiguration
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('de'),
-          Locale('en'),
-        ],
-        locale: _localeProvider.currentLocale, // Dynamische Sprache vom Provider
+      child: ThemeRootProvider(
+        defaultContext: 'universal',
+        defaultBundle: 'pre-game-minimal',
+        child: MaterialApp.router(
+          title: Env.appName,
+          theme: _themeProvider.currentLightTheme, // Legacy Provider für globale Kontrolle
+          darkTheme: _themeProvider.currentDarkTheme, // Legacy Provider für globale Kontrolle  
+          themeMode: _themeProvider.themeMode, // Legacy Provider für Theme Mode Switching
+          routerConfig: AppRouter.router,
+          debugShowCheckedModeBanner: false,
+          
+          // Lokalisierungs-Konfiguration
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('de'),
+            Locale('en'),
+          ],
+          locale: _localeProvider.currentLocale, // Dynamische Sprache vom Provider
+        ),
       ),
     );
   }

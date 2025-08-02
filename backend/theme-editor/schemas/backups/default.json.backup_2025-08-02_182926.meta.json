@@ -1,0 +1,17 @@
+{
+  "themeName": "default",
+  "timestamp": "2025-08-02_182926",
+  "createdBy": "admin",
+  "createdById": 1,
+  "createdAt": "2025-08-02T18:29:26.550Z",
+  "originalSize": 5865,
+  "originalVersion": "1.3.0",
+  "newVersion": "1.3.0",
+  "type": "manual_save",
+  "modulesModified": [],
+  "totalModules": 6,
+  "backupReason": "Theme Editor manual save",
+  "userAgent": "Theme Editor Web Interface",
+  "originalChecksum": "d448263a329ed5bc685d49d3b7d9aabf",
+  "category": "neutral"
+}

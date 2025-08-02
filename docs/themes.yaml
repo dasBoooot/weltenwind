@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
-  title: Weltenwind Theme API
-  description: API für dynamisches Theme-Management im Weltenwind-System
-  version: 1.0.0
+  title: Weltenwind Theme API (Modular)
+  description: API für modulares Theme-Management mit Meta-Tracking im Weltenwind-System
+  version: 2.0.0
 
 paths:
   /api/themes:
     get:
-      summary: Liste aller verfügbaren Themes
-      description: Lädt eine Liste aller verfügbaren Theme-Dateien aus dem tokens/ Verzeichnis
+      summary: Liste aller verfügbaren modularen Themes
+      description: Lädt alle verfügbaren modularen Themes aus dem schemas-Verzeichnis
       tags:
         - Themes
       responses:
@@ -38,8 +38,12 @@ paths:
                           example: "Standard Weltenwind Theme mit mystischer Fantasy-Ästhetik"
                         version:
                           type: string
-                          description: Theme-Version
+                          description: Theme-Version (Semantic Versioning)
                           example: "1.0.0"
+                        category:
+                          type: string
+                          description: Theme-Kategorie (fantasy, sci-fi, etc.)
+                          example: "fantasy"
         '500':
           description: Serverfehler beim Laden der Theme-Liste
           content:
@@ -217,6 +221,210 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Serverfehler beim Klonen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/themes/{name}/backups:
+    get:
+      summary: Liste aller Backups für ein Theme
+      description: Lädt alle verfügbaren Backups mit detaillierten Metadaten für ein spezifisches Theme
+      tags:
+        - Themes
+        - Backups
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Theme-Name
+          schema:
+            type: string
+            example: "tolkien"
+      responses:
+        '200':
+          description: Liste der Theme-Backups mit Metadaten
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  theme:
+                    type: string
+                    example: "tolkien"
+                  backups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        filename:
+                          type: string
+                          example: "tolkien.json.backup_2025-08-02_110234"
+                        timestamp:
+                          type: string
+                          example: "2025-08-02_110234"
+                        displayName:
+                          type: string
+                          example: "02.08.2025 um 11:02:34"
+                        created:
+                          type: string
+                          format: date-time
+                          example: "2025-08-02T11:02:34.567Z"
+                        size:
+                          type: number
+                          example: 15234
+                        createdBy:
+                          type: string
+                          example: "admin"
+                        type:
+                          type: string
+                          enum: [manual_save, auto_save, pre_restore]
+                          example: "manual_save"
+                        modulesModified:
+                          type: array
+                          items:
+                            type: string
+                            enum: [colors, typography, spacing, radius, gaming, effects, bundle]
+                          example: ["colors", "typography"]
+                        originalVersion:
+                          type: string
+                          example: "1.0.0"
+                        newVersion:
+                          type: string
+                          example: "1.1.0"
+                        metadata:
+                          type: object
+                          description: Vollständige Backup-Metadaten
+        '403':
+          description: Keine Berechtigung für Backup-Anzeige
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Theme nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Serverfehler beim Laden der Backup-Liste
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/themes/{name}/audit:
+    get:
+      summary: Audit-Trail für ein Theme (Backups + Clone-History)
+      description: Lädt den vollständigen Audit-Trail mit allen Theme-Aktivitäten (Speicherungen, Klonungen, etc.)
+      tags:
+        - Themes
+        - Audit
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Theme-Name
+          schema:
+            type: string
+            example: "tolkien"
+      responses:
+        '200':
+          description: Vollständiger Audit-Trail mit allen Theme-Aktivitäten
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  theme:
+                    type: string
+                    example: "tolkien"
+                  auditTrail:
+                    type: array
+                    items:
+                      type: object  
+                      properties:
+                        action:
+                          type: string
+                          enum: [manual_save, theme_clone, auto_save, pre_restore]
+                          example: "manual_save"
+                        themeName:
+                          type: string
+                          example: "tolkien"
+                        timestamp:
+                          type: string
+                          example: "2025-08-02_110234"
+                        createdBy:
+                          type: string
+                          example: "admin"
+                        createdById:
+                          type: number
+                          example: 1
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: "2025-08-02T11:02:34.567Z"
+                        type:
+                          type: string
+                          example: "manual_save"
+                        modulesModified:
+                          type: array
+                          items:
+                            type: string
+                          example: ["colors", "typography"]
+                        originalVersion:
+                          type: string
+                          example: "1.0.0"
+                        newVersion:
+                          type: string
+                          example: "1.1.0"
+                        sourceTheme:
+                          type: string
+                          description: "Bei Klonungen: Quell-Theme"
+                          example: "default"
+                        targetTheme:
+                          type: string  
+                          description: "Bei Klonungen: Ziel-Theme"
+                          example: "tolkien"
+                        category:
+                          type: string
+                          example: "fantasy"
+                  totalEntries:
+                    type: number
+                    example: 15
+                  oldestEntry:
+                    type: string
+                    format: date-time
+                    example: "2025-07-01T10:00:00.000Z"
+                  newestEntry:
+                    type: string
+                    format: date-time
+                    example: "2025-08-02T11:02:34.567Z"
+        '403':
+          description: Keine Berechtigung für Audit-Trail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Theme nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Serverfehler beim Laden des Audit-Trails
           content:
             application/json:
               schema:
