@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'accessibility_provider.dart';
+import '../../../core/providers/theme_context_provider.dart';
 
 /// 🎯 Focus Indicator Types from Accessibility Schema
 enum FocusIndicatorType {
@@ -82,12 +83,26 @@ class _FocusIndicatorState extends State<FocusIndicator> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final accessibilityProvider = AccessibilityProviderWidget.of(context);
-    
     if (!widget.isVisible && !widget.animated) {
       return widget.child;
     }
+
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'FocusIndicator',
+      contextOverrides: {
+        'type': widget.type.name,
+        'visible': widget.isVisible.toString(),
+        'animated': widget.animated.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildFocusIndicator(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildFocusIndicator(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
+    final accessibilityProvider = AccessibilityProviderWidget.of(context);
     
     return AnimatedBuilder(
       animation: _animation,

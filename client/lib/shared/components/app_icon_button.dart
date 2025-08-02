@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 🔘 Icon Button Sizes
 enum AppIconButtonSize {
@@ -329,9 +329,21 @@ class _AppIconButtonState extends State<AppIconButton> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppIconButton',
+      contextOverrides: {
+        'size': widget.size.name,
+        'variant': widget.variant.name,
+        'enabled': widget.onPressed != null ? 'true' : 'false',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildIconButton(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildIconButton(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     Widget iconButton = AnimatedBuilder(
       animation: _hoverController,
       builder: (context, child) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 📨 Invite Status Types
 enum InviteStatus {
@@ -200,9 +200,21 @@ class _InviteStatusBannerState extends State<InviteStatusBanner> with TickerProv
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'InviteStatusBanner',
+      contextOverrides: {
+        'status': widget.invite.status.name,
+        'animated': widget.animateIn.toString(),
+        'dismissible': widget.onDismiss != null ? 'true' : 'false',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildInviteBanner(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildInviteBanner(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     Widget banner = AnimatedBuilder(
       animation: _slideController,
       builder: (context, child) {

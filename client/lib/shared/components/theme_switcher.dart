@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 🎨 Theme Option
 class ThemeOption {
@@ -159,9 +159,21 @@ class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'ThemeSwitcher',
+      contextOverrides: {
+        'direction': widget.direction.name,
+        'showLabels': widget.showLabels.toString(),
+        'currentTheme': 'default',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildSwitcher(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildSwitcher(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Container(
       padding: EdgeInsets.all(_getSpacing()),
       decoration: _getContainerDecoration(theme, extensions),

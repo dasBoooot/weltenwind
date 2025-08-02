@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 🖼️ Fantasy Frame Variants based on Theme Schema
 enum AppFrameVariant {
@@ -121,9 +121,21 @@ class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppFrame',
+      contextOverrides: {
+        'variant': widget.variant.name,
+        'state': _isHovered ? 'hovered' : 'normal',
+        'interactive': widget.isInteractive.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildFrame(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildFrame(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return MouseRegion(
       onEnter: _handleHoverEnter,
       onExit: _handleHoverExit,

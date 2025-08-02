@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 🏗️ App Scaffold based on Schema Configuration
 /// 
@@ -32,9 +32,21 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppScaffold',
+      contextOverrides: {
+        'hasAppBar': _shouldShowAppBar().toString(),
+        'hasBackground': showBackgroundGradient.toString(),
+        'extendBody': extendBodyBehindAppBar.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildScaffold(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Scaffold(
       appBar: _shouldShowAppBar() ? appBar : null,
       body: _buildBody(context, theme, extensions),

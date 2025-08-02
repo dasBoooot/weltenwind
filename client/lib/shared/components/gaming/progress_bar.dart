@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/services/modular_theme_service.dart';
+import '../../../core/providers/theme_context_provider.dart';
 
 /// 🎮 RPG Progress Bar Types based on Gaming Schema
 enum ProgressBarType {
@@ -142,9 +142,21 @@ class _GameProgressBarState extends State<GameProgressBar> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'GameProgressBar',
+      contextOverrides: {
+        'type': widget.type.name,
+        'animated': widget.isAnimated.toString(),
+        'progress': widget.value.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildProgressBar(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildProgressBar(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return AnimatedBuilder(
       animation: Listenable.merge([_progressController, _pulseController]),
       builder: (context, child) {

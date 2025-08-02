@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 🎯 Fantasy Button Variants based on Theme Schema
 enum AppButtonVariant {
@@ -115,11 +115,22 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppButton',
+      contextOverrides: {
+        'variant': widget.variant.name,
+        'size': widget.size.name,
+        'state': widget.isLoading ? 'loading' : 'normal',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildButton(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildButton(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     final isEnabled = widget.onPressed != null && !widget.isLoading;
-    
-    // Get extensions from ModularThemeService for fantasy effects
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
     
     return Semantics(
       label: _getSemanticLabel(),

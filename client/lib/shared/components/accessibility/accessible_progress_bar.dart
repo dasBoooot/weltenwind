@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'accessibility_provider.dart';
+import '../../../core/providers/theme_context_provider.dart';
 
 /// 📊 Accessible Progress Bar based on Gaming Accessibility Schema
 /// 
@@ -26,14 +28,24 @@ class AccessibleProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final accessibilityProvider = AccessibilityProviderWidget.of(context);
-    
-    if (accessibilityProvider == null) {
-      return _buildDefaultProgressBar(theme);
-    }
-    
-    return _buildAccessibleProgressBar(context, theme, accessibilityProvider);
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AccessibleProgressBar',
+      contextOverrides: {
+        'type': resourceType,
+        'value': value.toString(),
+        'showPattern': showPattern.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        final accessibilityProvider = AccessibilityProviderWidget.of(context);
+        
+        if (accessibilityProvider == null) {
+          return _buildDefaultProgressBar(contextTheme);
+        }
+        
+        return _buildAccessibleProgressBar(context, contextTheme, accessibilityProvider);
+      },
+    );
   }
 
   /// Build default progress bar when no accessibility provider

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 🛠️ Schema Indicator Mode
 enum SchemaIndicatorMode {
@@ -143,7 +143,7 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
 
   void _refreshData() {
     setState(() {
-      _currentExtensions = ModularThemeService().getCurrentThemeExtensions();
+      _currentExtensions = <String, dynamic>{}; // TODO: Get from ThemeContextConsumer
       _currentThemeName = 'Current Theme'; // Would get from service
       _loadedModules = _getLoadedModules();
       _validateCurrentSchema();
@@ -223,8 +223,21 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
       return _buildToggleButton();
     }
 
-    final theme = Theme.of(context);
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'SchemaIndicator',
+      contextOverrides: {
+        'mode': widget.mode.name,
+        'visible': _isVisible.toString(),
+        'animated': 'true',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildIndicatorContent(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildIndicatorContent(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Stack(
       children: [
         // Main indicator

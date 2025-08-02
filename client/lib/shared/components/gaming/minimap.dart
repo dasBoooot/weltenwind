@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../../core/services/modular_theme_service.dart';
+import '../../../core/providers/theme_context_provider.dart';
 
 /// 🗺️ Minimap Entity Types
 enum MinimapEntityType {
@@ -139,9 +139,21 @@ class _GameMinimapState extends State<GameMinimap> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'Minimap',
+      contextOverrides: {
+        'zoomLevel': widget.zoomLevel.toString(),
+        'hasEntities': widget.entities.isNotEmpty.toString(),
+        'showGrid': widget.showGrid.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildMinimap(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildMinimap(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(

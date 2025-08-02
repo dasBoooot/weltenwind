@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 📱 Fantasy AppBar Variants based on Theme Schema
 enum AppAppBarVariant {
@@ -106,9 +106,21 @@ class _AppAppBarState extends State<AppAppBar> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppBar',
+      contextOverrides: {
+        'variant': widget.variant.name,
+        'hasActions': (widget.actions?.isNotEmpty ?? false).toString(),
+        'hasLeading': (widget.leading != null).toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildAppBar(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return AnimatedBuilder(
       animation: _glowAnimation,
       builder: (context, child) {

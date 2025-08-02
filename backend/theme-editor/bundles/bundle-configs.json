@@ -394,6 +394,382 @@
         }
       }
     },
+    "pre_game_bundle": {
+      "name": "Pre Game Bundle",
+      "description": "Spezielles Bundle für Login, Registrierung, Invite-Landing - Optimiert für ersten Eindruck",
+      "context": "pre-game",
+      "priority": "high",
+      "estimatedSize": "18KB",
+      "loadTime": "very-fast",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing",
+          "radius"
+        ],
+        "optional": [
+          "effects.animations"
+        ],
+        "excluded": [
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud",
+          "effects.visual",
+          "gaming.accessibility"
+        ]
+      },
+      "features": {
+        "cleanUI": true,
+        "welcomeAnimations": true,
+        "responsiveDesign": true,
+        "brandingElements": true,
+        "firstImpressionOptimized": true,
+        "gamingFeatures": false,
+        "visualEffects": "subtle",
+        "accessibility": "basic"
+      },
+      "performance": {
+        "target": "all-devices",
+        "priority": "instant-loading",
+        "memoryUsage": "minimal",
+        "batterySaving": true,
+        "criticalCSS": true
+      },
+      "dependencies": {
+        "colors": {
+          "sections": ["primary", "secondary", "background", "text", "status"],
+          "excludes": ["gaming", "effects"]
+        },
+        "typography": {
+          "sections": ["fontFamily.primary", "textStyles.heading", "textStyles.body", "textStyles.welcome"],
+          "excludes": ["gaming", "fantasy.decorative"]
+        }
+      },
+      "overrides": {
+        "branding": {
+          "emphasizeLogo": true,
+          "cleanDesign": true,
+          "professionalLook": true
+        },
+        "animations": {
+          "welcomeSequence": true,
+          "subtleTransitions": true,
+          "duration": 250
+        }
+      }
+    },
+    "world_fire_bundle": {
+      "name": "Fire World Theme Bundle",
+      "description": "Feuerwelt-spezifisches Bundle mit warmen Farben, Feuer-Effekten und entsprechender Atmosphäre",
+      "context": "world-themed",
+      "priority": "medium",
+      "estimatedSize": "95KB",
+      "loadTime": "medium",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing",
+          "radius",
+          "effects.visual",
+          "effects.animations",
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud"
+        ],
+        "optional": [
+          "gaming.accessibility"
+        ],
+        "excluded": []
+      },
+      "features": {
+        "worldThemed": true,
+        "fireEffects": true,
+        "warmColorPalette": true,
+        "emberAnimations": true,
+        "heatDistortion": true,
+        "gamingFeatures": true,
+        "visualEffects": "fire-themed",
+        "accessibility": "enhanced"
+      },
+      "performance": {
+        "target": "medium-high-devices",
+        "priority": "visual-quality",
+        "memoryUsage": "medium-high",
+        "batterySaving": false,
+        "gpuAcceleration": true
+      },
+      "dependencies": {
+        "colors": {
+          "fullLoad": true,
+          "emphasize": ["fire.primary", "fire.secondary", "ember.glow"]
+        },
+        "effects.visual": {
+          "sections": ["fire", "ember", "heat", "lava", "smoke"],
+          "excludes": ["ice", "water", "nature"]
+        },
+        "effects.animations": {
+          "sections": ["fire.flicker", "ember.drift", "heat.shimmer"],
+          "excludes": ["ice", "water"]
+        }
+      },
+      "overrides": {
+        "worldTheme": {
+          "type": "fire",
+          "intensity": "high",
+          "ambientEffects": true
+        },
+        "colors": {
+          "primary": "#FF4500",
+          "secondary": "#FF6347", 
+          "accent": "#FFD700",
+          "background": "#2F1B14",
+          "surface": "#8B4513"
+        },
+        "effects": {
+          "particles": {
+            "type": "ember",
+            "density": 0.7,
+            "movement": "upward-drift"
+          },
+          "glow": {
+            "color": "#FF4500",
+            "intensity": 0.8,
+            "pulsing": true
+          },
+          "distortion": {
+            "type": "heat-wave",
+            "intensity": 0.3
+          }
+        }
+      }
+    },
+    "world_ice_bundle": {
+      "name": "Ice World Theme Bundle", 
+      "description": "Eiswelt-spezifisches Bundle mit kalten Farben, Eis-Effekten und frostiger Atmosphäre",
+      "context": "world-themed",
+      "priority": "medium",
+      "estimatedSize": "98KB",
+      "loadTime": "medium",
+      "modules": {
+        "required": [
+          "colors",
+          "typography", 
+          "spacing",
+          "radius",
+          "effects.visual",
+          "effects.animations",
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud"
+        ],
+        "optional": [
+          "gaming.accessibility"
+        ],
+        "excluded": []
+      },
+      "features": {
+        "worldThemed": true,
+        "iceEffects": true,
+        "coldColorPalette": true,
+        "crystalAnimations": true,
+        "frostOverlay": true,
+        "gamingFeatures": true,
+        "visualEffects": "ice-themed",
+        "accessibility": "enhanced"
+      },
+      "performance": {
+        "target": "medium-high-devices",
+        "priority": "visual-quality",
+        "memoryUsage": "medium-high", 
+        "batterySaving": false,
+        "gpuAcceleration": true
+      },
+      "dependencies": {
+        "colors": {
+          "fullLoad": true,
+          "emphasize": ["ice.primary", "ice.secondary", "crystal.shimmer"]
+        },
+        "effects.visual": {
+          "sections": ["ice", "crystal", "frost", "snow", "aurora"],
+          "excludes": ["fire", "ember", "heat"]
+        },
+        "effects.animations": {
+          "sections": ["ice.crystallize", "frost.spread", "aurora.wave"],
+          "excludes": ["fire", "ember"]
+        }
+      },
+      "overrides": {
+        "worldTheme": {
+          "type": "ice",
+          "intensity": "high", 
+          "ambientEffects": true
+        },
+        "colors": {
+          "primary": "#87CEEB",
+          "secondary": "#B0E0E6",
+          "accent": "#E0FFFF",
+          "background": "#0F1419",
+          "surface": "#1E3A5F"
+        },
+        "effects": {
+          "particles": {
+            "type": "snowflake",
+            "density": 0.5,
+            "movement": "downward-drift"
+          },
+          "glow": {
+            "color": "#87CEEB",
+            "intensity": 0.6,
+            "crystalline": true
+          },
+          "distortion": {
+            "type": "frost-pattern",
+            "intensity": 0.2
+          }
+        }
+      }
+    },
+    "minimal_bundle": {
+      "name": "Minimal Bundle",
+      "description": "Ultra-minimales Bundle für Overlays, Modals und Dialoge - Kleinstmögliche Größe",
+      "context": "overlay",
+      "priority": "highest",
+      "estimatedSize": "8KB",
+      "loadTime": "instant",
+      "modules": {
+        "required": [
+          "colors",
+          "typography", 
+          "spacing"
+        ],
+        "optional": [],
+        "excluded": [
+          "radius",
+          "effects.visual",
+          "effects.animations", 
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud",
+          "gaming.accessibility"
+        ]
+      },
+      "features": {
+        "ultraMinimal": true,
+        "overlayOptimized": true,
+        "instantLoad": true,
+        "noAnimations": true,
+        "noEffects": true,
+        "gamingFeatures": false,
+        "visualEffects": false,
+        "accessibility": "minimal"
+      },
+      "performance": {
+        "target": "all-devices",
+        "priority": "maximum-speed",
+        "memoryUsage": "minimal",
+        "batterySaving": true,
+        "instantaneous": true
+      },
+      "dependencies": {
+        "colors": {
+          "sections": ["primary", "background", "text"],
+          "minimumSet": true
+        },
+        "typography": {
+          "sections": ["fontFamily.primary", "textStyles.body"],
+          "minimumSet": true
+        },
+        "spacing": {
+          "sections": ["base"],
+          "minimumSet": true
+        }
+      },
+      "overrides": {
+        "optimization": {
+          "aggressiveTreeShaking": true,
+          "removeUnused": true,
+          "inlineCSS": true
+        },
+        "ui": {
+          "flatDesign": true,
+          "noShadows": true,
+          "noGradients": true,
+          "noRounding": true
+        }
+      }
+    },
+    "debug_bundle": {
+      "name": "Debug Bundle",
+      "description": "Debug-Bundle mit speziellen Debugging-Features und erweiterten Entwicklertools",
+      "context": "debug",
+      "priority": "low",
+      "estimatedSize": "160KB",
+      "loadTime": "slow",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing",
+          "radius", 
+          "effects.visual",
+          "effects.animations",
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud",
+          "gaming.accessibility"
+        ],
+        "optional": [],
+        "excluded": [],
+        "debug": true,
+        "development": true
+      },
+      "features": {
+        "debugMode": true,
+        "schemaInspector": true,
+        "performanceMetrics": true,
+        "componentBounds": true,
+        "colorPalette": true,
+        "themeValidation": true,
+        "liveEdit": true,
+        "allFeatures": true
+      },
+      "performance": {
+        "target": "development-only",
+        "priority": "debugging-features",
+        "memoryUsage": "unlimited",
+        "debugging": true,
+        "profiling": true
+      },
+      "dependencies": {
+        "all": { 
+          "fullLoad": true, 
+          "includeDebug": true,
+          "includeMetadata": true
+        }
+      },
+      "overrides": {
+        "debug": {
+          "schemaValidation": true,
+          "performanceProfiling": true,
+          "componentInspection": true,
+          "themeAnalysis": true,
+          "bundleAnalysis": true,
+          "memoryProfiler": true
+        },
+        "colors": {
+          "debugMode": true,
+          "showColorNames": true,
+          "contrastAnalysis": true
+        },
+        "ui": {
+          "showBounds": true,
+          "debugOverlay": true,
+          "measurementTools": true
+        }
+      }
+    },
     "developer-preview": {
       "name": "Developer Preview",
       "description": "Bundle für Theme-Entwicklung mit allen Features und Debug-Tools",
@@ -467,15 +843,32 @@
     },
     "conditionalLoading": {
       "deviceTier": {
-        "low": ["performance-optimized"],
-        "medium": ["world-preview", "accessibility-enhanced"],
-        "high": ["full-gaming", "developer-preview"]
+        "low": ["performance-optimized", "minimal_bundle"],
+        "medium": ["world-preview", "accessibility-enhanced", "pre_game_bundle"],
+        "high": ["full-gaming", "world_fire_bundle", "world_ice_bundle", "developer-preview"]
       },
       "context": {
-        "pre-game": ["pre-game-minimal"],
+        "pre-game": ["pre_game_bundle", "pre-game-minimal"],
         "world-preview": ["world-preview"],
         "in-game": ["full-gaming"],
-        "development": ["developer-preview"]
+        "world-themed": ["world_fire_bundle", "world_ice_bundle"],
+        "overlay": ["minimal_bundle"],
+        "debug": ["debug_bundle"],
+        "development": ["developer-preview", "debug_bundle"]
+      },
+      "worldType": {
+        "fire": ["world_fire_bundle"],
+        "ice": ["world_ice_bundle"],
+        "fantasy": ["full-gaming"],
+        "scifi": ["full-gaming"],
+        "medieval": ["full-gaming"]
+      },
+      "uiContext": {
+        "login": ["pre_game_bundle"],
+        "register": ["pre_game_bundle"], 
+        "modal": ["minimal_bundle"],
+        "overlay": ["minimal_bundle"],
+        "dialog": ["minimal_bundle"]
       },
       "accessibility": {
         "required": ["accessibility-enhanced"]

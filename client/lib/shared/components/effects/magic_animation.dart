@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../../../core/services/modular_theme_service.dart';
+import '../../../core/providers/theme_context_provider.dart';
 
 /// 🪄 Magic Animation Types based on Animations Schema
 enum MagicAnimationType {
@@ -185,9 +185,21 @@ class _MagicAnimationState extends State<MagicAnimation> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'MagicAnimation',
+      contextOverrides: {
+        'type': widget.animationType.name,
+        'duration': widget.duration.inMilliseconds.toString(),
+        'autoStart': widget.autoStart.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildMagicAnimation(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildMagicAnimation(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {

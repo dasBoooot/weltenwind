@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 💬 App Tooltip based on Schema Configuration
 /// 
@@ -168,8 +168,20 @@ class _AppTooltipState extends State<AppTooltip> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppTooltip',
+      contextOverrides: {
+        'visible': 'normal',
+        'hasMessage': (widget.message.isNotEmpty).toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildTooltip(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildTooltip(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     
     Widget tooltip = Tooltip(
       message: widget.message,

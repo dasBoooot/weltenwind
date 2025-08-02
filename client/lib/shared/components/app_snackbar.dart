@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 📢 Snackbar Types
 enum AppSnackbarType {
@@ -197,9 +197,21 @@ class _AppSnackbarState extends State<AppSnackbar> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppSnackbar',
+      contextOverrides: {
+        'type': widget.type.name,
+        'hasAction': (widget.onAction != null).toString(),
+        'floating': 'false',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildSnackbar(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildSnackbar(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     Widget snackbar = Container(
       constraints: BoxConstraints(
         maxWidth: widget.maxWidth ?? _getMaxWidth(),

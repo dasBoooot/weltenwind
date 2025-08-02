@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/services/modular_theme_service.dart';
+import '../../../core/providers/theme_context_provider.dart';
 
 /// 🦾 Color Blind Types from Accessibility Schema
 enum ColorBlindType {

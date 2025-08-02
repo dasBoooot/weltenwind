@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// ⏳ Loading Overlay based on Schema Configuration
 /// 
@@ -169,21 +169,33 @@ class _LoadingOverlayState extends State<LoadingOverlay> with TickerProviderStat
       return const SizedBox.shrink();
     }
 
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'LoadingOverlay',
+      contextOverrides: {
+        'showText': widget.showText.toString(),
+        'hasBlur': widget.backdropBlur.toString(),
+        'pulsing': widget.pulseAnimation.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildOverlay(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildOverlay(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return AnimatedBuilder(
       animation: _fadeController,
       builder: (context, child) {
         return Opacity(
           opacity: _fadeAnimation.value,
-          child: _buildOverlay(theme, extensions),
+          child: _buildOverlayContent(theme, extensions),
         );
       },
     );
   }
 
-  Widget _buildOverlay(ThemeData theme, Map<String, dynamic>? extensions) {
+  Widget _buildOverlayContent(ThemeData theme, Map<String, dynamic>? extensions) {
     Widget overlay = Container(
       color: _getBackgroundColor(theme, extensions),
       child: Center(

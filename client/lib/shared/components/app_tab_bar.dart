@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 📑 Tab Item Model
 class AppTab {
@@ -259,9 +259,21 @@ class _AppTabBarState extends State<AppTabBar> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppTabBar',
+      contextOverrides: {
+        'variant': widget.variant.name,
+        'currentTab': 'default',
+        'hasIndicator': (widget.indicatorType != TabIndicatorType.none).toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildTabBarContent(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildTabBarContent(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Semantics(
       label: _getSemanticLabel(),
       hint: _getSemanticHint(),

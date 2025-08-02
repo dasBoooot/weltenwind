@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 🚨 Error Message Types
 enum ErrorMessageType {
@@ -192,8 +192,21 @@ class _ErrorMessageBoxState extends State<ErrorMessageBox> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'ErrorMessageBox',
+      contextOverrides: {
+        'type': widget.type.name,
+        'hasAction': (widget.onTap != null).toString(),
+        'closable': widget.showClose.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildErrorBox(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildErrorBox(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     
     Widget errorBox = Container(
       padding: _getPadding(),

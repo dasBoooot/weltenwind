@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 📋 Dropdown Option Model
 class DropdownOption<T> {
@@ -339,9 +339,21 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppDropdown',
+      contextOverrides: {
+        'variant': widget.variant.name,
+        'open': _isOpen.toString(),
+        'hasValue': (widget.value != null).toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildDropdown(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildDropdown(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return Semantics(
       label: _getSemanticLabel(),
       hint: _getSemanticHint(),
@@ -554,9 +566,21 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
   }
 
   Widget _buildOverlay(Offset offset, Size buttonSize) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppDropdown',
+      contextOverrides: {
+        'variant': widget.variant.name,
+        'open': _isOpen.toString(),
+        'hasValue': (widget.value != null).toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildOverlayContent(context, contextTheme, extensions, offset, buttonSize);
+      },
+    );
+  }
+
+  Widget _buildOverlayContent(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions, Offset offset, Size buttonSize) {
     return GestureDetector(
       onTap: _closeDropdown,
       child: Container(

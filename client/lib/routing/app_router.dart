@@ -12,7 +12,6 @@ import '../features/invite/invite_landing_page.dart';
 import '../features/dashboard/dashboard_page.dart';
 import '../features/landing/landing_page.dart';
 import '../core/services/auth_service.dart';
-import '../theme/app_theme.dart';
 import '../main.dart';
 
 // Custom Navigation Observer für Logging

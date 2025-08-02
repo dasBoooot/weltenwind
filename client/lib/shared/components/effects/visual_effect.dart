@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../../../core/services/modular_theme_service.dart';
+import '../../../core/providers/theme_context_provider.dart';
 
 /// ✨ Visual Effect Types based on Effects Schema
 enum VisualEffectType {
@@ -151,9 +151,21 @@ class _VisualEffectState extends State<VisualEffect> with TickerProviderStateMix
       return widget.child;
     }
 
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'VisualEffect',
+      contextOverrides: {
+        'type': widget.effectType.name,
+        'enabled': widget.isEnabled.toString(),
+        'animated': 'true',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildVisualEffect(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildVisualEffect(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return AnimatedBuilder(
       animation: Listenable.merge([_animationController, _particleController]),
       builder: (context, child) {

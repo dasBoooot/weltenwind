@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// ➖ App Divider Variants based on Schema Configuration
 enum AppDividerVariant {
@@ -152,22 +152,34 @@ class _AppDividerState extends State<AppDivider> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppDivider',
+      contextOverrides: {
+        'variant': widget.variant.name,
+        'animated': widget.animated.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildDivider(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildDivider(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     
     if (widget.animated && _animationController != null) {
       return AnimatedBuilder(
         animation: _animationController!,
         builder: (context, child) {
-          return _buildDivider(theme, extensions);
+          return _buildDividerContent(theme, extensions);
         },
       );
     }
     
-    return _buildDivider(theme, extensions);
+    return _buildDividerContent(theme, extensions);
   }
 
-  Widget _buildDivider(ThemeData theme, Map<String, dynamic>? extensions) {
+  Widget _buildDividerContent(ThemeData theme, Map<String, dynamic>? extensions) {
     switch (widget.variant) {
       case AppDividerVariant.horizontal:
         return _buildHorizontalDivider(theme, extensions);

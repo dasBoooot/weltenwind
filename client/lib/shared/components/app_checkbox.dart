@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// ☑️ Checkbox Variants
 enum AppCheckboxVariant {
@@ -246,9 +246,21 @@ class _AppCheckboxState extends State<AppCheckbox> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppCheckbox',
+      contextOverrides: {
+        'variant': widget.variant.name,
+        'checked': widget.value.toString(),
+        'enabled': (widget.onChanged != null).toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildCheckboxWidget(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildCheckboxWidget(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     Widget checkbox = MouseRegion(
       onEnter: _onEnter,
       onExit: _onExit,

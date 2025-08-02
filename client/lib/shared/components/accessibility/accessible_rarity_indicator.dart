@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'accessibility_provider.dart';
+import '../../../core/providers/theme_context_provider.dart';
 
 /// 💎 Accessible Rarity Indicator based on Accessibility Schema
 /// 
@@ -22,20 +24,30 @@ class AccessibleRarityIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final accessibilityProvider = AccessibilityProviderWidget.of(context);
-    
-    if (accessibilityProvider == null) {
-      return _buildDefaultIndicator(theme);
-    }
-    
-    final settings = accessibilityProvider.settings;
-    
-    return Container(
-      width: size,
-      height: size,
-      decoration: _getDecoration(theme, accessibilityProvider),
-      child: _buildContent(theme, accessibilityProvider),
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AccessibleRarityIndicator',
+      contextOverrides: {
+        'rarity': rarity,
+        'size': size.toString(),
+        'showSymbol': showSymbol.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        final accessibilityProvider = AccessibilityProviderWidget.of(context);
+        
+        if (accessibilityProvider == null) {
+          return _buildDefaultIndicator(contextTheme);
+        }
+        
+        final settings = accessibilityProvider.settings;
+        
+        return Container(
+          width: size,
+          height: size,
+          decoration: _getDecoration(contextTheme, accessibilityProvider),
+          child: _buildContent(contextTheme, accessibilityProvider),
+        );
+      },
     );
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 🎴 Fantasy Card Variants based on Theme Schema
 enum AppCardVariant {
@@ -114,9 +114,20 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'AppCard',
+      contextOverrides: {
+        'variant': widget.variant.name,
+        'state': _isHovered ? 'hovered' : 'normal',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildCard(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildCard(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     return MouseRegion(
       onEnter: _handleHoverEnter,
       onExit: _handleHoverExit,

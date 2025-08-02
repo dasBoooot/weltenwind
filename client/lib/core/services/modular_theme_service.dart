@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../../config/logger.dart';
 import '../../config/env.dart';
 import 'api_service.dart';
+import 'theme_context_manager.dart';
 
 
 /// 🚀 Modular Theme Service für Bundle-basiertes Theme Loading
@@ -579,6 +580,304 @@ class ModularThemeService {
     }
     
     return null;
+  }
+
+  /// 🎯 CONTEXT-BASED THEME METHODS
+  
+  /// Lädt Theme basierend auf dem aktuellen Kontext
+  Future<ThemeData?> getTheme(ThemeContext context, {bool isDark = false}) async {
+    try {
+      AppLogger.app.i('🎯 Loading theme for context: ${context.toJson()}');
+      
+      // Bundle ID aus Kontext bestimmen
+      final bundleId = _getBundleIdFromContext(context);
+      
+      // Theme Name aus Welt-Kontext oder Fallback
+      final themeName = _getThemeNameFromContext(context);
+      
+      // Theme mit spezifischem Bundle laden
+      final theme = await loadThemeWithBundle(themeName, bundleId, isDark: isDark);
+      
+      if (theme != null) {
+        // Kontext-spezifische Modifikationen anwenden
+        return _applyContextModifications(theme, context);
+      }
+      
+      return theme;
+    } catch (e) {
+      AppLogger.app.e('❌ Error loading theme for context', error: e);
+      return null;
+    }
+  }
+
+  /// Lädt spezifisches Bundle
+  Future<ThemeData?> getBundle(String bundleId, {String? themeName, bool isDark = false}) async {
+    try {
+      AppLogger.app.i('📦 Loading bundle: $bundleId');
+      
+      final resolvedThemeName = themeName ?? _getDefaultThemeForBundle(bundleId);
+      return await loadThemeWithBundle(resolvedThemeName, bundleId, isDark: isDark);
+    } catch (e) {
+      AppLogger.app.e('❌ Error loading bundle $bundleId', error: e);
+      return null;
+    }
+  }
+
+  /// Live-Context-Switch für aktuelle Theme-Instanz
+  Future<void> switchContext(ThemeContext newContext) async {
+    try {
+      AppLogger.app.i('🔄 Switching to new context: ${newContext.uiContext.name}');
+      
+      final newBundleId = _getBundleIdFromContext(newContext);
+      
+      // Nur Bundle wechseln wenn unterschiedlich
+      if (newBundleId != _currentBundle) {
+        // Theme mit neuem Bundle laden
+        final isDark = newContext.visualModeContext == VisualModeContext.dark;
+        final themeName = _getThemeNameFromContext(newContext);
+        
+        await loadThemeWithBundle(themeName, newBundleId, isDark: isDark);
+      }
+      
+      // Context-spezifische Cache-Updates
+      _updateContextCache(newContext);
+      
+    } catch (e) {
+      AppLogger.app.e('❌ Error switching context', error: e);
+    }
+  }
+
+  /// Gibt verfügbare Bundles für Kontext zurück
+  List<String> getAvailableBundlesForContext(ThemeContext context) {
+    final availableBundles = <String>[];
+    
+    // Basis-Bundles
+    availableBundles.addAll(['minimal_bundle', 'universal_bundle']);
+    
+    // UI-Context-spezifische Bundles
+    switch (context.uiContext) {
+      case UIContext.login:
+      case UIContext.register:
+        availableBundles.add('pre_game_bundle');
+        break;
+      case UIContext.worldSelection:
+        availableBundles.add('world_preview_bundle');
+        break;
+      case UIContext.inGame:
+        availableBundles.add('full_gaming_bundle');
+        break;
+      case UIContext.debug:
+        availableBundles.add('debug_bundle');
+        break;
+      default:
+        break;
+    }
+    
+    // Welt-spezifische Bundles
+    if (context.worldContext != null) {
+      final worldType = context.worldContext!.worldType;
+      availableBundles.add('world_${worldType.name}_bundle');
+    }
+    
+    return availableBundles;
+  }
+
+  /// 🔍 Private: Bundle ID aus Kontext bestimmen
+  String _getBundleIdFromContext(ThemeContext context) {
+    // Priorität: Welt > UI > Platform > Default
+    
+    // 1. Welt-Context hat höchste Priorität
+    if (context.worldContext != null) {
+      return context.worldContext!.bundleId;
+    }
+    
+    // 2. UI-Context bestimmt Bundle
+    switch (context.uiContext) {
+      case UIContext.login:
+      case UIContext.register:
+        return 'pre_game_bundle';
+      case UIContext.worldSelection:
+        return 'world_preview_bundle';
+      case UIContext.inGame:
+        return 'full_gaming_bundle';
+      case UIContext.modal:
+      case UIContext.overlay:
+      case UIContext.dialog:
+        return 'minimal_bundle';
+      case UIContext.debug:
+        return 'debug_bundle';
+      case UIContext.settings:
+        return 'settings_bundle';
+      case UIContext.main:
+        return 'universal_bundle';
+    }
+  }
+
+  /// 🎨 Private: Theme Name aus Kontext bestimmen
+  String _getThemeNameFromContext(ThemeContext context) {
+    // Welt-spezifische Themes
+    if (context.worldContext != null) {
+      final worldType = context.worldContext!.worldType;
+      return switch (worldType) {
+        WorldType.fantasy => 'mystical-fantasy',
+        WorldType.scifi => 'cyber-tech',
+        WorldType.medieval => 'ancient-stone',
+        WorldType.modern => 'clean-modern',
+        WorldType.horror => 'dark-horror',
+        WorldType.cyberpunk => 'neon-cyber',
+        WorldType.steampunk => 'brass-steam',
+        WorldType.nature => 'forest-nature',
+      };
+    }
+    
+    // Visual Mode bestimmt Theme-Variante
+    switch (context.visualModeContext) {
+      case VisualModeContext.highContrast:
+        return 'high-contrast';
+      case VisualModeContext.colorBlind:
+        return 'accessible-colors';
+      default:
+        return 'mystical-fantasy'; // Standard Fantasy Theme
+    }
+  }
+
+  /// 📦 Private: Standard-Theme für Bundle
+  String _getDefaultThemeForBundle(String bundleId) {
+    return switch (bundleId) {
+      'pre_game_bundle' => 'clean-login',
+      'world_preview_bundle' => 'world-preview',
+      'full_gaming_bundle' => 'mystical-fantasy',
+      'debug_bundle' => 'developer-debug',
+      _ => 'mystical-fantasy',
+    };
+  }
+
+  /// 🎭 Private: Kontext-spezifische Theme-Modifikationen anwenden
+  ThemeData _applyContextModifications(ThemeData baseTheme, ThemeContext context) {
+    var modifiedTheme = baseTheme;
+    
+    // Player State Modifikationen
+    if (context.playerStateContext != null) {
+      modifiedTheme = _applyPlayerStateModifications(modifiedTheme, context.playerStateContext!);
+    }
+    
+    // Platform Context Modifikationen
+    modifiedTheme = _applyPlatformModifications(modifiedTheme, context.platformContext);
+    
+    // UI Context Modifikationen
+    modifiedTheme = _applyUIContextModifications(modifiedTheme, context.uiContext);
+    
+    return modifiedTheme;
+  }
+
+  /// 👤 Private: Player State Theme-Modifikationen
+  ThemeData _applyPlayerStateModifications(ThemeData theme, PlayerStateContext playerState) {
+    final intensity = playerState.intensity;
+    
+    return switch (playerState.state) {
+      PlayerState.cursed => theme.copyWith(
+        colorScheme: theme.colorScheme.copyWith(
+          primary: _blendColor(theme.colorScheme.primary, Colors.red, intensity * 0.3),
+          surface: _blendColor(theme.colorScheme.surface, Colors.black, intensity * 0.2),
+        ),
+      ),
+      PlayerState.blessed => theme.copyWith(
+        colorScheme: theme.colorScheme.copyWith(
+          primary: _blendColor(theme.colorScheme.primary, Colors.amber, intensity * 0.4),
+          surface: _blendColor(theme.colorScheme.surface, Colors.white, intensity * 0.1),
+        ),
+      ),
+      PlayerState.poisoned => theme.copyWith(
+        colorScheme: theme.colorScheme.copyWith(
+          primary: _blendColor(theme.colorScheme.primary, Colors.green, intensity * 0.3),
+        ),
+      ),
+      PlayerState.burning => theme.copyWith(
+        colorScheme: theme.colorScheme.copyWith(
+          primary: _blendColor(theme.colorScheme.primary, Colors.orange, intensity * 0.4),
+        ),
+      ),
+      PlayerState.frozen => theme.copyWith(
+        colorScheme: theme.colorScheme.copyWith(
+          primary: _blendColor(theme.colorScheme.primary, Colors.cyan, intensity * 0.3),
+        ),
+      ),
+      _ => theme,
+    };
+  }
+
+  /// 📱 Private: Platform Context Modifikationen
+  ThemeData _applyPlatformModifications(ThemeData theme, PlatformContext platform) {
+    return switch (platform) {
+      PlatformContext.mobile => theme.copyWith(
+        // Größere Touch-Targets für Mobile
+        elevatedButtonTheme: _adjustButtonThemeForMobile(theme.elevatedButtonTheme),
+        textTheme: _adjustTextThemeForMobile(theme.textTheme),
+      ),
+      PlatformContext.desktop => theme.copyWith(
+        // Dichtere UI für Desktop
+        visualDensity: VisualDensity.compact,
+      ),
+      _ => theme,
+    };
+  }
+
+  /// 🖥️ Private: UI Context Modifikationen
+  ThemeData _applyUIContextModifications(ThemeData theme, UIContext uiContext) {
+    return switch (uiContext) {
+      UIContext.modal => theme.copyWith(
+        dialogTheme: theme.dialogTheme.copyWith(
+          backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.95),
+        ),
+      ),
+      UIContext.overlay => theme.copyWith(
+        // Transparentere Overlays
+        canvasColor: theme.canvasColor.withValues(alpha: 0.8),
+      ),
+      UIContext.debug => theme.copyWith(
+        // Debug-spezifische Farben
+        colorScheme: theme.colorScheme.copyWith(
+          primary: Colors.orange,
+          secondary: Colors.cyan,
+        ),
+      ),
+      _ => theme,
+    };
+  }
+
+  /// 💾 Private: Context-Cache aktualisieren
+  void _updateContextCache(ThemeContext context) {
+    // Context-spezifische Metadaten cachen
+    final contextKey = 'context_${context.hashCode}';
+    _moduleCache[contextKey] = context.toJson();
+  }
+
+  /// 🎨 Private: Color Blending Helper
+  Color _blendColor(Color base, Color blend, double factor) {
+    return Color.lerp(base, blend, factor.clamp(0.0, 1.0)) ?? base;
+  }
+
+  /// 📱 Private: Button Theme für Mobile anpassen
+  ElevatedButtonThemeData? _adjustButtonThemeForMobile(ElevatedButtonThemeData? buttonTheme) {
+    if (buttonTheme?.style == null) return buttonTheme;
+    
+    return ElevatedButtonThemeData(
+      style: buttonTheme!.style!.copyWith(
+        minimumSize: WidgetStateProperty.all(const Size(44, 44)), // WCAG Touch Target
+        padding: WidgetStateProperty.all(
+          const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        ),
+      ),
+    );
+  }
+
+  /// 📱 Private: Text Theme für Mobile anpassen
+  TextTheme _adjustTextThemeForMobile(TextTheme textTheme) {
+    return textTheme.copyWith(
+      bodyLarge: textTheme.bodyLarge?.copyWith(fontSize: 16),
+      bodyMedium: textTheme.bodyMedium?.copyWith(fontSize: 14),
+      bodySmall: textTheme.bodySmall?.copyWith(fontSize: 12),
+    );
   }
 
   /// Berechnet Cache-Hit-Rate

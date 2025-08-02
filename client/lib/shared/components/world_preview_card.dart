@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/services/modular_theme_service.dart';
+import '../../core/providers/theme_context_provider.dart';
 
 /// 🌍 World Status Types
 enum WorldStatus {
@@ -213,9 +213,21 @@ class _WorldPreviewCardState extends State<WorldPreviewCard> with TickerProvider
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
-    
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'WorldPreviewCard',
+      contextOverrides: {
+        'status': widget.world.status.name,
+        'hoverEffect': widget.hoverEffect.toString(),
+        'interactive': widget.onTap != null ? 'true' : 'false',
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildWorldCard(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildWorldCard(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     Widget card = AnimatedBuilder(
       animation: _hoverController,
       builder: (context, child) {

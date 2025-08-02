@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/services/modular_theme_service.dart';
+import '../../../core/providers/theme_context_provider.dart';
 
 /// 🔮 Buff/Debuff Types
 enum BuffType {
@@ -123,8 +123,21 @@ class _GameBuffBarState extends State<GameBuffBar> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extensions = ModularThemeService().getCurrentThemeExtensions();
+    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    return ThemeContextConsumer(
+      componentName: 'GameBuffBar',
+      contextOverrides: {
+        'direction': widget.direction.name,
+        'hasBuffs': widget.buffs.isNotEmpty.toString(),
+        'maxSlots': widget.maxSlots.toString(),
+      },
+      builder: (context, contextTheme, extensions) {
+        return _buildBuffBar(context, contextTheme, extensions);
+      },
+    );
+  }
+
+  Widget _buildBuffBar(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     final visibleBuffs = _getVisibleBuffs();
     
     return AnimatedBuilder(
