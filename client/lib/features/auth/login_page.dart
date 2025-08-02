@@ -41,9 +41,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   String? _inviteToken;
   bool _autoAcceptInvite = false;
   
-  // Für bessere Validierung
-  bool _hasInteractedWithUsername = false;
-  bool _hasInteractedWithPassword = false;
+  // Für bessere Validierung (removed unused variables)
 
   @override
   void initState() {
@@ -270,11 +268,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 autofillHints: const [AutofillHints.username],
                                 textInputAction: TextInputAction.next,
                                 onChanged: (_) {
-                                  if (!_hasInteractedWithUsername) {
-                                    setState(() {
-                                      _hasInteractedWithUsername = true;
-                                    });
-                                  }
+                                  // Fix: Removed setState to prevent focus loss during typing
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authUsernameLabel,
@@ -300,11 +294,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 textInputAction: TextInputAction.done,
                                 onFieldSubmitted: (_) => _isLoading ? null : _login(),
                                 onChanged: (_) {
-                                  if (!_hasInteractedWithPassword) {
-                                    setState(() {
-                                      _hasInteractedWithPassword = true;
-                                    });
-                                  }
+                                  // Fix: Removed setState to prevent focus loss during typing
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authPasswordLabel,

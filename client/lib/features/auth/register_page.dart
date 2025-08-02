@@ -44,10 +44,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   // E-Mail-Validierung Regex
   static final RegExp _emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
 
-  // Für bessere Validierung
-  bool _hasInteractedWithUsername = false;
-  bool _hasInteractedWithEmail = false;
-  bool _hasInteractedWithPassword = false;
+  // Für bessere Validierung (removed unused variables to fix focus loss)
 
   @override
   void initState() {
@@ -275,11 +272,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 autofillHints: const [AutofillHints.username],
                                 textInputAction: TextInputAction.next,
                                 onChanged: (_) {
-                                  if (!_hasInteractedWithUsername) {
-                                    setState(() {
-                                      _hasInteractedWithUsername = true;
-                                    });
-                                  }
+                                                                  // Fix: Removed setState to prevent focus loss during typing
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authUsernameLabel,
@@ -304,11 +297,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 autofillHints: const [AutofillHints.email],
                                 textInputAction: TextInputAction.next,
                                 onChanged: (_) {
-                                  if (!_hasInteractedWithEmail) {
-                                    setState(() {
-                                      _hasInteractedWithEmail = true;
-                                    });
-                                  }
+                                                                  // Fix: Removed setState to prevent focus loss during typing
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authEmailLabel,
@@ -334,11 +323,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 textInputAction: TextInputAction.done,
                                 onFieldSubmitted: (_) => _isLoading ? null : _register(),
                                 onChanged: (_) {
-                                  if (!_hasInteractedWithPassword) {
-                                    setState(() {
-                                      _hasInteractedWithPassword = true;
-                                    });
-                                  }
+                                                                  // Fix: Removed setState to prevent focus loss during typing
                                 },
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context).authPasswordLabel,

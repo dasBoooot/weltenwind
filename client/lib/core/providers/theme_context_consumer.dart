@@ -46,6 +46,10 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
   ThemeData? _cachedDarkTheme;
   Map<String, dynamic>? _cachedExtensions;
   bool _isLoading = false;
+  
+  // Fix: Cache Future to prevent recreation on every build
+  Future<ThemeData>? _cachedThemeFuture;
+  Future<ThemeData>? _cachedDarkThemeFuture;
 
   @override
   void initState() {
@@ -61,6 +65,11 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
     if (oldWidget.contextOverrides != widget.contextOverrides ||
         oldWidget.worldThemeOverride != widget.worldThemeOverride ||
         oldWidget.fallbackBundle != widget.fallbackBundle) {
+      // Fix: Clear cached futures to force reload
+      _cachedThemeFuture = null;
+      _cachedDarkThemeFuture = null;
+      _cachedTheme = null;
+      _cachedDarkTheme = null;
       _loadTheme(isDark: false);
     }
   }
@@ -95,23 +104,20 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
           isDark: isDark, 
           contextOverrides: contextOverrides,
         );
-        if (resolvedTheme != null) {
-          AppLogger.app.d('🎯 Using context override theme');
-        }
+        AppLogger.app.d('🎯 Using context override theme');
       }
       
       // 🎨 3. PAGE/GLOBAL THEME
-      if (resolvedTheme == null) {
-        resolvedTheme = await ThemeHelper.getCurrentTheme(context, isDark: isDark);
-      }
+      resolvedTheme ??= await ThemeHelper.getCurrentTheme(context, isDark: isDark);
       
-      // 🔄 4. FALLBACK BUNDLE
+      // 🔄 4. FALLBACK BUNDLE - Additional safety (rarely needed but available)
       final fallbackBundle = widget.fallbackBundle;
-      if (resolvedTheme == null && fallbackBundle != null) {
+      if (fallbackBundle != null && resolvedTheme == null) {
         // Direkt über ModularThemeService laden
         final themeService = ThemeHelper.themeService;
-        resolvedTheme = await themeService.getBundle(fallbackBundle, isDark: isDark);
-        if (resolvedTheme != null) {
+        final fallbackTheme = await themeService.getBundle(fallbackBundle, isDark: isDark);
+        if (fallbackTheme != null) {
+          resolvedTheme = fallbackTheme;
           AppLogger.app.d('🔄 Using fallback bundle: $fallbackBundle');
         }
       }
@@ -198,26 +204,47 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
     final brightness = MediaQuery.of(context).platformBrightness;
     final isDark = brightness == Brightness.dark;
     
-    // 🔄 ASYNC THEME LOADING: FutureBuilder für Race-Condition Fix
-    return FutureBuilder<ThemeData>(
-      future: _getEffectiveTheme(isDark),
-      builder: (context, snapshot) {
-        // 🔄 LOADING STATE: Während Theme lädt
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoadingWidget();
-        }
-        
-        // ❌ ERROR STATE: Theme loading fehlgeschlagen
-        if (snapshot.hasError) {
-          print('❌ [THEME-DEBUG] Theme loading failed for ${widget.componentName}: ${snapshot.error}');
-          return widget.builder(context, Theme.of(context), _cachedExtensions);
-        }
-        
-        // ✅ SUCCESS: Theme geladen
-        final effectiveTheme = snapshot.data ?? Theme.of(context);
-        return widget.builder(context, effectiveTheme, _cachedExtensions);
-      },
-    );
+    // Fix: Use cached Future to prevent recreation on every build
+    final themeFuture = isDark ? _cachedDarkThemeFuture : _cachedThemeFuture;
+    
+    // If we have a cached theme, return it immediately
+    final cachedTheme = isDark ? _cachedDarkTheme : _cachedTheme;
+    if (cachedTheme != null) {
+      return widget.builder(context, cachedTheme, _cachedExtensions);
+    }
+    
+    // Only use FutureBuilder if we don't have a cached theme
+    if (themeFuture != null) {
+      return FutureBuilder<ThemeData>(
+        future: themeFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildLoadingWidget();
+          }
+          
+          if (snapshot.hasError) {
+            print('❌ [THEME-DEBUG] Theme loading failed for ${widget.componentName}: ${snapshot.error}');
+            return widget.builder(context, Theme.of(context), _cachedExtensions);
+          }
+          
+          final effectiveTheme = snapshot.data ?? Theme.of(context);
+          return widget.builder(context, effectiveTheme, _cachedExtensions);
+        },
+      );
+    }
+    
+    // Fallback: Load theme and return default while loading
+    _initializeTheme(isDark);
+    return widget.builder(context, Theme.of(context), _cachedExtensions);
+  }
+
+  /// Initialize theme loading and cache the Future
+  void _initializeTheme(bool isDark) {
+    if (isDark) {
+      _cachedDarkThemeFuture ??= _getEffectiveTheme(isDark);
+    } else {
+      _cachedThemeFuture ??= _getEffectiveTheme(isDark);
+    }
   }
 
   /// 🔄 Get Effective Theme mit async loading

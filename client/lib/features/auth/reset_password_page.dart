@@ -38,9 +38,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   
-  // Für bessere Validierung
-  bool _hasInteractedWithPassword = false;
-  bool _hasInteractedWithConfirmPassword = false;
+  // Für bessere Validierung (removed unused variables to fix focus loss)
+  // bool _hasInteractedWithPassword = false;  // Removed to prevent setState focus issues
+  // bool _hasInteractedWithConfirmPassword = false;  // Removed to prevent setState focus issues
 
   @override
   void initState() {
@@ -239,15 +239,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
               obscureText: _obscurePassword,
               autofillHints: const [AutofillHints.newPassword],
               textInputAction: TextInputAction.next,
-              onChanged: (_) {
-                if (!_hasInteractedWithPassword) {
-                  setState(() {
-                    _hasInteractedWithPassword = true;
-                  });
-                } else {
-                  setState(() {}); // Rebuild for real-time validation
-                }
-              },
+                              onChanged: (_) {
+                  // Fix: Removed setState to prevent focus loss during typing
+                  // Password validation will happen on form submission
+                },
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context).authNewPasswordLabel,
                 helperText: AppLocalizations.of(context).authPasswordHelperText,
@@ -285,15 +280,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
               autofillHints: const [AutofillHints.newPassword],
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => _isLoading ? null : _resetPassword(),
-              onChanged: (_) {
-                if (!_hasInteractedWithConfirmPassword) {
-                  setState(() {
-                    _hasInteractedWithConfirmPassword = true;
-                  });
-                } else {
-                  setState(() {}); // Rebuild for real-time validation
-                }
-              },
+                              onChanged: (_) {
+                  // Fix: Removed setState to prevent focus loss during typing
+                  // Password validation will happen on form submission
+                },
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context).authConfirmPasswordLabel,
                 prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary),
@@ -321,7 +311,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
             SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
             
             // 📋 Password Requirements
-            if (_hasInteractedWithPassword)
+            // Always show password requirements (was: if (_hasInteractedWithPassword))
+            if (true)
               Container(
                 padding: EdgeInsets.all(theme.textTheme.bodySmall?.fontSize ?? 8.0),
                 decoration: BoxDecoration(
