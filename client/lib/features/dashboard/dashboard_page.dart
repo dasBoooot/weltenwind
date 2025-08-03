@@ -7,6 +7,7 @@ import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
 import '../../shared/widgets/language_switcher.dart';
 import '../../main.dart';
+import 'widgets/world_dashboard_widget.dart';
 
 class DashboardPage extends StatefulWidget {
   final String worldId;
@@ -29,9 +30,12 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _loadWorldData() async {
+    print('🌍 [DASHBOARD-DEBUG] Loading world data for ID: ${widget.worldId}');
     try {
       final worldService = ServiceLocator.get<WorldService>();
       final world = await worldService.getWorld(int.parse(widget.worldId));
+      
+      print('🌍 [DASHBOARD-DEBUG] World loaded: ${world.name} (Theme: ${world.themeBundle})');
       
       setState(() {
         _world = world;
@@ -39,7 +43,9 @@ class _DashboardPageState extends State<DashboardPage> {
         _isLoading = false;
       });
     } catch (e) {
+      print('❌ [DASHBOARD-ERROR] Failed to load world: $e');
       setState(() {
+        _world = null; // Explicitly set to null
         _worldTheme = 'default'; // ✅ Theme-Name Fallback
         _isLoading = false;
       });
@@ -76,113 +82,13 @@ class _DashboardPageState extends State<DashboardPage> {
                 ? CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                   )
-                : Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 600),
-                      child: Card(
-                        elevation: 12,
-                        color: const Color(0xFF1A1A1A), // Dunkle Karte
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF1A1A1A),
-                            Color(0xFF2A2A2A),
-                          ],
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(32.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Icon
-                            Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.5),
-                                  width: 2,
-                                ),
-                              ),
-                              child: Icon(
-                                Icons.rocket_launch,
-                                size: 40,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            
-                            // Title
-                            Text(
-                              _world?.name ?? 'Welt-Dashboard',
-                              style: theme.textTheme.headlineMedium?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            
-                            // Subtitle
-                            Text(
-                              'Welt: ${_world?.name ?? 'Unbekannt'} (ID: ${widget.worldId})',
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                color: Colors.grey[300],
-                              ),
-                            ),
-                            const SizedBox(height: 32),
-                            
-                            // Info message
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.rocket_launch,
-                                    color: theme.colorScheme.primary,
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      'Willkommen in der Welt "${_world?.name ?? 'Unbekannt'}"! Das Dashboard wird bald verfügbar sein.',
-                                      style: TextStyle(
-                                        color: Colors.grey[300],
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                : WorldDashboardWidget(
+                    worldTheme: _worldTheme,
+                    worldName: _world?.name,
+                    worldId: int.tryParse(widget.worldId),
+                    theme: theme,
+                    extensions: extensions,
                   ),
-                ),
-              ),
             ),
             
             // User info widget in top-left corner
