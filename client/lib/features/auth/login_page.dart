@@ -5,13 +5,13 @@ import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
 import '../../core/theme/index.dart';
+import '../../shared/navigation/smart_navigation.dart';
 import '../../shared/components/index.dart' hide ThemeSwitcher;
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
 import '../../shared/widgets/theme_switcher.dart';
 import '../../shared/utils/dynamic_components.dart';
-import '../../core/providers/theme_provider.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -166,7 +166,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     
     if (_inviteToken == null) {
       AppLogger.app.i('❌ No invite token found, going to world-list');
-      context.goNamed('world-list');
+      await context.smartGoNamed('world-list');
       return;
     }
 
@@ -195,9 +195,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               );
               
               if (worldId != null) {
-                context.go('/go/worlds/$worldId/join');
+                await context.smartGo('/go/worlds/$worldId/join');
               } else {
-                context.goNamed('world-list');
+                await context.smartGoNamed('world-list');
               }
             }
             return;
@@ -206,33 +206,24 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         
         // Fallback: Bei Fehler zur Invite-Seite leiten
         AppLogger.app.w('⚠️ Auto-accept failed, redirecting to invite page');
-        if (mounted) context.go('/go/invite/$_inviteToken');
+        if (mounted) await context.smartGo('/go/invite/$_inviteToken');
         
       } catch (e) {
         AppLogger.error.e('❌ Fehler beim Auto-Accept von Invite', error: e);
         // Fallback: Bei Fehler zur Invite-Seite leiten
-        if (mounted) context.go('/go/invite/$_inviteToken');
+        if (mounted) await context.smartGo('/go/invite/$_inviteToken');
       }
     } else {
       // Normales Login ohne Auto-Accept -> zu World-List
       AppLogger.app.i('🏠 Normal login, going to world-list');
-      if (mounted) context.goNamed('world-list');
+      if (mounted) await context.smartGoNamed('worldList');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SCOPED CONTEXT: Login Page mit pre-game Context
-    return ThemePageProvider(
-      contextId: 'pre-game',
-      bundleId: 'pre-game-minimal',
-      child: ThemeContextConsumer(
-        componentName: 'LoginPage', 
-        builder: (context, theme, extensions) {
-          return _buildLoginPage(context, theme, extensions);
-        },
-      ),
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme aus Smart Navigation
+    return _buildLoginPage(context, Theme.of(context), null);
   }
 
   Widget _buildLoginPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
@@ -351,7 +342,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   // 🔮 Passwort vergessen
                                   DynamicComponents.secondaryButton(
                                     text: AppLocalizations.of(context).authForgotPassword,
-                                    onPressed: () => context.goNamed('forgot-password'),
+                                    onPressed: () async => await context.smartGoNamed('forgot-password'),
                                     size: AppButtonSize.small,
                                   ),
                                 ],
@@ -414,7 +405,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 8.0),
                                   DynamicComponents.secondaryButton(
                                     text: AppLocalizations.of(context).authRegisterButton,
-                                    onPressed: () => context.goNamed('register'),
+                                    onPressed: () async => await context.smartGoNamed('register'),
                                     size: AppButtonSize.small,
                                   ),
                                 ],

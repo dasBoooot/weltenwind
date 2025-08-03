@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED
 
 /// 💬 App Tooltip based on Schema Configuration
 /// 
@@ -169,16 +169,7 @@ class _AppTooltipState extends State<AppTooltip> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'AppTooltip',
-      contextOverrides: {
-        'visible': 'normal',
-        'hasMessage': (widget.message.isNotEmpty).toString(),
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildTooltip(context, contextTheme, extensions);
-      },
-    );
+    return _buildTooltip(context, Theme.of(context), null);
   }
 
   Widget _buildTooltip(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 🎴 Fantasy Card Variants based on Theme Schema
 enum AppCardVariant {
@@ -114,17 +114,8 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'AppCard',
-      contextOverrides: {
-        'variant': widget.variant.name,
-        'state': _isHovered ? 'hovered' : 'normal',
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildCard(context, contextTheme, extensions);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet globales Theme
+    return _buildCard(context, Theme.of(context), null);
   }
 
   Widget _buildCard(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

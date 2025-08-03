@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 🏗️ App Scaffold based on Schema Configuration
 /// 
@@ -33,17 +33,7 @@ class AppScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'AppScaffold',
-      contextOverrides: {
-        'hasAppBar': _shouldShowAppBar().toString(),
-        'hasBackground': showBackgroundGradient.toString(),
-        'extendBody': extendBodyBehindAppBar.toString(),
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildScaffold(context, contextTheme, extensions);
-      },
-    );
+    return _buildScaffold(context, Theme.of(context), null);
   }
 
   Widget _buildScaffold(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

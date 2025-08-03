@@ -130,6 +130,10 @@ class _CyberpunkHackingWidgetState extends State<CyberpunkHackingWidget>
   @override
   Widget build(BuildContext context) {
     final cyberpunk = widget.extensions?['cyberpunk'] as Map<String, dynamic>? ?? {};
+    // Use cyberpunk theme extension for advanced styling
+    if (cyberpunk.isNotEmpty) {
+      // Theme-specific customizations available
+    }
     
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),

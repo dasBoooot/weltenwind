@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
-import '../../core/theme/index.dart';
+// REMOVED: import '../../core/theme/index.dart'; // UNUSED after theme cleanup
+import '../../shared/navigation/smart_navigation.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/language_switcher.dart';
 import 'dart:math' as math;
@@ -114,17 +114,8 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SCOPED CONTEXT: Landing Page mit pre-game Context
-    return ThemePageProvider(
-      contextId: 'pre-game',
-      bundleId: 'pre-game-minimal',
-      child: ThemeContextConsumer(
-        componentName: 'LandingPage',
-        builder: (context, theme, extensions) {
-          return _buildLandingPage(context, theme, extensions);
-        },
-      ),
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
+    return _buildLandingPage(context, Theme.of(context), null);
   }
 
   Widget _buildLandingPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
@@ -341,7 +332,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                       ],
                                                     ),
                                                     child: ElevatedButton(
-                                                      onPressed: () => context.goNamed('register'),
+                                                      onPressed: () async => await context.smartGoNamed('register'),
                                                       style: ElevatedButton.styleFrom(
                                                         backgroundColor: Colors.transparent,
                                                         shadowColor: Colors.transparent,
@@ -399,7 +390,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                                     ),
                                                   ),
                                                   child: ElevatedButton.icon(
-                                                    onPressed: () => context.goNamed('login'),
+                                                    onPressed: () async => await context.smartGoNamed('login'),
                                                     icon: Icon(
                                                       Icons.login,
                                                       color: theme.colorScheme.primary,
@@ -606,7 +597,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                     SizedBox(
                                       height: 56,
                                       child: ElevatedButton(
-                                        onPressed: () => context.goNamed('register'),
+                                        onPressed: () async => await context.smartGoNamed('register'),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: theme.colorScheme.primary,
                                           padding: const EdgeInsets.symmetric(horizontal: 48),

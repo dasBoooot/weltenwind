@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/theme/index.dart';
+import '../../shared/navigation/smart_navigation.dart';
 import '../../shared/components/index.dart' hide ThemeSwitcher;
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
 import '../../shared/widgets/theme_switcher.dart';
 import '../../shared/utils/dynamic_components.dart';
-import '../../core/providers/theme_provider.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   final String token;
@@ -93,9 +92,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
         AppLogger.app.i('✅ Password Reset erfolgreich');
         
         // Nach 3 Sekunden zur Login-Seite weiterleiten
-        Future.delayed(const Duration(seconds: 3), () {
+        Future.delayed(const Duration(seconds: 3), () async {
           if (mounted) {
-            context.goNamed('login');
+            await context.smartGoNamed('login');
           }
         });
       } else {
@@ -133,17 +132,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SCOPED CONTEXT: Reset Password Page mit pre-game Context
-    return ThemePageProvider(
-      contextId: 'pre-game',
-      bundleId: 'pre-game-minimal',
-      child: ThemeContextConsumer(
-        componentName: 'ResetPasswordPage',
-        builder: (context, theme, extensions) {
-          return _buildResetPasswordPage(context, theme, extensions);
-        },
-      ),
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme aus Smart Navigation
+    return _buildResetPasswordPage(context, Theme.of(context), null);
   }
 
   Widget _buildResetPasswordPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
@@ -398,7 +388,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
             // Back to Login
             DynamicComponents.tertiaryButton(
               text: AppLocalizations.of(context).authBackToLogin,
-              onPressed: () => context.goNamed('login'),
+              onPressed: () async => await context.smartGoNamed('login'),
               size: AppButtonSize.small,
             ),
           ],
@@ -469,7 +459,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
             width: double.infinity,
             child: DynamicComponents.secondaryButton(
               text: AppLocalizations.of(context).authBackToLogin,
-              onPressed: () => context.goNamed('login'),
+              onPressed: () async => await context.smartGoNamed('login'),
               size: AppButtonSize.medium,
               icon: Icons.arrow_forward_rounded,
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/providers/theme_provider.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 🎨 Theme-Switcher für Weltenwind
 /// 
@@ -67,21 +67,8 @@ class _ThemeSwitcherState extends State<ThemeSwitcher>
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 MIXED-CONTEXT THEME: Universal Theme Switcher
-    return ThemeContextConsumer(
-      componentName: 'ThemeSwitcher',
-      enableMixedContext: true,
-      contextOverrides: const {
-        'uiContext': 'theme-switcher',
-        'context': 'inherit', // Erbt Theme vom Parent (Pre-Game oder World-themed)
-        'inherit': 'parent-theme',
-        'universalComponent': 'true', // Universelles UI-Element
-      },
-      fallbackTheme: 'pre-game-minimal',
-      builder: (context, theme, extensions) {
-        return _buildThemeSwitcher(context, theme, extensions);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
+    return _buildThemeSwitcher(context, Theme.of(context), null);
   }
 
   /// 🎨 Theme Switcher Build mit Theme

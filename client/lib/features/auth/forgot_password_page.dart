@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/theme/index.dart';
+import '../../shared/navigation/smart_navigation.dart';
 import '../../shared/components/index.dart' hide ThemeSwitcher;
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
 import '../../shared/widgets/theme_switcher.dart';
 import '../../shared/utils/dynamic_components.dart';
-import '../../core/providers/theme_provider.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -102,17 +101,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SCOPED CONTEXT: Forgot Password Page mit pre-game Context
-    return ThemePageProvider(
-      contextId: 'pre-game',
-      bundleId: 'pre-game-minimal',
-      child: ThemeContextConsumer(
-        componentName: 'ForgotPasswordPage',
-        builder: (context, theme, extensions) {
-          return _buildForgotPasswordPage(context, theme, extensions);
-        },
-      ),
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme aus Smart Navigation
+    return _buildForgotPasswordPage(context, Theme.of(context), null);
   }
 
   Widget _buildForgotPasswordPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
@@ -277,7 +267,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                 children: [
                   DynamicComponents.secondaryButton(
                     text: AppLocalizations.of(context).authBackToLogin,
-                    onPressed: () => context.goNamed('login'),
+                    onPressed: () async => await context.smartGoNamed('login'),
                     size: AppButtonSize.small,
                   ),
                 ],
@@ -340,7 +330,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                 width: double.infinity,
                 child: DynamicComponents.secondaryButton(
                   text: AppLocalizations.of(context).authForgotPasswordBackToLogin,
-                  onPressed: () => context.goNamed('login'),
+                  onPressed: () async => await context.smartGoNamed('login'),
                   size: AppButtonSize.medium,
                   icon: Icons.arrow_back_rounded,
                 ),

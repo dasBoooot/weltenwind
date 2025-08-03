@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 📨 Invite Status Types
 enum InviteStatus {
@@ -201,17 +201,7 @@ class _InviteStatusBannerState extends State<InviteStatusBanner> with TickerProv
   @override
   Widget build(BuildContext context) {
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'InviteStatusBanner',
-      contextOverrides: {
-        'status': widget.invite.status.name,
-        'animated': widget.animateIn.toString(),
-        'dismissible': widget.onDismiss != null ? 'true' : 'false',
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildInviteBanner(context, contextTheme, extensions);
-      },
-    );
+    return _buildInviteBanner(context, Theme.of(context), null);
   }
 
   Widget _buildInviteBanner(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

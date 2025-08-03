@@ -837,4 +837,63 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get authRegisterSuccessButInviteFailed =>
       'Registration successful, but invitation could not be accepted.';
+
+  @override
+  String get navigationLoadingGeneric => 'Loading page...';
+
+  @override
+  String get navigationLoadingError => 'Error loading page';
+
+  @override
+  String get navigationLoadingRetry => 'Try again';
+
+  @override
+  String get navigationLoadingWorldList => 'Loading worlds...';
+
+  @override
+  String get navigationLoadingDashboard => 'Preparing dashboard...';
+
+  @override
+  String get navigationLoadingWorldJoin => 'Loading world...';
+
+  @override
+  String get navigationErrorServiceUnavailable =>
+      'Service unavailable. App will restart...';
+
+  @override
+  String get navigationErrorNetwork =>
+      'Network error. Check your internet connection.';
+
+  @override
+  String get navigationErrorTimeout =>
+      'Loading takes too long. Please try again.';
+
+  @override
+  String get navigationErrorTheme =>
+      'Theme loading issues. Page will show with default theme.';
+
+  @override
+  String get navigationErrorGeneric => 'Unexpected error while loading page.';
+
+  @override
+  String get worldListLoading => 'Loading worlds...';
+
+  @override
+  String get worldListEmpty => 'No worlds available';
+
+  @override
+  String get worldListEmptyDescription =>
+      'No worlds have been created yet. Create your first world!';
+
+  @override
+  String get worldListError => 'Error loading worlds';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get worldListNoResults => 'No results found';
+
+  @override
+  String get clearFilters => 'Clear filters';
 }

@@ -37,6 +37,6 @@ export 'effects/magic_animation.dart';
 
 // 🦾 Accessibility Components
 export 'accessibility/accessibility_provider.dart';
-export 'accessibility/accessible_rarity_indicator.dart';
-export 'accessibility/accessible_progress_bar.dart';
+// REMOVED: export 'accessibility/accessible_rarity_indicator.dart'; // File deleted during theme cleanup
+// REMOVED: export 'accessibility/accessible_progress_bar.dart'; // File deleted during theme cleanup
 export 'accessibility/focus_indicator.dart';

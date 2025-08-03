@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 📋 Dropdown Option Model
 class DropdownOption<T> {
@@ -339,18 +339,8 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'AppDropdown',
-      contextOverrides: {
-        'variant': widget.variant.name,
-        'open': _isOpen.toString(),
-        'hasValue': (widget.value != null).toString(),
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildDropdown(context, contextTheme, extensions);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet globales Theme
+    return _buildDropdown(context, Theme.of(context), null);
   }
 
   Widget _buildDropdown(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
@@ -566,18 +556,8 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
   }
 
   Widget _buildOverlay(Offset offset, Size buttonSize) {
-    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'AppDropdown',
-      contextOverrides: {
-        'variant': widget.variant.name,
-        'open': _isOpen.toString(),
-        'hasValue': (widget.value != null).toString(),
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildOverlayContent(context, contextTheme, extensions, offset, buttonSize);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet globales Theme
+    return _buildOverlayContent(context, Theme.of(context), null, offset, buttonSize);
   }
 
   Widget _buildOverlayContent(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions, Offset offset, Size buttonSize) {

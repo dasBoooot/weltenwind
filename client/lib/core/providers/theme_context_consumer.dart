@@ -110,20 +110,24 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
       // 🎨 3. PAGE/GLOBAL THEME
       resolvedTheme ??= await ThemeHelper.getCurrentTheme(context, isDark: isDark);
       
-      // 🔄 4. FALLBACK BUNDLE - Additional safety (rarely needed but available)
-      final fallbackBundle = widget.fallbackBundle;
-      if (fallbackBundle != null && resolvedTheme == null) {
-        // Direkt über ModularThemeService laden
-        final themeService = ThemeHelper.themeService;
-        final fallbackTheme = await themeService.getBundle(fallbackBundle, isDark: isDark);
-        if (fallbackTheme != null) {
-          resolvedTheme = fallbackTheme;
-          AppLogger.app.d('🔄 Using fallback bundle: $fallbackBundle');
+      // 🔄 4. FALLBACK BUNDLE & FLUTTER DEFAULT
+      if (resolvedTheme == null) {
+        final fallbackBundle = widget.fallbackBundle;
+        if (fallbackBundle != null) {
+          // Direkt über ModularThemeService laden
+          final themeService = ThemeHelper.themeService;
+          final fallbackTheme = await themeService.getBundle(fallbackBundle, isDark: isDark);
+          if (fallbackTheme != null) {
+            resolvedTheme = fallbackTheme;
+            AppLogger.app.d('🔄 Using fallback bundle: $fallbackBundle');
+          }
+        }
+        
+        // ⚠️ FLUTTER DEFAULT als letzter Ausweg
+        if (resolvedTheme == null) {
+          resolvedTheme = Theme.of(context);
         }
       }
-      
-      // ⚠️ 5. FLUTTER DEFAULT als letzter Ausweg
-      resolvedTheme ??= Theme.of(context);
       
       setState(() {
         if (isDark) {

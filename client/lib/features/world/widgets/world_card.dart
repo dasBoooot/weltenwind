@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/world.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../core/providers/theme_context_consumer.dart';
+// REMOVED: import '../../../core/providers/theme_context_consumer.dart'; // DEPRECATED - using Theme.of(context)
 
 
 class WorldCard extends StatelessWidget {
@@ -32,15 +32,8 @@ class WorldCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 🎨 World-spezifisches Theme laden mit ThemeContextConsumer
-    return ThemeContextConsumer(
-      componentName: 'WorldCard',
-      worldThemeOverride: world.themeBundle, // Theme-Name aus DB
-      fallbackBundle: 'world-preview',
-      builder: (context, theme, extensions) {
-        return _buildCard(context, theme, extensions);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet globales Theme
+    return _buildCard(context, Theme.of(context), null);
   }
 
   Widget _buildCard(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

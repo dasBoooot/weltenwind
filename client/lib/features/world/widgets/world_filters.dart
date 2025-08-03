@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/world.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../core/providers/theme_context_consumer.dart';
+// REMOVED: import '../../../core/providers/theme_context_consumer.dart'; // DEPRECATED - using Theme.of(context)
 
 class WorldFilters extends StatelessWidget {
   final WorldStatus? statusFilter;
@@ -29,13 +29,7 @@ class WorldFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ThemeContextConsumer(
-      componentName: 'WorldFilters',
-      fallbackBundle: 'world-preview',
-      builder: (context, theme, extensions) {
-        return _buildFilters(context, theme);
-      },
-    );
+    return _buildFilters(context, Theme.of(context));
   }
 
   Widget _buildFilters(BuildContext context, ThemeData theme) {

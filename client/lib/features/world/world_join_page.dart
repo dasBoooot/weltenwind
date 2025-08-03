@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/models/world.dart';
 import '../../core/services/world_service.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/theme/index.dart';
+// REMOVED: import '../../core/theme/index.dart'; // UNUSED after theme cleanup
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
 import '../../shared/widgets/language_switcher.dart';
+import '../../shared/navigation/smart_navigation.dart';
 import '../invite/widgets/invite_widget.dart';
 import '../../l10n/app_localizations.dart';
-
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -444,11 +443,11 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     }
   }
   
-  void _playWorld() {
+  Future<void> _playWorld() async {
     final world = _world;
     if (world == null) return;
     // Navigate directly to world dashboard for playing
-    context.goNamed('world-dashboard', pathParameters: {'id': world.id.toString()});
+    await context.smartGoNamed('world-dashboard', pathParameters: {'id': world.id.toString()});
   }
 
   // Welt-Status bestimmen
@@ -485,23 +484,11 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🌍 WORLD-SPECIFIC THEME: Mit bestehender Architektur
-    final worldTheme = _getWorldTheme();
+    // 🌍 WORLD-SPECIFIC THEME: Available via Smart Navigation context
+    // final worldTheme = _getWorldTheme();
     
-    // 🔸 SCOPED CONTEXT: World Join Page mit world-spezifischem Theme
-    return ThemePageProvider(
-      contextId: 'world-join',
-      bundleId: 'world-preview', // Base bundle für World Join
-      worldTheme: worldTheme, // 🌍 World-spezifisches Theme
-      child: ThemeContextConsumer(
-        componentName: 'WorldJoinPage',
-        worldThemeOverride: worldTheme, // 🌍 Component-Level Override - async loading in ThemeContextConsumer
-        fallbackBundle: 'world-preview', // Fallback während Loading
-        builder: (context, theme, extensions) {
-          return _buildWorldJoinPage(context, theme, extensions);
-        },
-      ),
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
+    return _buildWorldJoinPage(context, Theme.of(context), null);
   }
 
   Widget _buildWorldJoinPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
@@ -544,9 +531,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
             // Navigation widget (only show when authenticated)
             if (_isAuthenticated)
               NavigationWidget(
-                currentRoute: 'world-join',
-                routeParams: {'id': widget.worldId},
-                isJoinedWorld: _isJoined,
+                currentContext: NavigationContext.worldJoin,
+                routeParams: {'id': widget.worldId.toString()},
               ),
           ],
         ),
@@ -630,7 +616,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                       ),
                       const SizedBox(height: 16),
                       TextButton(
-                        onPressed: () => context.goNamed('world-list'),
+                        onPressed: () => context.smartGoNamed('world-list'),
                         child: Text(
                           AppLocalizations.of(context).worldJoinBackToWorldsButton,
                           style: TextStyle(
@@ -712,7 +698,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                         width: double.infinity,
                         height: 48,
                         child: ElevatedButton(
-                          onPressed: () => context.goNamed('world-list'),
+                          onPressed: () => context.smartGoNamed('world-list'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: theme.colorScheme.primary,
                             foregroundColor: theme.colorScheme.onPrimary,

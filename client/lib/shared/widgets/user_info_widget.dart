@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/theme/index.dart';
+// REMOVED: import '../../core/theme/index.dart'; // UNUSED after theme cleanup
 import '../components/index.dart';
+import '../navigation/smart_navigation.dart';
 import '../utils/dynamic_components.dart';
 import '../../main.dart';
 import '../../l10n/app_localizations.dart';
@@ -90,16 +90,8 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
     final user = _authService.currentUser;
     if (user == null) return const SizedBox.shrink();
     
-    // 🎯 PARENT-THEME INHERITANCE: Erbt automatisch das Theme der umgebenden Seite
-    // WorldListPage → world-preview | WorldJoinPage → tolkien | DashboardPage → tolkien
-    return ThemeContextConsumer(
-      componentName: 'UserInfoWidget',
-      // Keine worldThemeOverride → erbt Parent-Theme automatisch
-      fallbackBundle: 'pre-game-minimal', // Nur als Sicherheitsnetz
-      builder: (context, theme, extensions) {
-        return _buildUserInfo(context, theme, extensions, user);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
+    return _buildUserInfo(context, Theme.of(context), null, user);
   }
 
   /// 🎨 User Info Build mit Theme
@@ -284,7 +276,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> with SingleTickerProvid
             onPressed: () async {
               await _authService.logout();
               if (mounted) {
-                context.goNamed('login');
+                await context.smartGoNamed('login');
               }
             },
             icon: Icons.logout,

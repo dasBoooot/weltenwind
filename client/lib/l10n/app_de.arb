@@ -1367,5 +1367,96 @@
   "authRegisterSuccessButInviteFailed": "Registrierung erfolgreich, aber Einladung konnte nicht angenommen werden.",
   "@authRegisterSuccessButInviteFailed": {
     "context": "auth"
+  },
+  "navigationLoadingGeneric": "Seite wird geladen...",
+  "@navigationLoadingGeneric": {
+    "description": "Generic navigation loading text",
+    "context": "navigation"
+  },
+  "navigationLoadingError": "Fehler beim Laden der Seite",
+  "@navigationLoadingError": {
+    "description": "Navigation loading error text",
+    "context": "navigation"
+  },
+  "navigationLoadingRetry": "Erneut versuchen",
+  "@navigationLoadingRetry": {
+    "description": "Navigation loading retry button",
+    "context": "navigation"
+  },
+  "navigationLoadingWorldList": "Welten werden geladen...",
+  "@navigationLoadingWorldList": {
+    "description": "Loading text for world list page",
+    "context": "navigation"
+  },
+  "navigationLoadingDashboard": "Dashboard wird vorbereitet...",
+  "@navigationLoadingDashboard": {
+    "description": "Loading text for dashboard page",
+    "context": "navigation"
+  },
+  "navigationLoadingWorldJoin": "Welt wird geladen...",
+  "@navigationLoadingWorldJoin": {
+    "description": "Loading text for world join page",
+    "context": "navigation"
+  },
+  "navigationErrorServiceUnavailable": "Service nicht verfügbar. App wird neu gestartet...",
+  "@navigationErrorServiceUnavailable": {
+    "description": "Error message when services are not available",
+    "context": "navigation"
+  },
+  "navigationErrorNetwork": "Netzwerkfehler. Prüfe deine Internetverbindung.",
+  "@navigationErrorNetwork": {
+    "description": "Error message for network issues",
+    "context": "navigation"
+  },
+  "navigationErrorTimeout": "Ladevorgang dauert zu lange. Versuche es erneut.",
+  "@navigationErrorTimeout": {
+    "description": "Error message for loading timeout",
+    "context": "navigation"
+  },
+  "navigationErrorTheme": "Theme-Ladeprobleme. Page wird mit Standard-Theme angezeigt.",
+  "@navigationErrorTheme": {
+    "description": "Error message for theme loading issues",
+    "context": "navigation"
+  },
+  "navigationErrorGeneric": "Unerwarteter Fehler beim Laden der Seite.",
+  "@navigationErrorGeneric": {
+    "description": "Generic error message for navigation",
+    "context": "navigation"
+  },
+  
+  "worldListLoading": "Welten werden geladen...",
+  "@worldListLoading": {
+    "description": "Loading message for world list",
+    "context": "world"
+  },
+  "worldListEmpty": "Keine Welten verfügbar",
+  "@worldListEmpty": {
+    "description": "Empty state message for world list",
+    "context": "world"
+  },
+  "worldListEmptyDescription": "Es sind noch keine Welten erstellt worden. Erstelle deine erste Welt!",
+  "@worldListEmptyDescription": {
+    "description": "Empty state description for world list",
+    "context": "world"
+  },
+  "worldListError": "Fehler beim Laden der Welten",
+  "@worldListError": {
+    "description": "Error message for world list",
+    "context": "world"
+  },
+  "retry": "Erneut versuchen",
+  "@retry": {
+    "description": "Retry button text",
+    "context": "general"
+  },
+  "worldListNoResults": "Keine Ergebnisse gefunden",
+  "@worldListNoResults": {
+    "description": "No results message for world list",
+    "context": "world"
+  },
+  "clearFilters": "Filter zurücksetzen",
+  "@clearFilters": {
+    "description": "Clear filters button text",
+    "context": "general"
   }
 }

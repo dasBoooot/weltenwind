@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// ⏳ Loading Overlay based on Schema Configuration
 /// 
@@ -170,17 +170,7 @@ class _LoadingOverlayState extends State<LoadingOverlay> with TickerProviderStat
     }
 
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'LoadingOverlay',
-      contextOverrides: {
-        'showText': widget.showText.toString(),
-        'hasBlur': widget.backdropBlur.toString(),
-        'pulsing': widget.pulseAnimation.toString(),
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildOverlay(context, contextTheme, extensions);
-      },
-    );
+    return _buildOverlay(context, Theme.of(context), null);
   }
 
   Widget _buildOverlay(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

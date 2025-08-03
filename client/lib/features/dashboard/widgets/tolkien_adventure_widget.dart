@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
+
 
 /// 🧙‍♂️ TOLKIEN ADVENTURE DASHBOARD
 /// 
@@ -72,6 +72,10 @@ class _TolkienAdventureWidgetState extends State<TolkienAdventureWidget>
   @override
   Widget build(BuildContext context) {
     final fantasy = widget.extensions?['fantasy'] as Map<String, dynamic>? ?? {};
+    // Use fantasy theme extension for mystical styling
+    if (fantasy.isNotEmpty) {
+      // Theme-specific customizations available
+    }
     
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),

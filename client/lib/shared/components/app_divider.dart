@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// ➖ App Divider Variants based on Schema Configuration
 enum AppDividerVariant {
@@ -153,16 +153,7 @@ class _AppDividerState extends State<AppDivider> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'AppDivider',
-      contextOverrides: {
-        'variant': widget.variant.name,
-        'animated': widget.animated.toString(),
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildDivider(context, contextTheme, extensions);
-      },
-    );
+    return _buildDivider(context, Theme.of(context), null);
   }
 
   Widget _buildDivider(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

@@ -847,4 +847,64 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get authRegisterSuccessButInviteFailed =>
       'Registrierung erfolgreich, aber Einladung konnte nicht angenommen werden.';
+
+  @override
+  String get navigationLoadingGeneric => 'Seite wird geladen...';
+
+  @override
+  String get navigationLoadingError => 'Fehler beim Laden der Seite';
+
+  @override
+  String get navigationLoadingRetry => 'Erneut versuchen';
+
+  @override
+  String get navigationLoadingWorldList => 'Welten werden geladen...';
+
+  @override
+  String get navigationLoadingDashboard => 'Dashboard wird vorbereitet...';
+
+  @override
+  String get navigationLoadingWorldJoin => 'Welt wird geladen...';
+
+  @override
+  String get navigationErrorServiceUnavailable =>
+      'Service nicht verfügbar. App wird neu gestartet...';
+
+  @override
+  String get navigationErrorNetwork =>
+      'Netzwerkfehler. Prüfe deine Internetverbindung.';
+
+  @override
+  String get navigationErrorTimeout =>
+      'Ladevorgang dauert zu lange. Versuche es erneut.';
+
+  @override
+  String get navigationErrorTheme =>
+      'Theme-Ladeprobleme. Page wird mit Standard-Theme angezeigt.';
+
+  @override
+  String get navigationErrorGeneric =>
+      'Unerwarteter Fehler beim Laden der Seite.';
+
+  @override
+  String get worldListLoading => 'Welten werden geladen...';
+
+  @override
+  String get worldListEmpty => 'Keine Welten verfügbar';
+
+  @override
+  String get worldListEmptyDescription =>
+      'Es sind noch keine Welten erstellt worden. Erstelle deine erste Welt!';
+
+  @override
+  String get worldListError => 'Fehler beim Laden der Welten';
+
+  @override
+  String get retry => 'Erneut versuchen';
+
+  @override
+  String get worldListNoResults => 'Keine Ergebnisse gefunden';
+
+  @override
+  String get clearFilters => 'Filter zurücksetzen';
 }

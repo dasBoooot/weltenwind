@@ -6,7 +6,7 @@ import '../../../config/logger.dart';
 import '../../../config/env.dart';
 import '../../../core/services/api_service.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../core/theme/index.dart';
+// REMOVED: import '../../../core/theme/index.dart'; // UNUSED after theme cleanup
 import '../../../main.dart';
 
 /// Modulares Widget zum Versenden von Einladungen
@@ -260,18 +260,8 @@ class _InviteWidgetState extends State<InviteWidget> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     
-    // 🎯 THEME CONTEXT CONSUMER: Invite Widget kann später World-spezifisch erweitert werden
-    return ThemeContextConsumer(
-      componentName: 'InviteWidget',
-      contextOverrides: const {
-        'uiContext': 'invite-widget',
-        'componentType': 'widget',
-        'context': 'utility', // Utility widget, kann überall verwendet werden
-      },
-      builder: (context, theme, extensions) {
-        return _buildInviteWidget(context, theme, l10n);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet globales Theme
+    return _buildInviteWidget(context, Theme.of(context), l10n);
   }
 
   Widget _buildInviteWidget(BuildContext context, ThemeData theme, AppLocalizations l10n) {

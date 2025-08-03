@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
-import '../../core/theme/index.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
 import '../../theme/background_widget.dart';
+import '../../shared/navigation/smart_navigation.dart';
 import '../../main.dart';
 
 class InviteLandingPage extends StatefulWidget {
@@ -90,9 +89,9 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
             );
             
             if (worldId != null) {
-              context.go('/go/worlds/$worldId');
+              await context.smartGo('/go/worlds/$worldId');
             } else {
-              context.goNamed('world-list');
+              await context.smartGoNamed('world-list');
             }
           }
         } else {
@@ -127,7 +126,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
               backgroundColor: Colors.orange,
             ),
           );
-          context.goNamed('world-list');
+          await context.smartGoNamed('world-list');
         }
       } else {
         final responseData = jsonDecode(response.body);
@@ -160,20 +159,8 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
       }
     }
     
-    // 🔻 MIXED CONTEXT: Pre-game Basis mit World-spezifischen Overrides
-    return ThemePageProvider(
-      contextId: 'pre-game',
-      bundleId: 'pre-game-minimal',
-      worldTheme: worldTheme, // 🌍 World-Override wenn verfügbar
-      child: ThemeContextConsumer(
-        componentName: 'InviteLandingPage',
-        worldThemeOverride: worldTheme, // 🌍 Component-Level Override - async loading in ThemeContextConsumer
-        fallbackBundle: 'pre-game-minimal', // 🎨 Fallback für Loading/Error States
-        builder: (context, theme, extensions) {
-          return _buildInvitePage(context, theme, extensions, l10n, worldTheme);
-        },
-      ),
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
+    return _buildInvitePage(context, Theme.of(context), null, l10n, worldTheme);
   }
 
   Widget _buildInvitePage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions, AppLocalizations l10n, String? worldTheme) {
@@ -669,9 +656,9 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: () {
+              onPressed: () async {
                 // 🎯 CLEAN NAVIGATION: Direkt zur Register-Seite mit invite_token im State
-                context.goNamed('register', extra: {
+                await context.smartGoNamed('register', extra: {
                   'invite_token': widget.token,
                   'email': inviteEmail,
                   'auto_accept_invite': true,  // Flag für Auto-Accept nach Registrierung
@@ -686,9 +673,9 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
             ),
             const SizedBox(height: 8),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 // 🎯 CLEAN NAVIGATION: Direkt zur Login-Seite mit invite_token im State
-                context.goNamed('login', extra: {
+                await context.smartGoNamed('login', extra: {
                   'invite_token': widget.token,
                   'redirect_to_invite': '/go/invite/${widget.token}',
                 });
@@ -766,9 +753,9 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
               ],
             ),
             child: ElevatedButton.icon(
-              onPressed: () {
+              onPressed: () async {
                 // 🎯 CLEAN NAVIGATION: Direkt zur Login-Seite mit invite_token im State
-                context.goNamed('login', extra: {
+                await context.smartGoNamed('login', extra: {
                   'invite_token': widget.token,
                   'auto_accept_invite': true,  // Flag für Auto-Accept nach Login
                   'redirect_to_invite': '/go/invite/${widget.token}',
@@ -959,7 +946,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                 try {
                   await authService.logout();
                   if (mounted) {
-                    context.goNamed('register', queryParameters: {
+                    await context.smartGoNamed('register', queryParameters: {
                       'redirect': '/go/invite/${widget.token}',
                       if (inviteEmail != null) 'email': inviteEmail,
                     });
@@ -1092,8 +1079,8 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  context.goNamed('world-list');
+                onPressed: () async {
+                  await context.smartGoNamed('world-list');
                 },
                 icon: const Icon(Icons.explore),
                 label: const Text('Zu den Welten'),
@@ -1216,8 +1203,8 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    context.goNamed('world-list');
+                  onPressed: () async {
+                    await context.smartGoNamed('world-list');
                   },
                   icon: const Icon(Icons.explore_outlined),
                   label: Text(AppLocalizations.of(context).marketingBrowseAllWorlds),

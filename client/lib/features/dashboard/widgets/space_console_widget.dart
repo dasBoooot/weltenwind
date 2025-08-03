@@ -29,7 +29,8 @@ class _SpaceConsoleWidgetState extends State<SpaceConsoleWidget>
   late AnimationController _starsController;
   late AnimationController _warpController;
   late Animation<double> _radarSweep;
-  late Animation<double> _starTwinkle;
+  // Animation for future star twinkling effect
+  // late Animation<double> _starTwinkle;
   late Animation<double> _warpPulse;
 
   Timer? _logTimer;
@@ -71,7 +72,7 @@ class _SpaceConsoleWidgetState extends State<SpaceConsoleWidget>
     )..repeat(reverse: true);
     
     _radarSweep = Tween<double>(begin: 0.0, end: 2 * math.pi).animate(_radarController);
-    _starTwinkle = Tween<double>(begin: 0.3, end: 1.0).animate(_starsController);
+    // _starTwinkle = Tween<double>(begin: 0.3, end: 1.0).animate(_starsController); // Removed - field was commented out
     _warpPulse = Tween<double>(begin: 0.8, end: 1.2).animate(_warpController);
     
     _startCommandLog();

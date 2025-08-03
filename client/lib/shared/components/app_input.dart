@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 📝 Fantasy Input Variants based on Theme Schema
 enum AppInputVariant {
@@ -134,17 +134,7 @@ class _AppInputState extends State<AppInput> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'AppInput',
-      contextOverrides: {
-        'variant': widget.variant.name,
-        'state': _isFocused ? 'focused' : 'normal',
-        'hasError': widget.errorText != null ? 'error' : 'normal',
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildInput(context, contextTheme, extensions);
-      },
-    );
+    return _buildInput(context, Theme.of(context), null);
   }
 
   Widget _buildInput(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

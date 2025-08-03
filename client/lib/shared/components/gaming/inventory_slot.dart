@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../../core/providers/theme_context_provider.dart'; // DEPRECATED
 
 /// 🎮 RPG Item Rarity based on Gaming Schema
 enum ItemRarity {
@@ -94,18 +94,8 @@ class _InventorySlotState extends State<InventorySlot> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'InventorySlot',
-      contextOverrides: {
-        'rarity': widget.itemRarity?.name ?? 'common',
-        'hasItem': (!widget.isEmpty).toString(),
-        'hovered': _isHovered.toString(),
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildInventorySlot(context, contextTheme, extensions);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet globales Theme
+    return _buildInventorySlot(context, Theme.of(context), null);
   }
 
   Widget _buildInventorySlot(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 📑 Tab Item Model
 class AppTab {
@@ -260,17 +260,7 @@ class _AppTabBarState extends State<AppTabBar> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'AppTabBar',
-      contextOverrides: {
-        'variant': widget.variant.name,
-        'currentTab': 'default',
-        'hasIndicator': (widget.indicatorType != TabIndicatorType.none).toString(),
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildTabBarContent(context, contextTheme, extensions);
-      },
-    );
+    return _buildTabBarContent(context, Theme.of(context), null);
   }
 
   Widget _buildTabBarContent(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

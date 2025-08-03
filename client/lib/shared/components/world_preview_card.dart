@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 🌍 World Status Types
 enum WorldStatus {
@@ -214,17 +214,7 @@ class _WorldPreviewCardState extends State<WorldPreviewCard> with TickerProvider
   @override
   Widget build(BuildContext context) {
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'WorldPreviewCard',
-      contextOverrides: {
-        'status': widget.world.status.name,
-        'hoverEffect': widget.hoverEffect.toString(),
-        'interactive': widget.onTap != null ? 'true' : 'false',
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildWorldCard(context, contextTheme, extensions);
-      },
-    );
+    return _buildWorldCard(context, Theme.of(context), null);
   }
 
   Widget _buildWorldCard(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

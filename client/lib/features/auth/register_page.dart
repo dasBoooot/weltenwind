@@ -5,13 +5,13 @@ import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
 import '../../core/theme/index.dart';
+import '../../shared/navigation/smart_navigation.dart';
 import '../../shared/components/index.dart' hide ThemeSwitcher;
 import '../../theme/background_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
 import '../../shared/widgets/theme_switcher.dart';
 import '../../shared/utils/dynamic_components.dart';
-import '../../core/providers/theme_provider.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -170,7 +170,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     
     if (_inviteToken == null) {
       AppLogger.app.i('❌ No invite token found, going to login');
-      context.goNamed('login');
+              await context.smartGoNamed('login');
       return;
     }
 
@@ -199,9 +199,9 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
               );
               
               if (worldId != null) {
-                context.go('/go/worlds/$worldId/join');
+                await context.smartGo('/go/worlds/$worldId/join');
               } else {
-                context.goNamed('world-list');
+                await context.smartGoNamed('world-list');
               }
             }
             return;
@@ -210,33 +210,24 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         
         // Fallback: Bei Fehler zur Invite-Seite leiten
         AppLogger.app.w('⚠️ Auto-accept failed, redirecting to invite page');
-        if (mounted) context.go('/go/invite/$_inviteToken');
+        if (mounted) await context.smartGo('/go/invite/$_inviteToken');
         
       } catch (e) {
         AppLogger.error.e('❌ Fehler beim Auto-Accept von Invite', error: e);
         // Fallback: Bei Fehler zur Invite-Seite leiten
-        if (mounted) context.go('/go/invite/$_inviteToken');
+        if (mounted) await context.smartGo('/go/invite/$_inviteToken');
       }
     } else {
       // Normale Registrierung ohne Auto-Accept -> zu Login
       AppLogger.app.i('🏠 Normal registration, going to login');
-      if (mounted) context.goNamed('login');
+      if (mounted) await context.smartGoNamed('login');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SCOPED CONTEXT: Register Page mit pre-game Context
-    return ThemePageProvider(
-      contextId: 'pre-game',
-      bundleId: 'pre-game-minimal',
-      child: ThemeContextConsumer(
-        componentName: 'RegisterPage',
-        builder: (context, theme, extensions) {
-          return _buildRegisterPage(context, theme, extensions);
-        },
-      ),
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme aus Smart Navigation
+    return _buildRegisterPage(context, Theme.of(context), null);
   }
 
   Widget _buildRegisterPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
@@ -407,7 +398,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                   SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 8.0),
                                   DynamicComponents.secondaryButton(
                                     text: AppLocalizations.of(context).authLoginButton,
-                                    onPressed: () => context.goNamed('login'),
+                                    onPressed: () async => await context.smartGoNamed('login'),
                                     size: AppButtonSize.small,
                                   ),
                                 ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/providers/locale_provider.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 import '../../l10n/app_localizations.dart';
 
 import '../components/index.dart';
@@ -60,21 +60,8 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
   
   @override
   Widget build(BuildContext context) {
-    // 🎯 MIXED-CONTEXT THEME: Universal Language Switcher
-    return ThemeContextConsumer(
-      componentName: 'LanguageSwitcher',
-      enableMixedContext: true,
-      contextOverrides: const {
-        'uiContext': 'language-switcher',
-        'context': 'inherit', // Erbt Theme vom Parent (Pre-Game oder World-themed)
-        'inherit': 'parent-theme',
-        'universalComponent': 'true', // Universelles UI-Element
-      },
-      fallbackTheme: 'pre-game-minimal',
-      builder: (context, theme, extensions) {
-        return _buildLanguageSwitcher(context, theme);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
+    return _buildLanguageSwitcher(context, Theme.of(context));
   }
 
   /// 🎨 Language Switcher Build mit Theme

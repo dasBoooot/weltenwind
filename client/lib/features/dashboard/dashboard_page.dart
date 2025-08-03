@@ -105,9 +105,8 @@ class _DashboardPageState extends State<DashboardPage> {
             
             // Navigation widget in top-right corner
             NavigationWidget(
-              currentRoute: 'world-dashboard',
-              routeParams: {'id': widget.worldId},
-              isJoinedWorld: true, // User muss in der Welt sein um das Dashboard zu sehen
+              currentContext: NavigationContext.worldDashboard,
+              routeParams: {'id': widget.worldId.toString()},
             ),
           ],
         ),

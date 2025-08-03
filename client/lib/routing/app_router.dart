@@ -12,6 +12,9 @@ import '../features/invite/invite_landing_page.dart';
 import '../features/dashboard/dashboard_page.dart';
 import '../features/landing/landing_page.dart';
 import '../core/services/auth_service.dart';
+import '../shared/widgets/navigation_splash_screen.dart';
+import '../shared/navigation/page_preloaders.dart';
+import '../shared/navigation/smart_navigation.dart';
 import '../main.dart';
 
 // Custom Navigation Observer für Logging
@@ -71,6 +74,69 @@ class AppRouter {
     }
     // Kein Fallback - Services sind nicht verfügbar
     return null;
+  }
+  
+  /// 🧭 Helper: Wrap Page with Navigation Loading (nur für spezielle Routen)
+  static Widget _wrapWithNavigationLoading({
+    required String routeName,
+    required Widget child,
+    Map<String, String>? parameters,
+    String? customLoadingText,
+  }) {
+    try {
+      // Nur für definierte Routen mit Preload-Funktionen
+      if (!_shouldUseNavigationLoading(routeName)) {
+        return child;
+      }
+      
+      // Erstelle preload function basierend auf route name
+      Future<void> Function() preloadFunction;
+      switch (routeName) {
+        case 'worldList':
+        case 'world-list':
+          preloadFunction = () => PagePreloaders.preloadWorldListPage(
+            ThemeContext(contextId: 'world-preview', bundleId: 'world-preview')
+          );
+          break;
+        case 'dashboard':
+        case 'world-dashboard':
+          final worldId = parameters?['id'];
+          preloadFunction = () => PagePreloaders.preloadDashboardPage(
+            ThemeContext(contextId: 'dashboard-base', bundleId: 'dashboard-base', worldTheme: worldId != null ? 'world-$worldId' : null)
+          );
+          break;
+        case 'worldJoin':
+        case 'world-join':
+          final worldId = parameters?['id'];
+          preloadFunction = () => PagePreloaders.preloadWorldJoinPage(
+            worldId,
+            ThemeContext(contextId: 'world-preview', bundleId: 'world-preview', worldTheme: worldId != null ? 'world-$worldId' : null)
+          );
+          break;
+        default:
+          return child; // No preloading for this route
+      }
+      
+      return NavigationSplashScreen(
+        targetRouteName: routeName,
+        preloadFunction: preloadFunction,
+        loadingText: customLoadingText,
+        child: child,
+      );
+    } catch (e) {
+      AppLogger.navigation.w('⚠️ Navigation loading setup failed for $routeName - showing directly', error: e);
+      return child;
+    }
+  }
+  
+  /// 🔍 Helper: Check if route should use navigation loading
+  static bool _shouldUseNavigationLoading(String routeName) {
+    const loadingRoutes = {
+      worldListRoute,
+      worldDashboardRoute, 
+      worldJoinRoute,
+    };
+    return loadingRoutes.contains(routeName);
   }
   
   static GoRouter get router {
@@ -242,12 +308,15 @@ class AppRouter {
         },
       ),
 
-      // World routes - NORMALE NAVIGATION
+      // World routes - MIT NAVIGATION LOADING
       GoRoute(
         path: '/go/worlds',
         name: worldListRoute,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: const WorldListPage(),
+          child: _wrapWithNavigationLoading(
+            routeName: worldListRoute,
+            child: const WorldListPage(),
+          ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
             FadeTransition(opacity: animation, child: child),
         ),
@@ -274,7 +343,11 @@ class AppRouter {
             );
           }
           return CustomTransitionPage(
-            child: DashboardPage(worldId: worldId),
+            child: _wrapWithNavigationLoading(
+              routeName: worldDashboardRoute,
+              parameters: {'id': worldId},
+              child: DashboardPage(worldId: worldId),
+            ),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               SlideTransition(
                 position: Tween<Offset>(
@@ -312,8 +385,12 @@ class AppRouter {
             );
           }
           return CustomTransitionPage(
-            child: WorldJoinPage(
-              worldId: worldId,
+            child: _wrapWithNavigationLoading(
+              routeName: worldJoinRoute,
+              parameters: {'id': worldId},
+              child: WorldJoinPage(
+                worldId: worldId,
+              ),
             ),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               SlideTransition(

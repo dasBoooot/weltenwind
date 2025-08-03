@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 import 'world_preview_card.dart';
 
 /// 📋 Sort Options
@@ -234,18 +234,8 @@ class _WorldsListSelectorState extends State<WorldsListSelector> {
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'WorldsListSelector',
-      contextOverrides: {
-        'loading': 'false',
-        'hasWorlds': _filteredWorlds.isNotEmpty.toString(),
-        'sortBy': _sortOption.name,
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildWorldsList(context, contextTheme, extensions);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet globales Theme
+    return _buildWorldsList(context, Theme.of(context), null);
   }
 
   Widget _buildWorldsList(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

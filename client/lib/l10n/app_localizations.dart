@@ -1602,6 +1602,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Registration successful, but invitation could not be accepted.'**
   String get authRegisterSuccessButInviteFailed;
+
+  /// Generic navigation loading text
+  ///
+  /// In en, this message translates to:
+  /// **'Loading page...'**
+  String get navigationLoadingGeneric;
+
+  /// Navigation loading error text
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading page'**
+  String get navigationLoadingError;
+
+  /// Navigation loading retry button
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get navigationLoadingRetry;
+
+  /// Loading text for world list page
+  ///
+  /// In en, this message translates to:
+  /// **'Loading worlds...'**
+  String get navigationLoadingWorldList;
+
+  /// Loading text for dashboard page
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing dashboard...'**
+  String get navigationLoadingDashboard;
+
+  /// Loading text for world join page
+  ///
+  /// In en, this message translates to:
+  /// **'Loading world...'**
+  String get navigationLoadingWorldJoin;
+
+  /// Error message when services are not available
+  ///
+  /// In en, this message translates to:
+  /// **'Service unavailable. App will restart...'**
+  String get navigationErrorServiceUnavailable;
+
+  /// Error message for network issues
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Check your internet connection.'**
+  String get navigationErrorNetwork;
+
+  /// Error message for loading timeout
+  ///
+  /// In en, this message translates to:
+  /// **'Loading takes too long. Please try again.'**
+  String get navigationErrorTimeout;
+
+  /// Error message for theme loading issues
+  ///
+  /// In en, this message translates to:
+  /// **'Theme loading issues. Page will show with default theme.'**
+  String get navigationErrorTheme;
+
+  /// Generic error message for navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error while loading page.'**
+  String get navigationErrorGeneric;
+
+  /// Loading message for world list
+  ///
+  /// In en, this message translates to:
+  /// **'Loading worlds...'**
+  String get worldListLoading;
+
+  /// Empty state message for world list
+  ///
+  /// In en, this message translates to:
+  /// **'No worlds available'**
+  String get worldListEmpty;
+
+  /// Empty state description for world list
+  ///
+  /// In en, this message translates to:
+  /// **'No worlds have been created yet. Create your first world!'**
+  String get worldListEmptyDescription;
+
+  /// Error message for world list
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading worlds'**
+  String get worldListError;
+
+  /// Retry button text
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No results message for world list
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get worldListNoResults;
+
+  /// Clear filters button text
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get clearFilters;
 }
 
 class _AppLocalizationsDelegate

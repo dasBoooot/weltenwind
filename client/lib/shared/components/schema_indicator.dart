@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 🛠️ Schema Indicator Mode
 enum SchemaIndicatorMode {
@@ -223,17 +223,7 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
     }
 
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'SchemaIndicator',
-      contextOverrides: {
-        'mode': widget.mode.name,
-        'visible': _isVisible.toString(),
-        'animated': 'true',
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildIndicatorContent(context, contextTheme, extensions);
-      },
-    );
+    return _buildIndicatorContent(context, Theme.of(context), null);
   }
 
   Widget _buildIndicatorContent(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

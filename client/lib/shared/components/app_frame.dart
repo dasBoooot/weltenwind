@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 🖼️ Fantasy Frame Variants based on Theme Schema
 enum AppFrameVariant {
@@ -122,17 +122,7 @@ class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'AppFrame',
-      contextOverrides: {
-        'variant': widget.variant.name,
-        'state': _isHovered ? 'hovered' : 'normal',
-        'interactive': widget.isInteractive.toString(),
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildFrame(context, contextTheme, extensions);
-      },
-    );
+    return _buildFrame(context, Theme.of(context), null);
   }
 
   Widget _buildFrame(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

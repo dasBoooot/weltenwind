@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED
 
 /// 🚨 Error Message Types
 enum ErrorMessageType {
@@ -193,17 +193,7 @@ class _ErrorMessageBoxState extends State<ErrorMessageBox> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'ErrorMessageBox',
-      contextOverrides: {
-        'type': widget.type.name,
-        'hasAction': (widget.onTap != null).toString(),
-        'closable': widget.showClose.toString(),
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildErrorBox(context, contextTheme, extensions);
-      },
-    );
+    return _buildErrorBox(context, Theme.of(context), null);
   }
 
   Widget _buildErrorBox(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

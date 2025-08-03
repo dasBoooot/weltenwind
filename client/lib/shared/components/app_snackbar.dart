@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED
 
 /// 📢 Snackbar Types
 enum AppSnackbarType {
@@ -198,17 +198,7 @@ class _AppSnackbarState extends State<AppSnackbar> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'AppSnackbar',
-      contextOverrides: {
-        'type': widget.type.name,
-        'hasAction': (widget.onAction != null).toString(),
-        'floating': 'false',
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildSnackbar(context, contextTheme, extensions);
-      },
-    );
+    return _buildSnackbar(context, Theme.of(context), null);
   }
 
   Widget _buildSnackbar(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

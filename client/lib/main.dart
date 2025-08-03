@@ -6,6 +6,9 @@ import 'app.dart';
 import 'config/logger.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/api_service.dart';
+import 'core/services/world_service.dart';
+import 'core/services/invite_service.dart';
+import 'core/providers/theme_context_provider.dart';
 
 // Service-Container für Dependency Injection
 class ServiceLocator {
@@ -96,9 +99,10 @@ void main() async {
   // 🔧 SERVICES INITIALISIEREN VOR APP-START
   try {
     await _initializeServices();
-    AppLogger.app.i('✅ Services initialized - App ready');
+    AppLogger.app.i('✅ All services initialized - App ready');
   } catch (e) {
     AppLogger.error.e('❌ Service initialization FAILED: $e');
+    // App trotzdem starten, aber mit Fehlerzustand
   }
 
   runApp(const WeltenwindApp());
@@ -107,13 +111,27 @@ void main() async {
 /// Initialisiert alle Services bevor die App gestartet wird
 Future<void> _initializeServices() async {
   try {
-    // AuthService importieren und initialisieren
+    // 1. AuthService initialisieren (Basis-Service)
     final authService = await _createAuthService();
     ServiceLocator.register<AuthService>(authService);
     
-    // ApiService mit AuthService initialisieren  
+    // 2. ApiService mit AuthService-Abhängigkeit
     final apiService = await _createApiService(authService);
     ServiceLocator.register<ApiService>(apiService);
+    
+    // 3. WorldService initialisieren
+    final worldService = WorldService();
+    ServiceLocator.register<WorldService>(worldService);
+    
+    // 4. InviteService initialisieren
+    final inviteService = InviteService();
+    ServiceLocator.register<InviteService>(inviteService);
+    
+    // 5. ThemeContextProvider als Singleton Service
+    final themeProvider = ThemeContextProvider();
+    ServiceLocator.register<ThemeContextProvider>(themeProvider);
+    
+    AppLogger.app.i('⚙️ All services registered in ServiceLocator');
   } catch (e) {
     AppLogger.error.e('❌ Service initialization failed: $e');
     rethrow;

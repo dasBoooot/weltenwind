@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 🎨 Theme Option
 class ThemeOption {
@@ -151,17 +151,7 @@ class _ThemeSwitcherState extends State<ThemeSwitcher> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'ThemeSwitcher',
-      contextOverrides: {
-        'direction': widget.direction.name,
-        'showLabels': widget.showLabels.toString(),
-        'currentTheme': 'default',
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildSwitcher(context, contextTheme, extensions);
-      },
-    );
+    return _buildSwitcher(context, Theme.of(context), null);
   }
 
   Widget _buildSwitcher(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/index.dart';
+// REMOVED: import '../../../core/theme/index.dart'; // UNUSED after theme cleanup
 import '../../../l10n/app_localizations.dart';
 
 class WorldListHeader extends StatelessWidget {
@@ -16,19 +16,8 @@ class WorldListHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 🎨 STATIC AREA: Header verwendet pre-game Theme (Teil des Mixed-Context Systems)
-    return ThemeContextConsumer(
-      componentName: 'WorldListHeader',
-      contextOverrides: const {
-        'uiContext': 'world-list-header',
-        'componentType': 'header',
-        'context': 'pre-game',
-        'staticArea': 'true',
-      },
-      builder: (context, theme, extensions) {
-        return _buildHeader(context, theme);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet globales Theme
+    return _buildHeader(context, Theme.of(context));
   }
 
   Widget _buildHeader(BuildContext context, ThemeData theme) {

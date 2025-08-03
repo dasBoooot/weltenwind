@@ -6,12 +6,12 @@ import 'routing/app_router.dart';
 import 'shared/widgets/splash_screen.dart';
 import 'main.dart';
 import 'core/services/auth_service.dart';
-import 'core/services/api_service.dart';
 import 'core/services/world_service.dart';
-import 'core/services/invite_service.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/providers/theme_provider.dart';
-import 'core/providers/theme_root_provider.dart';
+
+import 'core/providers/theme_context_provider.dart';
+import 'package:provider/provider.dart';
 import 'l10n/app_localizations.dart';
 
 class WeltenwindApp extends StatefulWidget {
@@ -69,16 +69,17 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
         'Bereit!',
       ],
       appName: Env.appName,
-      child: ThemeRootProvider(
-        defaultContext: 'universal',
-        defaultBundle: 'pre-game-minimal',
-        child: MaterialApp.router(
-          title: Env.appName,
-          theme: _themeProvider.currentLightTheme, // Legacy Provider für globale Kontrolle
-          darkTheme: _themeProvider.currentDarkTheme, // Legacy Provider für globale Kontrolle  
-          themeMode: _themeProvider.themeMode, // Legacy Provider für Theme Mode Switching
-          routerConfig: AppRouter.router,
-          debugShowCheckedModeBanner: false,
+      child: ChangeNotifierProvider<ThemeContextProvider>(
+        create: (_) => ServiceLocator.get<ThemeContextProvider>(),
+        child: Consumer<ThemeContextProvider>(
+          builder: (context, themeProvider, child) {
+            return MaterialApp.router(
+              title: Env.appName,
+              theme: themeProvider.currentTheme ?? _createFallbackTheme(false),
+              darkTheme: themeProvider.currentDarkTheme ?? _createFallbackTheme(true),
+              themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              routerConfig: AppRouter.router,
+              debugShowCheckedModeBanner: false,
           
           // Lokalisierungs-Konfiguration
           localizationsDelegates: const [
@@ -92,7 +93,21 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
             Locale('en'),
           ],
           locale: _localeProvider.currentLocale, // Dynamische Sprache vom Provider
+        );
+          },
         ),
+      ),
+    );
+  }
+  
+  /// Erstellt ein Fallback-Theme
+  ThemeData _createFallbackTheme(bool isDark) {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: isDark ? Brightness.dark : Brightness.light,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF6366F1),
+        brightness: isDark ? Brightness.dark : Brightness.light,
       ),
     );
   }
@@ -116,19 +131,13 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
     
     AppLogger.app.i('🎨 ThemeProvider initialisiert');
     
-    // 4. Services initialisieren (jetzt sicher, da App bereits läuft)
+    // 4. Services sind bereits in main.dart registriert - nur validieren
     try {
-      final authService = AuthService();
-      final apiService = ApiService.withAuth(authService);
-      final worldService = WorldService();
-      final inviteService = InviteService();
-
-      ServiceLocator.register<AuthService>(authService);
-      ServiceLocator.register<ApiService>(apiService);
-      ServiceLocator.register<WorldService>(worldService);
-      ServiceLocator.register<InviteService>(inviteService);
+      // Services-Verfügbarkeit prüfen
+      final authService = ServiceLocator.get<AuthService>();
+      ServiceLocator.get<WorldService>(); // Validation check
       
-      AppLogger.app.i('⚙️ Services registriert');
+      AppLogger.app.i('⚙️ Services validated - all available');
       
       // 5. Token-Validierung beim App-Start (VOR loadStoredUser)
       bool isValid = false;

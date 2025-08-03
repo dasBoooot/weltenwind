@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/world_service.dart';
@@ -10,6 +9,7 @@ import '../../routing/app_router.dart';
 import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
 import '../../shared/widgets/language_switcher.dart';
+import '../../shared/navigation/smart_navigation.dart';
 import './widgets/world_card.dart';
 import './widgets/world_filters.dart';
 import '../invite/widgets/invite_widget.dart';
@@ -127,7 +127,7 @@ class _WorldListPageState extends State<WorldListPage> {
             // Cache invalidieren nach Logout
             AppRouter.invalidateAuthCache();
             if (mounted) {
-              context.goNamed('login');
+              await context.smartGoNamed('login');
             }
           }
         }
@@ -294,7 +294,7 @@ class _WorldListPageState extends State<WorldListPage> {
           ),
         );
         // Navigate to world dashboard
-        context.goNamed('world-dashboard', pathParameters: {'id': world.id.toString()});
+        await context.smartGoNamed('world-dashboard', pathParameters: {'id': world.id.toString()});
       }
     } catch (e) {
       if (mounted) {
@@ -304,7 +304,7 @@ class _WorldListPageState extends State<WorldListPage> {
           // Cache invalidieren nach Logout
           AppRouter.invalidateAuthCache();
           if (mounted) {
-            context.goNamed('login');
+            await context.smartGoNamed('login');
           }
         } else {
           final errorMessage = e.toString().replaceAll('Exception: ', '');
@@ -342,7 +342,7 @@ class _WorldListPageState extends State<WorldListPage> {
           // Cache invalidieren nach Logout
           AppRouter.invalidateAuthCache();
           if (mounted) {
-            context.goNamed('login');
+            await context.smartGoNamed('login');
           }
         } else {
           final errorMessage = e.toString().replaceAll('Exception: ', '');
@@ -404,7 +404,7 @@ class _WorldListPageState extends State<WorldListPage> {
           // Cache invalidieren nach Logout
           AppRouter.invalidateAuthCache();
           if (mounted) {
-            context.goNamed('login');
+            await context.smartGoNamed('login');
           }
         } else {
           final errorMessage = e.toString().replaceAll('Exception: ', '');
@@ -443,7 +443,7 @@ class _WorldListPageState extends State<WorldListPage> {
           // Cache invalidieren nach Logout
           AppRouter.invalidateAuthCache();
           if (mounted) {
-            context.goNamed('login');
+            await context.smartGoNamed('login');
           }
         } else {
           final errorMessage = e.toString().replaceAll('Exception: ', '');
@@ -459,31 +459,21 @@ class _WorldListPageState extends State<WorldListPage> {
   }
 
   // Deep-Link zur World-Join-Page
-  void _navigateToWorldJoin(World world) {
-    context.goNamed('world-join', pathParameters: {'id': world.id.toString()});
+  Future<void> _navigateToWorldJoin(World world) async {
+    await context.smartGoNamed('world-join', pathParameters: {'id': world.id.toString()});
   }
 
-  void _playWorld(World world) {
+  Future<void> _playWorld(World world) async {
     // Navigate directly to world dashboard for playing
-    context.goNamed('world-dashboard', pathParameters: {'id': world.id.toString()});
+    await context.smartGoNamed('world-dashboard', pathParameters: {'id': world.id.toString()});
   }
 
 // Filter and sort methods removed - now using WorldFilters widget
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 AUTOMATISCHE THEME-LOGIK: UIContext.worldSelection → world-preview Bundle
-    // 🔻 MIXED CONTEXT: Pre-game Page mit world-spezifischen Cards
-    return ThemePageProvider(
-      contextId: 'world-selection',
-      bundleId: 'world-preview',
-      child: ThemeContextConsumer(
-        componentName: 'WorldListPage',
-        builder: (context, theme, extensions) {
-          return _buildWorldListPage(context, theme, extensions);
-        },
-      ),
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
+    return _buildWorldListPage(context, Theme.of(context), null);
   }
 
   Widget _buildWorldListPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
@@ -776,7 +766,7 @@ class _WorldListPageState extends State<WorldListPage> {
               ),
             ),
             // Navigation widget in top-right corner
-            const NavigationWidget(currentRoute: 'world-list'),        
+            const NavigationWidget(currentContext: NavigationContext.worldList),        
           ],
         ),
       ),

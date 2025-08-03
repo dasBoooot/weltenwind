@@ -41,14 +41,15 @@ class BackgroundWidget extends StatelessWidget {
     );
   }
 
-  /// Get the appropriate background image based on world theme
+  /// Get the appropriate background image based on world theme (with safe fallback)
   String _getBackgroundImage() {
-    if (worldTheme != null && worldTheme!.isNotEmpty) {
+    // ⚡ RACE CONDITION FIX: Check for null/empty worldTheme
+    if (worldTheme != null && worldTheme!.isNotEmpty && worldTheme != 'null') {
       // Use world-specific background dynamically (no hardcoded mappings!)
       return 'assets/images/worlds/${worldTheme!.toLowerCase()}.png';
     }
     
-    // Default background for non-world pages
+    // Default background for non-world pages or during theme loading
     return 'assets/images/weltenwind-background-1.png';
   }
 } 

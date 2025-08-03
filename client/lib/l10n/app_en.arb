@@ -1367,5 +1367,96 @@
   "authRegisterSuccessButInviteFailed": "Registration successful, but invitation could not be accepted.",
   "@authRegisterSuccessButInviteFailed": {
     "context": "auth"
+  },
+  "navigationLoadingGeneric": "Loading page...",
+  "@navigationLoadingGeneric": {
+    "description": "Generic navigation loading text",
+    "context": "navigation"
+  },
+  "navigationLoadingError": "Error loading page",
+  "@navigationLoadingError": {
+    "description": "Navigation loading error text",
+    "context": "navigation"
+  },
+  "navigationLoadingRetry": "Try again",
+  "@navigationLoadingRetry": {
+    "description": "Navigation loading retry button",
+    "context": "navigation"
+  },
+  "navigationLoadingWorldList": "Loading worlds...",
+  "@navigationLoadingWorldList": {
+    "description": "Loading text for world list page",
+    "context": "navigation"
+  },
+  "navigationLoadingDashboard": "Preparing dashboard...",
+  "@navigationLoadingDashboard": {
+    "description": "Loading text for dashboard page",
+    "context": "navigation"
+  },
+  "navigationLoadingWorldJoin": "Loading world...",
+  "@navigationLoadingWorldJoin": {
+    "description": "Loading text for world join page",
+    "context": "navigation"
+  },
+  "navigationErrorServiceUnavailable": "Service unavailable. App will restart...",
+  "@navigationErrorServiceUnavailable": {
+    "description": "Error message when services are not available",
+    "context": "navigation"
+  },
+  "navigationErrorNetwork": "Network error. Check your internet connection.",
+  "@navigationErrorNetwork": {
+    "description": "Error message for network issues",
+    "context": "navigation"
+  },
+  "navigationErrorTimeout": "Loading takes too long. Please try again.",
+  "@navigationErrorTimeout": {
+    "description": "Error message for loading timeout",
+    "context": "navigation"
+  },
+  "navigationErrorTheme": "Theme loading issues. Page will show with default theme.",
+  "@navigationErrorTheme": {
+    "description": "Error message for theme loading issues",
+    "context": "navigation"
+  },
+  "navigationErrorGeneric": "Unexpected error while loading page.",
+  "@navigationErrorGeneric": {
+    "description": "Generic error message for navigation",
+    "context": "navigation"
+  },
+  
+  "worldListLoading": "Loading worlds...",
+  "@worldListLoading": {
+    "description": "Loading message for world list",
+    "context": "world"
+  },
+  "worldListEmpty": "No worlds available",
+  "@worldListEmpty": {
+    "description": "Empty state message for world list",
+    "context": "world"
+  },
+  "worldListEmptyDescription": "No worlds have been created yet. Create your first world!",
+  "@worldListEmptyDescription": {
+    "description": "Empty state description for world list",
+    "context": "world"
+  },
+  "worldListError": "Error loading worlds",
+  "@worldListError": {
+    "description": "Error message for world list",
+    "context": "world"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text",
+    "context": "general"
+  },
+  "worldListNoResults": "No results found",
+  "@worldListNoResults": {
+    "description": "No results message for world list",
+    "context": "world"
+  },
+  "clearFilters": "Clear filters",
+  "@clearFilters": {
+    "description": "Clear filters button text",
+    "context": "general"
   }
 }

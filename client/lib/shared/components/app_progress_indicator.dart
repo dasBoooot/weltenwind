@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import '../../core/providers/theme_context_provider.dart';
+// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED
 
 /// 📊 Progress Indicator Variants
 enum AppProgressVariant {
@@ -212,18 +212,8 @@ class _AppProgressIndicatorState extends State<AppProgressIndicator> with Ticker
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
-    return ThemeContextConsumer(
-      componentName: 'AppProgressIndicator',
-      contextOverrides: {
-        'variant': widget.variant.name,
-        'animated': 'true',
-        'progress': widget.value.toString(),
-      },
-      builder: (context, contextTheme, extensions) {
-        return _buildProgress(context, contextTheme, extensions);
-      },
-    );
+    // 🎯 SMART NAVIGATION THEME: Verwendet globales Theme
+    return _buildProgress(context, Theme.of(context), null);
   }
 
   Widget _buildProgress(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

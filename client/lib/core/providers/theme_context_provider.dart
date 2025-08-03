@@ -36,6 +36,9 @@ class ThemeContextProvider extends ChangeNotifier {
   Map<String, dynamic>? get currentExtensions => _currentExtensions;
   bool get isDarkMode => _isDarkMode;
   bool get isUpdating => _isUpdating;
+  
+  /// Theme Service Getter (for preloaders)
+  ModularThemeService get themeService => _themeService;
 
   /// 🚀 Initialize Provider
   Future<void> _initialize() async {
