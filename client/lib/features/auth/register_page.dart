@@ -231,7 +231,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   }
 
   Widget _buildRegisterPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return Scaffold(
+    return AppScaffold(
+      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
       body: Stack(
         children: [
           BackgroundWidget(

@@ -235,7 +235,7 @@ class _InviteWidgetState extends State<InviteWidget> {
           SnackBar(
             content: Text(AppLocalizations.of(context).errorInviteLinkCopy),
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
       }

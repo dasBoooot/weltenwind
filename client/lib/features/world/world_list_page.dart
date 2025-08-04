@@ -13,6 +13,8 @@ import './widgets/world_filters.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/dialogs/fullscreen_dialog.dart';
 import '../../shared/dialogs/invite_fullscreen_dialog.dart';
+import '../../shared/components/app_snackbar.dart';
+import '../../shared/components/app_scaffold.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -108,11 +110,9 @@ class _WorldListPageState extends State<WorldListPage> {
             _isLoading = false;
           });
           
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).worldListLoadingError(e.toString())),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          SnackbarHelpers.showError(
+            context,
+            AppLocalizations.of(context).worldListLoadingError(e.toString()),
           );
         } else {
           // For 401/404/token errors, just set loading to false
@@ -269,11 +269,9 @@ class _WorldListPageState extends State<WorldListPage> {
       AppLogger.logError('Fehler beim Öffnen des Invite-Dialogs', e, context: {'worldId': world.id});
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).errorInviteDialogOpen(e.toString())),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
+        SnackbarHelpers.showError(
+          context,
+          AppLocalizations.of(context).errorInviteDialogOpen(e.toString()),
         );
       }
     }
@@ -287,11 +285,9 @@ class _WorldListPageState extends State<WorldListPage> {
           _joinedWorlds[world.id] = true;
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).worldJoinSuccess(world.name)),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
+        SnackbarHelpers.showSuccess(
+          context,
+          AppLocalizations.of(context).worldJoinSuccess(world.name),
         );
         // Navigate to world dashboard
         await context.smartGoNamed('world-dashboard', pathParameters: {'id': world.id.toString()});
@@ -308,11 +304,9 @@ class _WorldListPageState extends State<WorldListPage> {
           }
         } else {
           final errorMessage = e.toString().replaceAll('Exception: ', '');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          SnackbarHelpers.showError(
+            context,
+            errorMessage,
           );
         }
       }
@@ -327,11 +321,9 @@ class _WorldListPageState extends State<WorldListPage> {
           _preRegisteredWorlds[world.id] = true;
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).worldPreRegisterSuccessful(world.name)),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
+        SnackbarHelpers.showSuccess(
+          context,
+          AppLocalizations.of(context).worldPreRegisterSuccessful(world.name),
         );
       }
     } catch (e) {
@@ -346,11 +338,9 @@ class _WorldListPageState extends State<WorldListPage> {
           }
         } else {
           final errorMessage = e.toString().replaceAll('Exception: ', '');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          SnackbarHelpers.showError(
+            context,
+            errorMessage,
           );
         }
       }
@@ -379,11 +369,9 @@ class _WorldListPageState extends State<WorldListPage> {
           _joinedWorlds[world.id] = false;
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).worldLeaveSuccessful(world.name)),
-            backgroundColor: Colors.orange,
-          ),
+        SnackbarHelpers.showInfo(
+          context,
+          AppLocalizations.of(context).worldLeaveSuccessful(world.name),
         );
       }
     } catch (e) {
@@ -398,11 +386,9 @@ class _WorldListPageState extends State<WorldListPage> {
           }
         } else {
           final errorMessage = e.toString().replaceAll('Exception: ', '');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          SnackbarHelpers.showError(
+            context,
+            errorMessage,
           );
         }
       }
@@ -418,11 +404,9 @@ class _WorldListPageState extends State<WorldListPage> {
           _preRegisteredWorlds[world.id] = false;
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).worldPreRegisterCancelled(world.name)),
-            backgroundColor: Colors.orange,
-          ),
+        SnackbarHelpers.showInfo(
+          context,
+          AppLocalizations.of(context).worldPreRegisterCancelled(world.name),
         );
       }
     } catch (e) {
@@ -437,11 +421,9 @@ class _WorldListPageState extends State<WorldListPage> {
           }
         } else {
           final errorMessage = e.toString().replaceAll('Exception: ', '');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          SnackbarHelpers.showError(
+            context,
+            errorMessage,
           );
         }
       }
@@ -467,18 +449,19 @@ class _WorldListPageState extends State<WorldListPage> {
   }
 
   Widget _buildWorldListPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return Scaffold(
-      body: BackgroundWidget(
+    return AppScaffold(
+      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
+      body: BackgroundWidget( // 🖼️ RESTORED: BackgroundWidget for image backgrounds
         child: Stack(
           children: [
             // Main content
             Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 800),
-                    child: Card(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: Card(
                       elevation: 12,
                       color: theme.colorScheme.surface, // Theme-basierte Kartenfarbe
                       shape: RoundedRectangleBorder(

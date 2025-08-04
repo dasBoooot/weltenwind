@@ -173,7 +173,7 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

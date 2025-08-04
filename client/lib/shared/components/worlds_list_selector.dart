@@ -532,7 +532,7 @@ class _WorldsListSelectorState extends State<WorldsListSelector> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.sort, size: 18),
+          const Icon(Icons.sort, size: 18),
           const SizedBox(width: 4),
           Text(_getSortOptionText(_sortOption)),
           Icon(

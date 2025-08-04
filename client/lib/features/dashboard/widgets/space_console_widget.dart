@@ -147,9 +147,9 @@ class _SpaceConsoleWidgetState extends State<SpaceConsoleWidget>
           Container(
             width: 60,
             height: 60,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              gradient: const RadialGradient(
+              gradient: RadialGradient(
                 colors: [Color(0xFF0099FF), Color(0xFF003366)],
               ),
             ),
@@ -298,7 +298,7 @@ class _SpaceConsoleWidgetState extends State<SpaceConsoleWidget>
         children: [
           Row(
             children: [
-              Icon(Icons.stars, color: const Color(0xFF0099FF), size: 24),
+              const Icon(Icons.stars, color: Color(0xFF0099FF), size: 24),
               const SizedBox(width: 12),
               Text(
                 'Stellar Phenomena',
@@ -385,7 +385,7 @@ class _SpaceConsoleWidgetState extends State<SpaceConsoleWidget>
         children: [
           Row(
             children: [
-              Icon(Icons.terminal, color: const Color(0xFF0099FF), size: 24),
+              const Icon(Icons.terminal, color: Color(0xFF0099FF), size: 24),
               const SizedBox(width: 12),
               Text(
                 'Command Log',

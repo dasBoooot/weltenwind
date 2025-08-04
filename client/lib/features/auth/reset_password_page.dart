@@ -137,7 +137,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTicker
   }
 
   Widget _buildResetPasswordPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return Scaffold(
+    return AppScaffold(
+      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
       body: Stack(
         children: [
           BackgroundWidget(

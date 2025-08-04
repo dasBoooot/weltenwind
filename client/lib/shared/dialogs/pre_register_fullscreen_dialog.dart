@@ -411,7 +411,7 @@ class _PreRegisterDialogContentState extends State<_PreRegisterDialogContent> {
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.how_to_reg,
                                   size: 18,
                                 ),

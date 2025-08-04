@@ -6,6 +6,7 @@
 /// 🔹 Global: ThemeRootProvider (ein globales Theme aktiv)
 /// 🔸 Scoped: ThemePageProvider (ganzes Layout hat einen Kontext)  
 /// 🔻 Mixed: ThemeContextConsumer (lokale Overrides pro Komponente)
+library;
 
 // 🌍 Root Provider - Globaler Fallback
 export '../providers/theme_root_provider.dart';

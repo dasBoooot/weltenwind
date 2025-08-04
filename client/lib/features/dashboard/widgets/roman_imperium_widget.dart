@@ -36,13 +36,13 @@ class _RomanImperiumWidgetState extends State<RomanImperiumWidget>
   String _activeArchitecture = 'column';
   int _imperiumPower = 89;
   int _legionStrength = 76;
-  Map<String, int> _legionStatus = {
+  final Map<String, int> _legionStatus = {
     'I_Augusta': 92,
     'II_Victrix': 87,
     'III_Gallica': 81,
     'V_Macedonica': 78,
   };
-  List<String> _imperiumLog = [
+  final List<String> _imperiumLog = [
     '🏛️ Senate session convened in Forum',
     '⚔️ Legion III advances on Gaul',
     '🏺 Trade routes established with Egypt',
@@ -283,10 +283,10 @@ class _RomanImperiumWidgetState extends State<RomanImperiumWidget>
                       height: 60,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: RadialGradient(
+                        gradient: const RadialGradient(
                           colors: [
-                            const Color(0xFF800020),
-                            const Color(0xFFB22222),
+                            Color(0xFF800020),
+                            Color(0xFFB22222),
                           ],
                         ),
                         boxShadow: [
@@ -725,9 +725,9 @@ class _RomanImperiumWidgetState extends State<RomanImperiumWidget>
                     builder: (context, child) {
                       return Transform.scale(
                         scale: 1.0 + 0.1 * math.sin(_legionController.value * 2 * math.pi + strength * 0.02),
-                        child: Icon(
+                        child: const Icon(
                           Icons.military_tech,
-                          color: const Color(0xFF800020),
+                          color: Color(0xFF800020),
                           size: 16,
                         ),
                       );
@@ -769,11 +769,11 @@ class _RomanImperiumWidgetState extends State<RomanImperiumWidget>
                       widthFactor: (strength / 100) * (1.0 + 0.05 * math.sin(_legionController.value * 2 * math.pi)),
                       child: Container(
                         height: 6,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              const Color(0xFF800020),
-                              const Color(0xFFFFD700),
+                              Color(0xFF800020),
+                              Color(0xFFFFD700),
                             ],
                           ),
                         ),
@@ -852,7 +852,7 @@ class _RomanImperiumWidgetState extends State<RomanImperiumWidget>
                         value: (_imperiumPower / 100) * (1.0 + 0.05 * math.sin(_goldController.value * 2 * math.pi)),
                         strokeWidth: 8,
                         backgroundColor: const Color(0xFF800020).withValues(alpha: 0.2),
-                        valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFFFFD700)),
+                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFFD700)),
                       );
                     },
                   ),

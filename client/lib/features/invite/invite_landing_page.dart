@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/navigation/smart_navigation.dart';
+import '../../shared/components/app_scaffold.dart';
 import '../../config/logger.dart';
 import '../../main.dart';
 
@@ -165,7 +166,8 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
   }
 
   Widget _buildInvitePage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions, AppLocalizations l10n, String? worldTheme) {
-    return Scaffold(
+    return AppScaffold(
+      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
       appBar: AppBar(
         title: Text(l10n.invitePageTitle),
         centerTitle: true,

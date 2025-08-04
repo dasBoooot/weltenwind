@@ -190,9 +190,9 @@ class _CyberpunkHackingWidgetState extends State<CyberpunkHackingWidget>
                 Container(
                   width: 60,
                   height: 60,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: const RadialGradient(
+                    gradient: RadialGradient(
                       colors: [Color(0xFF00FF88), Color(0xFF004422)],
                     ),
                   ),
@@ -242,7 +242,7 @@ class _CyberpunkHackingWidgetState extends State<CyberpunkHackingWidget>
         children: [
           Row(
             children: [
-              Icon(Icons.radar, color: const Color(0xFF00FF88), size: 24),
+              const Icon(Icons.radar, color: Color(0xFF00FF88), size: 24),
               const SizedBox(width: 12),
               Text(
                 'Network Scanner',
@@ -400,7 +400,7 @@ class _CyberpunkHackingWidgetState extends State<CyberpunkHackingWidget>
         children: [
           Row(
             children: [
-              Icon(Icons.terminal, color: const Color(0xFF00FF88), size: 24),
+              const Icon(Icons.terminal, color: Color(0xFF00FF88), size: 24),
               const SizedBox(width: 12),
               Text(
                 'Hacking Terminal',
@@ -472,7 +472,7 @@ class _CyberpunkHackingWidgetState extends State<CyberpunkHackingWidget>
         children: [
           Row(
             children: [
-              Icon(Icons.grid_view, color: const Color(0xFF0088FF), size: 24),
+              const Icon(Icons.grid_view, color: Color(0xFF0088FF), size: 24),
               const SizedBox(width: 12),
               Text(
                 'Cyber Grid',

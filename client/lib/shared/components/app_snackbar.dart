@@ -206,7 +206,7 @@ class _AppSnackbarState extends State<AppSnackbar> with SingleTickerProviderStat
       constraints: BoxConstraints(
         maxWidth: widget.maxWidth ?? _getMaxWidth(),
       ),
-      margin: EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
       padding: EdgeInsets.all(_getPadding()),
       decoration: _getSnackbarDecoration(theme, extensions),
       child: IntrinsicHeight(
@@ -466,7 +466,7 @@ class SnackbarManager {
   static bool get isShowing => _isShowing;
 }
 
-/// 📢 Snackbar Helpers
+/// 📢 Snackbar Helpers - FIXED: Using ScaffoldMessenger for reliable display
 class SnackbarHelpers {
   /// Show info snackbar
   static void showInfo(
@@ -475,12 +475,19 @@ class SnackbarHelpers {
     String? actionLabel,
     VoidCallback? onAction,
   }) {
-    SnackbarManager.show(
-      context,
-      AppSnackbar.info(
-        message: message,
-        actionLabel: actionLabel,
-        onAction: onAction,
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: _buildSnackbarContent(
+          message: message,
+          icon: Icons.info_outline,
+          iconColor: Theme.of(context).colorScheme.primary,
+          actionLabel: actionLabel,
+          onAction: onAction,
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        duration: const Duration(seconds: 4),
       ),
     );
   }
@@ -492,12 +499,19 @@ class SnackbarHelpers {
     String? actionLabel,
     VoidCallback? onAction,
   }) {
-    SnackbarManager.show(
-      context,
-      AppSnackbar.success(
-        message: message,
-        actionLabel: actionLabel,
-        onAction: onAction,
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: _buildSnackbarContent(
+          message: message,
+          icon: Icons.check_circle_outline,
+          iconColor: Colors.white,
+          actionLabel: actionLabel,
+          onAction: onAction,
+        ),
+        backgroundColor: const Color(0xFF4CAF50),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        duration: const Duration(seconds: 3),
       ),
     );
   }
@@ -509,12 +523,19 @@ class SnackbarHelpers {
     String? actionLabel,
     VoidCallback? onAction,
   }) {
-    SnackbarManager.show(
-      context,
-      AppSnackbar.warning(
-        message: message,
-        actionLabel: actionLabel,
-        onAction: onAction,
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: _buildSnackbarContent(
+          message: message,
+          icon: Icons.warning_outlined,
+          iconColor: Colors.white,
+          actionLabel: actionLabel,
+          onAction: onAction,
+        ),
+        backgroundColor: const Color(0xFFF59E0B),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        duration: const Duration(seconds: 5),
       ),
     );
   }
@@ -526,13 +547,56 @@ class SnackbarHelpers {
     String? actionLabel,
     VoidCallback? onAction,
   }) {
-    SnackbarManager.show(
-      context,
-      AppSnackbar.error(
-        message: message,
-        actionLabel: actionLabel,
-        onAction: onAction,
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: _buildSnackbarContent(
+          message: message,
+          icon: Icons.error_outline,
+          iconColor: Theme.of(context).colorScheme.onErrorContainer,
+          actionLabel: actionLabel,
+          onAction: onAction,
+        ),
+        backgroundColor: Theme.of(context).colorScheme.errorContainer,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        duration: const Duration(seconds: 6),
       ),
+    );
+  }
+
+  /// Build snackbar content widget
+  static Widget _buildSnackbarContent({
+    required String message,
+    required IconData icon,
+    required Color iconColor,
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, color: iconColor, size: 20),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            message,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        if (actionLabel != null && onAction != null) ...[
+          const SizedBox(width: 12),
+          TextButton(
+            onPressed: onAction,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              visualDensity: VisualDensity.compact,
+            ),
+            child: Text(actionLabel),
+          ),
+        ],
+      ],
     );
   }
 

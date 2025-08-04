@@ -200,7 +200,7 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
         ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(AppLocalizations.of(context).schemaCopiedToClipboard),
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -601,7 +601,7 @@ class SchemaIndicatorManager {
     if (_overlayEntry != null) return;
     
     _overlayEntry = OverlayEntry(
-      builder: (context) => SchemaIndicator(
+      builder: (context) => const SchemaIndicator(
         enabled: true,
         onDismiss: hide,
       ),

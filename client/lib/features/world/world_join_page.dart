@@ -7,10 +7,11 @@ import '../../core/theme/index.dart'; // Theme System für ThemePageProvider und
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
 import '../../shared/navigation/smart_navigation.dart';
-// import '../invite/widgets/invite_widget.dart'; // Replaced by fullscreen dialog system
 import '../../l10n/app_localizations.dart';
 import '../../shared/dialogs/fullscreen_dialog.dart';
 import '../../shared/dialogs/invite_fullscreen_dialog.dart';
+import '../../shared/components/app_snackbar.dart';
+import '../../shared/components/app_scaffold.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -253,11 +254,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
       AppLogger.logError('Fehler beim Öffnen des Invite-Dialogs', e, context: {'worldId': _world!.id});
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).errorInviteDialogOpen(e.toString())),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
+        SnackbarHelpers.showError(
+          context,
+          AppLocalizations.of(context).errorInviteDialogOpen(e.toString()),
         );
       }
     }
@@ -281,12 +280,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
         });
         
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).worldJoinSuccess(_world!.name)),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              duration: const Duration(seconds: 3),
-            ),
+          SnackbarHelpers.showSuccess(
+            context,
+            AppLocalizations.of(context).worldJoinSuccess(_world!.name),
           );
         }
       } else {
@@ -328,11 +324,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
         });
         
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).worldPreRegisterSuccessful(world.name)),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
+          SnackbarHelpers.showSuccess(
+            context,
+            AppLocalizations.of(context).worldPreRegisterSuccessful(world.name),
           );
         }
       } else {
@@ -370,11 +364,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
         });
         
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).worldPreRegisterCancelled(world.name)),
-              backgroundColor: Theme.of(context).colorScheme.tertiary,
-            ),
+          SnackbarHelpers.showInfo(
+            context,
+            AppLocalizations.of(context).worldPreRegisterCancelled(world.name),
           );
         }
       } else {
@@ -425,11 +417,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
       });
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).worldLeaveSuccessful(world.name)),
-            backgroundColor: Theme.of(context).colorScheme.tertiary,
-          ),
+        SnackbarHelpers.showInfo(
+          context,
+          AppLocalizations.of(context).worldLeaveSuccessful(world.name),
         );
       }
     } catch (e) {
@@ -507,7 +497,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
   Widget _buildWorldJoinPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
     final worldTheme = _getWorldTheme();
     
-    return Scaffold(
+    return AppScaffold(
+      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
       body: BackgroundWidget(
         worldTheme: worldTheme,  // 🌍 World-specific background
         child: Stack(

@@ -4,6 +4,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/navigation/smart_navigation.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/language_switcher.dart';
+import '../../shared/components/app_scaffold.dart';
 import 'dart:math' as math;
 
 class LandingPage extends StatefulWidget {
@@ -119,7 +120,8 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
   }
 
   Widget _buildLandingPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return Scaffold(
+    return AppScaffold(
+      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
       body: Stack(
         children: [
           BackgroundWidget(

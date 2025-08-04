@@ -4,6 +4,7 @@ import '../../core/services/world_service.dart';
 import '../../core/models/world.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
+import '../../shared/components/app_scaffold.dart';
 import '../../main.dart';
 import 'widgets/world_dashboard_widget.dart';
 
@@ -69,7 +70,8 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildDashboard(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return Scaffold(
+    return AppScaffold(
+      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
       body: BackgroundWidget(
         worldTheme: _worldTheme,  // 🌍 World-specific background
         child: Stack(

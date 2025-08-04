@@ -106,7 +106,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
   }
 
   Widget _buildForgotPasswordPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return Scaffold(
+    return AppScaffold(
+      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
       body: Stack(
         children: [
           BackgroundWidget(

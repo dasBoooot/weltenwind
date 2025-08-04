@@ -212,7 +212,7 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
     if (widget.multiSelect && widget.values != null) {
       _selectedValues = List.from(widget.values!);
     } else if (!widget.multiSelect && widget.value != null) {
-      _selectedValues = [widget.value!];
+      _selectedValues = [widget.value as T];
     }
   }
 
@@ -228,7 +228,7 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
     if (widget.multiSelect && widget.values != oldWidget.values) {
       _selectedValues = List.from(widget.values ?? []);
     } else if (!widget.multiSelect && widget.value != oldWidget.value) {
-      _selectedValues = widget.value != null ? [widget.value!] : [];
+      _selectedValues = widget.value != null ? [widget.value as T] : [];
     }
   }
 

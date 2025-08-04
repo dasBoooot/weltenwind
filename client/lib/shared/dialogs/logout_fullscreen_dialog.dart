@@ -192,7 +192,7 @@ Future<bool?> showLogoutDialog(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.logout,
                               size: 18,
                             ),

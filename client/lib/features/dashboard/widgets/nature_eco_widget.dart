@@ -248,10 +248,10 @@ class _NatureEcoWidgetState extends State<NatureEcoWidget>
                   height: 40,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: RadialGradient(
+                    gradient: const RadialGradient(
                       colors: [
-                        const Color(0xFF228B22),
-                        const Color(0xFF32CD32),
+                        Color(0xFF228B22),
+                        Color(0xFF32CD32),
                       ],
                     ),
                     boxShadow: [
@@ -906,7 +906,7 @@ class _NatureEcoWidgetState extends State<NatureEcoWidget>
                         value: (_ecosystemHealth / 100) * (1.0 + 0.05 * math.sin(_growthController.value * 2 * math.pi)),
                         strokeWidth: 6,
                         backgroundColor: const Color(0xFF0F2A0F),
-                        valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF32CD32)),
+                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF32CD32)),
                       );
                     },
                   ),
