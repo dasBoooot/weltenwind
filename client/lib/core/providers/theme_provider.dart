@@ -95,7 +95,7 @@ class ThemeProvider extends ChangeNotifier {
   Future<void> _loadCurrentTheme() async {
     try {
       AppLogger.app.i('🎨 [THEME-DEBUG] Global Theme Load: $_currentTheme + $_currentBundle');
-      print('🎨 [THEME-DEBUG] Global Theme Load: $_currentTheme + $_currentBundle');
+      AppLogger.app.d('🎨 [THEME-DEBUG] Global Theme Load: $_currentTheme + $_currentBundle');
       
       final lightTheme = await _themeService.loadThemeWithBundle(
         _currentTheme, 
@@ -114,7 +114,7 @@ class ThemeProvider extends ChangeNotifier {
         _darkTheme = darkTheme;
         _performanceStats = _themeService.getPerformanceStats();
         AppLogger.app.i('✅ [THEME-DEBUG] Global Theme Applied: $_currentTheme + $_currentBundle');
-        print('✅ [THEME-DEBUG] Global Theme Applied: $_currentTheme + $_currentBundle');
+        AppLogger.app.d('✅ [THEME-DEBUG] Global Theme Applied: $_currentTheme + $_currentBundle');
         notifyListeners();
       } else {
         AppLogger.app.w('⚠️ [THEME-DEBUG] Global Theme FAILED: $_currentTheme + $_currentBundle');
@@ -148,7 +148,7 @@ class ThemeProvider extends ChangeNotifier {
     if (_currentTheme == themeName) return;
     
     AppLogger.app.i('🎨 [THEME-DEBUG] User Theme Switch: $themeName');
-    print('🎨 [THEME-DEBUG] User Theme Switch: $themeName');
+        AppLogger.app.d('🎨 [THEME-DEBUG] User Theme Switch: $themeName');
     _currentTheme = themeName;
     
     // 🎯 Globalen Theme-State für Cross-Service-Kommunikation aktualisieren
@@ -158,7 +158,7 @@ class ThemeProvider extends ChangeNotifier {
     await _saveSettings();
     
     AppLogger.app.i('✅ [THEME-DEBUG] Theme erfolgreich geändert zu: $themeName (Bundle: $_currentBundle)');
-    print('✅ [THEME-DEBUG] Theme erfolgreich geändert zu: $themeName (Bundle: $_currentBundle)');
+        AppLogger.app.d('✅ [THEME-DEBUG] Theme erfolgreich geändert zu: $themeName (Bundle: $_currentBundle)');
   }
   
   /// Bundle wechseln
@@ -210,7 +210,7 @@ class ThemeProvider extends ChangeNotifier {
           _currentBundle = bundleString;
         } else {
           // Legacy Bundle gefunden → Clean State Reset
-          print('🧹 [THEME-DEBUG] Legacy Bundle found: $bundleString → Reset to Clean State');
+          AppLogger.app.d('🧹 [THEME-DEBUG] Legacy Bundle found: $bundleString → Reset to Clean State');
           await _resetToCleanState();
           return; // Early return nach Reset
         }
@@ -250,7 +250,7 @@ class ThemeProvider extends ChangeNotifier {
       _currentTheme = 'default';
       _currentBundle = 'pre-game-minimal';
       
-      print('🧹 [THEME-DEBUG] Reset to Clean State: $_currentTheme + $_currentBundle');
+      AppLogger.app.d('🧹 [THEME-DEBUG] Reset to Clean State: $_currentTheme + $_currentBundle');
       AppLogger.app.i('🧹 Theme System auf Clean State zurückgesetzt');
       
       await _saveSettings();

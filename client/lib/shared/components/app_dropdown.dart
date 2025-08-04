@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/services/theme_helper.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 // REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
@@ -339,8 +340,20 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SMART NAVIGATION THEME: Verwendet globales Theme
-    return _buildDropdown(context, Theme.of(context), null);
+    // 🎯 MODULARES THEME SYSTEM - Smart Theme Loading
+    final cachedTheme = ThemeHelper.getCurrentThemeCached(context);
+    if (cachedTheme != null) {
+      return _buildDropdown(context, cachedTheme, null);
+    }
+    
+    // Fallback für nicht-gecachte Themes  
+    return FutureBuilder<ThemeData>(
+      future: ThemeHelper.getCurrentTheme(context),
+      builder: (context, snapshot) {
+        final theme = snapshot.data ?? Theme.of(context);
+        return _buildDropdown(context, theme, null);
+      },
+    );
   }
 
   Widget _buildDropdown(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

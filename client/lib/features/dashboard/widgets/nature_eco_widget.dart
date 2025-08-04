@@ -36,13 +36,13 @@ class _NatureEcoWidgetState extends State<NatureEcoWidget>
   String _activeBiome = 'grove';
   int _biodiversity = 87;
   int _ecosystemHealth = 92;
-  Map<String, int> _wildlifePopulation = {
+  final Map<String, int> _wildlifePopulation = {
     'butterflies': 234,
     'birds': 45,
     'mammals': 18,
     'insects': 1847,
   };
-  List<String> _ecoLog = [
+  final List<String> _ecoLog = [
     '🌱 New saplings detected in Grove sector',
     '🦋 Butterfly migration in progress',
     '🌸 Spring bloom cycle initiated',

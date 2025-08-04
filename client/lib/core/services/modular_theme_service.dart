@@ -87,7 +87,7 @@ class ModularThemeService {
       // Direkter HTTP-Call ohne API-Service da theme-editor statisch bereitgestellt wird
       const urlPath = '/theme-editor/bundles/bundle-configs.json';
       const urlPrefix = Env.apiUrl;
-      final url = '$urlPrefix$urlPath';
+      const url = '$urlPrefix$urlPath';
       final response = await http.get(Uri.parse(url));
       
       if (response.statusCode != 200) {
@@ -762,7 +762,6 @@ class ModularThemeService {
         WorldType.nature => 'nature',
       };
       AppLogger.app.i('🌍 [THEME-DEBUG] World Theme: $worldTheme (WorldType: $worldType)');
-      print('🌍 [THEME-DEBUG] World Theme: $worldTheme (WorldType: $worldType)');
       return worldTheme;
     }
     
@@ -770,7 +769,6 @@ class ModularThemeService {
     final globalTheme = GlobalThemeState.currentTheme;
     if (globalTheme.isNotEmpty && globalTheme != 'default') {
       AppLogger.app.i('👤 [THEME-DEBUG] User Theme: $globalTheme (from GlobalState)');
-      print('👤 [THEME-DEBUG] User Theme: $globalTheme (from GlobalState)');
       return globalTheme; // Verwende das vom User gewählte Theme!
     }
     

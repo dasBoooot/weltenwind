@@ -64,18 +64,13 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
     return _buildLanguageSwitcher(context, Theme.of(context));
   }
 
-  /// 🎨 Language Switcher Build mit Theme
+  /// 🎨 Language Switcher Build mit Theme (Navigation Bar optimiert)
   Widget _buildLanguageSwitcher(BuildContext context, ThemeData theme) {
-    // Dynamische Größenberechnung basierend auf verfügbaren Sprachen
-    final dynamicHeight = _isExpanded 
-        ? 90.0 + (_availableLanguages.length * 50.0) // Header + Buttons
-        : 48.0;
-    
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       constraints: BoxConstraints(
-        maxWidth: _isExpanded ? 200 : 48,  // Sichere feste Maximalbreite
-        maxHeight: dynamicHeight,
+        maxWidth: _isExpanded ? 180 : 48,  // Compact width for navigation bar
+        maxHeight: 64,                     // Fixed height for navigation bar
       ),
       child: _isExpanded ? _buildExpandedView(context, theme) : _buildCompactView(theme),
     );
@@ -96,16 +91,16 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
           ),
           boxShadow: [
             BoxShadow(
-              color: theme.colorScheme.shadow.withValues(alpha: 0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
             ),
           ],
         ),
         child: Icon(
           Icons.language,
           color: theme.colorScheme.primary,
-          size: 28, // Exakt gleiche Größe wie NavigationWidget
+          size: 24, // Slightly smaller for navigation bar
         ),
       ),
     );
@@ -114,72 +109,78 @@ class _LanguageSwitcherState extends State<LanguageSwitcher> {
   Widget _buildExpandedView(BuildContext context, ThemeData theme) {
     final currentLanguage = _localeProvider.currentLocale.languageCode;
     
-    return DynamicComponents.frame(
-      title: AppLocalizations.of(context).commonLanguage,
-      padding: const EdgeInsets.all(16.0), // sm
-      child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with close button
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.language,
-                      color: theme.colorScheme.primary,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 8.0), // xs
-                    Text(
-                      AppLocalizations.of(context).commonLanguage,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-                GestureDetector(
-                  onTap: _toggleExpanded,
-                  child: Icon(
-                    Icons.close,
-                    size: 16,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16.0), // sm
-            // Language buttons - dynamisch generiert
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: _availableLanguages.map((language) {
-                final isSelected = currentLanguage == language['code'];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0), // xs
-                  child: SizedBox(
-                    width: double.infinity, // Feste Breite für Row-Kompatibilität
-                    child: isSelected
-                        ? DynamicComponents.primaryButton(
-                            text: language['name']!,
-                            onPressed: () => _switchLanguage(language['code']!),
-                            size: AppButtonSize.small,
-                            isLoading: false,
-                            icon: Icons.check,
-                          )
-                        : DynamicComponents.secondaryButton(
-                            text: language['name']!,
-                            onPressed: () => _switchLanguage(language['code']!),
-                            size: AppButtonSize.small,
-                          ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
+    return Container(
+      height: 64, // Fixed height for navigation bar
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.95),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.3),
+          width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Close button
+          GestureDetector(
+            onTap: _toggleExpanded,
+            child: Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+              ),
+              child: Icon(
+                Icons.close,
+                size: 16,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Language buttons in horizontal row
+          ..._availableLanguages.map((language) {
+            final isSelected = currentLanguage == language['code'];
+            return Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: GestureDetector(
+                onTap: () => _switchLanguage(language['code']!),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: isSelected 
+                      ? theme.colorScheme.primary.withValues(alpha: 0.2)
+                      : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                    border: isSelected 
+                      ? Border.all(color: theme.colorScheme.primary, width: 1)
+                      : null,
+                  ),
+                  child: Text(
+                    language['code']!.toUpperCase(),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: isSelected 
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ],
+      ),
     );
   }
 }

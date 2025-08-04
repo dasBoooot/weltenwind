@@ -139,6 +139,18 @@ abstract class AppLocalizations {
   /// **'Sign Out'**
   String get authLogoutButton;
 
+  /// Confirmation message for logout dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Do you really want to sign out?'**
+  String get authLogoutConfirmMessage;
+
+  /// Message when user account is locked
+  ///
+  /// In en, this message translates to:
+  /// **'Account locked'**
+  String get authAccountLocked;
+
   /// Label for email input field
   ///
   /// In en, this message translates to:

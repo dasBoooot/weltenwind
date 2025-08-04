@@ -3,9 +3,7 @@ import '../../core/theme/index.dart';
 import '../../core/services/world_service.dart';
 import '../../core/models/world.dart';
 import '../../theme/background_widget.dart';
-import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
-import '../../shared/widgets/language_switcher.dart';
 import '../../main.dart';
 import 'widgets/world_dashboard_widget.dart';
 
@@ -91,25 +89,21 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
             ),
             
-            // User info widget in top-left corner
-            const UserInfoWidget(),
-            
-            // Language switcher (left of NavigationWidget)
-            const Positioned(
-              top: 16.0, // Fixed spacing
-              right: 96, // 20px Abstand vom NavigationWidget (76 + 20)
-              child: SafeArea(
-              child: LanguageSwitcher(),
-              ),
-            ),
-            
-            // Navigation widget in top-right corner
-            NavigationWidget(
-              currentContext: NavigationContext.worldDashboard,
-              routeParams: {'id': widget.worldId.toString()},
-            ),
+            // 🧭 INTEGRATED NAVIGATION: Now gets correct themes from context
+            _buildNavigationWithTheme(theme),
           ],
         ),
+      ),
+    );
+  }
+
+  /// 🎨 Build Navigation with correct theme context
+  Widget _buildNavigationWithTheme(ThemeData theme) {
+    return Theme(
+      data: theme,
+      child: NavigationWidget(
+        currentContext: NavigationContext.worldDashboard,
+        routeParams: {'id': widget.worldId.toString()},
       ),
     );
   }

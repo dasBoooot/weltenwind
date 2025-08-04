@@ -32,7 +32,8 @@ class WorldCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SMART NAVIGATION THEME: Verwendet globales Theme
+    // 🌍 WORLD-SPECIFIC THEME: Nutzt das vom ThemeContextConsumer bereitgestellte world theme
+    // Das individuelle world theme wird von der World List Page via ThemeContextConsumer gesetzt
     return _buildCard(context, Theme.of(context), null);
   }
 

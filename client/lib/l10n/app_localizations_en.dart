@@ -32,6 +32,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authLogoutButton => 'Sign Out';
 
   @override
+  String get authLogoutConfirmMessage => 'Do you really want to sign out?';
+
+  @override
+  String get authAccountLocked => 'Account locked';
+
+  @override
   String get authEmailLabel => 'Email';
 
   @override

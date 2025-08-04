@@ -32,6 +32,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authLogoutButton => 'Abmelden';
 
   @override
+  String get authLogoutConfirmMessage => 'Möchtest du dich wirklich abmelden?';
+
+  @override
+  String get authAccountLocked => 'Account gesperrt';
+
+  @override
   String get authEmailLabel => 'E-Mail';
 
   @override

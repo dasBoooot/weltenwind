@@ -521,7 +521,7 @@ class ErrorPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton.icon(
-                        onPressed: () => context.goNamed('landing'),
+                        onPressed: () async => await context.smartGoNamed('landing'),
                         icon: const Icon(Icons.home),
                         label: const Text('Startseite'),
                         style: ElevatedButton.styleFrom(
@@ -530,7 +530,7 @@ class ErrorPage extends StatelessWidget {
                         ),
                       ),
                       ElevatedButton.icon(
-                        onPressed: () => context.goNamed('world-list'),
+                        onPressed: () async => await context.smartGoNamed('world-list'),
                         icon: const Icon(Icons.public),
                         label: const Text('Welten'),
                         style: ElevatedButton.styleFrom(
@@ -601,7 +601,7 @@ class AuthErrorPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton.icon(
-                    onPressed: () => context.goNamed('login'),
+                    onPressed: () async => await context.smartGoNamed('login'),
                     icon: const Icon(Icons.login),
                     label: const Text('Anmelden'),
                     style: ElevatedButton.styleFrom(
@@ -674,7 +674,7 @@ class WorldNotFoundPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton.icon(
-                    onPressed: () => context.goNamed('world-list'),
+                    onPressed: () async => await context.smartGoNamed('world-list'),
                     icon: const Icon(Icons.list),
                     label: const Text('Alle Welten anzeigen'),
                     style: ElevatedButton.styleFrom(

@@ -193,7 +193,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Erfolgreich der Welt "$worldName" beigetreten!'),
+                  content: Text(AppLocalizations.of(context)!.worldJoinSuccess(worldName ?? '')),
                   backgroundColor: Theme.of(context).colorScheme.primary,
                 ),
               );

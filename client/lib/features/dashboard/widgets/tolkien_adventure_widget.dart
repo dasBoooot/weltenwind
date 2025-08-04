@@ -29,9 +29,9 @@ class _TolkienAdventureWidgetState extends State<TolkienAdventureWidget>
   late Animation<double> _magicGlow;
   late Animation<double> _questPulse;
 
-  List<String> _fellowshipMembers = ['Frodo', 'Sam', 'Gandalf', 'Aragorn', 'Legolas'];
+  final List<String> _fellowshipMembers = ['Frodo', 'Sam', 'Gandalf', 'Aragorn', 'Legolas'];
   int _selectedQuest = 0;
-  double _magicPower = 75.0;
+  final double _magicPower = 75.0;
   
   final List<Map<String, dynamic>> _quests = [
     {'name': 'Ring Bearer\'s Journey', 'progress': 0.8, 'danger': 'High', 'reward': 'One Ring'},

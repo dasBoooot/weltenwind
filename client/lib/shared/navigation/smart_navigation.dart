@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import 'page_preloaders.dart';
 import '../../core/services/world_service.dart';
+import '../../core/services/auth_service.dart';
 import '../../main.dart';
 
 /// 🎨 Theme Context Information
@@ -26,7 +27,7 @@ class ThemeContext {
 /// Zentrale Navigation-Logik mit intelligenter Theme-Context-Detection
 class SmartNavigation {
   
-  /// 🚀 Smart goNamed - Mit Context-Aware Theme Preloading
+  /// 🚀 Smart goNamed - Mit Context-Aware Theme Preloading + Auth Check
   static Future<void> goNamed(
     BuildContext context,
     String routeName, {
@@ -35,11 +36,21 @@ class SmartNavigation {
     Object? extra,
     bool forcePreload = false,
     String? customLoadingText,
+    bool skipAuthCheck = false,
   }) async {
     
     AppLogger.navigation.i('🧠 SmartNavigation.goNamed: $routeName');
     
     try {
+      // 🔐 1. AUTH CHECK: Prüfe Authentication für geschützte Routen
+      if (!skipAuthCheck && await _requiresAuth(routeName)) {
+        final authValid = await _validateAuth(context, routeName);
+        if (!authValid) {
+          AppLogger.navigation.w('🔒 Auth failed for $routeName, redirecting to login');
+          context.goNamed('login', extra: {'redirectAfterLogin': routeName, 'redirectParams': pathParameters});
+          return;
+        }
+      }
       // 1. Context-Detection: Welcher Theme-Context wird benötigt?
       final themeContext = await _detectThemeContext(routeName, pathParameters ?? {});
       AppLogger.navigation.i('🎨 Detected theme context: ${themeContext.contextId} → ${themeContext.bundleId}');
@@ -164,6 +175,8 @@ class SmartNavigation {
       'worldJoin', 'world-join',
       'landing',
       'inviteLanding', 'invite-landing',
+      'login', 'register',
+      'forgot-password', 'reset-password',
     };
     
     return preloadableRoutes.contains(routeName);
@@ -282,6 +295,40 @@ class SmartNavigation {
     }
   }
   
+  /// 🔐 Private: Prüfe ob Route Authentication benötigt
+  static Future<bool> _requiresAuth(String routeName) async {
+    const protectedRoutes = {
+      'world-list', 'worldList',
+      'world-dashboard', 'dashboard', 'worldDashboard',
+      'world-join', 'worldJoin',
+      'profile', 'settings',
+    };
+    return protectedRoutes.contains(routeName);
+  }
+  
+  /// 🔐 Private: Validiere Authentication
+  static Future<bool> _validateAuth(BuildContext context, String routeName) async {
+    try {
+      final authService = AuthService();
+      final isLoggedIn = await authService.isLoggedIn();
+      
+      if (!isLoggedIn) {
+        AppLogger.navigation.i('🔒 User not authenticated for $routeName');
+        return false;
+      }
+      
+      // TODO: Erweiterte Permission-Checks für spezielle Routen
+      // if (routeName.contains('admin')) {
+      //   return await authService.hasPermission('admin.access');
+      // }
+      
+      return true;
+    } catch (e) {
+      AppLogger.navigation.e('❌ Auth validation failed', error: e);
+      return false;
+    }
+  }
+
   /// 🚀 Private: Navigation mit Context-Aware Preloading
   static Future<void> _navigateWithContextAwarePreloading(
     BuildContext context,
@@ -312,6 +359,12 @@ class SmartNavigation {
       case 'invite-landing':
         preloader = () => PagePreloaders.preloadInviteLandingPage(pathParameters['inviteCode'], themeContext);
         break;
+      case 'login':
+        preloader = () => PagePreloaders.preloadLoginPage();
+        break;
+      case 'register':
+        preloader = () => PagePreloaders.preloadRegisterPage();
+        break;
     }
     
     if (preloader != null) {
@@ -341,6 +394,7 @@ extension SmartNavigationExtension on BuildContext {
     Object? extra,
     bool forcePreload = false,
     String? customLoadingText,
+    bool skipAuthCheck = false,
   }) async {
     return SmartNavigation.goNamed(
       this,
@@ -350,6 +404,7 @@ extension SmartNavigationExtension on BuildContext {
       extra: extra,
       forcePreload: forcePreload,
       customLoadingText: customLoadingText,
+      skipAuthCheck: skipAuthCheck,
     );
   }
   

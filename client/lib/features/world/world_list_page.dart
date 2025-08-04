@@ -6,9 +6,7 @@ import '../../core/models/world.dart';
 import '../../core/theme/index.dart';
 import '../../theme/background_widget.dart';
 import '../../routing/app_router.dart';
-import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
-import '../../shared/widgets/language_switcher.dart';
 import '../../shared/navigation/smart_navigation.dart';
 import './widgets/world_card.dart';
 import './widgets/world_filters.dart';
@@ -472,7 +470,8 @@ class _WorldListPageState extends State<WorldListPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
+    // 🎯 SMART NAVIGATION THEME: Page verwendet preloaded standard theme
+    // 🌍 Nur World Cards haben individuelle world themes via ThemeContextConsumer
     return _buildWorldListPage(context, Theme.of(context), null);
   }
 
@@ -688,16 +687,18 @@ class _WorldListPageState extends State<WorldListPage> {
                                       fallbackBundle: 'world-preview',
                                       // ✅ CLEAN: Automatische world-preview Logik für World Cards
                                       builder: (cardContext, worldTheme, worldExtensions) {
-                                        return WorldCard(
-                                          world: world,
-                                          isPreRegistered: _preRegisteredWorlds[world.id] ?? false,
-                                          isJoined: _joinedWorlds[world.id] ?? false,
-                                          onJoin: world.canJoin && !(_joinedWorlds[world.id] ?? false) 
-                                            ? () => _joinWorld(world) 
-                                            : null,
-                                          onLeave: (_joinedWorlds[world.id] ?? false)
-                                            ? () => _leaveWorld(world)
-                                            : null,  
+                                        return Theme(
+                                          data: worldTheme,
+                                          child: WorldCard(
+                                            world: world,
+                                            isPreRegistered: _preRegisteredWorlds[world.id] ?? false,
+                                            isJoined: _joinedWorlds[world.id] ?? false,
+                                            onJoin: world.canJoin && !(_joinedWorlds[world.id] ?? false) 
+                                              ? () => _joinWorld(world) 
+                                              : null,
+                                            onLeave: (_joinedWorlds[world.id] ?? false)
+                                              ? () => _leaveWorld(world)
+                                              : null,  
                                           onPlay: (_joinedWorlds[world.id] ?? false) && 
                                                   (world.status == WorldStatus.open || world.status == WorldStatus.running)
                                             ? () => _playWorld(world)
@@ -713,7 +714,8 @@ class _WorldListPageState extends State<WorldListPage> {
                                               ? () => _inviteToWorld(world)
                                               : null,
                                           onTap: () => _navigateToWorldJoin(world),
-                                        );
+                                        ),
+                                      );
                                       },
                                     )
                                   ).toList(),
@@ -755,17 +757,7 @@ class _WorldListPageState extends State<WorldListPage> {
                 ),
               ),
             ),
-            // User info widget in top-left corner
-            const UserInfoWidget(),
-            // Language switcher in top-right corner (NavigationWidget is hidden on world-list)
-            const Positioned(
-              top: 16.0, // Fixed value since theme is not available in const context
-              right: 96, // 20px Abstand vom NavigationWidget (76 + 20)
-              child: SafeArea(
-              child: LanguageSwitcher(),
-              ),
-            ),
-            // Navigation widget in top-right corner
+            // 🧭 INTEGRATED NAVIGATION: Uses preloaded theme from Smart Navigation
             const NavigationWidget(currentContext: NavigationContext.worldList),        
           ],
         ),

@@ -3,11 +3,9 @@ import '../../config/logger.dart';
 import '../../core/models/world.dart';
 import '../../core/services/world_service.dart';
 import '../../core/services/auth_service.dart';
-// REMOVED: import '../../core/theme/index.dart'; // UNUSED after theme cleanup
+import '../../core/theme/index.dart'; // Theme System für ThemePageProvider und ThemeContextConsumer
 import '../../theme/background_widget.dart';
-import '../../shared/widgets/user_info_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
-import '../../shared/widgets/language_switcher.dart';
 import '../../shared/navigation/smart_navigation.dart';
 import '../invite/widgets/invite_widget.dart';
 import '../../l10n/app_localizations.dart';
@@ -91,6 +89,17 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     };
     print('🎯 [THEME-DEBUG] Early detection for ID $worldId: $earlyTheme');
     return earlyTheme;
+  }
+
+    /// 🎨 Build Navigation with correct theme context
+  Widget _buildNavigationWithTheme(ThemeData theme) {
+    return Theme(
+      data: theme,
+      child: NavigationWidget(
+        currentContext: NavigationContext.worldJoin,
+        routeParams: {'id': widget.worldId.toString()},
+      ),
+    );
   }
 
   /// 🛡️ Helper: Bundle-Name zu Theme-Name Korrektur
@@ -484,11 +493,22 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🌍 WORLD-SPECIFIC THEME: Available via Smart Navigation context
-    // final worldTheme = _getWorldTheme();
+    // 🌍 WORLD-SPECIFIC THEME: Korrekte Integration mit preloaded world theme
+    final worldTheme = _getWorldTheme();
     
-    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
-    return _buildWorldJoinPage(context, Theme.of(context), null);
+    return ThemePageProvider(
+      contextId: 'world-join',
+      bundleId: 'world-preview',
+      worldTheme: worldTheme,
+      child: ThemeContextConsumer(
+        componentName: 'WorldJoinPage',
+        worldThemeOverride: worldTheme,
+        fallbackBundle: 'world-preview',
+        builder: (context, theme, extensions) {
+          return _buildWorldJoinPage(context, theme, extensions);
+        },
+      ),
+    );
   }
 
   Widget _buildWorldJoinPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
@@ -514,26 +534,9 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                           : _buildWorldContent(theme),
             ),
             
-            // User info widget (only show when authenticated)
+            // 🧭 INTEGRATED NAVIGATION: Now gets correct themes from context (only show when authenticated)
             if (_isAuthenticated)
-              const UserInfoWidget(),
-            
-            // Language switcher (only show when authenticated, left of NavigationWidget)
-            if (_isAuthenticated)
-              const Positioned(
-                top: 16.0, // Fixed spacing
-                right: 96, // 20px Abstand vom NavigationWidget (76 + 20)
-                child: SafeArea(
-                child: LanguageSwitcher(),
-                ),
-              ),
-            
-            // Navigation widget (only show when authenticated)
-            if (_isAuthenticated)
-              NavigationWidget(
-                currentContext: NavigationContext.worldJoin,
-                routeParams: {'id': widget.worldId.toString()},
-              ),
+              _buildNavigationWithTheme(theme),
           ],
         ),
       ),

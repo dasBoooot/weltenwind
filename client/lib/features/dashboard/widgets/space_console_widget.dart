@@ -36,7 +36,7 @@ class _SpaceConsoleWidgetState extends State<SpaceConsoleWidget>
   Timer? _logTimer;
   List<String> _commandLog = [];
   int _selectedSystem = 0;
-  double _warpCharge = 85.0;
+  final double _warpCharge = 85.0;
   
   final List<Map<String, dynamic>> _stellarBodies = [
     {'name': 'Alpha Centauri', 'type': 'Star', 'distance': '4.37 ly', 'status': 'Stable'},

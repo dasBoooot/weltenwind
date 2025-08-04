@@ -111,23 +111,7 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
       resolvedTheme ??= await ThemeHelper.getCurrentTheme(context, isDark: isDark);
       
       // 🔄 4. FALLBACK BUNDLE & FLUTTER DEFAULT
-      if (resolvedTheme == null) {
-        final fallbackBundle = widget.fallbackBundle;
-        if (fallbackBundle != null) {
-          // Direkt über ModularThemeService laden
-          final themeService = ThemeHelper.themeService;
-          final fallbackTheme = await themeService.getBundle(fallbackBundle, isDark: isDark);
-          if (fallbackTheme != null) {
-            resolvedTheme = fallbackTheme;
-            AppLogger.app.d('🔄 Using fallback bundle: $fallbackBundle');
-          }
-        }
-        
-        // ⚠️ FLUTTER DEFAULT als letzter Ausweg
-        if (resolvedTheme == null) {
-          resolvedTheme = Theme.of(context);
-        }
-      }
+      resolvedTheme ??= await _loadFallbackTheme(context, isDark);
       
       setState(() {
         if (isDark) {
@@ -227,7 +211,7 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
           }
           
           if (snapshot.hasError) {
-            print('❌ [THEME-DEBUG] Theme loading failed for ${widget.componentName}: ${snapshot.error}');
+            AppLogger.app.e('❌ Theme loading failed for ${widget.componentName}', error: snapshot.error);
             return widget.builder(context, Theme.of(context), _cachedExtensions);
           }
           
@@ -291,7 +275,7 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
       }
       return theme;
     } catch (e) {
-      print('❌ [THEME-DEBUG] ThemeHelper failed for ${widget.componentName}: $e');
+      AppLogger.app.e('❌ ThemeHelper failed for ${widget.componentName}', error: e);
     }
 
     // 4. Fallback Bundle als letzter Ausweg
@@ -301,11 +285,11 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
         final themeService = ThemeHelper.themeService;
         final fallbackTheme = await themeService.getBundle(fallbackBundle, isDark: isDark);
         if (fallbackTheme != null) {
-          print('🔄 [THEME-DEBUG] Using fallback bundle: $fallbackBundle');
+          AppLogger.app.i('🔄 Using fallback bundle: $fallbackBundle');
           return fallbackTheme;
         }
       } catch (e) {
-        print('❌ [THEME-DEBUG] Fallback bundle failed: $fallbackBundle - $e');
+        AppLogger.app.e('❌ Fallback bundle failed: $fallbackBundle', error: e);
       }
     }
 
@@ -338,5 +322,22 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
         ),
       ),
     );
+  }
+
+  /// 🔄 Load fallback theme when primary theme resolution fails
+  Future<ThemeData> _loadFallbackTheme(BuildContext context, bool isDark) async {
+    final fallbackBundle = widget.fallbackBundle;
+    if (fallbackBundle != null) {
+      // Direkt über ModularThemeService laden
+      final themeService = ThemeHelper.themeService;
+      final fallbackTheme = await themeService.getBundle(fallbackBundle, isDark: isDark);
+      if (fallbackTheme != null) {
+        AppLogger.app.d('🔄 Using fallback bundle: $fallbackBundle');
+        return fallbackTheme;
+      }
+    }
+    
+    // ⚠️ FLUTTER DEFAULT als letzter Ausweg
+    return Theme.of(context);
   }
 }

@@ -147,18 +147,18 @@ class ThemeContextProvider extends ChangeNotifier {
       // 🎯 THEME-NAME zu BUNDLE-NAME Resolution
       final bundleName = getBundleForTheme(worldThemeName);
       
-      print('🔍 [THEME-DEBUG] getWorldTheme: $worldThemeName → Bundle: $bundleName');
+      AppLogger.app.d('🔍 [THEME-DEBUG] getWorldTheme: $worldThemeName → Bundle: $bundleName');
       
       // Verwende gecachtes Theme falls verfügbar
       final cachedTheme = _themeService.getCachedTheme(bundleName, isDark: _isDarkMode);
       
       if (cachedTheme != null) {
-        print('✅ [THEME-DEBUG] Cached theme found for: $worldThemeName ($bundleName)');
+        AppLogger.app.d('✅ [THEME-DEBUG] Cached theme found for: $worldThemeName ($bundleName)');
         return cachedTheme;
       }
       
       // Async load falls nicht cached
-      print('🔄 [THEME-DEBUG] Theme not cached, loading async: $worldThemeName ($bundleName)');
+      AppLogger.app.d('🔄 [THEME-DEBUG] Theme not cached, loading async: $worldThemeName ($bundleName)');
       _loadThemeAsync(worldThemeName, bundleName);
       
       // ✅ RETURN NULL to trigger Smart Fallback
@@ -194,25 +194,25 @@ class ThemeContextProvider extends ChangeNotifier {
     // 🛡️ LOOP PREVENTION: Don't load if already loading
     final loadKey = '$themeName:$bundleName';
     if (_loadingThemes.contains(loadKey)) {
-      print('⚠️ [THEME-DEBUG] Already loading: $themeName ($bundleName) - SKIP');
+      AppLogger.app.d('⚠️ [THEME-DEBUG] Already loading: $themeName ($bundleName) - SKIP');
       return;
     }
 
     try {
       _loadingThemes.add(loadKey);
-      print('🔄 [THEME-DEBUG] Loading theme async: $themeName ($bundleName)');
+      AppLogger.app.d('🔄 [THEME-DEBUG] Loading theme async: $themeName ($bundleName)');
       
       final theme = await _themeService.getBundle(bundleName, isDark: _isDarkMode);
       if (theme != null) {
-        print('✅ [THEME-DEBUG] Theme loaded async: $themeName');
+        AppLogger.app.d('✅ [THEME-DEBUG] Theme loaded async: $themeName');
         
         // 🎯 SMART NOTIFY: Only notify after successful load + small delay
         await Future.delayed(const Duration(milliseconds: 100));
-        print('🔔 [THEME-DEBUG] Notifying UI of theme change: $themeName');
+        AppLogger.app.d('🔔 [THEME-DEBUG] Notifying UI of theme change: $themeName');
         notifyListeners();
       }
     } catch (e) {
-      print('❌ [THEME-DEBUG] Async theme load failed: $themeName - $e');
+      AppLogger.app.d('❌ [THEME-DEBUG] Async theme load failed: $themeName - $e');
     } finally {
       _loadingThemes.remove(loadKey);
     }
@@ -259,22 +259,22 @@ class ThemeContextProvider extends ChangeNotifier {
   /// 📦 Get Theme from specific Bundle (synchron mit Cache)
   ThemeData? getThemeFromBundle(String bundleId) {
     try {
-      print('🔍 [THEME-DEBUG] getThemeFromBundle: $bundleId');
+      AppLogger.app.d('🔍 [THEME-DEBUG] getThemeFromBundle: $bundleId');
       
       // Verwende gecachtes Theme falls verfügbar
       final cachedTheme = _themeService.getCachedTheme(bundleId, isDark: _isDarkMode);
-      print('🔍 [THEME-DEBUG] cachedTheme for $bundleId: ${cachedTheme != null ? "FOUND" : "NULL"}');
+      AppLogger.app.d('🔍 [THEME-DEBUG] cachedTheme for $bundleId: ${cachedTheme != null ? "FOUND" : "NULL"}');
       
       if (cachedTheme != null) {
-        print('✅ [THEME-DEBUG] Returning cached theme for $bundleId');
+        AppLogger.app.d('✅ [THEME-DEBUG] Returning cached theme for $bundleId');
         return cachedTheme;
       }
       
-      print('🔍 [THEME-DEBUG] _currentTheme: ${_currentTheme != null ? "FOUND" : "NULL"}');
+      AppLogger.app.d('🔍 [THEME-DEBUG] _currentTheme: ${_currentTheme != null ? "FOUND" : "NULL"}');
       
       // BESSERER FALLBACK: Verwende globalen ThemeProvider falls verfügbar
       if (_currentTheme == null) {
-        print('🔧 [THEME-DEBUG] _currentTheme is null, trying async bundle load for $bundleId');
+        AppLogger.app.d('🔧 [THEME-DEBUG] _currentTheme is null, trying async bundle load for $bundleId');
         // Versuche Bundle asynchron zu laden
         _loadBundleAsync(bundleId);
         return null; // Trigger Flutter default theme until loaded
@@ -284,7 +284,7 @@ class ThemeContextProvider extends ChangeNotifier {
       return _currentTheme;
     } catch (e) {
       AppLogger.app.e('❌ Error loading theme from bundle: $bundleId', error: e);
-      print('❌ [THEME-DEBUG] Error in getThemeFromBundle: $bundleId - $e');
+      AppLogger.app.d('❌ [THEME-DEBUG] Error in getThemeFromBundle: $bundleId - $e');
       return null; // Return null to trigger Flutter default theme
     }
   }
@@ -443,14 +443,14 @@ class ThemeContextProvider extends ChangeNotifier {
   /// 🔄 Private: Asynchron Bundle laden falls nicht im Cache
   Future<void> _loadBundleAsync(String bundleId) async {
     try {
-      print('🔄 [THEME-DEBUG] Loading bundle async: $bundleId');
+      AppLogger.app.d('🔄 [THEME-DEBUG] Loading bundle async: $bundleId');
       final theme = await _themeService.getBundle(bundleId, isDark: _isDarkMode);
       if (theme != null) {
-        print('✅ [THEME-DEBUG] Bundle loaded async: $bundleId');
+        AppLogger.app.d('✅ [THEME-DEBUG] Bundle loaded async: $bundleId');
         notifyListeners(); // Trigger rebuild
       }
     } catch (e) {
-      print('❌ [THEME-DEBUG] Async bundle load failed: $bundleId - $e');
+      AppLogger.app.d('❌ [THEME-DEBUG] Async bundle load failed: $bundleId - $e');
     }
   }
 
@@ -503,24 +503,24 @@ class ThemeContextConsumer extends StatelessWidget {
           // 🌍 WORLD-SPECIFIC THEME für dynamische Inhalte
           resolvedTheme = provider.getWorldTheme(worldThemeOverride!);
           resolvedExtensions = provider.getWorldExtensions(worldThemeOverride!);
-          print('🌍 [THEME-DEBUG] Context World Theme: $worldThemeOverride (Component: $componentName)');
+          AppLogger.app.d('🌍 [THEME-DEBUG] Context World Theme: $worldThemeOverride (Component: $componentName)');
           
           // 🛡️ Smart World Theme Fallback: If World Theme is loading, try its bundle directly
           if (resolvedTheme == null) {
             final worldBundleName = provider.getBundleForTheme(worldThemeOverride!);
             resolvedTheme = provider.getThemeFromBundle(worldBundleName);
-            print('🎯 [THEME-DEBUG] World Theme loading, using bundle: $worldBundleName (for theme: $worldThemeOverride)');
+            AppLogger.app.d('🎯 [THEME-DEBUG] World Theme loading, using bundle: $worldBundleName (for theme: $worldThemeOverride)');
           }
         } else if (enableMixedContext && staticAreas != null) {
           // 🗺️ STATIC AREA MAPPING für Page-Level Bereiche
           resolvedTheme = provider.getThemeForArea(componentName, staticAreas!);
           resolvedExtensions = provider.getExtensionsForArea(componentName, staticAreas!);
-          print('🗺️ [THEME-DEBUG] Context Area Theme: ${staticAreas.toString()} (Component: $componentName)');
+          AppLogger.app.d('🗺️ [THEME-DEBUG] Context Area Theme: ${staticAreas.toString()} (Component: $componentName)');
         } else {
           // 🎨 STANDARD Theme Resolution
           resolvedTheme = provider.getThemeForComponent(componentName, contextOverrides: contextOverrides);
           resolvedExtensions = provider.getExtensionsForComponent(componentName);
-          print('🎨 [THEME-DEBUG] Context Standard Theme (Component: $componentName)');
+          AppLogger.app.d('🎨 [THEME-DEBUG] Context Standard Theme (Component: $componentName)');
         }
 
         // 🔄 FALLBACK Handling (NUR wenn kein worldThemeOverride vorhanden!)
@@ -528,11 +528,11 @@ class ThemeContextConsumer extends StatelessWidget {
           if (fallbackTheme != null && worldThemeOverride == null) {
             // 🛡️ Fallback NUR wenn KEIN World Theme Override vorhanden
             resolvedTheme = provider.getThemeFromBundle(fallbackTheme!);
-            print('🔄 [THEME-DEBUG] Context Fallback Theme: $fallbackTheme (Component: $componentName)');
+            AppLogger.app.d('🔄 [THEME-DEBUG] Context Fallback Theme: $fallbackTheme (Component: $componentName)');
           }
           resolvedTheme ??= Theme.of(context);
           if (resolvedTheme == Theme.of(context)) {
-            print('⚠️ [THEME-DEBUG] Context using Flutter Default Theme (Component: $componentName)');
+            AppLogger.app.d('⚠️ [THEME-DEBUG] Context using Flutter Default Theme (Component: $componentName)');
           }
         }
 

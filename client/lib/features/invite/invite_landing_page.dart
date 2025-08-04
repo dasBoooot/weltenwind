@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/language_switcher.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/navigation/smart_navigation.dart';
+import '../../config/logger.dart';
 import '../../main.dart';
 
 class InviteLandingPage extends StatefulWidget {
@@ -147,15 +148,15 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     
     // 🌍 WORLD-SPECIFIC THEME: Verwende World-Theme wenn verfügbar
     String? worldTheme;
-    print('🔍 [INVITE-DEBUG] _inviteData: ${_inviteData != null ? 'EXISTS' : 'NULL'}');
+    AppLogger.app.d('🔍 [INVITE-DEBUG] _inviteData: ${_inviteData != null ? 'EXISTS' : 'NULL'}');
     if (_inviteData != null) {
-      print('🔍 [INVITE-DEBUG] _inviteData.keys: ${_inviteData!.keys}');
+      AppLogger.app.d('🔍 [INVITE-DEBUG] _inviteData.keys: ${_inviteData!.keys}');
       if (_inviteData!['world'] != null) {
         worldTheme = _inviteData!['world']['themeBundle'] as String?;
-        print('🔍 [INVITE-DEBUG] Found worldTheme: "$worldTheme"');
-        print('🔍 [INVITE-DEBUG] World data: ${_inviteData!['world']}');
+        AppLogger.app.d('🔍 [INVITE-DEBUG] Found worldTheme: "$worldTheme"');
+        AppLogger.app.d('🔍 [INVITE-DEBUG] World data: ${_inviteData!['world']}');
       } else {
-        print('🔍 [INVITE-DEBUG] No world data in _inviteData');
+        AppLogger.app.d('🔍 [INVITE-DEBUG] No world data in _inviteData');
       }
     }
     
