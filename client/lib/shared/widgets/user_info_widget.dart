@@ -40,15 +40,15 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary.withOpacity(0.2),
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
           shape: BoxShape.circle,
           border: Border.all(
-            color: theme.colorScheme.primary.withOpacity(0.5),
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
             width: 2,
           ),
           boxShadow: [
             BoxShadow(
-              color: theme.colorScheme.shadow.withOpacity(0.1),
+              color: theme.colorScheme.shadow.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 1),
             ),
@@ -89,7 +89,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(
-              color: theme.colorScheme.outline.withOpacity(0.2),
+              color: theme.colorScheme.outline.withValues(alpha: 0.2),
               width: 1,
             ),
           ),
@@ -100,10 +100,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.2),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: theme.colorScheme.primary.withOpacity(0.5),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
                     width: 2,
                   ),
                 ),
@@ -162,10 +162,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                           margin: const EdgeInsets.only(bottom: 8),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: roleColor.withOpacity(0.1),
+                            color: roleColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: roleColor.withOpacity(0.3),
+                              color: roleColor.withValues(alpha: 0.3),
                               width: 1,
                             ),
                           ),
@@ -178,7 +178,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: roleColor.withOpacity(0.2),
+                                      color: roleColor.withValues(alpha: 0.2),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
@@ -195,7 +195,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                       child: Text(
                                         userRole.role.description!,
                                         style: theme.textTheme.bodySmall?.copyWith(
-                                          color: theme.colorScheme.onSurface.withOpacity(0.7),
+                                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -210,13 +210,13 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                   Icon(
                                     userRole.scopeType == 'global' ? Icons.public : Icons.location_on,
                                     size: 14,
-                                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
                                     '${userRole.scopeType}${userRole.scopeObjectId != 'null' ? ' (${userRole.scopeObjectId})' : ''}',
                                     style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                     ),
                                   ),
                                 ],
@@ -229,14 +229,14 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                     Icon(
                                       Icons.rule,
                                       size: 14,
-                                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                     ),
                                     const SizedBox(width: 4),
                                     Expanded(
                                       child: Text(
                                         'Bedingung: ${userRole.condition}',
                                         style: theme.textTheme.bodySmall?.copyWith(
-                                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -284,7 +284,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                   children: [
                     Icon(
                       Icons.email,
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       size: 16,
                     ),
                     const SizedBox(width: 8),
@@ -292,7 +292,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       child: Text(
                         user.email,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.8),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -359,10 +359,6 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   Color _getRoleColor(String role, ThemeData theme) {
     try {
       // Null-Safety checks
-      if (theme.colorScheme.primary == null) {
-        return const Color(0xFF2196F3); // Material Blue als absoluter Fallback
-      }
-      
       switch (role.toLowerCase()) {
         case 'admin':
         case 'super_admin':
@@ -376,8 +372,8 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
           return theme.colorScheme.primary;
       }
     } catch (e) {
-      // Absoluter Fallback bei Theme-Problemen
-      return const Color(0xFF2196F3); // Material Blue
+      // Absoluter Fallback bei Theme-Problemen - theme-aware
+      return theme.colorScheme.primary;
     }
   }
 }

@@ -22,7 +22,7 @@ class ElegantTransitions {
     Animation<double> secondaryAnimation,
     Widget child, {
     SlideDirection direction = SlideDirection.fromBottom,
-    Duration duration = const Duration(milliseconds: 400),
+    Duration duration = const Duration(milliseconds: 2400),
   }) {
     
     final theme = Theme.of(context);
@@ -32,9 +32,9 @@ class ElegantTransitions {
     final backgroundColor = theme.colorScheme.surface;
     
     // 🎭 Animation Curves für die 3 Phasen
-    final slideInCurve = Curves.easeInOutCubic;
-    final fadeInCurve = Curves.easeInOut;
-    final slideOutCurve = Curves.easeInOutCubic;
+    const slideInCurve = Curves.easeInOutCubic;
+    const fadeInCurve = Curves.easeInOut;
+    const slideOutCurve = Curves.easeInOutCubic;
     
     // 📐 Slide-Offsets basierend auf Richtung
     final slideOffset = _getSlideOffset(direction);
@@ -43,19 +43,19 @@ class ElegantTransitions {
       animation: animation,
       builder: (context, _) {
         
-        // 🎯 3-Phasen Logic
+        // 🎯 3-Phasen Logic - Sanftere Übergänge
         final progress = animation.value;
         
-        if (progress < 0.3) {
-          // PHASE 1: Overlay slides in (0.0 → 0.3)
+        if (progress < 0.25) {
+          // PHASE 1: Overlay slides in (0.0 → 0.25)
           return _buildPhase1(context, progress, overlayColor, slideOffset, slideInCurve);
           
-        } else if (progress < 0.7) {
-          // PHASE 2: Overlay heller, neue Seite durchscheinen (0.3 → 0.7)
+        } else if (progress < 0.75) {
+          // PHASE 2: Overlay heller, neue Seite durchscheinen (0.25 → 0.75)
           return _buildPhase2(context, progress, child, overlayColor, backgroundColor, fadeInCurve);
           
         } else {
-          // PHASE 3: Overlay slides out, neue Seite übernimmt (0.7 → 1.0)
+          // PHASE 3: Overlay slides out, neue Seite übernimmt (0.75 → 1.0)
           return _buildPhase3(context, progress, child, overlayColor, slideOffset, slideOutCurve);
         }
       },
@@ -70,8 +70,8 @@ class ElegantTransitions {
     Offset slideOffset,
     Curve curve,
   ) {
-    // Normalize progress for phase 1 (0.0 → 0.3 becomes 0.0 → 1.0)
-    final phaseProgress = (progress / 0.3).clamp(0.0, 1.0);
+    // Normalize progress for phase 1 (0.0 → 0.25 becomes 0.0 → 1.0)
+    final phaseProgress = (progress / 0.25).clamp(0.0, 1.0);
     final curvedProgress = curve.transform(phaseProgress);
     
     return Stack(
@@ -117,8 +117,8 @@ class ElegantTransitions {
     Color backgroundColor,
     Curve curve,
   ) {
-    // Normalize progress for phase 2 (0.3 → 0.7 becomes 0.0 → 1.0)
-    final phaseProgress = ((progress - 0.3) / 0.4).clamp(0.0, 1.0);
+    // Normalize progress for phase 2 (0.25 → 0.75 becomes 0.0 → 1.0)
+    final phaseProgress = ((progress - 0.25) / 0.5).clamp(0.0, 1.0);
     final curvedProgress = curve.transform(phaseProgress);
     
     return Stack(
@@ -159,8 +159,8 @@ class ElegantTransitions {
     Offset slideOffset,
     Curve curve,
   ) {
-    // Normalize progress for phase 3 (0.7 → 1.0 becomes 0.0 → 1.0)
-    final phaseProgress = ((progress - 0.7) / 0.3).clamp(0.0, 1.0);
+    // Normalize progress for phase 3 (0.75 → 1.0 becomes 0.0 → 1.0)
+    final phaseProgress = ((progress - 0.75) / 0.25).clamp(0.0, 1.0);
     final curvedProgress = curve.transform(phaseProgress);
     
     return Stack(

@@ -177,8 +177,15 @@ class AppRouter {
         name: landingRoute,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const LandingPage(),
+          transitionDuration: const Duration(milliseconds: 2400),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            FadeTransition(opacity: animation, child: child),
+            ElegantTransitions.elegantSlideWithOverlay(
+              context, 
+              animation, 
+              secondaryAnimation, 
+              child,
+              direction: SlideDirection.fromTop,
+            ),
         ),
       ),
 
@@ -188,8 +195,15 @@ class AppRouter {
         name: loginRoute,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const LoginPage(),
+          transitionDuration: const Duration(milliseconds: 2400),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            FadeTransition(opacity: animation, child: child),
+            ElegantTransitions.elegantSlideWithOverlay(
+              context, 
+              animation, 
+              secondaryAnimation, 
+              child,
+              direction: SlideDirection.fromRight,
+            ),
         ),
       ),
       GoRoute(
@@ -197,8 +211,15 @@ class AppRouter {
         name: registerRoute,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const RegisterPage(),
+          transitionDuration: const Duration(milliseconds: 2400),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            FadeTransition(opacity: animation, child: child),
+            ElegantTransitions.elegantSlideWithOverlay(
+              context, 
+              animation, 
+              secondaryAnimation, 
+              child,
+              direction: SlideDirection.fromRight,
+            ),
         ),
       ),
       GoRoute(
@@ -206,8 +227,15 @@ class AppRouter {
         name: forgotPasswordRoute,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const ForgotPasswordPage(),
+          transitionDuration: const Duration(milliseconds: 2400),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            FadeTransition(opacity: animation, child: child),
+            ElegantTransitions.elegantSlideWithOverlay(
+              context, 
+              animation, 
+              secondaryAnimation, 
+              child,
+              direction: SlideDirection.fromRight,
+            ),
         ),
       ),
       GoRoute(
@@ -220,14 +248,28 @@ class AppRouter {
             // Ohne Token zur Passwort-vergessen Seite weiterleiten
             return CustomTransitionPage(
               child: const ForgotPasswordPage(),
+              transitionDuration: const Duration(milliseconds: 2400),
               transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                FadeTransition(opacity: animation, child: child),
+                ElegantTransitions.elegantSlideWithOverlay(
+                  context, 
+                  animation, 
+                  secondaryAnimation, 
+                  child,
+                  direction: SlideDirection.fromRight,
+                ),
             );
           }
           return CustomTransitionPage(
             child: ResetPasswordPage(token: token),
+            transitionDuration: const Duration(milliseconds: 2400),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              FadeTransition(opacity: animation, child: child),
+              ElegantTransitions.elegantSlideWithOverlay(
+                context, 
+                animation, 
+                secondaryAnimation, 
+                child,
+                direction: SlideDirection.fromRight,
+              ),
           );
         },
       ),
@@ -240,22 +282,27 @@ class AppRouter {
           if (token == null || token.isEmpty) {
             return CustomTransitionPage(
               child: const ErrorPage(),
+              transitionDuration: const Duration(milliseconds: 2400),
               transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                FadeTransition(opacity: animation, child: child),
+                ElegantTransitions.elegantSlideWithOverlay(
+                  context, 
+                  animation, 
+                  secondaryAnimation, 
+                  child,
+                  direction: SlideDirection.fromBottom,
+                ),
             );
           }
           return CustomTransitionPage(
             child: InviteLandingPage(token: token),
+            transitionDuration: const Duration(milliseconds: 2400),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0.0, 1.0),
-                  end: Offset.zero,
-                ).animate(CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.easeInOut,
-                )),
-                child: child,
+              ElegantTransitions.elegantSlideWithOverlay(
+                context, 
+                animation, 
+                secondaryAnimation, 
+                child,
+                direction: SlideDirection.fromBottom,
               ),
           );
         },
@@ -267,6 +314,7 @@ class AppRouter {
         name: worldListRoute,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const WorldListPage(),
+          transitionDuration: const Duration(milliseconds: 2400),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
             ElegantTransitions.elegantSlideWithOverlay(
               context, 
@@ -285,6 +333,7 @@ class AppRouter {
           if (worldId == null) {
             return CustomTransitionPage(
               child: const ErrorPage(),
+              transitionDuration: const Duration(milliseconds: 2400),
               transitionsBuilder: (context, animation, secondaryAnimation, child) =>
                 ElegantTransitions.elegantSlideWithOverlay(
                   context, 
@@ -297,6 +346,7 @@ class AppRouter {
           }
           return CustomTransitionPage(
             child: DashboardPage(worldId: worldId),
+            transitionDuration: const Duration(milliseconds: 2400),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               ElegantTransitions.elegantSlideWithOverlay(
                 context, 
@@ -317,6 +367,7 @@ class AppRouter {
           if (worldId == null) {
             return CustomTransitionPage(
               child: const ErrorPage(),
+              transitionDuration: const Duration(milliseconds: 2400),
               transitionsBuilder: (context, animation, secondaryAnimation, child) =>
                 ElegantTransitions.elegantSlideWithOverlay(
                   context, 
@@ -331,6 +382,7 @@ class AppRouter {
             child: WorldJoinPage(
               worldId: worldId,
             ),
+            transitionDuration: const Duration(milliseconds: 2400),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               ElegantTransitions.elegantSlideWithOverlay(
                 context, 

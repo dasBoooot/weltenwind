@@ -107,7 +107,7 @@ class _LogoutWidgetState extends State<LogoutWidget> with SingleTickerProviderSt
               border: Border.all(
                 color: _isLoggingOut
                     ? theme.colorScheme.error.withValues(alpha: 0.5)
-                    : theme.colorScheme.outline.withValues(alpha: 0.3),
+                    : theme.colorScheme.primary.withValues(alpha: 0.3),
                 width: 2,
               ),
               boxShadow: [
@@ -133,7 +133,7 @@ class _LogoutWidgetState extends State<LogoutWidget> with SingleTickerProviderSt
                     angle: _animationController.value * 0.1,
                     child: Icon(
                       Icons.logout,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                      color: theme.colorScheme.primary,
                       size: 24,
                     ),
                   ),

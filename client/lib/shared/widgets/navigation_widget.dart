@@ -63,26 +63,27 @@ class _NavigationWidgetState extends State<NavigationWidget> {
             ),
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // 🔰 LEFT SIDE: User Info + Language Switcher + Logout (with overflow protection)
-              Flexible(
+              const Flexible(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const UserInfoWidget(),
-                    const SizedBox(width: 12),
-                    const LanguageSwitcher(),
-                    const SizedBox(width: 12),
-                    const LogoutWidget(),
+                    LogoutWidget(),
+                    SizedBox(width: 12),
+                    UserInfoWidget(),
+                    SizedBox(width: 12),
+                    LanguageSwitcher(),
                   ],
                 ),
               ),
               
-              // 🌟 SPACER: Flexible space between left and right
-              const Spacer(),
-              
-              // 🧭 RIGHT SIDE: Navigation Tabs (Fixed Width)
-              ..._buildNavigationTabs(context, theme),
+              // 🧭 RIGHT SIDE: Navigation Tabs (Rechtsbündig)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: _buildNavigationTabs(context, theme),
+              ),
             ],
           ),
         ),
@@ -93,31 +94,27 @@ class _NavigationWidgetState extends State<NavigationWidget> {
   List<Widget> _buildNavigationTabs(BuildContext context, ThemeData theme) {
     final tabs = <Widget>[];
     
-    // 🎯 OPTIMIERTE NAVIGATION LOGIK - Nur relevante Nav-Punkte pro Page
+    // 🎯 OPTIMIERTE NAVIGATION LOGIK - Mit Active Page
     switch (_currentContext) {
       case NavigationContext.worldList:
-        // 🏠 WORLD LIST: Keine Nav-Punkte - User ist bereits hier
-        break;
-        
-      case NavigationContext.worldJoin:
-        // 🚀 WORLD JOIN: Nur zurück zur World List
+        // 🏠 WORLD LIST: Aktuelle Page als aktiv anzeigen
         tabs.add(_buildNavTab(
           context, theme,
           icon: Icons.public,
           label: AppLocalizations.of(context).navWorldList,
-          isActive: false, // Nicht aktiv, da auf anderer Page
-          index: 0,
+          isActive: true, // Aktuelle Page
+          index: -1, // Kein Navigation bei aktiver Page
         ));
         break;
         
-      case NavigationContext.worldDashboard:
-        // 🏛️ DASHBOARD: Zurück zu World List + World Join
+      case NavigationContext.worldJoin:
+        // 🚀 WORLD JOIN: Aktuelle Page + World List
         tabs.addAll([
           _buildNavTab(
             context, theme,
             icon: Icons.public,
             label: AppLocalizations.of(context).navWorldList,
-            isActive: false, // Nicht aktiv, da auf anderer Page
+            isActive: false,
             index: 0,
           ),
           const SizedBox(width: 8),
@@ -125,8 +122,37 @@ class _NavigationWidgetState extends State<NavigationWidget> {
             context, theme,
             icon: Icons.login,
             label: AppLocalizations.of(context).worldJoinNowButton,
-            isActive: false, // Nicht aktiv, da auf anderer Page
+            isActive: true, // Aktuelle Page
+            index: -1, // Kein Navigation bei aktiver Page
+          ),
+        ]);
+        break;
+        
+      case NavigationContext.worldDashboard:
+        // 🏛️ DASHBOARD: Aktuelle Page + World List + World Join
+        tabs.addAll([
+          _buildNavTab(
+            context, theme,
+            icon: Icons.public,
+            label: AppLocalizations.of(context).navWorldList,
+            isActive: false,
+            index: 0,
+          ),
+          const SizedBox(width: 8),
+          _buildNavTab(
+            context, theme,
+            icon: Icons.login,
+            label: AppLocalizations.of(context).worldJoinNowButton,
+            isActive: false,
             index: 1,
+          ),
+          const SizedBox(width: 8),
+          _buildNavTab(
+            context, theme,
+            icon: Icons.dashboard,
+            label: 'Dashboard', // TODO: Add to AppLocalizations
+            isActive: true, // Aktuelle Page
+            index: -1, // Kein Navigation bei aktiver Page
           ),
         ]);
         break;
@@ -148,10 +174,11 @@ class _NavigationWidgetState extends State<NavigationWidget> {
     required int index,
   }) {
     return GestureDetector(
-      onTap: () => _onNavigationTap(index),
+      onTap: index >= 0 ? () => _onNavigationTap(index) : null, // Kein Tap für aktive Pages
       child: Container(
-        width: 120, // 🎯 FIXED WIDTH for navigation tabs
+        constraints: const BoxConstraints(minWidth: 80, maxWidth: 100), // 🎯 FLEXIBLE WIDTH
         height: 64,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: isActive 
             ? theme.colorScheme.primary.withValues(alpha: 0.1)
