@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
+import '../dialogs/pre_register_fullscreen_dialog.dart';
 
+/// 🎨 Pre Register Dialog - Wrapper for Fullscreen Version
+/// 
+/// This is a wrapper that maintains backward compatibility
+/// while using the new fullscreen dialog system.
 class PreRegisterDialog extends StatefulWidget {
   final String worldName;
   final Function(String email) onPreRegister;
@@ -12,9 +18,46 @@ class PreRegisterDialog extends StatefulWidget {
 
   @override
   State<PreRegisterDialog> createState() => _PreRegisterDialogState();
+
+  /// 🚀 Show PreRegister Dialog (uses new fullscreen version)
+  static Future<bool?> show(
+    BuildContext context, {
+    required String worldName,
+    required Future<void> Function(String email) onPreRegister,
+  }) {
+    return showPreRegisterDialog(
+      context,
+      worldName: worldName,
+      onPreRegister: onPreRegister,
+    );
+  }
 }
 
 class _PreRegisterDialogState extends State<PreRegisterDialog> {
+  @override
+  Widget build(BuildContext context) {
+    // This widget now automatically shows the fullscreen dialog
+    // when used in showDialog() calls
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showPreRegisterDialog(
+        context,
+        worldName: widget.worldName,
+        onPreRegister: (email) async {
+          await widget.onPreRegister(email);
+        },
+      ).then((result) {
+        // Pop this placeholder dialog and return the result
+        Navigator.of(context).pop(result);
+      });
+    });
+
+    // Return an invisible placeholder while the fullscreen dialog is shown
+    return const SizedBox.shrink();
+  }
+}
+
+// Old implementation kept for reference but not used
+class _OldPreRegisterDialogState extends State<PreRegisterDialog> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   bool _isLoading = false;
@@ -39,7 +82,7 @@ class _PreRegisterDialogState extends State<PreRegisterDialog> {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Vorregistrierung erfolgreich!'),
+            content: Text(AppLocalizations.of(context).preRegistrationSuccess),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
@@ -48,7 +91,7 @@ class _PreRegisterDialogState extends State<PreRegisterDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Fehler: ${e.toString()}'),
+                          content: Text(AppLocalizations.of(context).errorGenericWithDetails(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -99,7 +142,7 @@ class _PreRegisterDialogState extends State<PreRegisterDialog> {
               keyboardType: TextInputType.emailAddress,
               style: TextStyle(color: colorScheme.onSurface),
               decoration: InputDecoration(
-                labelText: 'E-Mail-Adresse',
+                                  labelText: AppLocalizations.of(context).authForgotPasswordEmailLabel,
                 labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                 prefixIcon: Icon(Icons.email, color: colorScheme.primary),
                 filled: true,
@@ -140,7 +183,7 @@ class _PreRegisterDialogState extends State<PreRegisterDialog> {
           style: TextButton.styleFrom(
             foregroundColor: colorScheme.onSurfaceVariant,
           ),
-          child: const Text('Abbrechen'),
+                            child: Text(AppLocalizations.of(context).buttonCancel),
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _submit,
@@ -160,7 +203,7 @@ class _PreRegisterDialogState extends State<PreRegisterDialog> {
                     valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimary),
                   ),
                 )
-              : const Text('Vorregistrieren'),
+                                    : Text(AppLocalizations.of(context).worldPreRegisterButton),
         ),
       ],
     );

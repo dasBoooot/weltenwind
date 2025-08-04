@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 // REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
+import '../../l10n/app_localizations.dart';
 
 /// 🛠️ Schema Indicator Mode
 enum SchemaIndicatorMode {
@@ -196,9 +197,9 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
 
   void _copyToClipboard(String data) {
     Clipboard.setData(ClipboardData(text: data));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Schema data copied to clipboard'),
+        ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context).schemaCopiedToClipboard),
         duration: Duration(seconds: 2),
       ),
     );
@@ -494,19 +495,19 @@ class _SchemaIndicatorState extends State<SchemaIndicator> with TickerProviderSt
       children: [
         _buildActionButton(
           icon: Icons.copy,
-          tooltip: 'Copy Schema',
+          tooltip: AppLocalizations.of(context).tooltipCopySchema,
           onPressed: _exportSchema,
         ),
         const SizedBox(width: 8),
         _buildActionButton(
           icon: Icons.refresh,
-          tooltip: 'Refresh',
+          tooltip: AppLocalizations.of(context).tooltipRefresh,
           onPressed: _refreshData,
         ),
         const SizedBox(width: 8),
         _buildActionButton(
           icon: Icons.info,
-          tooltip: 'Info',
+          tooltip: AppLocalizations.of(context).tooltipInfo,
           onPressed: () {
             // Show detailed info dialog
           },

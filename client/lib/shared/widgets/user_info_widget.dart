@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/services/auth_service.dart';
 import '../../main.dart';
 import '../../l10n/app_localizations.dart';
-import '../../config/logger.dart';
+import '../dialogs/user_info_fullscreen_dialog.dart';
 
 /// 👤 User Info Widget mit Dialog
 /// 
@@ -68,8 +68,13 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
     );
   }
 
-  /// 📋 User Dialog anzeigen (wie Pages: Theme.of(context) verwenden!)
+  /// 📋 User Dialog anzeigen - Fullscreen Version
   Future<void> _showUserDialog(BuildContext context, dynamic user) async {
+    showUserInfoDialog(context, user);
+  }
+
+  /// 📋 OLD User Dialog (replaced by fullscreen version)
+  Future<void> _showUserDialogOld(BuildContext context, dynamic user) async {
     await showDialog(
       context: context,
       barrierDismissible: true,
@@ -251,7 +256,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(

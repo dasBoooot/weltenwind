@@ -955,7 +955,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                 } catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Logout error: $e')),
+                      SnackBar(content: Text(AppLocalizations.of(context).errorLogout(e.toString()))),
                     );
                   }
                 }
@@ -1084,7 +1084,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                   await context.smartGoNamed('world-list');
                 },
                 icon: const Icon(Icons.explore),
-                label: const Text('Zu den Welten'),
+                label: Text(AppLocalizations.of(context).buttonToWorlds),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,

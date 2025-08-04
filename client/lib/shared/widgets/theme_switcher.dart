@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/providers/theme_provider.dart';
 // REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
+import '../../l10n/app_localizations.dart';
+import '../dialogs/theme_switcher_fullscreen_dialog.dart';
 
 /// 🎨 Theme-Switcher für Weltenwind
 /// 
@@ -110,12 +112,12 @@ class _ThemeSwitcherState extends State<ThemeSwitcher>
         IconButton(
           onPressed: () => widget.themeProvider.cycleThemeMode(),
           icon: Icon(_getThemeModeIcon(widget.themeProvider.themeMode)),
-          tooltip: 'Theme Mode: ${widget.themeProvider.themeMode.displayName}',
+                      tooltip: AppLocalizations.of(context).tooltipThemeMode(widget.themeProvider.themeMode.displayName),
         ),
         IconButton(
           onPressed: _showThemeDialog,
           icon: const Icon(Icons.palette_rounded),
-          tooltip: 'Theme Settings',
+                      tooltip: AppLocalizations.of(context).tooltipThemeSettings,
         ),
       ],
     );
@@ -445,23 +447,11 @@ class _ThemeSwitcherState extends State<ThemeSwitcher>
     );
   }
 
-  /// 💬 Dialog für Theme-Einstellungen
+  /// 💬 Dialog für Theme-Einstellungen - Fullscreen Version
   void _showThemeDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Theme Settings'),
-        content: SizedBox(
-          width: 400,
-          child: _buildFullSwitcher(theme.brightness == Brightness.dark),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
+    showThemeSettingsDialog(
+      context, 
+      _buildFullSwitcher(theme.brightness == Brightness.dark),
     );
   }
 

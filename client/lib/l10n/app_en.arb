@@ -391,6 +391,11 @@
     "description": "Cancel button text",
     "context": "common"
   },
+  "buttonConfirm": "Confirm",
+  "@buttonConfirm": {
+    "description": "Confirm button text",
+    "context": "common"
+  },
   "buttonSave": "Save",
   "@buttonSave": {
     "description": "Save button text",
@@ -1468,5 +1473,185 @@
   "@clearFilters": {
     "description": "Clear filters button text",
     "context": "general"
+  },
+  "logoutConfirmTitle": "Confirm Logout",
+  "@logoutConfirmTitle": {
+    "description": "Title for logout confirmation dialog",
+    "context": "authentication"
+  },
+  "logoutConfirmMessage": "Do you really want to log out?",
+  "@logoutConfirmMessage": {
+    "description": "Message for logout confirmation dialog",
+    "context": "authentication"
+  },
+  "buttonLogout": "Logout",
+  "@buttonLogout": {
+    "description": "Logout button text",
+    "context": "authentication"
+  },
+  "errorInviteDialogOpen": "Error opening invite dialog: {error}",
+  "@errorInviteDialogOpen": {
+    "description": "Error message when invite dialog fails to open",
+    "context": "errors",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "errorLogout": "Logout error: {error}",
+  "@errorLogout": {
+    "description": "Error message when logout fails",
+    "context": "errors",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "errorInviteLinkCopy": "Error copying link",
+  "@errorInviteLinkCopy": {
+    "description": "Error message when copying invite link fails",
+    "context": "errors"
+  },
+  "errorGenericWithDetails": "Error: {error}",
+  "@errorGenericWithDetails": {
+    "description": "Generic error message with error details",
+    "context": "errors",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "buttonSkip": "Skip",
+  "@buttonSkip": {
+    "description": "Skip button text",
+    "context": "buttons"
+  },
+  "buttonClearAll": "Clear All",
+  "@buttonClearAll": {
+    "description": "Clear all button text",
+    "context": "buttons"
+  },
+  "buttonAccept": "Accept",
+  "@buttonAccept": {
+    "description": "Accept button text",
+    "context": "buttons"
+  },
+  "buttonDecline": "Decline",
+  "@buttonDecline": {
+    "description": "Decline button text",
+    "context": "buttons"
+  },
+  "buttonToWorlds": "To Worlds",
+  "@buttonToWorlds": {
+    "description": "Button text to navigate to worlds",
+    "context": "buttons"
+  },
+  "tooltipThemeMode": "Theme Mode: {mode}",
+  "@tooltipThemeMode": {
+    "description": "Tooltip for theme mode indicator",
+    "context": "tooltips",
+    "placeholders": {
+      "mode": {
+        "type": "String",
+        "description": "The current theme mode"
+      }
+    }
+  },
+  "tooltipThemeSettings": "Theme Settings",
+  "@tooltipThemeSettings": {
+    "description": "Tooltip for theme settings button",
+    "context": "tooltips"
+  },
+  "tooltipClose": "Close",
+  "@tooltipClose": {
+    "description": "Tooltip for close button",
+    "context": "tooltips"
+  },
+  "tooltipCopySchema": "Copy Schema",
+  "@tooltipCopySchema": {
+    "description": "Tooltip for copy schema button",
+    "context": "tooltips"
+  },
+  "tooltipRefresh": "Refresh",
+  "@tooltipRefresh": {
+    "description": "Tooltip for refresh button",
+    "context": "tooltips"
+  },
+  "tooltipInfo": "Info",
+  "@tooltipInfo": {
+    "description": "Tooltip for info button",
+    "context": "tooltips"
+  },
+  "emailHintExample": "your@email.com",
+  "@emailHintExample": {
+    "description": "Hint text example for email input",
+    "context": "labels"
+  },
+  "labelFilters": "Filters",
+  "@labelFilters": {
+    "description": "Label for filters section",
+    "context": "labels"
+  },
+  "labelTags": "Tags",
+  "@labelTags": {
+    "description": "Label for tags section",
+    "context": "labels"
+  },
+  "labelFavoritesOnly": "Favorites Only",
+  "@labelFavoritesOnly": {
+    "description": "Label for favorites only filter",
+    "context": "labels"
+  },
+  "preRegistrationSuccess": "Pre-registration successful!",
+  "@preRegistrationSuccess": {
+    "description": "Success message for pre-registration without parameters",
+    "context": "messages"
+  },
+  "schemaCopiedToClipboard": "Schema data copied to clipboard",
+  "@schemaCopiedToClipboard": {
+    "description": "Success message when schema is copied to clipboard",
+    "context": "messages"
+  },
+  "sortOptionName": "Name",
+  "@sortOptionName": {
+    "description": "Sort option for name",
+    "context": "sorting"
+  },
+  "sortOptionPlayers": "Players",
+  "@sortOptionPlayers": {
+    "description": "Sort option for player count",
+    "context": "sorting"
+  },
+  "sortOptionStatus": "Status",
+  "@sortOptionStatus": {
+    "description": "Sort option for status",
+    "context": "sorting"
+  },
+  "sortOptionLastPlayed": "Last Played",
+  "@sortOptionLastPlayed": {
+    "description": "Sort option for last played",
+    "context": "sorting"
+  },
+  "sortOptionCreated": "Created",
+  "@sortOptionCreated": {
+    "description": "Sort option for created date",
+    "context": "sorting"
+  },
+  "sortOptionDescending": "{option} (desc)",
+  "@sortOptionDescending": {
+    "description": "Sort option with descending indicator",  
+    "context": "sorting",
+    "placeholders": {
+      "option": {
+        "type": "String",
+        "description": "The sort option name"
+      }
+    }
   }
 }

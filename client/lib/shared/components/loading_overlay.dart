@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 // REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
+import '../../l10n/app_localizations.dart';
 
 /// ⏳ Loading Overlay based on Schema Configuration
 /// 
@@ -318,7 +319,7 @@ class _LoadingOverlayState extends State<LoadingOverlay> with TickerProviderStat
         foregroundColor: _getTextColor(theme),
         side: BorderSide(color: _getTextColor(theme).withValues(alpha: 0.5)),
       ),
-      child: const Text('Cancel'),
+      child: Text(AppLocalizations.of(context).buttonCancel),
     );
   }
 

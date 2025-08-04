@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../core/providers/locale_provider.dart';
-// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
-import '../../l10n/app_localizations.dart';
-
-import '../components/index.dart';
-import '../utils/dynamic_components.dart';
 
 /// Language switcher widget that displays as an expandable icon.
 /// Shows a language globe icon when collapsed, expands to show language options when tapped.

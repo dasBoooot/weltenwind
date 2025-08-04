@@ -7,8 +7,10 @@ import '../../core/theme/index.dart'; // Theme System für ThemePageProvider und
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
 import '../../shared/navigation/smart_navigation.dart';
-import '../invite/widgets/invite_widget.dart';
+// import '../invite/widgets/invite_widget.dart'; // Replaced by fullscreen dialog system
 import '../../l10n/app_localizations.dart';
+import '../../shared/dialogs/fullscreen_dialog.dart';
+import '../../shared/dialogs/invite_fullscreen_dialog.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -233,14 +235,15 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
 
 
 
-  Future<void> _inviteToWorld() async {
+  Future<void> _inviteToWorld(ThemeData worldTheme) async {
     if (_world == null) return;
     
     try {
-      await showInviteDialog(
-        context,
+      await InviteFullscreenDialog.show(
+        context: context, // Normaler Context für Navigation
         worldId: _world!.id.toString(),
         worldName: _world!.name,
+        themeOverride: worldTheme, // 🌍 DIRECT: World-Theme direkt übergeben!
         onInviteSent: () {
           // Optional: Refresh oder andere Aktion nach erfolgreichem Invite
           AppLogger.app.i('✅ Invite sent for world: ${_world!.name}');
@@ -252,7 +255,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Fehler beim Öffnen des Einladungs-Dialogs: $e'),
+            content: Text(AppLocalizations.of(context).errorInviteDialogOpen(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -392,30 +395,20 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     }
   }
   
-  Future<void> _leaveWorld() async {
+  Future<void> _leaveWorld(ThemeData worldTheme) async {
     final world = _world;
     if (world == null) return;
     
-    // Bestätigungsdialog anzeigen
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context).worldJoinLeaveDialogTitle),
-        content: Text(AppLocalizations.of(context).worldJoinLeaveDialogContent(world.name)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context).buttonCancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
-            child: Text(AppLocalizations.of(context).worldLeaveButton),
-          ),
-        ],
-      ),
+    // Theme-aware Fullscreen Bestätigungsdialog anzeigen
+    final confirmed = await FullscreenDialog.showConfirmation(
+      context,
+      title: AppLocalizations.of(context).worldJoinLeaveDialogTitle,
+      message: AppLocalizations.of(context).worldJoinLeaveDialogContent(world.name),
+      confirmText: AppLocalizations.of(context).worldLeaveButton,
+      cancelText: AppLocalizations.of(context).buttonCancel,
+      confirmColor: Colors.red,
+      icon: Icons.exit_to_app,
+      themeOverride: worldTheme, // 🌍 DIRECT: World-Theme direkt übergeben!
     );
     
     if (confirmed != true) return;
@@ -953,7 +946,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
           // Invite Button als LETZTER Button für pre-registered upcoming worlds
           buttons.add(
             ElevatedButton.icon(
-                onPressed: _inviteToWorld,
+                onPressed: () => _inviteToWorld(theme), // 🎨 DIRECT: World-Theme direkt übergeben!
                 icon: const Icon(Icons.person_add),
                 label: Text(AppLocalizations.of(context).worldInviteButton),
                 style: ElevatedButton.styleFrom(
@@ -1009,7 +1002,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
           // Verlassen Button
           buttons.add(
             ElevatedButton.icon(
-                onPressed: _isJoining ? null : _leaveWorld,
+                onPressed: _isJoining ? null : () => _leaveWorld(theme), // 🎨 DIRECT: World-Theme direkt übergeben!
                 icon: const Icon(Icons.exit_to_app),
                 label: Text(_isJoining ? AppLocalizations.of(context).worldJoinLeaveInProgress : AppLocalizations.of(context).worldLeaveButton),
                 style: ElevatedButton.styleFrom(
@@ -1026,7 +1019,7 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
           // Invite Button als LETZTER Button
           buttons.add(
             ElevatedButton.icon(
-                onPressed: _inviteToWorld,
+                onPressed: () => _inviteToWorld(theme), // 🎨 DIRECT: World-Theme direkt übergeben!
                 icon: const Icon(Icons.person_add),
                 label: Text(AppLocalizations.of(context).worldInviteButton),
                 style: ElevatedButton.styleFrom(

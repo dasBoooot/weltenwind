@@ -260,6 +260,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonCancel => 'Cancel';
 
   @override
+  String get buttonConfirm => 'Confirm';
+
+  @override
   String get buttonSave => 'Save';
 
   @override
@@ -902,4 +905,104 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clearFilters => 'Clear filters';
+
+  @override
+  String get logoutConfirmTitle => 'Confirm Logout';
+
+  @override
+  String get logoutConfirmMessage => 'Do you really want to log out?';
+
+  @override
+  String get buttonLogout => 'Logout';
+
+  @override
+  String errorInviteDialogOpen(String error) {
+    return 'Error opening invite dialog: $error';
+  }
+
+  @override
+  String errorLogout(String error) {
+    return 'Logout error: $error';
+  }
+
+  @override
+  String get errorInviteLinkCopy => 'Error copying link';
+
+  @override
+  String errorGenericWithDetails(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get buttonSkip => 'Skip';
+
+  @override
+  String get buttonClearAll => 'Clear All';
+
+  @override
+  String get buttonAccept => 'Accept';
+
+  @override
+  String get buttonDecline => 'Decline';
+
+  @override
+  String get buttonToWorlds => 'To Worlds';
+
+  @override
+  String tooltipThemeMode(String mode) {
+    return 'Theme Mode: $mode';
+  }
+
+  @override
+  String get tooltipThemeSettings => 'Theme Settings';
+
+  @override
+  String get tooltipClose => 'Close';
+
+  @override
+  String get tooltipCopySchema => 'Copy Schema';
+
+  @override
+  String get tooltipRefresh => 'Refresh';
+
+  @override
+  String get tooltipInfo => 'Info';
+
+  @override
+  String get emailHintExample => 'your@email.com';
+
+  @override
+  String get labelFilters => 'Filters';
+
+  @override
+  String get labelTags => 'Tags';
+
+  @override
+  String get labelFavoritesOnly => 'Favorites Only';
+
+  @override
+  String get preRegistrationSuccess => 'Pre-registration successful!';
+
+  @override
+  String get schemaCopiedToClipboard => 'Schema data copied to clipboard';
+
+  @override
+  String get sortOptionName => 'Name';
+
+  @override
+  String get sortOptionPlayers => 'Players';
+
+  @override
+  String get sortOptionStatus => 'Status';
+
+  @override
+  String get sortOptionLastPlayed => 'Last Played';
+
+  @override
+  String get sortOptionCreated => 'Created';
+
+  @override
+  String sortOptionDescending(String option) {
+    return '$option (desc)';
+  }
 }

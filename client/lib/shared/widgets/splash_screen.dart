@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../config/logger.dart';
+import '../../l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   final Future<void> Function() initializationFunction;
@@ -314,7 +315,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                       });
                       _initialize();
                     },
-                    child: const Text('Erneut versuchen'),
+                    child: Text(AppLocalizations.of(context).buttonRetry),
                   ),
                   
                   TextButton(
@@ -324,7 +325,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                         _isInitialized = true;
                       });
                     },
-                    child: const Text('Überspringen'),
+                    child: Text(AppLocalizations.of(context).buttonSkip),
                   ),
                 ],
               ),

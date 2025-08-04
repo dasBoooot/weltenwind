@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 // REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
+import '../../l10n/app_localizations.dart';
 import 'world_preview_card.dart';
 
 /// 📋 Sort Options
@@ -312,7 +313,7 @@ class _WorldsListSelectorState extends State<WorldsListSelector> {
                   icon: Icon(
                     _filtersExpanded ? Icons.expand_less : Icons.expand_more,
                   ),
-                  label: Text('Filters'),
+                  label: Text(AppLocalizations.of(context).labelFilters),
                 ),
                 
                 if (_filter.activeFilterCount > 0) ...[
@@ -342,7 +343,7 @@ class _WorldsListSelectorState extends State<WorldsListSelector> {
                         _updateFilteredWorlds();
                       });
                     },
-                    child: const Text('Clear All'),
+                    child: Text(AppLocalizations.of(context).buttonClearAll),
                   ),
               ],
             ),
@@ -389,7 +390,7 @@ class _WorldsListSelectorState extends State<WorldsListSelector> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Status', style: theme.textTheme.titleSmall),
+                        Text(AppLocalizations.of(context).worldFiltersStatus.replaceAll(':', ''), style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -430,7 +431,7 @@ class _WorldsListSelectorState extends State<WorldsListSelector> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Player Count', style: theme.textTheme.titleSmall),
+                        Text(AppLocalizations.of(context).worldFiltersSortPlayerCount, style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -460,7 +461,7 @@ class _WorldsListSelectorState extends State<WorldsListSelector> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Tags', style: theme.textTheme.titleSmall),
+                        Text(AppLocalizations.of(context).labelTags, style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -492,7 +493,7 @@ class _WorldsListSelectorState extends State<WorldsListSelector> {
 
   Widget _buildFavoritesFilter(ThemeData theme) {
     return CheckboxListTile(
-      title: const Text('Favorites Only'),
+                          title: Text(AppLocalizations.of(context).labelFavoritesOnly),
       value: _filter.favoritesOnly,
       onChanged: (value) {
         setState(() {
@@ -561,7 +562,7 @@ class _WorldsListSelectorState extends State<WorldsListSelector> {
             value: '${option.name}_desc',
             child: Row(
               children: [
-                Text('${_getSortOptionText(option)} (desc)'),
+                Text(AppLocalizations.of(context).sortOptionDescending(_getSortOptionText(option))),
                 const Spacer(),
                 if (_sortOption == option && _sortDirection == SortDirection.desc)
                   const Icon(Icons.check, size: 16),
@@ -875,17 +876,18 @@ class _WorldsListSelectorState extends State<WorldsListSelector> {
 
   /// Get sort option text
   String _getSortOptionText(SortOption option) {
+    final l10n = AppLocalizations.of(context);
     switch (option) {
       case SortOption.name:
-        return 'Name';
+        return l10n.sortOptionName;
       case SortOption.playerCount:
-        return 'Players';
+        return l10n.sortOptionPlayers;
       case SortOption.status:
-        return 'Status';
+        return l10n.sortOptionStatus;
       case SortOption.lastPlayed:
-        return 'Last Played';
+        return l10n.sortOptionLastPlayed;
       case SortOption.created:
-        return 'Created';
+        return l10n.sortOptionCreated;
     }
   }
 

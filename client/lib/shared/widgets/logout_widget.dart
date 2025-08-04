@@ -3,6 +3,7 @@ import '../../core/services/auth_service.dart';
 import '../navigation/smart_navigation.dart';
 import '../../main.dart';
 import '../../l10n/app_localizations.dart';
+import '../dialogs/logout_fullscreen_dialog.dart';
 
 /// 🚪 Logout Widget - Kompaktes Logout für Navigation Bar
 class LogoutWidget extends StatefulWidget {
@@ -37,80 +38,7 @@ class _LogoutWidgetState extends State<LogoutWidget> with SingleTickerProviderSt
   Future<void> _showLogoutDialog() async {
     if (_isLoggingOut) return;
     
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
-    
-    final shouldLogout = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          backgroundColor: theme.colorScheme.surface,
-          surfaceTintColor: theme.colorScheme.surfaceTint,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(
-              color: theme.colorScheme.outline.withValues(alpha: 0.2),
-              width: 1,
-            ),
-          ),
-          title: Row(
-            children: [
-              Icon(
-                Icons.logout,
-                color: theme.colorScheme.error,
-                size: 24,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                l10n.authLogoutButton,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  color: theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            l10n.authLogoutConfirmMessage,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-            ),
-          ),
-          actions: [
-            // Cancel Button
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              ),
-              child: Text(l10n.buttonCancel),
-            ),
-            // Logout Button
-            ElevatedButton(
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.error,
-                foregroundColor: theme.colorScheme.onError,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.logout, size: 18),
-                  const SizedBox(width: 8),
-                  Text(l10n.authLogoutButton),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
-    );
+    final shouldLogout = await showLogoutDialog(context);
 
     if (shouldLogout == true) {
       await _performLogout();

@@ -265,6 +265,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get buttonCancel => 'Abbrechen';
 
   @override
+  String get buttonConfirm => 'Bestätigen';
+
+  @override
   String get buttonSave => 'Speichern';
 
   @override
@@ -913,4 +916,105 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get clearFilters => 'Filter zurücksetzen';
+
+  @override
+  String get logoutConfirmTitle => 'Ausloggen bestätigen';
+
+  @override
+  String get logoutConfirmMessage => 'Möchten Sie sich wirklich ausloggen?';
+
+  @override
+  String get buttonLogout => 'Ausloggen';
+
+  @override
+  String errorInviteDialogOpen(String error) {
+    return 'Fehler beim Öffnen des Einladungs-Dialogs: $error';
+  }
+
+  @override
+  String errorLogout(String error) {
+    return 'Fehler beim Abmelden: $error';
+  }
+
+  @override
+  String get errorInviteLinkCopy => 'Fehler beim Kopieren des Links';
+
+  @override
+  String errorGenericWithDetails(String error) {
+    return 'Fehler: $error';
+  }
+
+  @override
+  String get buttonSkip => 'Überspringen';
+
+  @override
+  String get buttonClearAll => 'Alle löschen';
+
+  @override
+  String get buttonAccept => 'Annehmen';
+
+  @override
+  String get buttonDecline => 'Ablehnen';
+
+  @override
+  String get buttonToWorlds => 'Zu den Welten';
+
+  @override
+  String tooltipThemeMode(String mode) {
+    return 'Theme-Modus: $mode';
+  }
+
+  @override
+  String get tooltipThemeSettings => 'Theme-Einstellungen';
+
+  @override
+  String get tooltipClose => 'Schließen';
+
+  @override
+  String get tooltipCopySchema => 'Schema kopieren';
+
+  @override
+  String get tooltipRefresh => 'Aktualisieren';
+
+  @override
+  String get tooltipInfo => 'Information';
+
+  @override
+  String get emailHintExample => 'ihre@email.de';
+
+  @override
+  String get labelFilters => 'Filter';
+
+  @override
+  String get labelTags => 'Tags';
+
+  @override
+  String get labelFavoritesOnly => 'Nur Favoriten';
+
+  @override
+  String get preRegistrationSuccess => 'Vorregistrierung erfolgreich!';
+
+  @override
+  String get schemaCopiedToClipboard =>
+      'Schema-Daten in Zwischenablage kopiert';
+
+  @override
+  String get sortOptionName => 'Name';
+
+  @override
+  String get sortOptionPlayers => 'Spieler';
+
+  @override
+  String get sortOptionStatus => 'Status';
+
+  @override
+  String get sortOptionLastPlayed => 'Zuletzt gespielt';
+
+  @override
+  String get sortOptionCreated => 'Erstellt';
+
+  @override
+  String sortOptionDescending(String option) {
+    return '$option (absteigend)';
+  }
 }

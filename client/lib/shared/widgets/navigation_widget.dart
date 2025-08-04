@@ -202,7 +202,7 @@ class _NavigationWidgetState extends State<NavigationWidget> {
       case NavigationContext.worldJoin:
         switch (index) {
           case 0:
-            // Navigate to world list
+            // Navigate to world list (needs theme context preloading)
             await context.smartGoNamed('world-list');
             break;
         }
@@ -211,20 +211,20 @@ class _NavigationWidgetState extends State<NavigationWidget> {
       case NavigationContext.worldDashboard:
         switch (index) {
           case 0:
-            // Navigate to world list
+            // Navigate to world list (needs theme context preloading)
             await context.smartGoNamed('world-list');
             break;
           case 1:
-            // Navigate back to world join
+            // Navigate back to world join (Tab Navigation - skip preloading)
             if (worldId != null) {
-              await context.smartGoNamed('world-join', pathParameters: {'id': worldId});
+              await context.smartGoNamed('world-join', pathParameters: {'id': worldId}, skipPreloading: true);
             }
             break;
         }
         break;
         
       default:
-        // Fallback navigation - go to world list
+        // Fallback navigation - go to world list (needs theme context preloading)
         await context.smartGoNamed('world-list');
         break;
     }

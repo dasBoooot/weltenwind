@@ -35,6 +35,7 @@ class SmartNavigation {
     Map<String, dynamic>? queryParameters,
     Object? extra,
     bool forcePreload = false,
+    bool skipPreloading = false,
     String? customLoadingText,
     bool skipAuthCheck = false,
   }) async {
@@ -52,11 +53,11 @@ class SmartNavigation {
         }
       }
       // 1. Context-Detection: Welcher Theme-Context wird benötigt?
-      final themeContext = await _detectThemeContext(routeName, pathParameters ?? {});
+      final themeContext = await detectThemeContext(routeName, pathParameters ?? {});
       AppLogger.navigation.i('🎨 Detected theme context: ${themeContext.contextId} → ${themeContext.bundleId}');
       
       // 2. Prüfe ob Preloading für diese Route verfügbar ist
-      if (_shouldUsePreloading(routeName, forcePreload)) {
+      if (!skipPreloading && _shouldUsePreloading(routeName, forcePreload)) {
         AppLogger.navigation.i('✨ Using context-aware preloading for: $routeName');
         await _navigateWithContextAwarePreloading(
           context, 
@@ -182,8 +183,8 @@ class SmartNavigation {
     return preloadableRoutes.contains(routeName);
   }
   
-  /// 🎨 Private: Theme Context Detection - Intelligente Theme-Auswahl
-  static Future<ThemeContext> _detectThemeContext(String routeName, Map<String, String> pathParameters) async {
+  /// 🎨 Public: Theme Context Detection - Intelligente Theme-Auswahl (für F5-Refresh)
+  static Future<ThemeContext> detectThemeContext(String routeName, Map<String, String> pathParameters) async {
     try {
       switch (routeName) {
         case 'landing':
@@ -393,6 +394,7 @@ extension SmartNavigationExtension on BuildContext {
     Map<String, dynamic>? queryParameters,
     Object? extra,
     bool forcePreload = false,
+    bool skipPreloading = false,
     String? customLoadingText,
     bool skipAuthCheck = false,
   }) async {
@@ -403,6 +405,7 @@ extension SmartNavigationExtension on BuildContext {
       queryParameters: queryParameters,
       extra: extra,
       forcePreload: forcePreload,
+      skipPreloading: skipPreloading,
       customLoadingText: customLoadingText,
       skipAuthCheck: skipAuthCheck,
     );

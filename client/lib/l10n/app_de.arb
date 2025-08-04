@@ -391,6 +391,11 @@
     "description": "Cancel button text",
     "context": "common"
   },
+  "buttonConfirm": "Bestätigen",
+  "@buttonConfirm": {
+    "description": "Confirm button text",
+    "context": "common"
+  },
   "buttonSave": "Speichern",
   "@buttonSave": {
     "description": "Save button text",
@@ -1468,5 +1473,185 @@
   "@clearFilters": {
     "description": "Clear filters button text",
     "context": "general"
+  },
+  "logoutConfirmTitle": "Ausloggen bestätigen",
+  "@logoutConfirmTitle": {
+    "description": "Title for logout confirmation dialog",
+    "context": "authentication"
+  },
+  "logoutConfirmMessage": "Möchten Sie sich wirklich ausloggen?",
+  "@logoutConfirmMessage": {
+    "description": "Message for logout confirmation dialog",
+    "context": "authentication"
+  },
+  "buttonLogout": "Ausloggen",
+  "@buttonLogout": {
+    "description": "Logout button text",
+    "context": "authentication"
+  },
+  "errorInviteDialogOpen": "Fehler beim Öffnen des Einladungs-Dialogs: {error}",
+  "@errorInviteDialogOpen": {
+    "description": "Error message when invite dialog fails to open",
+    "context": "errors",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "errorLogout": "Fehler beim Abmelden: {error}",
+  "@errorLogout": {
+    "description": "Error message when logout fails",
+    "context": "errors",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "errorInviteLinkCopy": "Fehler beim Kopieren des Links",
+  "@errorInviteLinkCopy": {
+    "description": "Error message when copying invite link fails",
+    "context": "errors"
+  },
+  "errorGenericWithDetails": "Fehler: {error}",
+  "@errorGenericWithDetails": {
+    "description": "Generic error message with error details",
+    "context": "errors",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "buttonSkip": "Überspringen",
+  "@buttonSkip": {
+    "description": "Skip button text",
+    "context": "buttons"
+  },
+  "buttonClearAll": "Alle löschen",
+  "@buttonClearAll": {
+    "description": "Clear all button text",
+    "context": "buttons"
+  },
+  "buttonAccept": "Annehmen",
+  "@buttonAccept": {
+    "description": "Accept button text",
+    "context": "buttons"
+  },
+  "buttonDecline": "Ablehnen",
+  "@buttonDecline": {
+    "description": "Decline button text",
+    "context": "buttons"
+  },
+  "buttonToWorlds": "Zu den Welten",
+  "@buttonToWorlds": {
+    "description": "Button text to navigate to worlds",
+    "context": "buttons"
+  },
+  "tooltipThemeMode": "Theme-Modus: {mode}",
+  "@tooltipThemeMode": {
+    "description": "Tooltip for theme mode indicator",
+    "context": "tooltips",
+    "placeholders": {
+      "mode": {
+        "type": "String",
+        "description": "The current theme mode"
+      }
+    }
+  },
+  "tooltipThemeSettings": "Theme-Einstellungen",
+  "@tooltipThemeSettings": {
+    "description": "Tooltip for theme settings button",
+    "context": "tooltips"
+  },
+  "tooltipClose": "Schließen",
+  "@tooltipClose": {
+    "description": "Tooltip for close button",
+    "context": "tooltips"
+  },
+  "tooltipCopySchema": "Schema kopieren",
+  "@tooltipCopySchema": {
+    "description": "Tooltip for copy schema button",
+    "context": "tooltips"
+  },
+  "tooltipRefresh": "Aktualisieren",
+  "@tooltipRefresh": {
+    "description": "Tooltip for refresh button",
+    "context": "tooltips"
+  },
+  "tooltipInfo": "Information",
+  "@tooltipInfo": {
+    "description": "Tooltip for info button",
+    "context": "tooltips"
+  },
+  "emailHintExample": "ihre@email.de",
+  "@emailHintExample": {
+    "description": "Hint text example for email input",
+    "context": "labels"
+  },
+  "labelFilters": "Filter",
+  "@labelFilters": {
+    "description": "Label for filters section",
+    "context": "labels"
+  },
+  "labelTags": "Tags",
+  "@labelTags": {
+    "description": "Label for tags section",
+    "context": "labels"
+  },
+  "labelFavoritesOnly": "Nur Favoriten",
+  "@labelFavoritesOnly": {
+    "description": "Label for favorites only filter",
+    "context": "labels"
+  },
+  "preRegistrationSuccess": "Vorregistrierung erfolgreich!",
+  "@preRegistrationSuccess": {
+    "description": "Success message for pre-registration without parameters",
+    "context": "messages"
+  },
+  "schemaCopiedToClipboard": "Schema-Daten in Zwischenablage kopiert",
+  "@schemaCopiedToClipboard": {
+    "description": "Success message when schema is copied to clipboard",
+    "context": "messages"
+  },
+  "sortOptionName": "Name",
+  "@sortOptionName": {
+    "description": "Sort option for name",
+    "context": "sorting"
+  },
+  "sortOptionPlayers": "Spieler",
+  "@sortOptionPlayers": {
+    "description": "Sort option for player count",
+    "context": "sorting"
+  },
+  "sortOptionStatus": "Status",
+  "@sortOptionStatus": {
+    "description": "Sort option for status",
+    "context": "sorting"
+  },
+  "sortOptionLastPlayed": "Zuletzt gespielt",
+  "@sortOptionLastPlayed": {
+    "description": "Sort option for last played",
+    "context": "sorting"
+  },
+  "sortOptionCreated": "Erstellt",
+  "@sortOptionCreated": {
+    "description": "Sort option for created date",
+    "context": "sorting"
+  },
+  "sortOptionDescending": "{option} (absteigend)",
+  "@sortOptionDescending": {
+    "description": "Sort option with descending indicator",
+    "context": "sorting",
+    "placeholders": {
+      "option": {
+        "type": "String",
+        "description": "The sort option name"
+      }
+    }
   }
 }

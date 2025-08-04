@@ -12,9 +12,9 @@ import '../features/invite/invite_landing_page.dart';
 import '../features/dashboard/dashboard_page.dart';
 import '../features/landing/landing_page.dart';
 import '../core/services/auth_service.dart';
-import '../shared/widgets/navigation_splash_screen.dart';
-import '../shared/navigation/page_preloaders.dart';
 import '../shared/navigation/smart_navigation.dart';
+import '../shared/navigation/elegant_transitions.dart';
+import 'initial_theme_detector.dart';
 import '../main.dart';
 
 // Custom Navigation Observer für Logging
@@ -76,68 +76,7 @@ class AppRouter {
     return null;
   }
   
-  /// 🧭 Helper: Wrap Page with Navigation Loading (nur für spezielle Routen)
-  static Widget _wrapWithNavigationLoading({
-    required String routeName,
-    required Widget child,
-    Map<String, String>? parameters,
-    String? customLoadingText,
-  }) {
-    try {
-      // Nur für definierte Routen mit Preload-Funktionen
-      if (!_shouldUseNavigationLoading(routeName)) {
-        return child;
-      }
-      
-      // Erstelle preload function basierend auf route name
-      Future<void> Function() preloadFunction;
-      switch (routeName) {
-        case 'worldList':
-        case 'world-list':
-          preloadFunction = () => PagePreloaders.preloadWorldListPage(
-            ThemeContext(contextId: 'world-preview', bundleId: 'world-preview')
-          );
-          break;
-        case 'dashboard':
-        case 'world-dashboard':
-          final worldId = parameters?['id'];
-          preloadFunction = () => PagePreloaders.preloadDashboardPage(
-            ThemeContext(contextId: 'dashboard-base', bundleId: 'dashboard-base', worldTheme: worldId != null ? 'world-$worldId' : null)
-          );
-          break;
-        case 'worldJoin':
-        case 'world-join':
-          final worldId = parameters?['id'];
-          preloadFunction = () => PagePreloaders.preloadWorldJoinPage(
-            worldId,
-            ThemeContext(contextId: 'world-preview', bundleId: 'world-preview', worldTheme: worldId != null ? 'world-$worldId' : null)
-          );
-          break;
-        default:
-          return child; // No preloading for this route
-      }
-      
-      return NavigationSplashScreen(
-        targetRouteName: routeName,
-        preloadFunction: preloadFunction,
-        loadingText: customLoadingText,
-        child: child,
-      );
-    } catch (e) {
-      AppLogger.navigation.w('⚠️ Navigation loading setup failed for $routeName - showing directly', error: e);
-      return child;
-    }
-  }
-  
-  /// 🔍 Helper: Check if route should use navigation loading
-  static bool _shouldUseNavigationLoading(String routeName) {
-    const loadingRoutes = {
-      worldListRoute,
-      worldDashboardRoute, 
-      worldJoinRoute,
-    };
-    return loadingRoutes.contains(routeName);
-  }
+  // Navigation loading helpers removed - using direct page transitions now
   
   static GoRouter get router {
     if (_routerInstance != null) {
@@ -182,6 +121,20 @@ class AppRouter {
           // ✅ INVITE-ROUTES: Immer direkt erlauben (Cross-Platform)
           if (uriPath.startsWith('/go/invite/')) {
             return null; // Invite-Routes immer erlauben
+          }
+          
+          // 🎨 F5-REFRESH THEME DETECTION - Wichtig für Web!
+          // Setup Theme-Context für Direct Page Loads (F5-Refresh)
+          if (kIsWeb && (uriPath.startsWith('/go/worlds') || 
+                        uriPath.contains('/join') || 
+                        uriPath.contains('/dashboard'))) {
+            try {
+              // Theme-Detection für F5-Refresh ausführen
+              await InitialThemeDetector.detectAndSetThemeFromRoute(context, uriPath);
+              AppLogger.navigation.i('🎨 F5-Refresh theme set for: $uriPath');
+            } catch (e) {
+              AppLogger.navigation.w('⚠️ F5-Refresh theme detection failed', error: e);
+            }
           }
           
           // 🔄 STANDARD AUTH & PROTECTION LOGIC
@@ -313,12 +266,15 @@ class AppRouter {
         path: '/go/worlds',
         name: worldListRoute,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: _wrapWithNavigationLoading(
-            routeName: worldListRoute,
-            child: const WorldListPage(),
-          ),
+          child: const WorldListPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            FadeTransition(opacity: animation, child: child),
+            ElegantTransitions.elegantSlideWithOverlay(
+              context, 
+              animation, 
+              secondaryAnimation, 
+              child,
+              direction: SlideDirection.fromBottom,
+            ),
         ),
       ),
       GoRoute(
@@ -330,34 +286,24 @@ class AppRouter {
             return CustomTransitionPage(
               child: const ErrorPage(),
               transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0.0, 1.0),
-                    end: Offset.zero,
-                  ).animate(CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.easeInOut,
-                  )),
-                  child: child,
+                ElegantTransitions.elegantSlideWithOverlay(
+                  context, 
+                  animation, 
+                  secondaryAnimation, 
+                  child,
+                  direction: SlideDirection.fromBottom,
                 ),
             );
           }
           return CustomTransitionPage(
-            child: _wrapWithNavigationLoading(
-              routeName: worldDashboardRoute,
-              parameters: {'id': worldId},
-              child: DashboardPage(worldId: worldId),
-            ),
+            child: DashboardPage(worldId: worldId),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0.0, 1.0),
-                  end: Offset.zero,
-                ).animate(CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.easeInOut,
-                )),
-                child: child,
+              ElegantTransitions.elegantSlideWithOverlay(
+                context, 
+                animation, 
+                secondaryAnimation, 
+                child,
+                direction: SlideDirection.fromBottom,
               ),
           );
         },
@@ -372,36 +318,26 @@ class AppRouter {
             return CustomTransitionPage(
               child: const ErrorPage(),
               transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0.0, 1.0),
-                    end: Offset.zero,
-                  ).animate(CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.easeInOut,
-                  )),
-                  child: child,
+                ElegantTransitions.elegantSlideWithOverlay(
+                  context, 
+                  animation, 
+                  secondaryAnimation, 
+                  child,
+                  direction: SlideDirection.fromBottom,
                 ),
             );
           }
           return CustomTransitionPage(
-            child: _wrapWithNavigationLoading(
-              routeName: worldJoinRoute,
-              parameters: {'id': worldId},
-              child: WorldJoinPage(
-                worldId: worldId,
-              ),
+            child: WorldJoinPage(
+              worldId: worldId,
             ),
             transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0.0, 1.0),
-                  end: Offset.zero,
-                ).animate(CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.easeInOut,
-                )),
-                child: child,
+              ElegantTransitions.elegantSlideWithOverlay(
+                context, 
+                animation, 
+                secondaryAnimation, 
+                child,
+                direction: SlideDirection.fromBottom,
               ),
           );
         },

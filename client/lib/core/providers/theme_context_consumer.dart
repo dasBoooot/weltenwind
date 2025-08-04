@@ -110,8 +110,7 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
       // 🎨 3. PAGE/GLOBAL THEME
       resolvedTheme ??= await ThemeHelper.getCurrentTheme(context, isDark: isDark);
       
-      // 🔄 4. FALLBACK BUNDLE & FLUTTER DEFAULT
-      resolvedTheme ??= await _loadFallbackTheme(context, isDark);
+      // 🔄 4. FALLBACK BUNDLE & FLUTTER DEFAULT (dead code - ThemeHelper.getCurrentTheme never returns null)
       
       setState(() {
         if (isDark) {

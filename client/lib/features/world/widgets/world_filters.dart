@@ -295,7 +295,7 @@ class WorldFilters extends StatelessWidget {
           TextButton.icon(
             onPressed: onResetFilters,
             icon: const Icon(Icons.clear_all, size: 16),
-            label: const Text('Alle zurücksetzen'),
+            label: Text(AppLocalizations.of(context).worldFiltersResetAll),
             style: TextButton.styleFrom(
               foregroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),

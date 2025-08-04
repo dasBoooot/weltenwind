@@ -571,6 +571,12 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get buttonCancel;
 
+  /// Confirm button text
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get buttonConfirm;
+
   /// Save button text
   ///
   /// In en, this message translates to:
@@ -1722,6 +1728,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear filters'**
   String get clearFilters;
+
+  /// Title for logout confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Logout'**
+  String get logoutConfirmTitle;
+
+  /// Message for logout confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Do you really want to log out?'**
+  String get logoutConfirmMessage;
+
+  /// Logout button text
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get buttonLogout;
+
+  /// Error message when invite dialog fails to open
+  ///
+  /// In en, this message translates to:
+  /// **'Error opening invite dialog: {error}'**
+  String errorInviteDialogOpen(String error);
+
+  /// Error message when logout fails
+  ///
+  /// In en, this message translates to:
+  /// **'Logout error: {error}'**
+  String errorLogout(String error);
+
+  /// Error message when copying invite link fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error copying link'**
+  String get errorInviteLinkCopy;
+
+  /// Generic error message with error details
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String errorGenericWithDetails(String error);
+
+  /// Skip button text
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get buttonSkip;
+
+  /// Clear all button text
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get buttonClearAll;
+
+  /// Accept button text
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get buttonAccept;
+
+  /// Decline button text
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get buttonDecline;
+
+  /// Button text to navigate to worlds
+  ///
+  /// In en, this message translates to:
+  /// **'To Worlds'**
+  String get buttonToWorlds;
+
+  /// Tooltip for theme mode indicator
+  ///
+  /// In en, this message translates to:
+  /// **'Theme Mode: {mode}'**
+  String tooltipThemeMode(String mode);
+
+  /// Tooltip for theme settings button
+  ///
+  /// In en, this message translates to:
+  /// **'Theme Settings'**
+  String get tooltipThemeSettings;
+
+  /// Tooltip for close button
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get tooltipClose;
+
+  /// Tooltip for copy schema button
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Schema'**
+  String get tooltipCopySchema;
+
+  /// Tooltip for refresh button
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get tooltipRefresh;
+
+  /// Tooltip for info button
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get tooltipInfo;
+
+  /// Hint text example for email input
+  ///
+  /// In en, this message translates to:
+  /// **'your@email.com'**
+  String get emailHintExample;
+
+  /// Label for filters section
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get labelFilters;
+
+  /// Label for tags section
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get labelTags;
+
+  /// Label for favorites only filter
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites Only'**
+  String get labelFavoritesOnly;
+
+  /// Success message for pre-registration without parameters
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-registration successful!'**
+  String get preRegistrationSuccess;
+
+  /// Success message when schema is copied to clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Schema data copied to clipboard'**
+  String get schemaCopiedToClipboard;
+
+  /// Sort option for name
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get sortOptionName;
+
+  /// Sort option for player count
+  ///
+  /// In en, this message translates to:
+  /// **'Players'**
+  String get sortOptionPlayers;
+
+  /// Sort option for status
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get sortOptionStatus;
+
+  /// Sort option for last played
+  ///
+  /// In en, this message translates to:
+  /// **'Last Played'**
+  String get sortOptionLastPlayed;
+
+  /// Sort option for created date
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get sortOptionCreated;
+
+  /// Sort option with descending indicator
+  ///
+  /// In en, this message translates to:
+  /// **'{option} (desc)'**
+  String sortOptionDescending(String option);
 }
 
 class _AppLocalizationsDelegate

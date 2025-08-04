@@ -231,9 +231,9 @@ class _InviteWidgetState extends State<InviteWidget> {
     } catch (e) {
       AppLogger.app.e('❌ Fehler beim Kopieren des Links', error: e);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Fehler beim Kopieren des Links'),
+                ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).errorInviteLinkCopy),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 2),
           ),
@@ -429,63 +429,4 @@ class _InviteWidgetState extends State<InviteWidget> {
       ),
     );
   }
-}
-
-/// Helper-Method um das InviteWidget als Dialog anzuzeigen
-Future<T?> showInviteDialog<T extends Object?>(
-  BuildContext context, {
-  required String worldId,
-  required String worldName,
-  VoidCallback? onInviteSent,
-}) {
-  final l10n = AppLocalizations.of(context);
-  
-  // ApiService direkt aus ServiceLocator holen - funktioniert überall!
-  final apiService = ServiceLocator.get<ApiService>();
-  
-  return showDialog<T>(
-    context: context,
-    builder: (dialogContext) {
-      // Debug-Log um zu sehen ob Dialog geladen wird
-      // Debug-Log entfernt für saubere Logs
-      // Entferntes Console Debug: //print('🔧 CONSOLE DEBUG: Invite-Dialog wird erstellt'); // Console Log
-      
-      // Theme direkt vom ursprünglichen Context holen
-      final theme = Theme.of(context);
-      final colorScheme = theme.colorScheme;
-      
-      return AlertDialog(
-        backgroundColor: colorScheme.surface,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          l10n.inviteWidgetDialogTitle,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            color: colorScheme.onSurface,
-          ),
-        ),
-        content: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: 450,
-            minWidth: 350,
-          ),
-          child: InviteWidget(
-            worldId: worldId,
-            worldName: worldName,
-            onInviteSent: onInviteSent,
-            isDialog: true,
-            apiService: apiService,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            style: TextButton.styleFrom(
-              foregroundColor: colorScheme.primary,
-            ),
-            child: Text(l10n.inviteWidgetCancel),
-          ),
-        ],
-      );
-    },
-  );
 }

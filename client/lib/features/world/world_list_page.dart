@@ -10,8 +10,9 @@ import '../../shared/widgets/navigation_widget.dart';
 import '../../shared/navigation/smart_navigation.dart';
 import './widgets/world_card.dart';
 import './widgets/world_filters.dart';
-import '../invite/widgets/invite_widget.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/dialogs/fullscreen_dialog.dart';
+import '../../shared/dialogs/invite_fullscreen_dialog.dart';
 
 // ServiceLocator Import für DI
 import '../../main.dart';
@@ -249,14 +250,15 @@ class _WorldListPageState extends State<WorldListPage> {
     }
   }
 
-  Future<void> _inviteToWorld(World world) async {
+  Future<void> _inviteToWorld(World world, ThemeData worldTheme) async {
     // Invite-Funktion aufgerufen (relevante Aktion)
     
     try {
-      await showInviteDialog(
-        context,
+      await InviteFullscreenDialog.show(
+        context: context, // Normaler Context für Navigation
         worldId: world.id.toString(),
         worldName: world.name,
+        themeOverride: worldTheme, // 🌍 DIRECT: World-Theme direkt übergeben!
         onInviteSent: () {
           // Optional: Refresh oder andere Aktion nach erfolgreichem Invite
           AppLogger.app.i('✅ Invite sent for world: ${world.name}');
@@ -269,7 +271,7 @@ class _WorldListPageState extends State<WorldListPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Fehler beim Öffnen des Einladungs-Dialogs: $e'),
+            content: Text(AppLocalizations.of(context).errorInviteDialogOpen(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -355,27 +357,17 @@ class _WorldListPageState extends State<WorldListPage> {
     }
   }
 
-  Future<void> _leaveWorld(World world) async {
-    // Zeige Bestätigungsdialog
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context).worldLeaveDialogTitle),
-        content: Text(AppLocalizations.of(context).worldLeaveDialogMessage(world.name)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context).buttonCancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
-            child: Text(AppLocalizations.of(context).worldLeaveConfirm),
-          ),
-        ],
-      ),
+  Future<void> _leaveWorld(World world, ThemeData worldTheme) async {
+    // Theme-aware Fullscreen Bestätigungsdialog anzeigen
+    final confirmed = await FullscreenDialog.showConfirmation(
+      context,
+      title: AppLocalizations.of(context).worldLeaveDialogTitle,
+      message: AppLocalizations.of(context).worldLeaveDialogMessage(world.name),
+      confirmText: AppLocalizations.of(context).worldLeaveConfirm,
+      cancelText: AppLocalizations.of(context).buttonCancel,
+      confirmColor: Colors.red,
+      icon: Icons.exit_to_app,
+      themeOverride: worldTheme, // 🌍 DIRECT: World-Theme direkt übergeben!
     );
 
     if (confirmed != true) return;
@@ -470,8 +462,7 @@ class _WorldListPageState extends State<WorldListPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SMART NAVIGATION THEME: Page verwendet preloaded standard theme
-    // 🌍 Nur World Cards haben individuelle world themes via ThemeContextConsumer
+    // 🎯 ORIGINAL BEHAVIOR: Page uses default theme, only World Cards use their specific themes
     return _buildWorldListPage(context, Theme.of(context), null);
   }
 
@@ -697,7 +688,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                               ? () => _joinWorld(world) 
                                               : null,
                                             onLeave: (_joinedWorlds[world.id] ?? false)
-                                              ? () => _leaveWorld(world)
+                                              ? () => _leaveWorld(world, worldTheme) // 🎨 DIRECT: World-Theme direkt übergeben!
                                               : null,  
                                           onPlay: (_joinedWorlds[world.id] ?? false) && 
                                                   (world.status == WorldStatus.open || world.status == WorldStatus.running)
@@ -711,7 +702,7 @@ class _WorldListPageState extends State<WorldListPage> {
                                             : null,
                                           onInvite: ((_joinedWorlds[world.id] ?? false) || (_preRegisteredWorlds[world.id] ?? false)) &&
                                                    (world.status != WorldStatus.closed && world.status != WorldStatus.archived)
-                                              ? () => _inviteToWorld(world)
+                                              ? () => _inviteToWorld(world, worldTheme) // 🎨 DIRECT: World-Theme direkt übergeben!
                                               : null,
                                           onTap: () => _navigateToWorldJoin(world),
                                         ),

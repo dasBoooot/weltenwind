@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 // REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
+import '../../l10n/app_localizations.dart';
 
 /// 📨 Invite Status Types
 enum InviteStatus {
@@ -452,7 +453,7 @@ class _InviteStatusBannerState extends State<InviteStatusBanner> with TickerProv
             child: ElevatedButton.icon(
               onPressed: widget.onAccept,
               icon: const Icon(Icons.check, size: 18),
-              label: const Text('Accept'),
+              label: Text(AppLocalizations.of(context).buttonAccept),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _getAcceptButtonColor(theme, extensions),
                 foregroundColor: theme.colorScheme.onPrimary,
@@ -469,7 +470,7 @@ class _InviteStatusBannerState extends State<InviteStatusBanner> with TickerProv
             child: OutlinedButton.icon(
               onPressed: widget.onDecline,
               icon: const Icon(Icons.close, size: 18),
-              label: const Text('Decline'),
+              label: Text(AppLocalizations.of(context).buttonDecline),
               style: OutlinedButton.styleFrom(
                 foregroundColor: theme.colorScheme.onSurfaceVariant,
                 side: BorderSide(color: theme.colorScheme.outline),
