@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../core/models/world.dart';
 import '../../shared/navigation/smart_navigation.dart';
+import '../../l10n/app_localizations.dart';
+import 'user_info_widget.dart';
+import 'language_switcher.dart';
+import 'logout_widget.dart';
 
 /// 🧭 Navigation Context
 enum NavigationContext {
@@ -35,133 +39,193 @@ class _NavigationWidgetState extends State<NavigationWidget> {
   
   @override
   Widget build(BuildContext context) {
-    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
-    return _buildNavigation(context, Theme.of(context), null);
+    // 🎯 SMART NAVIGATION THEME: Theme wird durch Smart Navigation preloaded oder explizit gesetzt
+    final theme = Theme.of(context);
+    return _buildNavigation(context, theme, null);
   }
 
   Widget _buildNavigation(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: theme.colorScheme.surface,
-      selectedItemColor: theme.colorScheme.primary,
-      unselectedItemColor: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-      currentIndex: _getCurrentIndex(),
-      onTap: _onNavigationTap,
-      items: _buildNavigationItems(context),
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: SafeArea(
+        child: Container(
+          height: 80,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface.withValues(alpha: 0.95),
+            border: Border(
+              bottom: BorderSide(
+                color: theme.colorScheme.outline.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              // 🔰 LEFT SIDE: User Info + Language Switcher + Logout (with overflow protection)
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const UserInfoWidget(),
+                    const SizedBox(width: 12),
+                    const LanguageSwitcher(),
+                    const SizedBox(width: 12),
+                    const LogoutWidget(),
+                  ],
+                ),
+              ),
+              
+              // 🌟 SPACER: Flexible space between left and right
+              const Spacer(),
+              
+              // 🧭 RIGHT SIDE: Navigation Tabs (Fixed Width)
+              ..._buildNavigationTabs(context, theme),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  List<BottomNavigationBarItem> _buildNavigationItems(BuildContext context) {
-    final baseItems = <BottomNavigationBarItem>[
-      const BottomNavigationBarItem(
-        icon: Icon(Icons.public),
-        label: 'Welten',
-      ),
-    ];
-
-    // Context-spezifische Items hinzufügen
+  List<Widget> _buildNavigationTabs(BuildContext context, ThemeData theme) {
+    final tabs = <Widget>[];
+    
+    // 🎯 OPTIMIERTE NAVIGATION LOGIK - Nur relevante Nav-Punkte pro Page
     switch (_currentContext) {
-      case NavigationContext.worldDashboard:
-        baseItems.addAll([
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.inventory),
-            label: 'Inventar',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
-          ),
-        ]);
+      case NavigationContext.worldList:
+        // 🏠 WORLD LIST: Keine Nav-Punkte - User ist bereits hier
         break;
         
       case NavigationContext.worldJoin:
-        baseItems.addAll([
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: 'Info',
+        // 🚀 WORLD JOIN: Nur zurück zur World List
+        tabs.add(_buildNavTab(
+          context, theme,
+          icon: Icons.public,
+          label: AppLocalizations.of(context).navWorldList,
+          isActive: false, // Nicht aktiv, da auf anderer Page
+          index: 0,
+        ));
+        break;
+        
+      case NavigationContext.worldDashboard:
+        // 🏛️ DASHBOARD: Zurück zu World List + World Join
+        tabs.addAll([
+          _buildNavTab(
+            context, theme,
+            icon: Icons.public,
+            label: AppLocalizations.of(context).navWorldList,
+            isActive: false, // Nicht aktiv, da auf anderer Page
+            index: 0,
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: 'Spieler',
+          const SizedBox(width: 8),
+          _buildNavTab(
+            context, theme,
+            icon: Icons.login,
+            label: AppLocalizations.of(context).worldJoinNowButton,
+            isActive: false, // Nicht aktiv, da auf anderer Page
+            index: 1,
           ),
         ]);
         break;
         
       default:
-        baseItems.addAll([
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
-          ),
-        ]);
+        // Fallback: Keine Navigation
+        break;
     }
-
-    return baseItems;
+    
+    return tabs;
   }
-
-  int _getCurrentIndex() {
-    switch (_currentContext) {
-      case NavigationContext.landing:
-      case NavigationContext.worldList:
-        return 0;
-      case NavigationContext.worldDashboard:
-        return 1;
-      case NavigationContext.worldJoin:
-        return 0;
-      case NavigationContext.invite:
-        return 0;
-    }
+  
+  Widget _buildNavTab(
+    BuildContext context, 
+    ThemeData theme, {
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required int index,
+  }) {
+    return GestureDetector(
+      onTap: () => _onNavigationTap(index),
+      child: Container(
+        width: 120, // 🎯 FIXED WIDTH for navigation tabs
+        height: 64,
+        decoration: BoxDecoration(
+          color: isActive 
+            ? theme.colorScheme.primary.withValues(alpha: 0.1)
+            : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: isActive 
+            ? Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3))
+            : null,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: isActive 
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: isActive 
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _onNavigationTap(int index) async {
+    final worldId = widget.routeParams?['id'];
+    
+    // 🎯 VEREINFACHTE NAVIGATION LOGIK - Jeder Nav-Punkt führt zu spezifischer Page
     switch (_currentContext) {
       case NavigationContext.worldList:
-        if (index == 0) return; // Already on worlds
-        if (index == 1) {
-          await context.smartGoNamed('profile');
+        // 🏠 WORLD LIST: Keine Nav-Punkte vorhanden
+        break;
+        
+      case NavigationContext.worldJoin:
+        switch (index) {
+          case 0:
+            // Navigate to world list
+            await context.smartGoNamed('world-list');
+            break;
         }
         break;
         
       case NavigationContext.worldDashboard:
-        final worldId = widget.routeParams?['id'];
-        if (worldId == null) return;
-        
         switch (index) {
           case 0:
-            await context.smartGoNamed('worldList');
+            // Navigate to world list
+            await context.smartGoNamed('world-list');
             break;
           case 1:
-            return; // Already on dashboard
-          case 2:
-            await context.smartGoNamed('inventory', pathParameters: {'id': worldId});
-            break;
-          case 3:
-            await context.smartGoNamed('profile');
-            break;
-        }
-        break;
-        
-      case NavigationContext.worldJoin:
-        final worldId = widget.routeParams?['id'];
-        if (worldId == null) return;
-        
-        switch (index) {
-          case 0:
-            return; // Already on world join
-          case 1:
-            await context.smartGoNamed('worldInfo', pathParameters: {'id': worldId});
-            break;
-          case 2:
-            await context.smartGoNamed('worldPlayers', pathParameters: {'id': worldId});
+            // Navigate back to world join
+            if (worldId != null) {
+              await context.smartGoNamed('world-join', pathParameters: {'id': worldId});
+            }
             break;
         }
         break;
         
       default:
+        // Fallback navigation - go to world list
+        await context.smartGoNamed('world-list');
         break;
     }
   }

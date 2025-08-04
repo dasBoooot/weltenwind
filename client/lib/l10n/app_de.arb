@@ -31,6 +31,16 @@
     "description": "Button for signing out",
     "context": "authentication"
   },
+  "authLogoutConfirmMessage": "Möchtest du dich wirklich abmelden?",
+  "@authLogoutConfirmMessage": {
+    "description": "Confirmation message for logout dialog",
+    "context": "authentication"
+  },
+  "authAccountLocked": "Account gesperrt",
+  "@authAccountLocked": {
+    "description": "Message when user account is locked",
+    "context": "authentication"
+  },
   "authEmailLabel": "E-Mail",
   "@authEmailLabel": {
     "description": "Label for email input field",
