@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
-// REMOVED: import '../../core/theme/index.dart'; // UNUSED after theme cleanup
 import '../../shared/navigation/smart_navigation.dart';
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/language_switcher.dart';
@@ -115,21 +114,23 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
-    return _buildLandingPage(context, Theme.of(context), null);
+    // 🌟 NEW: Using AppScaffold landing builder (no theme system needed)
+    return AppScaffoldBuilder.forLanding(
+      showBackgroundGradient: false, // Landing uses BackgroundWidget
+      body: _buildLandingBody(context),
+    );
   }
 
-  Widget _buildLandingPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return AppScaffold(
-      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
-      body: Stack(
-        children: [
-          BackgroundWidget(
-            child: SafeArea(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                physics: const BouncingScrollPhysics(),
-                child: Column(
+  Widget _buildLandingBody(BuildContext context) {
+    final theme = Theme.of(context); // 🎨 Local theme reference
+    return Stack(
+      children: [
+        BackgroundWidget(
+          child: SafeArea(
+            child: SingleChildScrollView(
+              controller: _scrollController, 
+              physics: const BouncingScrollPhysics(),
+              child: Column(
                   children: [
                     // Hero Section
                     Container(
@@ -687,21 +688,22 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          
-          // Language Switcher (oben links)
-          const Positioned(
-            top: 40.0,
-            left: 20.0,
-            child: SafeArea(
-              child: LanguageSwitcher(),
-            ),
-          ),
-        ],
+                  ], // Closes Column children
+                ), // Closes Column
+              ), // Closes SingleChildScrollView  
+            ), // Closes SafeArea
+          ), // Closes BackgroundWidget
+        _buildLanguageSwitcher(),
+      ], // Closes Stack children
+    ); // Closes Stack
+  }
+
+  Widget _buildLanguageSwitcher() {
+    return const Positioned(
+      top: 40.0,
+      left: 20.0,
+      child: SafeArea(
+        child: LanguageSwitcher(),
       ),
     );
   }

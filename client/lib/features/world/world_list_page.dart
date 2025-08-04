@@ -55,6 +55,35 @@ class _WorldListPageState extends State<WorldListPage> {
     _loadWorlds();
   }
 
+  /// 🎯 Get correct theme for a world (prioritizes themeVariant over themeBundle)
+  String _getWorldTheme(World world) {
+    // 1. Prioritize themeVariant (new API field)
+    if (world.themeVariant != null && world.themeVariant!.isNotEmpty && world.themeVariant != 'standard') {
+      AppLogger.app.d('✅ [WORLD-LIST-THEME] Using world.themeVariant: ${world.themeVariant} for world ${world.id}');
+      return world.themeVariant!;
+    }
+    
+    // 2. Fallback: Simple bundle-to-theme conversion
+    final worldBundle = world.themeBundle ?? 'world-preview';
+    final fallbackTheme = _getBundleFallbackTheme(worldBundle);
+    AppLogger.app.d('🔄 [WORLD-LIST-THEME] Bundle fallback: $worldBundle → $fallbackTheme for world ${world.id}');
+    return fallbackTheme;
+  }
+
+  /// 🛡️ Simple fallback: Bundle-Name zu Theme-Name 
+  /// (Nur noch für Legacy-Support ohne themeVariant)
+  String _getBundleFallbackTheme(String bundleOrTheme) {
+    switch (bundleOrTheme) {
+      case 'world-preview': 
+      case 'pre-game-minimal':
+        return 'default'; // Neutral themes
+      case 'full-gaming':
+        return 'default'; // Generic fallback (themeVariant should be available)
+      default: 
+        return bundleOrTheme; // Assume it's already a theme name
+    }
+  }
+
   void _initializeServices() {
     try {
       if (ServiceLocator.has<AuthService>()) {
@@ -440,302 +469,340 @@ class _WorldListPageState extends State<WorldListPage> {
     await context.smartGoNamed('world-dashboard', pathParameters: {'id': world.id.toString()});
   }
 
+  /// 🍔 Build themed hamburger drawer for filters
+  Widget _buildDrawer() {
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        
+        return Drawer(
+          backgroundColor: theme.colorScheme.surface,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(color: theme.colorScheme.primary),
+                child: Text(
+                  'Filter & Settings', 
+                  style: TextStyle(
+                    color: theme.colorScheme.onPrimary, 
+                    fontSize: 24
+                  )
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.filter_list), 
+                title: const Text('Status Filter'), 
+                onTap: () => Navigator.pop(context)
+              ),
+              ListTile(
+                leading: const Icon(Icons.category), 
+                title: const Text('Category Filter'), 
+                onTap: () => Navigator.pop(context)
+              ),
+              ListTile(
+                leading: const Icon(Icons.sort), 
+                title: const Text('Sortierung'), 
+                onTap: () => Navigator.pop(context)
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// 🌍 Build main world list body with mixed themes
+  Widget _buildWorldListBody() {
+    return BackgroundWidget( // 🖼️ World-specific background images
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: _buildWorldListCard(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 🎴 Build the main world list card
+  Widget _buildWorldListCard() {
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        final l10n = AppLocalizations.of(context);
+        
+        return Card(
+          elevation: 12,
+          color: theme.colorScheme.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+              width: 1,
+            ),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.worldListTitle,
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.worldListSubtitle,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 32),
+                
+                // Filters
+                WorldFilters(
+                  statusFilter: _statusFilter,
+                  categoryFilter: _categoryFilter,
+                  sortBy: _sortBy,
+                  sortAscending: _sortAscending,
+                  onStatusChanged: (status) => setState(() {
+                    _statusFilter = status;
+                    _applyFiltersAndSorting();
+                  }),
+                  onCategoryChanged: (category) => setState(() {
+                    _categoryFilter = category;
+                    _applyFiltersAndSorting();
+                  }),
+                  onSortByChanged: (sortBy) => setState(() {
+                    _sortBy = sortBy;
+                    _applyFiltersAndSorting();
+                  }),
+                  onSortOrderChanged: () => setState(() {
+                    _sortAscending = !_sortAscending;
+                    _applyFiltersAndSorting();
+                  }),
+                  onResetFilters: () => setState(() {
+                    _statusFilter = null;
+                    _categoryFilter = null;
+                    _sortBy = 'startDate';
+                    _sortAscending = true;
+                    _applyFiltersAndSorting();
+                  }),
+                ),
+                
+                const SizedBox(height: 32),
+                
+                // Content
+                if (_isLoading)
+                  _buildLoadingState(theme)
+                else if (_error != null)
+                  _buildErrorState(theme, l10n)
+                else
+                  _buildWorldsList(),
+                
+                const SizedBox(height: 24),
+                
+                // Action buttons
+                _buildActionButtons(theme, l10n),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// 🔄 Build loading state
+  Widget _buildLoadingState(ThemeData theme) {
+    return Center(
+      child: Column(
+        children: [
+          CircularProgressIndicator(color: theme.colorScheme.primary),
+          const SizedBox(height: 16),
+          Text(
+            'Loading worlds...',
+            style: theme.textTheme.bodyLarge,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// ❌ Build error state
+  Widget _buildErrorState(ThemeData theme, AppLocalizations l10n) {
+    return Center(
+      child: Column(
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 64,
+            color: theme.colorScheme.error,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Error: $_error',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.error,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 🌍 Build worlds list with mixed themes (THE CORE!)
+  Widget _buildWorldsList() {
+    if (_filteredWorlds.isEmpty) {
+      return Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
+          return Center(
+            child: Column(
+              children: [
+                Icon(
+                  Icons.public_off,
+                  size: 64,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No worlds available',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+
+    // 🎭 MIXED-THEME MAGIC: Each WorldCard gets its own theme!
+    return Column(
+      children: _filteredWorlds.map((world) {
+        final worldTheme = _getWorldTheme(world); // ✅ NEW: Use themeVariant logic!
+        
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: ThemeContextConsumer(
+            componentName: 'WorldCard_${world.id}',
+            worldThemeOverride: worldTheme, // 🎯 Dynamic theme resolution!
+            fallbackBundle: 'world-preview',
+            builder: (cardContext, resolvedTheme, worldExtensions) {
+              return Theme(
+                data: resolvedTheme,
+                child: WorldCard(
+                  world: world,
+                  isPreRegistered: _preRegisteredWorlds[world.id] ?? false,
+                  isJoined: _joinedWorlds[world.id] ?? false,
+                  onJoin: world.canJoin && !(_joinedWorlds[world.id] ?? false) 
+                    ? () => _joinWorld(world) 
+                    : null,
+                  onLeave: (_joinedWorlds[world.id] ?? false)
+                    ? () => _leaveWorld(world, resolvedTheme) 
+                    : null,  
+                  onPlay: (_joinedWorlds[world.id] ?? false) && 
+                          (world.status == WorldStatus.open || world.status == WorldStatus.running)
+                    ? () => _playWorld(world)
+                    : null,
+                  onPreRegister: world.canPreRegister && !(_preRegisteredWorlds[world.id] ?? false)
+                    ? () => _preRegisterWorld(world)
+                    : null,
+                  onCancelPreRegistration: (_preRegisteredWorlds[world.id] ?? false)
+                    ? () => _cancelPreRegistration(world)
+                    : null,
+                  onInvite: ((_joinedWorlds[world.id] ?? false) || (_preRegisteredWorlds[world.id] ?? false)) &&
+                           (world.status != WorldStatus.closed && world.status != WorldStatus.archived)
+                    ? () => _inviteToWorld(world, resolvedTheme) 
+                    : null,
+                  onTap: () => _navigateToWorldJoin(world),
+                ),
+              );
+            },
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  /// 🔧 Build action buttons
+  Widget _buildActionButtons(ThemeData theme, AppLocalizations l10n) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        SizedBox(
+          height: 48,
+          child: ElevatedButton.icon(
+            onPressed: _loadWorlds,
+            icon: const Icon(Icons.refresh),
+            label: Text(l10n.worldListRefreshButton),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 12,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
 // Filter and sort methods removed - now using WorldFilters widget
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 ORIGINAL BEHAVIOR: Page uses default theme, only World Cards use their specific themes
-    return _buildWorldListPage(context, Theme.of(context), null);
-  }
-
-  Widget _buildWorldListPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
+    final l10n = AppLocalizations.of(context);
+    
     return AppScaffold(
-      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
-      body: BackgroundWidget( // 🖼️ RESTORED: BackgroundWidget for image backgrounds
-        child: Stack(
-          children: [
-            // Main content
-            Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 800),
-                  child: Card(
-                      elevation: 12,
-                      color: theme.colorScheme.surface, // Theme-basierte Kartenfarbe
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color(0xFF1A1A1A), // Themed via ThemeData colorScheme
-                              Color(0xFF2A2A2A), // Themed via ThemeData colorScheme
-                            ],
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(32.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Logo
-                              Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
-                                    width: 2,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.public,
-                                  size: 40,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              
-                              // Title
-                              Text(
-                                AppLocalizations.of(context).appTitle,
-                                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                  color: theme.colorScheme.onSurface,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              
-                              // Subtitle
-                              Text(
-                                AppLocalizations.of(context).worldListSubtitle,
-                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 24),
-                              
-                              // Filter und Sortierung
-                              if (!_isLoading && _worlds.isNotEmpty) ...[
-                                WorldFilters(
-                                  statusFilter: _statusFilter,
-                                  categoryFilter: _categoryFilter,
-                                  sortBy: _sortBy,
-                                  sortAscending: _sortAscending,
-                                  onStatusChanged: (status) {
-                                    setState(() {
-                                      _statusFilter = status;
-                                    });
-                                    _applyFiltersAndSorting();
-                                  },
-                                  onCategoryChanged: (category) {
-                                    setState(() {
-                                      _categoryFilter = category;
-                                    });
-                                    _applyFiltersAndSorting();
-                                  },
-                                  onSortByChanged: (sortBy) {
-                                    setState(() {
-                                      _sortBy = sortBy;
-                                    });
-                                    _applyFiltersAndSorting();
-                                  },
-                                  onSortOrderChanged: () {
-                                    setState(() {
-                                      _sortAscending = !_sortAscending;
-                                    });
-                                    _applyFiltersAndSorting();
-                                  },
-                                  onResetFilters: () {
-                                    setState(() {
-                                      _statusFilter = null;
-                                      _categoryFilter = null;
-                                      _sortBy = 'startDate';
-                                      _sortAscending = true;
-                                    });
-                                    _applyFiltersAndSorting();
-                                  },
-                                ),
-                                const SizedBox(height: 16),
-                              ],
-                              
-                              // World list
-                              if (_isLoading)
-                                Center(
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-                                  ),
-                                )
-                              else if (_error != null)
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.error.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: theme.colorScheme.error.withValues(alpha: 0.5),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.error,
-                                        size: 48,
-                                        color: theme.colorScheme.error,
-                                      ),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        AppLocalizations.of(context).worldListErrorTitle,
-                                        style: TextStyle(
-                                          color: theme.colorScheme.error,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        _error ?? AppLocalizations.of(context).worldListErrorUnknown,
-                                        style: TextStyle(
-                                          color: theme.colorScheme.error.withValues(alpha: 0.8),
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              else if (_filteredWorlds.isEmpty)
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF2D2D2D),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.filter_list,
-                                        size: 48,
-                                        color: theme.colorScheme.primary.withValues(alpha: 0.7),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        AppLocalizations.of(context).worldListEmptyTitle,
-                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                          color: Colors.grey[300],
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        AppLocalizations.of(context).worldListEmptyMessage,
-                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Colors.grey[400],
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              else
-                                Column(
-                                  children: _filteredWorlds.map((world) => 
-                                    // 🌍 WORLD-SPECIFIC THEME: Jede World Card in ihrem eigenen Theme mit bestehender Architektur!
-                                    ThemeContextConsumer(
-                                      componentName: 'WorldCard_${world.id}',
-                                      worldThemeOverride: world.themeBundle ?? 'world-preview', // async loading in ThemeContextConsumer
-                                      fallbackBundle: 'world-preview',
-                                      // ✅ CLEAN: Automatische world-preview Logik für World Cards
-                                      builder: (cardContext, worldTheme, worldExtensions) {
-                                        return Theme(
-                                          data: worldTheme,
-                                          child: WorldCard(
-                                            world: world,
-                                            isPreRegistered: _preRegisteredWorlds[world.id] ?? false,
-                                            isJoined: _joinedWorlds[world.id] ?? false,
-                                            onJoin: world.canJoin && !(_joinedWorlds[world.id] ?? false) 
-                                              ? () => _joinWorld(world) 
-                                              : null,
-                                            onLeave: (_joinedWorlds[world.id] ?? false)
-                                              ? () => _leaveWorld(world, worldTheme) // 🎨 DIRECT: World-Theme direkt übergeben!
-                                              : null,  
-                                          onPlay: (_joinedWorlds[world.id] ?? false) && 
-                                                  (world.status == WorldStatus.open || world.status == WorldStatus.running)
-                                            ? () => _playWorld(world)
-                                            : null,
-                                          onPreRegister: world.canPreRegister && !(_preRegisteredWorlds[world.id] ?? false)
-                                            ? () => _preRegisterWorld(world)
-                                            : null,
-                                          onCancelPreRegistration: (_preRegisteredWorlds[world.id] ?? false)
-                                            ? () => _cancelPreRegistration(world)
-                                            : null,
-                                          onInvite: ((_joinedWorlds[world.id] ?? false) || (_preRegisteredWorlds[world.id] ?? false)) &&
-                                                   (world.status != WorldStatus.closed && world.status != WorldStatus.archived)
-                                              ? () => _inviteToWorld(world, worldTheme) // 🎨 DIRECT: World-Theme direkt übergeben!
-                                              : null,
-                                          onTap: () => _navigateToWorldJoin(world),
-                                        ),
-                                      );
-                                      },
-                                    )
-                                  ).toList(),
-                                ),
-                              
-                              const SizedBox(height: 24),
-                              
-                              // Action buttons
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  SizedBox(
-                                    height: 48,
-                                    child: ElevatedButton.icon(
-                                      onPressed: _loadWorlds,
-                                      icon: const Icon(Icons.refresh),
-                                      label: Text(AppLocalizations.of(context).worldListRefreshButton),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: theme.colorScheme.primary,
-                                        foregroundColor: Colors.white,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 24,
-                                          vertical: 12,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+      themeContextId: 'world-list',
+      themeBundleId: 'world-overview', // Neutral theme for the page itself
+      componentName: 'WorldListPage',
+      showBackgroundGradient: false, // Use BackgroundWidget instead
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: Text(l10n.appTitle),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 8.0),
+            child: const NavigationWidget(
+              currentContext: NavigationContext.worldList,
             ),
-            // 🧭 INTEGRATED NAVIGATION: Uses preloaded theme from Smart Navigation
-            const NavigationWidget(currentContext: NavigationContext.worldList),        
-          ],
-        ),
+          ),
+        ],
       ),
+      drawer: _buildDrawer(),
+      body: _buildWorldListBody(),
     );
   }
 } 

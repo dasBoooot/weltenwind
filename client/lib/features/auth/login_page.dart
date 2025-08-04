@@ -222,251 +222,264 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme aus Smart Navigation
-    return _buildLoginPage(context, Theme.of(context), null);
+    // 🎨 NEW: Using AppScaffold with integrated theme system
+    return AppScaffoldBuilder.forAuthWithTheme(
+      themeContext: 'auth',
+      themeBundle: 'pre-game-minimal',
+      body: _buildLoginBody(context),
+    );
   }
 
-  Widget _buildLoginPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return AppScaffold(
-      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
-      body: Stack(
-        children: [
-          BackgroundWidget(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: theme.cardTheme.margin ?? const EdgeInsets.all(24.0),
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 420),
-                      child: DynamicComponents.authFrame(
-                        welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
-                        pageTitle: AppLocalizations.of(context).authLoginTitle,
-                        subtitle: AppLocalizations.of(context).authLoginSubtitle,
-                        padding: theme.dialogTheme.contentTextStyle != null 
-                          ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
-                          : const EdgeInsets.all(32.0),
-                        context: context,
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              
-                              // 📝 Username field
-                              TextFormField(
-                                controller: _usernameController,
-                                autofillHints: const [AutofillHints.username],
-                                textInputAction: TextInputAction.next,
-                                onChanged: (_) {
-                                  // Fix: Removed setState to prevent focus loss during typing
-                                },
-                                decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context).authUsernameLabel,
-                                  prefixIcon: Icon(Icons.person, color: theme.colorScheme.primary),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return AppLocalizations.of(context).authUsernameRequired;
-                                  }
-                                  if (value.trim().length < 3) {
-                                    return AppLocalizations.of(context).authUsernameMinLength;
-                                  }
-                                  return null;
-                                },
-                              ),
-                              SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-                              
-                              // 🔒 Password field
-                              TextFormField(
-                                controller: _passwordController,
-                                obscureText: _obscurePassword,
-                                autofillHints: const [AutofillHints.password],
-                                textInputAction: TextInputAction.done,
-                                onFieldSubmitted: (_) => _isLoading ? null : _login(),
-                                onChanged: (_) {
-                                  // Fix: Removed setState to prevent focus loss during typing
-                                },
-                                decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context).authPasswordLabel,
-                                  prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscurePassword = !_obscurePassword;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return AppLocalizations.of(context).authPasswordRequired;
-                                  }
-                                  return null;
-                                },
-                              ),
-                              SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-                              
-                              // Remember me + forgot password
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Checkbox(
-                                        value: _rememberMe,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _rememberMe = value ?? false;
-                                          });
-                                        },
-                                        activeColor: theme.colorScheme.primary,
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _rememberMe = !_rememberMe;
-                                          });
-                                        },
-                                        child: Text(
-                                          AppLocalizations.of(context).authRememberMe,
-                                          style: theme.textTheme.bodyMedium,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  
-                                  // 🔮 Passwort vergessen
-                                  DynamicComponents.secondaryButton(
-                                    text: AppLocalizations.of(context).authForgotPassword,
-                                    onPressed: () async => await context.smartGoNamed('forgot-password'),
-                                    size: AppButtonSize.small,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: kTextTabBarHeight / 3),
-                              
-                              // Error message
-                              if (_loginError != null)
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(kTextTabBarHeight / 3),
-                                  margin: const EdgeInsets.only(bottom: kTextTabBarHeight / 2),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.error.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: theme.colorScheme.error.withValues(alpha: 0.3),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.error_outline,
-                                        color: theme.colorScheme.error,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: kTextTabBarHeight / 6),
-                                      Expanded(
-                                        child: Text(
-                                          _loginError!,
-                                          style: theme.textTheme.bodySmall?.copyWith(
-                                            color: theme.colorScheme.error,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              
-                              // 🎯 Dynamischer Login-Button
-                              SizedBox(
-                                width: double.infinity,
-                                child: DynamicComponents.primaryButton(
-                                  text: AppLocalizations.of(context).authLoginButton,
-                                  onPressed: _isLoading ? null : _login,
-                                  isLoading: _isLoading,
-                                  icon: Icons.login_rounded,
-                                ),
-                              ),
-                              SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
-                              
-                              // Register-Bereich
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    AppLocalizations.of(context).authNoAccount,
-                                    style: theme.textTheme.bodyMedium,
-                                  ),
-                                  SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 8.0),
-                                  DynamicComponents.secondaryButton(
-                                    text: AppLocalizations.of(context).authRegisterButton,
-                                    onPressed: () async => await context.smartGoNamed('register'),
-                                    size: AppButtonSize.small,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+  Widget _buildLoginBody(BuildContext context) {
+    return Stack(
+      children: [
+        BackgroundWidget(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: _buildLoginForm(context),
                   ),
                 ),
               ),
             ),
           ),
-          
-          // Loading Overlay
-          if (_isLoading)
-            Container(
-              color: theme.colorScheme.surface.withValues(alpha: 0.9),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+        ),
+        _buildLoadingOverlay(context),
+        _buildLanguageSwitcher(),
+        _buildThemeSwitcher(context),
+      ],
+    );
+  }
+
+  Widget _buildLoginForm(BuildContext context) {
+    final theme = Theme.of(context);
+    return DynamicComponents.authFrame(
+      welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
+      pageTitle: AppLocalizations.of(context).authLoginTitle,
+      subtitle: AppLocalizations.of(context).authLoginSubtitle,
+      padding: theme.dialogTheme.contentTextStyle != null 
+        ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
+        : const EdgeInsets.all(32.0),
+      context: context,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 📝 Username field
+            TextFormField(
+              controller: _usernameController,
+              autofillHints: const [AutofillHints.username],
+              textInputAction: TextInputAction.next,
+              onChanged: (_) {
+                // Fix: Removed setState to prevent focus loss during typing
+              },
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).authUsernameLabel,
+                prefixIcon: Icon(Icons.person, color: theme.colorScheme.primary),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return AppLocalizations.of(context).authUsernameRequired;
+                }
+                if (value.trim().length < 3) {
+                  return AppLocalizations.of(context).authUsernameMinLength;
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
+            
+            // 🔒 Password field
+            TextFormField(
+              controller: _passwordController,
+              obscureText: _obscurePassword,
+              autofillHints: const [AutofillHints.password],
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted: (_) => _isLoading ? null : _login(),
+              onChanged: (_) {
+                // Fix: Removed setState to prevent focus loss during typing
+              },
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).authPasswordLabel,
+                prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return AppLocalizations.of(context).authPasswordRequired;
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
+            
+            // Remember me + forgot password
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
                   children: [
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-                      strokeWidth: 3,
+                    Checkbox(
+                      value: _rememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          _rememberMe = value ?? false;
+                        });
+                      },
+                      activeColor: theme.colorScheme.primary,
                     ),
-                    SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-                    Text(
-                      AppLocalizations.of(context).authLoginLoading,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.onSurface,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _rememberMe = !_rememberMe;
+                        });
+                      },
+                      child: Text(
+                        AppLocalizations.of(context).authRememberMe,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+                
+                // 🔮 Passwort vergessen
+                DynamicComponents.secondaryButton(
+                  text: AppLocalizations.of(context).authForgotPassword,
+                  onPressed: () async => await context.smartGoNamed('forgot-password'),
+                  size: AppButtonSize.small,
+                ),
+              ],
+            ),
+            const SizedBox(height: kTextTabBarHeight / 3),
+            
+            // Error message
+            if (_loginError != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(kTextTabBarHeight / 3),
+                margin: const EdgeInsets.only(bottom: kTextTabBarHeight / 2),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.error.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: theme.colorScheme.error.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: theme.colorScheme.error,
+                      size: 20,
+                    ),
+                    const SizedBox(width: kTextTabBarHeight / 6),
+                    Expanded(
+                      child: Text(
+                        _loginError!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.error,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-          
-          // Language Switcher
-          const Positioned(
-            top: 40.0,
-            left: 20.0,
-            child: SafeArea(
-              child: LanguageSwitcher(),
-            ),
-          ),
-          
-          // Theme Switcher
-          Positioned(
-            top: 40.0,
-            right: 20.0,
-            child: SafeArea(
-              child: ThemeSwitcher(
-                themeProvider: ThemeProvider(),
-                isCompact: true,
+            
+            // 🎯 Dynamischer Login-Button
+            SizedBox(
+              width: double.infinity,
+              child: DynamicComponents.primaryButton(
+                text: AppLocalizations.of(context).authLoginButton,
+                onPressed: _isLoading ? null : _login,
+                isLoading: _isLoading,
+                icon: Icons.login_rounded,
               ),
             ),
-          ),
-        ],
+            SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
+            
+            // Register-Bereich
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  AppLocalizations.of(context).authNoAccount,
+                  style: theme.textTheme.bodyMedium,
+                ),
+                SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 8.0),
+                DynamicComponents.secondaryButton(
+                  text: AppLocalizations.of(context).authRegisterButton,
+                  onPressed: () async => await context.smartGoNamed('register'),
+                  size: AppButtonSize.small,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingOverlay(BuildContext context) {
+    final theme = Theme.of(context);
+    if (!_isLoading) return const SizedBox.shrink();
+    
+    return Container(
+      color: theme.colorScheme.surface.withValues(alpha: 0.9),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+              strokeWidth: 3,
+            ),
+            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
+            Text(
+              AppLocalizations.of(context).authLoginLoading,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageSwitcher() {
+    return const Positioned(
+      top: 40.0,
+      left: 20.0,
+      child: SafeArea(
+        child: LanguageSwitcher(),
+      ),
+    );
+  }
+
+  Widget _buildThemeSwitcher(BuildContext context) {
+    return Positioned(
+      top: 40.0,
+      right: 20.0,
+      child: SafeArea(
+        child: ThemeSwitcher(
+          themeProvider: ThemeProvider(),
+          isCompact: true,
+        ),
       ),
     );
   }

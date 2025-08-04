@@ -101,79 +101,88 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme aus Smart Navigation
-    return _buildForgotPasswordPage(context, Theme.of(context), null);
+    // 🎨 NEW: Using AppScaffold with integrated theme system
+    return AppScaffoldBuilder.forAuthWithTheme(
+      themeContext: 'auth',
+      themeBundle: 'pre-game-minimal',
+      body: _buildForgotPasswordBody(context),
+    );
   }
 
-  Widget _buildForgotPasswordPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return AppScaffold(
-      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
-      body: Stack(
-        children: [
-          BackgroundWidget(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: theme.cardTheme.margin ?? const EdgeInsets.all(24.0),
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 420),
-                      child: _isSuccess
-                          ? _buildSuccessView(theme)
-                          : _buildFormView(theme),
-                    ),
+  Widget _buildForgotPasswordBody(BuildContext context) {
+    return Stack(
+      children: [
+        BackgroundWidget(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: _isSuccess
+                        ? _buildSuccessView(Theme.of(context))
+                        : _buildFormView(Theme.of(context)),
                   ),
                 ),
               ),
             ),
           ),
-          
-          // Loading Overlay
-          if (_isLoading)
-            Container(
-              color: theme.colorScheme.surface.withValues(alpha: 0.9),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-                      strokeWidth: 3,
-                    ),
-                    SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-                    Text(
-                      AppLocalizations.of(context).authLoginLoading,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
+        ),
+        _buildLoadingOverlay(context),
+        _buildLanguageSwitcher(),
+        _buildThemeSwitcher(context),
+      ],
+    );
+  }
+
+  Widget _buildLoadingOverlay(BuildContext context) {
+    final theme = Theme.of(context);
+    if (!_isLoading) return const SizedBox.shrink();
+    
+    return Container(
+      color: theme.colorScheme.surface.withValues(alpha: 0.9),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+              strokeWidth: 3,
+            ),
+            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
+            Text(
+              AppLocalizations.of(context).authLoginLoading,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurface,
               ),
             ),
-          
-          // Language Switcher
-          const Positioned(
-            top: 40.0,
-            left: 20.0,
-            child: SafeArea(
-              child: LanguageSwitcher(),
-            ),
-          ),
-          
-          // Theme Switcher
-          Positioned(
-            top: 40.0,
-            right: 20.0,
-            child: SafeArea(
-              child: ThemeSwitcher(
-                themeProvider: ThemeProvider(),
-                isCompact: true,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageSwitcher() {
+    return const Positioned(
+      top: 40.0,
+      left: 20.0,
+      child: SafeArea(
+        child: LanguageSwitcher(),
+      ),
+    );
+  }
+
+  Widget _buildThemeSwitcher(BuildContext context) {
+    return Positioned(
+      top: 40.0,
+      right: 20.0,
+      child: SafeArea(
+        child: ThemeSwitcher(
+          themeProvider: ThemeProvider(),
+          isCompact: true,
+        ),
       ),
     );
   }

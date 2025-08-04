@@ -226,240 +226,252 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme aus Smart Navigation
-    return _buildRegisterPage(context, Theme.of(context), null);
+    // 🎨 NEW: Using AppScaffold with integrated theme system
+    return AppScaffoldBuilder.forAuthWithTheme(
+      themeContext: 'auth',
+      themeBundle: 'pre-game-minimal',
+      body: _buildRegisterBody(context),
+    );
   }
 
-  Widget _buildRegisterPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return AppScaffold(
-      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
-      body: Stack(
-        children: [
-          BackgroundWidget(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: theme.cardTheme.margin ?? const EdgeInsets.all(24.0),
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 420),
-                      child: DynamicComponents.authFrame(
-                        welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
-                        pageTitle: AppLocalizations.of(context).authRegisterTitle,
-                        subtitle: AppLocalizations.of(context).authRegisterSubtitle,
-                        padding: theme.dialogTheme.contentTextStyle != null 
-                          ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
-                          : const EdgeInsets.all(32.0),
-                        context: context,
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              
-                              // 📝 Username field
-                              TextFormField(
-                                controller: _usernameController,
-                                autofillHints: const [AutofillHints.username],
-                                textInputAction: TextInputAction.next,
-                                onChanged: (_) {
-                                                                  // Fix: Removed setState to prevent focus loss during typing
-                                },
-                                decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context).authUsernameLabel,
-                                  prefixIcon: Icon(Icons.person, color: theme.colorScheme.primary),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return AppLocalizations.of(context).authUsernameRequired;
-                                  }
-                                  if (value.trim().length < 3) {
-                                    return AppLocalizations.of(context).authUsernameMinLength;
-                                  }
-                                  return null;
-                                },
-                              ),
-                              SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-                              
-                              // 📧 Email field
-                              TextFormField(
-                                controller: _emailController,
-                                keyboardType: TextInputType.emailAddress,
-                                autofillHints: const [AutofillHints.email],
-                                textInputAction: TextInputAction.next,
-                                onChanged: (_) {
-                                                                  // Fix: Removed setState to prevent focus loss during typing
-                                },
-                                decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context).authEmailLabel,
-                                  prefixIcon: Icon(Icons.email, color: theme.colorScheme.primary),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return AppLocalizations.of(context).authEmailRequired;
-                                  }
-                                  if (!_emailRegex.hasMatch(value.trim())) {
-                                    return AppLocalizations.of(context).errorValidationEmail;
-                                  }
-                                  return null;
-                                },
-                              ),
-                              SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-                              
-                              // 🔒 Password field
-                              TextFormField(
-                                controller: _passwordController,
-                                obscureText: _obscurePassword,
-                                autofillHints: const [AutofillHints.newPassword],
-                                textInputAction: TextInputAction.done,
-                                onFieldSubmitted: (_) => _isLoading ? null : _register(),
-                                onChanged: (_) {
-                                                                  // Fix: Removed setState to prevent focus loss during typing
-                                },
-                                decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context).authPasswordLabel,
-                                  prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscurePassword = !_obscurePassword;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return AppLocalizations.of(context).authPasswordRequired;
-                                  }
-                                  if (value.length < 6) {
-                                    return AppLocalizations.of(context).authPasswordMinLength;
-                                  }
-                                  return null;
-                                },
-                              ),
-                              SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
-                              
-                              // Error message
-                              if (_registerError != null)
-                                Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.all(theme.textTheme.bodySmall?.fontSize ?? 8.0),
-                                  margin: EdgeInsets.only(bottom: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.error.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: theme.colorScheme.error.withValues(alpha: 0.3),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.error_outline,
-                                        color: theme.colorScheme.error,
-                                        size: 20,
-                                      ),
-                                      SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 4.0),
-                                      Expanded(
-                                        child: Text(
-                                          _registerError!,
-                                          style: theme.textTheme.bodySmall?.copyWith(
-                                            color: theme.colorScheme.error,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              
-                              // 🎯 Magischer Register-Button
-                              SizedBox(
-                                width: double.infinity,
-                                child: DynamicComponents.primaryButton(
-                                  text: AppLocalizations.of(context).authRegisterButton,
-                                  onPressed: _isLoading ? null : _register,
-                                  isLoading: _isLoading,
-                                  icon: Icons.person_add_rounded,
-                                ),
-                              ),
-                              SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
-                              
-                              // Login-Link
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    AppLocalizations.of(context).authHaveAccount,
-                                    style: theme.textTheme.bodyMedium,
-                                  ),
-                                  SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 8.0),
-                                  DynamicComponents.secondaryButton(
-                                    text: AppLocalizations.of(context).authLoginButton,
-                                    onPressed: () async => await context.smartGoNamed('login'),
-                                    size: AppButtonSize.small,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+  Widget _buildRegisterBody(BuildContext context) {
+    return Stack(
+      children: [
+        BackgroundWidget(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: _buildRegisterForm(context),
                   ),
                 ),
               ),
             ),
           ),
-          
-          // Loading Overlay
-          if (_isLoading)
-            Container(
-              color: theme.colorScheme.surface.withValues(alpha: 0.9),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+        ),
+        _buildLoadingOverlay(context),
+        _buildLanguageSwitcher(),
+        _buildThemeSwitcher(context),
+      ],
+    );
+  }
+
+  Widget _buildRegisterForm(BuildContext context) {
+    final theme = Theme.of(context);
+    return DynamicComponents.authFrame(
+      welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
+      pageTitle: AppLocalizations.of(context).authRegisterTitle,
+      subtitle: AppLocalizations.of(context).authRegisterSubtitle,
+      padding: theme.dialogTheme.contentTextStyle != null 
+        ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
+        : const EdgeInsets.all(32.0),
+      context: context,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 📝 Username field
+            TextFormField(
+              controller: _usernameController,
+              autofillHints: const [AutofillHints.username],
+              textInputAction: TextInputAction.next,
+              onChanged: (_) {
+                // Fix: Removed setState to prevent focus loss during typing
+              },
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).authUsernameLabel,
+                prefixIcon: Icon(Icons.person, color: theme.colorScheme.primary),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return AppLocalizations.of(context).authUsernameRequired;
+                }
+                if (value.trim().length < 3) {
+                  return AppLocalizations.of(context).authUsernameMinLength;
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
+                              
+            // 📧 Email field
+            TextFormField(
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
+              textInputAction: TextInputAction.next,
+              onChanged: (_) {
+                                                // Fix: Removed setState to prevent focus loss during typing
+              },
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).authEmailLabel,
+                prefixIcon: Icon(Icons.email, color: theme.colorScheme.primary),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return AppLocalizations.of(context).authEmailRequired;
+                }
+                if (!_emailRegex.hasMatch(value.trim())) {
+                  return AppLocalizations.of(context).errorValidationEmail;
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
+            
+            // 🔒 Password field
+            TextFormField(
+              controller: _passwordController,
+              obscureText: _obscurePassword,
+              autofillHints: const [AutofillHints.newPassword],
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted: (_) => _isLoading ? null : _register(),
+              onChanged: (_) {
+              },
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).authPasswordLabel,
+                prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return AppLocalizations.of(context).authPasswordRequired;
+                }
+                if (value.length < 6) {
+                  return AppLocalizations.of(context).authPasswordMinLength;
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
+            
+            // Error message
+            if (_registerError != null)
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(theme.textTheme.bodySmall?.fontSize ?? 8.0),
+                margin: EdgeInsets.only(bottom: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.error.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: theme.colorScheme.error.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
                   children: [
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-                      strokeWidth: 3,
+                    Icon(
+                      Icons.error_outline,
+                      color: theme.colorScheme.error,
+                      size: 20,
                     ),
-                    SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-                    Text(
-                      AppLocalizations.of(context).authLoginLoading,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.onSurface,
+                    SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 4.0),
+                    Expanded(
+                      child: Text(
+                        _registerError!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.error,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-          
-          // Language Switcher
-          const Positioned(
-            top: 40.0,
-            left: 20.0,
-            child: SafeArea(
-              child: LanguageSwitcher(),
-            ),
-          ),
-          
-          // Theme Switcher
-          Positioned(
-            top: 40.0,
-            right: 20.0,
-            child: SafeArea(
-              child: ThemeSwitcher(
-                themeProvider: ThemeProvider(),
-                isCompact: true,
+            
+            // 🎯 Magischer Register-Button
+            SizedBox(
+              width: double.infinity,
+              child: DynamicComponents.primaryButton(
+                text: AppLocalizations.of(context).authRegisterButton,
+                onPressed: _isLoading ? null : _register,
+                isLoading: _isLoading,
+                icon: Icons.person_add_rounded,
               ),
             ),
-          ),
-        ],
+            SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
+            
+            // Login-Link
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  AppLocalizations.of(context).authHaveAccount,
+                  style: theme.textTheme.bodyMedium,
+                ),
+                SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 8.0),
+                DynamicComponents.secondaryButton(
+                  text: AppLocalizations.of(context).authLoginButton,
+                  onPressed: () async => await context.smartGoNamed('login'),
+                  size: AppButtonSize.small,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingOverlay(BuildContext context) {
+    final theme = Theme.of(context);
+    if (!_isLoading) return const SizedBox.shrink();
+    
+    return Container(
+      color: theme.colorScheme.surface.withValues(alpha: 0.9),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+              strokeWidth: 3,
+            ),
+            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
+            Text(
+              AppLocalizations.of(context).authLoginLoading,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageSwitcher() {
+    return const Positioned(
+      top: 40.0,
+      left: 20.0,
+      child: SafeArea(
+        child: LanguageSwitcher(),
+      ),
+    );
+  }
+
+  Widget _buildThemeSwitcher(BuildContext context) {
+    return Positioned(
+      top: 40.0,
+      right: 20.0,
+      child: SafeArea(
+        child: ThemeSwitcher(
+          themeProvider: ThemeProvider(),
+          isCompact: true,
+        ),
       ),
     );
   }

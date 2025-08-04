@@ -33,6 +33,20 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     _loadInviteData();
   }
 
+  /// 🛡️ Simple fallback: Bundle-Name zu Theme-Name 
+  /// (Nur noch für Legacy-Support ohne themeVariant)
+  String _getBundleFallbackTheme(String bundleOrTheme) {
+    switch (bundleOrTheme) {
+      case 'world-preview': 
+      case 'pre-game-minimal':
+        return 'default'; // Neutral themes
+      case 'full-gaming':
+        return 'default'; // Generic fallback (themeVariant should be available)
+      default: 
+        return bundleOrTheme; // Assume it's already a theme name
+    }
+  }
+
   Future<void> _loadInviteData() async {
     try {
       setState(() {
@@ -153,26 +167,42 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     if (_inviteData != null) {
       AppLogger.app.d('🔍 [INVITE-DEBUG] _inviteData.keys: ${_inviteData!.keys}');
       if (_inviteData!['world'] != null) {
-        worldTheme = _inviteData!['world']['themeBundle'] as String?;
-        AppLogger.app.d('🔍 [INVITE-DEBUG] Found worldTheme: "$worldTheme"');
-        AppLogger.app.d('🔍 [INVITE-DEBUG] World data: ${_inviteData!['world']}');
+        final worldData = _inviteData!['world'];
+        final rawTheme = worldData['themeBundle'] as String?;
+        final worldId = worldData['id']?.toString();
+        
+        AppLogger.app.d('🔍 [INVITE-DEBUG] Raw themeBundle: "$rawTheme"');
+        AppLogger.app.d('🔍 [INVITE-DEBUG] World ID: "$worldId"');
+        
+        // 🎯 Erst themeVariant verwenden (neue API)
+        final themeVariant = worldData['themeVariant'] as String?;
+        if (themeVariant != null && themeVariant.isNotEmpty && themeVariant != 'standard') {
+          worldTheme = themeVariant;
+          AppLogger.app.d('✅ [INVITE-DEBUG] Using themeVariant: $themeVariant');
+        } else if (rawTheme != null) {
+          // 🛡️ Fallback: Simple bundle-to-theme conversion (no hardcoding!)
+          worldTheme = _getBundleFallbackTheme(rawTheme);
+          AppLogger.app.d('🔄 [INVITE-DEBUG] Simple fallback: $rawTheme → $worldTheme');
+        }
+        
+        AppLogger.app.d('🔍 [INVITE-DEBUG] Final worldTheme: "$worldTheme"');
+        AppLogger.app.d('🔍 [INVITE-DEBUG] World data: $worldData');
       } else {
         AppLogger.app.d('🔍 [INVITE-DEBUG] No world data in _inviteData');
       }
     }
     
-    // 🎯 SMART NAVIGATION THEME: Verwendet vorgeladenes Theme
-    return _buildInvitePage(context, Theme.of(context), null, l10n, worldTheme);
-  }
-
-  Widget _buildInvitePage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions, AppLocalizations l10n, String? worldTheme) {
-    return AppScaffold(
-      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
+    // 🌍 NEW: Using AppScaffold with integrated world theme system
+    return AppScaffoldBuilder.forGameWithTheme(
+      themeContext: 'invite-landing',
+      themeBundle: 'world-preview', // Base bundle für Invite Pages
+      worldTheme: worldTheme, // 🎯 Corrected world-specific theme!
+      componentName: 'InviteLandingPage',
       appBar: AppBar(
         title: Text(l10n.invitePageTitle),
         centerTitle: true,
-        backgroundColor: theme.appBarTheme.backgroundColor,
-        foregroundColor: theme.appBarTheme.foregroundColor,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: const [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -180,37 +210,44 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
           ),
         ],
       ),
-      body: BackgroundWidget(
-        worldTheme: worldTheme,  // 🌍 World-specific background
-        child: Center(
-          child: Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width > 900 ? 800 : 600, // 🎯 RESPONSIVE BREITE
-            ),
-            padding: const EdgeInsets.all(16.0),
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 500), // 🎯 SMOOTH TRANSITION
-              child: _isLoading
-                  ? Center(
-                      key: const ValueKey('loading'),
-                      child: CircularProgressIndicator(
-                        color: theme.colorScheme.primary,
-                      ),
-                    )
-                  : _error != null
-                      ? _buildErrorState(
-                          context, 
-                          theme,
-                          l10n,
-                          key: const ValueKey('error'),
-                        )
-                      : _buildContent(
-                          context, 
-                          theme,
-                          l10n,
-                          key: const ValueKey('content'),
-                        ),
-            ),
+      body: _buildInviteBody(context, worldTheme),
+    );
+  }
+
+  Widget _buildInviteBody(BuildContext context, String? worldTheme) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    
+    return BackgroundWidget(
+      worldTheme: worldTheme,  // 🌍 World-specific background
+      child: Center(
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width > 900 ? 800 : 600, // 🎯 RESPONSIVE BREITE
+          ),
+          padding: const EdgeInsets.all(16.0),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500), // 🎯 SMOOTH TRANSITION
+            child: _isLoading
+              ? Center(
+                key: const ValueKey('loading'),
+                child: CircularProgressIndicator(
+                  color: theme.colorScheme.primary,
+                ),
+              )
+            : _error != null
+            ? _buildErrorState(
+                context, 
+                theme,
+                l10n,
+                key: const ValueKey('error'),
+              )
+            : _buildContent(
+                context, 
+                theme,
+                l10n,
+                key: const ValueKey('content'),
+              ),
           ),
         ),
       ),

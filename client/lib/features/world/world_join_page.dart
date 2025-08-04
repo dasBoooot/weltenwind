@@ -3,7 +3,6 @@ import '../../config/logger.dart';
 import '../../core/models/world.dart';
 import '../../core/services/world_service.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/theme/index.dart'; // Theme System für ThemePageProvider und ThemeContextConsumer
 import '../../theme/background_widget.dart';
 import '../../shared/widgets/navigation_widget.dart';
 import '../../shared/navigation/smart_navigation.dart';
@@ -69,29 +68,25 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
 
   /// 🎯 Theme Early Detection: Bestimme Theme schon vor API-Load
   String _getWorldTheme() {
-    // 1. Wenn World bereits geladen → verwende themeBundle aber korrigiere Bundle-zu-Theme
+    // 1. Wenn World bereits geladen → verwende themeVariant zuerst
     if (_world != null) {
-      final worldBundle = _world!.themeBundle ?? 'world-preview';
-      print('🔍 [THEME-DEBUG] World loaded: themeBundle = $worldBundle');
+      // 🎯 Erst themeVariant verwenden (direkt aus DB)
+      if (_world!.themeVariant != null && _world!.themeVariant!.isNotEmpty && _world!.themeVariant != 'standard') {
+        AppLogger.app.d('✅ [THEME-DEBUG] Using world.themeVariant: ${_world!.themeVariant}');
+        return _world!.themeVariant!;
+      }
       
-      // 🛡️ BUNDLE-zu-THEME Korrektur (falls DB Bundle-Namen statt Theme-Namen hat)
-      final correctedTheme = _correctBundleToTheme(worldBundle);
-      print('🔄 [THEME-DEBUG] Bundle corrected: $worldBundle → $correctedTheme');
-      return correctedTheme;
+      // 🛡️ Fallback: Simple bundle-to-theme conversion (no hardcoding!)
+      final worldBundle = _world!.themeBundle ?? 'world-preview';
+      AppLogger.app.d('🔍 [THEME-DEBUG] World loaded: themeBundle = $worldBundle, themeVariant = ${_world!.themeVariant}');
+      final fallbackTheme = _getBundleFallbackTheme(worldBundle);
+      AppLogger.app.d('🔄 [THEME-DEBUG] Simple fallback: $worldBundle → $fallbackTheme');
+      return fallbackTheme;
     }
     
-    // 2. Early Detection basierend auf World-ID (Demo Worlds haben bekannte IDs)
-    final worldId = int.tryParse(widget.worldId) ?? 0;
-    final earlyTheme = switch (worldId) {
-      6 => 'tolkien',     // Mittelerde
-      7 => 'space',       // Galactic Empire
-      8 => 'roman',       // Römisches Reich
-      9 => 'nature',      // Waldreich
-      10 => 'cyberpunk',  // Neo Tokyo
-      _ => 'world-preview', // Fallback
-    };
-    print('🎯 [THEME-DEBUG] Early detection for ID $worldId: $earlyTheme');
-    return earlyTheme;
+    // 2. Fallback wenn World noch nicht geladen → Generic Preview Theme
+    AppLogger.app.d('🎯 [THEME-DEBUG] World not loaded yet, using preview theme');
+    return 'world-preview'; // Generic fallback while loading
   }
 
     /// 🎨 Build Navigation with correct theme context
@@ -105,25 +100,17 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     );
   }
 
-  /// 🛡️ Helper: Bundle-Name zu Theme-Name Korrektur
-  String _correctBundleToTheme(String bundleOrTheme) {
-    // Falls die DB Bundle-Namen statt Theme-Namen gespeichert hat
+  /// 🛡️ Simple fallback: Bundle-Name zu Theme-Name 
+  /// (Nur noch für Legacy-Support ohne themeVariant)
+  String _getBundleFallbackTheme(String bundleOrTheme) {
     switch (bundleOrTheme) {
-      case 'full-gaming': 
-        // ✅ KORREKT: full-gaming Bundle kann verschiedene Themes haben
-        // Hier sollten wir die World-ID berücksichtigen, nicht pauschal tolkien
-        final worldId = int.tryParse(widget.worldId) ?? 0;
-        switch (worldId) {
-          case 6: return 'tolkien';    // Mittelerde
-          case 7: return 'space';      // Galactic Empire  
-          case 8: return 'roman';      // Römisches Reich
-          case 9: return 'nature';     // Waldreich
-          case 10: return 'cyberpunk'; // Neo Tokyo
-          default: return 'default';   // Fallback für unbekannte Welten
-        }
-      case 'world-preview': return 'default'; // ✅ KORREKTUR: Neutrales Preview-Theme
-      case 'pre-game-minimal': return 'default';
-      default: return bundleOrTheme; // Assume it's already a theme name
+      case 'world-preview': 
+      case 'pre-game-minimal':
+        return 'default'; // Neutral themes
+      case 'full-gaming':
+        return 'default'; // Generic fallback (themeVariant should be available)
+      default: 
+        return bundleOrTheme; // Assume it's already a theme name
     }
   }
 
@@ -476,53 +463,43 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🌍 WORLD-SPECIFIC THEME: Korrekte Integration mit preloaded world theme
-    final worldTheme = _getWorldTheme();
-    
-    return ThemePageProvider(
-      contextId: 'world-join',
-      bundleId: 'world-preview',
-      worldTheme: worldTheme,
-      child: ThemeContextConsumer(
-        componentName: 'WorldJoinPage',
-        worldThemeOverride: worldTheme,
-        fallbackBundle: 'world-preview',
-        builder: (context, theme, extensions) {
-          return _buildWorldJoinPage(context, theme, extensions);
-        },
-      ),
+    // 🌍 NEW: Using AppScaffold with integrated world theme system
+    return AppScaffoldBuilder.forGameWithTheme(
+      themeContext: 'world-join',
+      themeBundle: 'world-preview',
+      worldTheme: _getWorldTheme(),
+      componentName: 'WorldJoinPage',
+      body: _buildWorldJoinBody(context),
     );
   }
 
-  Widget _buildWorldJoinPage(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
+  Widget _buildWorldJoinBody(BuildContext context) {
+    final theme = Theme.of(context);
     final worldTheme = _getWorldTheme();
     
-    return AppScaffold(
-      showBackgroundGradient: false, // 🎨 HYBRID: Disable AppScaffold gradient, use BackgroundWidget images
-      body: BackgroundWidget(
-        worldTheme: worldTheme,  // 🌍 World-specific background
-        child: Stack(
-          children: [
-            // Main content
-            SafeArea(
-              child: _isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-                      ),
-                    )
-                  : _errorMessage != null
-                      ? _buildErrorState(theme)
-                      : _world == null
-                          ? _buildNotFoundState(theme)
-                          : _buildWorldContent(theme),
-            ),
-            
-            // 🧭 INTEGRATED NAVIGATION: Now gets correct themes from context (only show when authenticated)
-            if (_isAuthenticated)
-              _buildNavigationWithTheme(theme),
-          ],
-        ),
+    return BackgroundWidget(
+      worldTheme: worldTheme,  // 🌍 World-specific background
+      child: Stack(
+        children: [
+          // Main content
+          SafeArea(
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                    ),
+                  )
+                : _errorMessage != null
+                    ? _buildErrorState(theme)
+                    : _world == null
+                        ? _buildNotFoundState(theme)
+                        : _buildWorldContent(theme),
+          ),
+          
+          // 🧭 INTEGRATED NAVIGATION: Now gets correct themes from context (only show when authenticated)
+          if (_isAuthenticated)
+            _buildNavigationWithTheme(theme),
+        ],
       ),
     );
   }

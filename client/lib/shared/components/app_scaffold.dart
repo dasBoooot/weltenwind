@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
+import '../../core/theme/index.dart'; // Theme System für ThemePageProvider und ThemeContextConsumer
 
 /// 🏗️ App Scaffold based on Schema Configuration
 /// 
-/// Main layout structure with background gradient, AppBar integration, and schema-based configuration
+/// Main layout structure with background gradient, AppBar integration, schema-based configuration,
+/// and integrated theme system support
 class AppScaffold extends StatelessWidget {
   final PreferredSizeWidget? appBar;
   final Widget body;
@@ -15,6 +16,12 @@ class AppScaffold extends StatelessWidget {
   final bool extendBodyBehindAppBar;
   final bool showBackgroundGradient;
   final Color? backgroundColor;
+  
+  // 🎨 NEW: Theme System Integration
+  final String? themeContextId;
+  final String? themeBundleId;
+  final String? worldThemeOverride;
+  final String? componentName;
 
   const AppScaffold({
     super.key,
@@ -28,11 +35,31 @@ class AppScaffold extends StatelessWidget {
     this.extendBodyBehindAppBar = false,
     this.showBackgroundGradient = true,
     this.backgroundColor,
+    // 🎨 NEW: Theme System Parameters
+    this.themeContextId,
+    this.themeBundleId,
+    this.worldThemeOverride,
+    this.componentName,
   });
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 NEUE KONTEXTSENSITIVE THEME-BEREITSTELLUNG
+    // 🎨 SMART THEME INTEGRATION: Use theme system if configured
+    if (themeContextId != null) {
+      return ThemePageProvider(
+        contextId: themeContextId!,
+        bundleId: themeBundleId ?? 'pre-game-minimal',
+        worldTheme: worldThemeOverride,
+        child: ThemeContextConsumer(
+          componentName: componentName ?? 'AppScaffold',
+          worldThemeOverride: worldThemeOverride,
+          fallbackBundle: themeBundleId ?? 'pre-game-minimal',
+          builder: (context, theme, extensions) => _buildScaffold(context, theme, extensions),
+        ),
+      );
+    }
+    
+    // 🎯 FALLBACK: Use direct theme without provider system
     return _buildScaffold(context, Theme.of(context), null);
   }
 
@@ -207,21 +234,52 @@ class AppScaffoldBuilder {
   static Widget forAuth({
     required Widget body,
     String? title,
+    String? themeContext = 'auth',
+    String? themeBundle = 'pre-game-minimal',
+    bool showBackgroundGradient = false, // Auth uses BackgroundWidget
   }) {
-    return Builder(
-      builder: (context) => AppScaffold(
-        appBar: title != null 
-            ? AppBar(
-                title: Text(title),
-                centerTitle: true,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-              )
-            : null,
-        body: body,
-        showBackgroundGradient: true,
-        extendBodyBehindAppBar: title != null,
-      ),
+    return AppScaffold(
+      themeContextId: themeContext,
+      themeBundleId: themeBundle,
+      componentName: 'AuthPage',
+      appBar: title != null 
+          ? AppBar(
+              title: Text(title),
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+            )
+          : null,
+      body: body,
+      showBackgroundGradient: showBackgroundGradient,
+      extendBodyBehindAppBar: title != null,
+    );
+  }
+
+  /// 🔐 NEW: Enhanced auth builder with theme integration
+  static Widget forAuthWithTheme({
+    required Widget body,
+    String? title,
+    String? themeContext = 'auth',
+    String? themeBundle = 'pre-game-minimal',
+    List<Widget>? actions,
+  }) {
+    return AppScaffold(
+      themeContextId: themeContext,
+      themeBundleId: themeBundle,
+      componentName: 'AuthPage',
+      appBar: title != null 
+          ? AppBar(
+              title: Text(title),
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              actions: actions,
+            )
+          : null,
+      body: body,
+      showBackgroundGradient: false, // Auth pages use BackgroundWidget
+      extendBodyBehindAppBar: title != null,
     );
   }
 
@@ -237,6 +295,46 @@ class AppScaffoldBuilder {
       floatingActionButton: floatingActionButton,
       showBackgroundGradient: true,
       extendBodyBehindAppBar: true,
+    );
+  }
+
+  /// 🎮 NEW: Enhanced game builder with full theme integration
+  static Widget forGameWithTheme({
+    required Widget body,
+    String themeContext = 'in-game',
+    String themeBundle = 'full-gaming',
+    String? worldTheme,
+    String componentName = 'GamePage',
+    PreferredSizeWidget? appBar,
+    Widget? floatingActionButton,
+  }) {
+    return AppScaffold(
+      themeContextId: themeContext,
+      themeBundleId: themeBundle,
+      worldThemeOverride: worldTheme,
+      componentName: componentName,
+      appBar: appBar,
+      body: body,
+      floatingActionButton: floatingActionButton,
+      showBackgroundGradient: false, // Game pages use BackgroundWidget
+      extendBodyBehindAppBar: true,
+    );
+  }
+
+  /// 🌟 NEW: Landing/Public pages builder (no theme system needed)
+  static Widget forLanding({
+    required Widget body,
+    PreferredSizeWidget? appBar,
+    Widget? floatingActionButton,
+    bool showBackgroundGradient = false, // Landing uses BackgroundWidget
+    bool extendBodyBehindAppBar = false,
+  }) {
+    return AppScaffold(
+      appBar: appBar,
+      body: body,
+      floatingActionButton: floatingActionButton,
+      showBackgroundGradient: showBackgroundGradient,
+      extendBodyBehindAppBar: extendBodyBehindAppBar,
     );
   }
 }

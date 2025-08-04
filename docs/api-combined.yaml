@@ -95,6 +95,24 @@ components:
           type: string
           format: date-time
           nullable: true
+        themeBundle:
+          type: string
+          description: Bundle name for theming (e.g., 'full-gaming', 'world-preview')
+          example: full-gaming
+          nullable: true
+        themeVariant:
+          type: string
+          description: Specific theme variant within the bundle (e.g., 'cyberpunk', 'tolkien', 'roman')
+          example: cyberpunk
+          nullable: true
+        themeOverrides:
+          type: string
+          description: JSON string containing theme-specific overrides
+          nullable: true
+        parentTheme:
+          type: string
+          description: Parent theme reference
+          nullable: true
     WorldStatus:
       type: string
       enum:
