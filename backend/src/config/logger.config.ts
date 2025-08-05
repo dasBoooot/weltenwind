@@ -237,6 +237,34 @@ export const loggers = {
         ip,
         rotationReason: action,
         metadata
+      }),
+    
+    sessionSecurityCheck: (userId: number, ip: string, metadata?: any) =>
+      logger.warn('Session security check performed', {
+        module: 'SECURITY',
+        action: 'SESSION_SECURITY_CHECK',
+        userId,
+        ip,
+        metadata
+      }),
+    
+    suspiciousSessionActivity: (userId: number, ip: string, reasons: string[], metadata?: any) =>
+      logger.warn('Suspicious session activity detected', {
+        module: 'SECURITY',
+        action: 'SUSPICIOUS_SESSION',
+        userId,
+        ip,
+        reasons,
+        metadata
+      }),
+    
+    sessionCleanup: (action: string, count: number, metadata?: any) =>
+      logger.info('Session cleanup performed', {
+        module: 'SECURITY',
+        action: 'SESSION_CLEANUP',
+        cleanupAction: action,
+        affectedSessions: count,
+        metadata
       })
   },
 

@@ -1,6 +1,8 @@
 import express from 'express';
 import prisma from '../libs/prisma';
 import { loggers } from '../config/logger.config';
+import { publicEndpointLimiter, inviteOperationsLimiter, createUserSpecificLimiter } from '../middleware/rateLimiter';
+import { csrfProtection } from '../middleware/csrf-protection';
 import { AuthenticatedRequest } from '../middleware/authenticate';
 import { authenticate } from '../middleware/authenticate';
 import { hasPermission } from '../services/access-control.service';
@@ -193,7 +195,11 @@ router.get('/validate/:token', async (req, res) => {
 });
 
 // POST /api/invites/accept/:token - Invite akzeptieren und User der Welt hinzufügen
-router.post('/accept/:token', authenticate, async (req: AuthenticatedRequest, res) => {
+router.post('/accept/:token', 
+  authenticate, 
+  csrfProtection,  // 🔐 CSRF-Schutz für Invite-Accept
+  inviteOperationsLimiter,
+  async (req: AuthenticatedRequest, res) => {
   const { token } = req.params;
   const userId = req.user!.id;
 
@@ -450,7 +456,11 @@ router.post('/accept/:token', authenticate, async (req: AuthenticatedRequest, re
  * Body: { worldId: number, email?: string, emails?: string[] }
  * Permission: invite.create (world scope)
  */
-router.post('/', authenticate, async (req: AuthenticatedRequest, res) => {
+router.post('/', 
+  authenticate, 
+  csrfProtection,  // 🔐 CSRF-Schutz für Invite-Creation
+  inviteOperationsLimiter,  // 🎯 Rate limiting für Invite-Operationen
+  async (req: AuthenticatedRequest, res) => {
   const { worldId, email, emails, sendEmail = true } = req.body;
   
   if (!worldId || isNaN(parseInt(worldId))) {
@@ -556,8 +566,12 @@ router.post('/', authenticate, async (req: AuthenticatedRequest, res) => {
  * Öffentliche Einladungen erstellen (keine Authentifizierung erforderlich)
  * Body: { worldId: number, email?: string, emails?: string[] }
  * Für Einladungen an nicht-registrierte Benutzer
+ * 
+ * ✅ Rate-Limiting: Sehr strenge Limits wegen öffentlichem Zugang!
  */
-router.post('/public', async (req, res) => {
+router.post('/public', 
+  publicEndpointLimiter,    // 🔐 KRITISCH: Strenger Spam-Schutz!
+  async (req, res) => {
   const { worldId, email, emails } = req.body;
   
   if (!worldId || isNaN(parseInt(worldId))) {
@@ -641,7 +655,9 @@ router.post('/public', async (req, res) => {
  * GET /api/invites/world/:worldId
  * Alle Einladungen einer Welt anzeigen 
  */
-router.get('/world/:worldId', async (req, res) => {
+router.get('/world/:worldId', 
+  inviteOperationsLimiter,  // 🎯 Rate limiting für Invite-Abfragen
+  async (req, res) => {
   const worldId = parseInt(req.params.worldId);
   
   if (isNaN(worldId)) {
@@ -694,7 +710,11 @@ router.get('/world/:worldId', async (req, res) => {
  * Einladung löschen (authentifiziert)
  * Permission: invite.delete (world scope)
  */
-router.delete('/:id', authenticate, async (req: AuthenticatedRequest, res) => {
+router.delete('/:id', 
+  authenticate, 
+  csrfProtection,  // 🔐 CSRF-Schutz für Invite-Deletion
+  inviteOperationsLimiter,  // 🎯 Rate limiting für Invite-Löschungen
+  async (req: AuthenticatedRequest, res) => {
   const inviteId = parseInt(req.params.id);
   
   if (isNaN(inviteId)) {

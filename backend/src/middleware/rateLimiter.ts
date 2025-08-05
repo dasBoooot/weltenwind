@@ -14,6 +14,16 @@ const PASSWORD_RESET_MAX_REQUESTS = parseInt(process.env.PASSWORD_RESET_MAX_REQU
 const REGISTRATION_LIMIT_WINDOW_HOURS = parseInt(process.env.REGISTRATION_LIMIT_WINDOW_HOURS || '24', 10);
 const REGISTRATION_LIMIT_MAX_REQUESTS = parseInt(process.env.REGISTRATION_LIMIT_MAX_REQUESTS || '5', 10);
 
+// 🔐 Erweiterte Rate Limiting Konfiguration
+const PUBLIC_ENDPOINT_WINDOW_MINUTES = parseInt(process.env.PUBLIC_ENDPOINT_WINDOW_MINUTES || '60', 10);
+const PUBLIC_ENDPOINT_MAX_REQUESTS = parseInt(process.env.PUBLIC_ENDPOINT_MAX_REQUESTS || '10', 10);
+const INVITE_CREATION_WINDOW_MINUTES = parseInt(process.env.INVITE_CREATION_WINDOW_MINUTES || '10', 10);
+const INVITE_CREATION_MAX_REQUESTS = parseInt(process.env.INVITE_CREATION_MAX_REQUESTS || '20', 10);
+const ADMIN_ENDPOINT_WINDOW_MINUTES = parseInt(process.env.ADMIN_ENDPOINT_WINDOW_MINUTES || '5', 10);
+const ADMIN_ENDPOINT_MAX_REQUESTS = parseInt(process.env.ADMIN_ENDPOINT_MAX_REQUESTS || '200', 10);
+const WORLD_OPERATIONS_WINDOW_MINUTES = parseInt(process.env.WORLD_OPERATIONS_WINDOW_MINUTES || '15', 10);
+const WORLD_OPERATIONS_MAX_REQUESTS = parseInt(process.env.WORLD_OPERATIONS_MAX_REQUESTS || '30', 10);
+
 // Erweitere Request-Type für rate-limit
 declare module 'express' {
   interface Request {
@@ -110,6 +120,160 @@ export const registrationLimiter = rateLimit({
   message: `Zu viele Registrierungen von dieser IP. Bitte versuche es in ${REGISTRATION_LIMIT_WINDOW_HOURS} Stunden erneut.`,
   skipSuccessfulRequests: false
 });
+
+// 🔐 Sehr strenger Limiter für öffentliche Endpoints (Spam-Schutz)
+export const publicEndpointLimiter = rateLimit({
+  windowMs: PUBLIC_ENDPOINT_WINDOW_MINUTES * 60 * 1000,
+  max: PUBLIC_ENDPOINT_MAX_REQUESTS,
+  message: 'Zu viele Anfragen von dieser IP. Bitte versuche es später erneut.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: false,
+  handler: (req: Request, res: Response) => {
+    const identifier = req.ip || 'unknown';
+    
+    loggers.security.rateLimitHit(identifier, req.originalUrl, {
+      limitType: 'public_endpoint',
+      maxRequests: PUBLIC_ENDPOINT_MAX_REQUESTS,
+      windowMs: `${PUBLIC_ENDPOINT_WINDOW_MINUTES}min`,
+      currentRequests: (req as any).rateLimit?.current,
+      userAgent: req.headers['user-agent'],
+      method: req.method,
+      severity: 'HIGH' // Öffentliche Endpoints sind kritisch
+    });
+    
+    res.status(429).json({
+      error: 'Rate limit exceeded',
+      message: `Du kannst maximal ${PUBLIC_ENDPOINT_MAX_REQUESTS} Anfragen pro ${PUBLIC_ENDPOINT_WINDOW_MINUTES} Minuten von dieser IP stellen.`,
+      retryAfter: (req as any).rateLimit?.resetTime,
+      type: 'public_endpoint_limit'
+    });
+  }
+});
+
+// 🎯 Spezieller Limiter für Invite-Operationen
+export const inviteOperationsLimiter = rateLimit({
+  windowMs: INVITE_CREATION_WINDOW_MINUTES * 60 * 1000,
+  max: INVITE_CREATION_MAX_REQUESTS,
+  message: 'Zu viele Invite-Operationen. Bitte reduziere die Anfragerate.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: false,
+  handler: (req: Request, res: Response) => {
+    const identifier = req.ip || 'unknown';
+    
+    loggers.security.rateLimitHit(identifier, req.originalUrl, {
+      limitType: 'invite_operations',
+      maxRequests: INVITE_CREATION_MAX_REQUESTS,
+      windowMs: `${INVITE_CREATION_WINDOW_MINUTES}min`,
+      currentRequests: (req as any).rateLimit?.current,
+      userAgent: req.headers['user-agent'],
+      method: req.method
+    });
+    
+    res.status(429).json({
+      error: 'Invite rate limit exceeded',
+      message: `Du kannst maximal ${INVITE_CREATION_MAX_REQUESTS} Invite-Operationen pro ${INVITE_CREATION_WINDOW_MINUTES} Minuten durchführen.`,
+      retryAfter: (req as any).rateLimit?.resetTime,
+      type: 'invite_limit'
+    });
+  }
+});
+
+// 👑 Moderater Limiter für Admin-Endpoints
+export const adminEndpointLimiter = rateLimit({
+  windowMs: ADMIN_ENDPOINT_WINDOW_MINUTES * 60 * 1000,
+  max: ADMIN_ENDPOINT_MAX_REQUESTS,
+  message: 'Admin-Rate-Limit erreicht. Bitte reduziere die Anfragerate.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true, // Erfolgreiche Admin-Requests nicht zählen
+  handler: (req: Request, res: Response) => {
+    const identifier = req.ip || 'unknown';
+    
+    loggers.security.rateLimitHit(identifier, req.originalUrl, {
+      limitType: 'admin_endpoint',
+      maxRequests: ADMIN_ENDPOINT_MAX_REQUESTS,
+      windowMs: `${ADMIN_ENDPOINT_WINDOW_MINUTES}min`,
+      currentRequests: (req as any).rateLimit?.current,
+      userAgent: req.headers['user-agent'],
+      method: req.method,
+      note: 'Admin user hitting rate limits'
+    });
+    
+    res.status(429).json({
+      error: 'Admin rate limit exceeded',
+      message: `Admin-Rate-Limit erreicht: ${ADMIN_ENDPOINT_MAX_REQUESTS} requests/${ADMIN_ENDPOINT_WINDOW_MINUTES}min.`,
+      retryAfter: (req as any).rateLimit?.resetTime,
+      type: 'admin_limit'
+    });
+  }
+});
+
+// 🌍 Spezifischer Limiter für World-Operationen
+export const worldOperationsLimiter = rateLimit({
+  windowMs: WORLD_OPERATIONS_WINDOW_MINUTES * 60 * 1000,
+  max: WORLD_OPERATIONS_MAX_REQUESTS,
+  message: 'Zu viele World-Operationen. Bitte reduziere die Anfragerate.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req: Request, res: Response) => {
+    const identifier = req.ip || 'unknown';
+    
+    loggers.security.rateLimitHit(identifier, req.originalUrl, {
+      limitType: 'world_operations',
+      maxRequests: WORLD_OPERATIONS_MAX_REQUESTS,
+      windowMs: `${WORLD_OPERATIONS_WINDOW_MINUTES}min`,
+      currentRequests: (req as any).rateLimit?.current,
+      userAgent: req.headers['user-agent'],
+      method: req.method
+    });
+    
+    res.status(429).json({
+      error: 'World operations rate limit exceeded',
+      message: `Du kannst maximal ${WORLD_OPERATIONS_MAX_REQUESTS} World-Operationen pro ${WORLD_OPERATIONS_WINDOW_MINUTES} Minuten durchführen.`,
+      retryAfter: (req as any).rateLimit?.resetTime,
+      type: 'world_limit'
+    });
+  }
+});
+
+// 🔑 User-spezifischer Rate Limiter (kombiniert IP + User ID)
+export const createUserSpecificLimiter = (windowMs: number, max: number, limitType: string) => {
+  return rateLimit({
+    windowMs,
+    max,
+    // Kombiniere IP + User ID für genauere Limits
+    keyGenerator: (req: Request) => {
+      const ip = req.ip || 'unknown';
+      const userId = (req as any).user?.id || 'anonymous';
+      return `${ip}:${userId}`;
+    },
+    handler: (req: Request, res: Response) => {
+      const ip = req.ip || 'unknown';
+      const userId = (req as any).user?.id || 'anonymous';
+      const username = (req as any).user?.username || 'anonymous';
+      
+      loggers.security.rateLimitHit(ip, req.originalUrl, {
+        limitType: `user_specific_${limitType}`,
+        maxRequests: max,
+        windowMs: `${windowMs/1000/60}min`,
+        currentRequests: (req as any).rateLimit?.current,
+        userId,
+        username,
+        userAgent: req.headers['user-agent'],
+        method: req.method
+      });
+      
+      res.status(429).json({
+        error: 'User-specific rate limit exceeded',
+        message: `Du hast dein persönliches Rate-Limit für diese Operation erreicht.`,
+        retryAfter: (req as any).rateLimit?.resetTime,
+        type: `user_${limitType}_limit`
+      });
+    }
+  });
+};
 
 // Trust Proxy für korrekte IP-Erkennung hinter Reverse Proxy
 export const configureTrustProxy = (app: any) => {

@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { authenticate, AuthenticatedRequest } from '../middleware/authenticate';
 import { hasPermission } from '../services/access-control.service';
+import { adminEndpointLimiter } from '../middleware/rateLimiter';
 
 const router = express.Router();
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -88,7 +89,10 @@ function resolveLogPath(logFile: string): string {
 }
 
 // API für Log-Daten
-router.get('/data', authenticate, async (req: AuthenticatedRequest, res) => {
+router.get('/data', 
+  authenticate, 
+  adminEndpointLimiter,  // 👑 Rate limiting für Admin-File-Operations
+  async (req: AuthenticatedRequest, res) => {
   const hasAdminPerm = await hasPermission(req.user!.id, 'system.logs', { type: 'global', objectId: '*' });
   if (!hasAdminPerm) { return res.status(403).json({ error: 'Keine Berechtigung' }); }
   
@@ -127,8 +131,11 @@ router.get('/data', authenticate, async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// API für verfügbare Log-Kategorien
-router.get('/categories', authenticate, async (req: AuthenticatedRequest, res) => {
+// API für verfügbare log-Kategorien
+router.get('/categories', 
+  authenticate, 
+  adminEndpointLimiter,  // 👑 Rate limiting für Admin-Metadata
+  async (req: AuthenticatedRequest, res) => {
   const hasAdminPerm = await hasPermission(req.user!.id, 'system.logs', { type: 'global', objectId: '*' });
   if (!hasAdminPerm) { return res.status(403).json({ error: 'Keine Berechtigung' }); }
   
@@ -153,7 +160,10 @@ function getLogCategory(logFile: string): string {
 }
 
 // Log-Statistiken
-router.get('/stats', authenticate, async (req: AuthenticatedRequest, res) => {
+router.get('/stats', 
+  authenticate, 
+  adminEndpointLimiter,  // 👑 Rate limiting für Admin-Statistics
+  async (req: AuthenticatedRequest, res) => {
   const hasAdminPerm = await hasPermission(req.user!.id, 'system.logs', { type: 'global', objectId: '*' });
   if (!hasAdminPerm) {
     return res.status(403).json({ error: 'Keine Berechtigung' });

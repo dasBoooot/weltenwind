@@ -2,6 +2,8 @@ import express from 'express';
 import { authenticate, AuthenticatedRequest } from '../middleware/authenticate';
 import { hasPermission } from '../services/access-control.service';
 import { loggers } from '../config/logger.config';
+import { csrfProtection } from '../middleware/csrf-protection';
+import { adminEndpointLimiter } from '../middleware/rateLimiter';
 import fs from 'fs';
 import path from 'path';
 
@@ -290,7 +292,11 @@ router.get('/:language', authenticate, async (req: AuthenticatedRequest, res) =>
  * PUT /api/arb/:language
  * Aktualisiert eine ARB-Datei (alle unterstützten Sprachen)
  */
-router.put('/:language', authenticate, async (req: AuthenticatedRequest, res) => {
+router.put('/:language', 
+  authenticate, 
+  csrfProtection,  // 🔐 CSRF-Schutz für Language-Updates
+  adminEndpointLimiter,  // 👑 Rate limiting für Admin-Operationen
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { language } = req.params;
     const { entries } = req.body;
@@ -760,7 +766,11 @@ router.get('/:language/backups', authenticate, async (req: AuthenticatedRequest,
 });
 
 // Backup wiederherstellen
-router.post('/:language/restore/:timestamp', authenticate, async (req: AuthenticatedRequest, res) => {
+router.post('/:language/restore/:timestamp', 
+  authenticate, 
+  csrfProtection,  // 🔐 CSRF-Schutz für Language-Restore
+  adminEndpointLimiter,  // 👑 Rate limiting für Admin-Operationen
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { language, timestamp } = req.params;
     
@@ -845,7 +855,11 @@ router.post('/:language/restore/:timestamp', authenticate, async (req: Authentic
  * DELETE /api/arb/:language/backups/:timestamp
  * Löscht ein spezifisches Backup
  */
-router.delete('/:language/backups/:timestamp', authenticate, async (req: AuthenticatedRequest, res) => {
+router.delete('/:language/backups/:timestamp', 
+  authenticate, 
+  csrfProtection,  // 🔐 CSRF-Schutz für Backup-Deletion
+  adminEndpointLimiter,  // 👑 Rate limiting für Admin-Operationen
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { language, timestamp } = req.params;
     

@@ -2,6 +2,8 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import { loggers } from '../config/logger.config';
+import { csrfProtection } from '../middleware/csrf-protection';
+import { adminEndpointLimiter } from '../middleware/rateLimiter';
 import { authenticate } from '../middleware/authenticate';
 
 const router = express.Router();
@@ -264,7 +266,11 @@ router.get('/:name', async (req, res) => {
  *       400:
  *         description: Ungültige Theme-Daten - mindestens name, version und ein Modul erforderlich
  */
-router.put('/:name', authenticate, async (req, res) => {
+router.put('/:name', 
+  authenticate, 
+  csrfProtection,  // 🔐 CSRF-Schutz für Theme-Updates
+  adminEndpointLimiter,  // 👑 Rate limiting für Admin-Operationen
+  async (req, res) => {
   try {
     const themeName = req.params.name;
     const themeData = req.body;
@@ -488,7 +494,11 @@ router.put('/:name', authenticate, async (req, res) => {
  *       409:
  *         description: Ziel-Theme existiert bereits
  */
-router.post('/:name/clone', authenticate, async (req, res) => {
+router.post('/:name/clone', 
+  authenticate, 
+  csrfProtection,  // 🔐 CSRF-Schutz für Theme-Cloning
+  adminEndpointLimiter,  // 👑 Rate limiting für Admin-Operationen
+  async (req, res) => {
   try {
     const sourceName = req.params.name;
     const { newName, newDescription } = req.body;

@@ -19,6 +19,18 @@ PUBLIC_ASSETS_URL="https://192.168.2.168"            # Static Assets (theme-edit
 # CORS Origins (Development - beide HTTP/HTTPS erlauben)
 ALLOWED_ORIGINS="https://192.168.2.168,http://localhost:8080,https://localhost:8080"
 
+# CSRF-Token-Konfiguration
+CSRF_TOKEN_EXPIRY_HOURS=1                 # CSRF-Token-Lebensdauer in Stunden
+
+# Erweiterte CSRF-Sicherheitsfeatures (optional)
+ENABLE_DOUBLE_SUBMIT_COOKIE=false         # Double-Submit-Cookie-Pattern aktivieren
+ENABLE_ORIGIN_VALIDATION=true             # Origin-Header-Validierung
+ENABLE_REFERER_VALIDATION=false           # Referer-Header-Validierung (kann problematisch sein)
+ENABLE_USER_AGENT_BINDING=false           # CSRF-Token an User-Agent binden
+
+# Trusted Origins für CORS/CSRF (komma-separiert)
+TRUSTED_ORIGINS="https://192.168.2.168,http://localhost:8080,https://localhost:8080"
+
 # ===========================================
 # 🔐 SSL & SECURITY
 # ===========================================
@@ -59,6 +71,20 @@ SESSION_SECRET="your-session-secret-here-min-32-chars"
 ALLOW_MULTI_DEVICE_LOGIN=false
 MAX_SESSIONS_PER_USER=1
 
+# Session-Limits und Timeouts
+MAX_CONCURRENT_SESSIONS=3                  # Max gleichzeitige Sessions pro User
+SESSION_INACTIVITY_TIMEOUT_HOURS=24       # Inaktive Sessions löschen nach X Stunden
+ALLOW_MULTI_DEVICE_LOGIN=false            # Multi-Device-Login erlauben
+MAX_SESSIONS_PER_USER=1                   # Max Sessions pro User (wenn Multi-Device aktiv)
+
+# Security-Monitoring
+SUSPICIOUS_ACTIVITY_THRESHOLD=5           # Verdächtig ab X verschiedenen IPs
+ENABLE_LOCATION_TRACKING=false            # IP-Geolocation-basierte Validierung
+
+# Account-Lockout (Brute-Force-Protection)
+MAX_LOGIN_ATTEMPTS=5                      # Max fehlgeschlagene Login-Versuche
+LOCKOUT_DURATION_MINUTES=15               # Lockout-Dauer nach zu vielen Fehlversuchen
+
 # Brute Force Protection
 MAX_LOGIN_ATTEMPTS=5
 LOCKOUT_DURATION_MINUTES=15
@@ -73,6 +99,22 @@ PASSWORD_RESET_WINDOW_HOURS=1          # Password Reset: 1 Hour Window
 PASSWORD_RESET_MAX_REQUESTS=3          # Password Reset: Max 3 Requests
 REGISTRATION_LIMIT_WINDOW_HOURS=24     # Registration: 24 Hours Window
 REGISTRATION_LIMIT_MAX_REQUESTS=5      # Registration: Max 5 per IP
+
+# Öffentliche Endpoints (sehr streng - Spam-Schutz)
+PUBLIC_ENDPOINT_WINDOW_MINUTES=60          # Zeitfenster für öffentliche APIs
+PUBLIC_ENDPOINT_MAX_REQUESTS=10            # Max Requests pro IP/Zeitfenster
+
+# Invite-Operationen (Spam-Schutz für Invite-System)
+INVITE_CREATION_WINDOW_MINUTES=10          # Zeitfenster für Invite-Ops
+INVITE_CREATION_MAX_REQUESTS=20            # Max Invite-Ops pro Zeitfenster
+
+# Admin-Endpoints (moderat - für Log-Viewer etc.)
+ADMIN_ENDPOINT_WINDOW_MINUTES=5            # Zeitfenster für Admin-APIs
+ADMIN_ENDPOINT_MAX_REQUESTS=200            # Max Admin-Requests pro Zeitfenster
+
+# World-Operationen (für Game-bezogene APIs)
+WORLD_OPERATIONS_WINDOW_MINUTES=15         # Zeitfenster für World-Ops
+WORLD_OPERATIONS_MAX_REQUESTS=30           # Max World-Ops pro Zeitfenster
 
 # 🛡️ CSRF Protection (für SSL-Migration optimiert)
 CSRF_AUTO_RECOVERY=true                   # Development: Auto-Recovery bei ungültigen Tokens

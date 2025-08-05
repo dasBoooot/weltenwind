@@ -6,6 +6,8 @@ import { hasPermission } from '../services/access-control.service';
 import { jwtConfig } from '../config/jwt.config';
 import jwt from 'jsonwebtoken';
 import prisma from '../libs/prisma';
+import { publicEndpointLimiter, worldOperationsLimiter } from '../middleware/rateLimiter';
+import { csrfProtection } from '../middleware/csrf-protection';
 
 import { loggers } from '../config/logger.config';
 
@@ -118,7 +120,11 @@ router.get('/:id/players', authenticate, async (req: AuthenticatedRequest, res) 
  * Welt beitreten
  * Permission: player.join (world scope)
  */
-router.post('/:id/join', authenticate, async (req: AuthenticatedRequest, res) => {
+router.post('/:id/join', 
+  authenticate, 
+  csrfProtection,  // 🔐 CSRF-Schutz für World-Join
+  worldOperationsLimiter,
+  async (req: AuthenticatedRequest, res) => {
   const worldId = parseInt(req.params.id);
   const { inviteCode } = req.body;
 
@@ -188,7 +194,11 @@ router.post('/:id/join', authenticate, async (req: AuthenticatedRequest, res) =>
  * Welt verlassen
  * Permission: player.leave (world scope)
  */
-router.delete('/:id/players/me', authenticate, async (req: AuthenticatedRequest, res) => {
+router.delete('/:id/players/me', 
+  authenticate, 
+  csrfProtection,  // 🔐 CSRF-Schutz für World-Leave
+  worldOperationsLimiter,
+  async (req: AuthenticatedRequest, res) => {
   const worldId = parseInt(req.params.id);
   if (isNaN(worldId)) {
     return res.status(400).json({ error: 'Ungültige Welt-ID' });
@@ -230,7 +240,11 @@ router.delete('/:id/players/me', authenticate, async (req: AuthenticatedRequest,
  * Status einer Welt ändern (z. B. "active", "upcoming", "archived")
  * Permission: world.edit (world scope)
  */
-router.post('/:id/edit', authenticate, async (req: AuthenticatedRequest, res) => {
+router.post('/:id/edit', 
+  authenticate, 
+  csrfProtection,  // 🔐 CSRF-Schutz für World-Edit
+  worldOperationsLimiter,
+  async (req: AuthenticatedRequest, res) => {
   const worldId = parseInt(req.params.id);
   const { status } = req.body;
 
@@ -274,11 +288,13 @@ router.post('/:id/edit', authenticate, async (req: AuthenticatedRequest, res) =>
  * POST /api/worlds/:id/pre-register
  * Vorregistrierung für eine Welt (öffentlich, keine Authentifizierung erforderlich)
  * 
- * TODO: Rate-Limiting hinzufügen (express-rate-limit)
- * - Max 3 Pre-Registrations pro IP pro Stunde
- * - Spam-Schutz für öffentliche Endpunkte
+ * ✅ Rate-Limiting implementiert:
+ * - Sehr strenge Limits für öffentliche Endpoints (10 requests/60min)
+ * - Spam-Schutz aktiv
  */
-router.post('/:id/pre-register', async (req, res) => {
+router.post('/:id/pre-register', 
+  publicEndpointLimiter,  // 🔐 Strenger Spam-Schutz für öffentliche APIs
+  async (req, res) => {
   const worldId = parseInt(req.params.id);
   const { email, config } = req.body;
   if (isNaN(worldId)) {
