@@ -12,3 +12,9 @@ nohup.out
 /client/pubspec.lock
 
 /logs/
+
+# SSL Certificates (managed on server)
+*.crt
+*.key
+*.pem
+weltenwind.crt
