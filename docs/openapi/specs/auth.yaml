@@ -1,0 +1,479 @@
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User Login
+      description: Authenticate user with username/email and password
+      security: [] # No auth required for login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: Username or email address
+                  example: "player1"
+                password:
+                  type: string
+                  format: password
+                  example: "securePassword123"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            description: JWT authentication token
+                            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: User Registration
+      description: Register a new user account
+      security: [] # No auth required for registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 50
+                  example: "newplayer"
+                email:
+                  type: string
+                  format: email
+                  example: "newplayer@example.com"
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: "securePassword123"
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            description: JWT authentication token
+        '409':
+          description: Username or email already exists
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User Logout
+      description: Logout current user and invalidate session
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get Current User
+      description: Get information about the currently authenticated user
+      responses:
+        '200':
+          description: Current user information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh Token
+      description: Refresh JWT authentication token
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+                            description: New JWT authentication token
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/request-reset:
+    post:
+      tags:
+        - Authentication
+      summary: Request Password Reset
+      description: Request a password reset email for a user account
+      security: [] # No auth required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+      responses:
+        '200':
+          description: Password reset email sent (always returns success for security)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/reset-password:
+    post:
+      tags:
+        - Authentication
+      summary: Reset Password
+      description: Reset user password using reset token
+      security: [] # No auth required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid or expired reset token
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/change-password:
+    post:
+      tags:
+        - Authentication
+      summary: Change Password
+      description: Change password for logged-in user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Current password incorrect
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/check-password-strength:
+    post:
+      tags:
+        - Authentication
+      summary: Check Password Strength
+      description: Validate password strength without creating account
+      security: [] # No auth required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+                  example: "myNewPassword123"
+      responses:
+        '200':
+          description: Password strength analysis
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PasswordStrength'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/permissions:
+    get:
+      tags:
+        - Authentication
+      summary: Get User Permissions
+      description: Get detailed permissions for current user
+      responses:
+        '200':
+          description: User permissions
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/UserPermissions'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Username or email address
+        password:
+          type: string
+          format: password
+
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+          description: JWT authentication token
+
+    ResetPasswordRequest:
+      type: object
+      required:
+        - token
+        - password
+      properties:
+        token:
+          type: string
+          description: Password reset token from email
+          example: "abc123-reset-token-xyz789"
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: "newSecurePassword123"
+
+    ChangePasswordRequest:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+          format: password
+          description: Current user password
+        newPassword:
+          type: string
+          format: password
+          minLength: 8
+          description: New password
+
+    PasswordStrength:
+      type: object
+      properties:
+        score:
+          type: integer
+          minimum: 0
+          maximum: 4
+          description: Password strength score (0=weak, 4=strong)
+          example: 3
+        isValid:
+          type: boolean
+          description: Whether password meets minimum requirements
+          example: true
+        feedback:
+          type: object
+          properties:
+            warning:
+              type: string
+              example: "This is a common password"
+            suggestions:
+              type: array
+              items:
+                type: string
+              example: ["Add another word or two", "Use a longer password"]
+        checks:
+          type: object
+          properties:
+            minLength:
+              type: boolean
+              example: true
+            hasUppercase:
+              type: boolean
+              example: true
+            hasLowercase:
+              type: boolean
+              example: true
+            hasNumbers:
+              type: boolean
+              example: true
+            hasSpecialChars:
+              type: boolean
+              example: false
+
+    UserPermissions:
+      type: object
+      properties:
+        userId:
+          type: integer
+          example: 123
+        globalPermissions:
+          type: array
+          items:
+            type: string
+          example: ["view_worlds", "join_worlds"]
+        worldPermissions:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            "456": ["edit_world", "invite_players"]
+            "789": ["view_world_players"]
+        roles:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              scope:
+                type: string
+              permissions:
+                type: array
+                items:
+                  type: string

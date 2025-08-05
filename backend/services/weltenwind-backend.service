@@ -14,8 +14,16 @@ Environment="PORT=3000"
 Environment="LOG_LEVEL=info"
 EnvironmentFile=/srv/weltenwind/backend/.env
 ExecStart=/usr/bin/npm run dev
+# Health Check - API muss erreichbar sein
+ExecStartPost=/bin/bash -c 'for i in {1..30}; do curl -f http://localhost:3000/api/health >/dev/null 2>&1 && break || sleep 2; done'
+# Advanced Restart Policy
 Restart=always
 RestartSec=10
+# Exponential Backoff für kritische Failures
+RestartSteps=10
+RestartMaxDelaySec=300
+# Watchdog für Health Monitoring (alle 30s)
+WatchdogSec=30
 
 # Logging Configuration
 # systemd Standard-Logs (stdout/stderr)

@@ -1,0 +1,175 @@
+openapi: 3.0.3
+info:
+  title: Weltenwind API
+  version: 1.0.0
+  description: |
+    **Weltenwind API** - Eine moderne REST API für Multi-World Gaming Platform
+    
+    Diese API ermöglicht das Management von Benutzern, Welten, Einladungen und Themes.
+    
+    ## Authentication
+    Die API verwendet JWT Bearer Token für Authentifizierung.
+    
+    ## Base URL
+    - Development: `http://192.168.2.168:3000/api`
+    - Production: `https://your-domain.com/api`
+  contact:
+    name: Weltenwind Team
+    url: https://github.com/dasBoooot/weltenwind
+  license:
+    name: BSD 2-Clause
+    url: https://opensource.org/licenses/BSD-2-Clause
+
+servers:
+  - url: http://192.168.2.168:3000/api
+    description: Development Server
+  - url: https://api.weltenwind.com/api
+    description: Production Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Token für Authentifizierung
+
+  schemas:
+    # Common Response Schemas
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Operation successful"
+        data:
+          type: object
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "ERROR_CODE"
+            message:
+              type: string
+              example: "Human-readable error message"
+            details:
+              type: string
+              example: "Additional error details"
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "VALIDATION_ERROR"
+            message:
+              type: string
+              example: "Validation failed"
+            fields:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+
+    # Common Data Models
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        username:
+          type: string
+          example: "player1"
+        email:
+          type: string
+          format: email
+          example: "player@example.com"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-05T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-01-05T10:30:00Z"
+
+  responses:
+    UnauthorizedError:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "AUTH_TOKEN_REQUIRED"
+              message: "Authentication token required"
+
+    ForbiddenError:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "ACCESS_DENIED"
+              message: "Insufficient permissions for this operation"
+
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "RESOURCE_NOT_FOUND"
+              message: "Requested resource not found"
+
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "INTERNAL_SERVER_ERROR"
+              message: "An internal server error occurred"
+
+# Global security requirement
+security:
+  - bearerAuth: []
+
+paths: {} # Individual modules will add their paths

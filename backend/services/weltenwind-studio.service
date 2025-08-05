@@ -16,8 +16,13 @@ EnvironmentFile=/srv/weltenwind/backend/.env
 Environment="PATH=/usr/local/bin:/usr/bin:/bin"
 ExecStartPre=/bin/bash -c 'cd /srv/weltenwind/backend && test -f node_modules/.bin/prisma || (echo "Prisma not installed!" && exit 1)'
 ExecStart=/bin/bash -c 'cd /srv/weltenwind/backend && /usr/bin/npx prisma studio --port 5555 --browser none --hostname 0.0.0.0'
+# Health Check - Port 5555 muss erreichbar sein
+ExecStartPost=/bin/bash -c 'for i in {1..20}; do nc -z localhost 5555 >/dev/null 2>&1 && break || sleep 3; done'
+# Advanced Restart Policy
 Restart=always
-RestartSec=10
+RestartSec=15
+RestartSteps=5
+RestartMaxDelaySec=180
 StandardOutput=append:/var/log/weltenwind/studio.log
 StandardError=append:/var/log/weltenwind/studio.error.log
 

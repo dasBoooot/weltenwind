@@ -1,0 +1,2126 @@
+openapi: 3.0.3
+info:
+  title: Weltenwind API
+  version: 1.0.0
+  description: |
+    **Weltenwind API** - Eine moderne REST API für Multi-World Gaming Platform
+
+    Diese API ermöglicht das Management von Benutzern, Welten, Einladungen und Themes.
+
+    ## Authentication
+    Die API verwendet JWT Bearer Token für Authentifizierung.
+
+    ## Base URL
+    - Development: `http://192.168.2.168:3000/api`
+    - Production: `https://your-domain.com/api`
+  contact:
+    name: Weltenwind Team
+    url: https://github.com/dasBoooot/weltenwind
+  license:
+    name: BSD 2-Clause
+    url: https://opensource.org/licenses/BSD-2-Clause
+servers:
+  - url: http://192.168.2.168:3000/api
+    description: Development Server
+  - url: https://api.weltenwind.com/api
+    description: Production Server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Token für Authentifizierung
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Operation successful
+        data:
+          type: object
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: ERROR_CODE
+            message:
+              type: string
+              example: Human-readable error message
+            details:
+              type: string
+              example: Additional error details
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Validation failed
+            fields:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        username:
+          type: string
+          example: player1
+        email:
+          type: string
+          format: email
+          example: player@example.com
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-01-05T10:30:00Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2025-01-05T10:30:00Z'
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Username or email address
+        password:
+          type: string
+          format: password
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+          description: JWT authentication token
+    ResetPasswordRequest:
+      type: object
+      required:
+        - token
+        - password
+      properties:
+        token:
+          type: string
+          description: Password reset token from email
+          example: abc123-reset-token-xyz789
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: newSecurePassword123
+    ChangePasswordRequest:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+          format: password
+          description: Current user password
+        newPassword:
+          type: string
+          format: password
+          minLength: 8
+          description: New password
+    PasswordStrength:
+      type: object
+      properties:
+        score:
+          type: integer
+          minimum: 0
+          maximum: 4
+          description: Password strength score (0=weak, 4=strong)
+          example: 3
+        isValid:
+          type: boolean
+          description: Whether password meets minimum requirements
+          example: true
+        feedback:
+          type: object
+          properties:
+            warning:
+              type: string
+              example: This is a common password
+            suggestions:
+              type: array
+              items:
+                type: string
+              example:
+                - Add another word or two
+                - Use a longer password
+        checks:
+          type: object
+          properties:
+            minLength:
+              type: boolean
+              example: true
+            hasUppercase:
+              type: boolean
+              example: true
+            hasLowercase:
+              type: boolean
+              example: true
+            hasNumbers:
+              type: boolean
+              example: true
+            hasSpecialChars:
+              type: boolean
+              example: false
+    UserPermissions:
+      type: object
+      properties:
+        userId:
+          type: integer
+          example: 123
+        globalPermissions:
+          type: array
+          items:
+            type: string
+          example:
+            - view_worlds
+            - join_worlds
+        worldPermissions:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            '456':
+              - edit_world
+              - invite_players
+            '789':
+              - view_world_players
+        roles:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              scope:
+                type: string
+              permissions:
+                type: array
+                items:
+                  type: string
+    World:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        name:
+          type: string
+          example: Mittelalter-Abenteuer
+        description:
+          type: string
+          example: Eine epische mittelalterliche Welt voller Abenteuer
+        status:
+          type: string
+          enum:
+            - upcoming
+            - open
+            - running
+            - closed
+            - archived
+          example: open
+        themeBundle:
+          type: string
+          example: medieval
+        themeVariant:
+          type: string
+          example: castle
+        playerCount:
+          type: integer
+          example: 42
+        maxPlayers:
+          type: integer
+          example: 100
+        createdAt:
+          type: string
+          format: date-time
+        creator:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+    WorldDetails:
+      allOf:
+        - $ref: '#/components/schemas/World'
+        - type: object
+          properties:
+            players:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlayerInfo'
+    CreateWorldRequest:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: Meine neue Welt
+        description:
+          type: string
+          minLength: 10
+          maxLength: 1000
+          example: Eine aufregende neue Welt zum Erkunden
+        themeBundle:
+          type: string
+          example: medieval
+        maxPlayers:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          example: 50
+    UpdateWorldRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: Aktualisierte Welt
+        description:
+          type: string
+          minLength: 10
+          maxLength: 1000
+          example: Eine aktualisierte Beschreibung
+        status:
+          type: string
+          enum:
+            - upcoming
+            - open
+            - running
+            - closed
+            - archived
+          example: open
+        themeBundle:
+          type: string
+          example: medieval
+        themeVariant:
+          type: string
+          example: castle
+        maxPlayers:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          example: 100
+    WorldState:
+      type: object
+      properties:
+        worldId:
+          type: integer
+          example: 123
+        status:
+          type: string
+          enum:
+            - upcoming
+            - open
+            - running
+            - closed
+            - archived
+          example: running
+        playerCount:
+          type: integer
+          example: 42
+        maxPlayers:
+          type: integer
+          example: 100
+        isOpen:
+          type: boolean
+          example: true
+        canJoin:
+          type: boolean
+          example: true
+        lastActivity:
+          type: string
+          format: date-time
+          example: '2025-01-05T14:30:00Z'
+        uptime:
+          type: integer
+          description: Uptime in seconds
+          example: 86400
+        gameState:
+          type: object
+          description: Game-specific state information
+          additionalProperties: true
+    PlayerInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        worldId:
+          type: integer
+        joinedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+        user:
+          $ref: '#/components/schemas/User'
+    PaginationInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 100
+        total:
+          type: integer
+          example: 5678
+        pages:
+          type: integer
+          example: 57
+        hasNext:
+          type: boolean
+          example: true
+        hasPrev:
+          type: boolean
+          example: false
+    CreateInviteRequest:
+      type: object
+      required:
+        - worldId
+        - email
+      properties:
+        worldId:
+          type: integer
+          example: 123
+        email:
+          type: string
+          format: email
+          example: friend@example.com
+        message:
+          type: string
+          maxLength: 500
+          example: Komm und spiele mit uns!
+    Invite:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 456
+        token:
+          type: string
+          example: abc123xyz789
+        worldId:
+          type: integer
+          example: 123
+        email:
+          type: string
+          format: email
+          example: friend@example.com
+        inviterUserId:
+          type: integer
+          example: 789
+        message:
+          type: string
+          example: Komm und spiele mit uns!
+        status:
+          type: string
+          enum:
+            - pending
+            - accepted
+            - declined
+            - expired
+          example: pending
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        inviteUrl:
+          type: string
+          example: https://weltenwind.com/invite/abc123xyz789
+    InviteListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        worldId:
+          type: integer
+        worldName:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+            - accepted
+            - declined
+            - expired
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        inviteUrl:
+          type: string
+    InviteValidation:
+      type: object
+      properties:
+        invite:
+          type: object
+          properties:
+            id:
+              type: integer
+            email:
+              type: string
+            message:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            expiresAt:
+              type: string
+              format: date-time
+        world:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            description:
+              type: string
+            themeBundle:
+              type: string
+            themeVariant:
+              type: string
+            status:
+              type: string
+            playerCount:
+              type: integer
+            maxPlayers:
+              type: integer
+            creator:
+              type: object
+              properties:
+                username:
+                  type: string
+        inviter:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+        userStatus:
+          type: string
+          enum:
+            - not_registered
+            - not_logged_in
+            - needs_login
+            - wrong_email
+            - can_accept
+            - already_accepted
+          description: Status of the current user relative to this invitation
+    InviteAcceptance:
+      type: object
+      properties:
+        world:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        player:
+          type: object
+          properties:
+            id:
+              type: integer
+            userId:
+              type: integer
+            worldId:
+              type: integer
+            joinedAt:
+              type: string
+              format: date-time
+            status:
+              type: string
+        invite:
+          type: object
+          properties:
+            id:
+              type: integer
+            acceptedAt:
+              type: string
+              format: date-time
+            status:
+              type: string
+    Language:
+      type: object
+      properties:
+        code:
+          type: string
+          example: de
+        name:
+          type: string
+          example: Deutsch
+        nativeName:
+          type: string
+          example: Deutsch
+        isDefault:
+          type: boolean
+          example: true
+    TranslationData:
+      type: object
+      properties:
+        language:
+          type: string
+          example: de
+        translations:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            buttonLogin: Anmelden
+            buttonRegister: Registrieren
+            welcomeMessage: Willkommen bei Weltenwind!
+    TranslationKey:
+      type: object
+      properties:
+        key:
+          type: string
+          example: buttonLogin
+        description:
+          type: string
+          example: Login button text
+        context:
+          type: string
+          example: auth
+        hasPlaceholders:
+          type: boolean
+          example: false
+        placeholders:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+    Theme:
+      type: object
+      properties:
+        id:
+          type: string
+          example: medieval
+        name:
+          type: string
+          example: Medieval
+        description:
+          type: string
+          example: A medieval fantasy theme
+        category:
+          type: string
+          example: fantasy
+        variants:
+          type: array
+          items:
+            type: string
+          example:
+            - castle
+            - village
+            - forest
+    ThemeDetails:
+      allOf:
+        - $ref: '#/components/schemas/Theme'
+        - type: object
+          properties:
+            colors:
+              type: object
+              description: Theme color configuration
+            assets:
+              type: object
+              description: Theme asset URLs
+            styles:
+              type: object
+              description: Theme style configuration
+    ThemeBundle:
+      type: object
+      properties:
+        id:
+          type: string
+          example: full-gaming
+        name:
+          type: string
+          example: Full Gaming Experience
+        description:
+          type: string
+          example: Complete theme bundle for full gaming experience
+        deviceTier:
+          type: string
+          enum:
+            - high
+            - medium
+            - low
+          example: high
+        themes:
+          type: array
+          items:
+            type: string
+          example:
+            - medieval
+            - sci-fi
+            - fantasy
+    WorldTheme:
+      type: object
+      properties:
+        worldId:
+          type: integer
+        themeId:
+          type: string
+        themeBundle:
+          type: string
+        themeVariant:
+          type: string
+        configuration:
+          type: object
+          description: World-specific theme configuration
+    LogEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          example: log_12345
+        timestamp:
+          type: string
+          format: date-time
+          example: '2025-01-05T14:30:00Z'
+        level:
+          type: string
+          enum:
+            - error
+            - warn
+            - info
+            - debug
+          example: info
+        category:
+          type: string
+          enum:
+            - system
+            - api
+            - security
+            - error
+            - debug
+          example: api
+        message:
+          type: string
+          example: User login successful
+        userId:
+          type: integer
+          nullable: true
+          example: 123
+        sessionId:
+          type: string
+          nullable: true
+          example: sess_abc123
+        ip:
+          type: string
+          nullable: true
+          example: 192.168.1.100
+        userAgent:
+          type: string
+          nullable: true
+          example: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Additional log context data
+        stackTrace:
+          type: string
+          nullable: true
+          description: Stack trace for error logs
+    LogCategory:
+      type: object
+      properties:
+        name:
+          type: string
+          example: api
+        displayName:
+          type: string
+          example: API Requests
+        description:
+          type: string
+          example: HTTP API request and response logs
+        count:
+          type: integer
+          example: 1234
+        lastEntry:
+          type: string
+          format: date-time
+          example: '2025-01-05T14:30:00Z'
+    LogStats:
+      type: object
+      properties:
+        period:
+          type: string
+          example: day
+        totalEntries:
+          type: integer
+          example: 5678
+        entriesByLevel:
+          type: object
+          properties:
+            error:
+              type: integer
+              example: 12
+            warn:
+              type: integer
+              example: 45
+            info:
+              type: integer
+              example: 4321
+            debug:
+              type: integer
+              example: 1300
+        entriesByCategory:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            system: 234
+            api: 3456
+            security: 67
+            error: 89
+            debug: 1832
+        topErrors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+              count:
+                type: integer
+              lastOccurrence:
+                type: string
+                format: date-time
+        systemHealth:
+          type: object
+          properties:
+            errorRate:
+              type: number
+              format: float
+              description: Error rate as percentage
+              example: 2.5
+            avgResponseTime:
+              type: number
+              format: float
+              description: Average API response time in ms
+              example: 145.6
+            activeUsers:
+              type: integer
+              example: 42
+  responses:
+    UnauthorizedError:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: AUTH_TOKEN_REQUIRED
+              message: Authentication token required
+    ForbiddenError:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: ACCESS_DENIED
+              message: Insufficient permissions for this operation
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: RESOURCE_NOT_FOUND
+              message: Requested resource not found
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: INTERNAL_SERVER_ERROR
+              message: An internal server error occurred
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User Login
+      description: Authenticate user with username/email and password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: Username or email address
+                  example: player1
+                password:
+                  type: string
+                  format: password
+                  example: securePassword123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            description: JWT authentication token
+                            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: User Registration
+      description: Register a new user account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 50
+                  example: newplayer
+                email:
+                  type: string
+                  format: email
+                  example: newplayer@example.com
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: securePassword123
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            description: JWT authentication token
+        '409':
+          description: Username or email already exists
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User Logout
+      description: Logout current user and invalidate session
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get Current User
+      description: Get information about the currently authenticated user
+      responses:
+        '200':
+          description: Current user information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh Token
+      description: Refresh JWT authentication token
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+                            description: New JWT authentication token
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/request-reset:
+    post:
+      tags:
+        - Authentication
+      summary: Request Password Reset
+      description: Request a password reset email for a user account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+      responses:
+        '200':
+          description: Password reset email sent (always returns success for security)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/reset-password:
+    post:
+      tags:
+        - Authentication
+      summary: Reset Password
+      description: Reset user password using reset token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid or expired reset token
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/change-password:
+    post:
+      tags:
+        - Authentication
+      summary: Change Password
+      description: Change password for logged-in user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Current password incorrect
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/check-password-strength:
+    post:
+      tags:
+        - Authentication
+      summary: Check Password Strength
+      description: Validate password strength without creating account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+                  example: myNewPassword123
+      responses:
+        '200':
+          description: Password strength analysis
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PasswordStrength'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/permissions:
+    get:
+      tags:
+        - Authentication
+      summary: Get User Permissions
+      description: Get detailed permissions for current user
+      responses:
+        '200':
+          description: User permissions
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/UserPermissions'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds:
+    get:
+      tags:
+        - Worlds
+      summary: List Worlds
+      description: Get a list of all available worlds
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - upcoming
+              - open
+              - running
+              - closed
+              - archived
+          description: Filter by world status
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Items per page
+      responses:
+        '200':
+          description: List of worlds
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/World'
+                      pagination:
+                        $ref: '#/components/schemas/PaginationInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+        - Worlds
+      summary: Create World
+      description: Create a new world
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorldRequest'
+      responses:
+        '201':
+          description: World created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/World'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds/{id}:
+    get:
+      tags:
+        - Worlds
+      summary: Get World Details
+      description: Get detailed information about a specific world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: World details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WorldDetails'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+        - Worlds
+      summary: Update World
+      description: Update world settings and configuration
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWorldRequest'
+      responses:
+        '200':
+          description: World updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/World'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags:
+        - Worlds
+      summary: Delete World
+      description: Permanently delete a world (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: World deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds/{id}/join:
+    post:
+      tags:
+        - Worlds
+      summary: Join World
+      description: Join a world as a player
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: Successfully joined world
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PlayerInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          description: Already a member of this world
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds/{id}/players:
+    get:
+      tags:
+        - Worlds
+      summary: List World Players
+      description: Get list of all players in a world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - active
+              - inactive
+          description: Filter by player status
+      responses:
+        '200':
+          description: List of world players
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PlayerInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds/{id}/players/me:
+    get:
+      tags:
+        - Worlds
+      summary: Get My Player Info
+      description: Get current user's player information in this world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: Player information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PlayerInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags:
+        - Worlds
+      summary: Leave World
+      description: Leave a world (remove my player)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: Successfully left world
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds/{id}/state:
+    get:
+      tags:
+        - Worlds
+      summary: Get World State
+      description: Get current state and status information of a world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: World state information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WorldState'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /invites:
+    post:
+      tags:
+        - Invites
+      summary: Create Invite
+      description: Create a new invitation to a world
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInviteRequest'
+      responses:
+        '201':
+          description: Invite created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Invite'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    get:
+      tags:
+        - Invites
+      summary: List My Invites
+      description: Get list of invites created by current user
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - pending
+              - accepted
+              - declined
+              - expired
+          description: Filter by invite status
+        - name: worldId
+          in: query
+          schema:
+            type: integer
+          description: Filter by world ID
+      responses:
+        '200':
+          description: List of invites
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/InviteListItem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /invites/validate/{token}:
+    get:
+      tags:
+        - Invites
+      summary: Validate Invite
+      description: Validate an invitation token and get invite details
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Invitation token
+      responses:
+        '200':
+          description: Valid invitation
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InviteValidation'
+        '400':
+          description: Invalid or expired invitation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /invites/accept/{token}:
+    post:
+      tags:
+        - Invites
+      summary: Accept Invite
+      description: Accept an invitation and join the world
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Invitation token
+      responses:
+        '200':
+          description: Invitation accepted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InviteAcceptance'
+        '400':
+          description: Invalid, expired, or already used invitation
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /invites/decline/{token}:
+    post:
+      tags:
+        - Invites
+      summary: Decline Invite
+      description: Decline an invitation
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Invitation token
+      responses:
+        '200':
+          description: Invitation declined successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid or expired invitation
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /invites/{id}:
+    delete:
+      tags:
+        - Invites
+      summary: Delete Invite
+      description: Delete an invitation (only by creator)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Invitation ID
+      responses:
+        '200':
+          description: Invitation deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /arb/languages:
+    get:
+      tags:
+        - Localization
+      summary: List Available Languages
+      description: Get list of supported languages
+      security: []
+      responses:
+        '200':
+          description: List of supported languages
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Language'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /arb/translations/{language}:
+    get:
+      tags:
+        - Localization
+      summary: Get Translations
+      description: Get all translations for a specific language
+      security: []
+      parameters:
+        - name: language
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - de
+              - en
+          description: Language code
+      responses:
+        '200':
+          description: Translation data
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TranslationData'
+        '404':
+          description: Language not supported
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /arb/keys:
+    get:
+      tags:
+        - Localization
+      summary: List Translation Keys
+      description: Get list of all available translation keys
+      responses:
+        '200':
+          description: List of translation keys
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TranslationKey'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /themes:
+    get:
+      tags:
+        - Themes
+      summary: List Available Themes
+      description: Get list of all available themes
+      responses:
+        '200':
+          description: List of themes
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Theme'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /themes/{id}:
+    get:
+      tags:
+        - Themes
+      summary: Get Theme Details
+      description: Get detailed information about a specific theme
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Theme ID
+      responses:
+        '200':
+          description: Theme details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ThemeDetails'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /themes/bundles:
+    get:
+      tags:
+        - Themes
+      summary: List Theme Bundles
+      description: Get list of available theme bundles
+      responses:
+        '200':
+          description: List of theme bundles
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ThemeBundle'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /themes/world/{worldId}:
+    get:
+      tags:
+        - Themes
+      summary: Get World Theme
+      description: Get theme configuration for a specific world
+      parameters:
+        - name: worldId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: World theme configuration
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WorldTheme'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /logs/viewer:
+    get:
+      tags:
+        - Logs
+      summary: Log Viewer Interface
+      description: Access the web-based log viewer interface
+      security: []
+      responses:
+        '200':
+          description: Log viewer HTML interface
+          content:
+            text/html:
+              schema:
+                type: string
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /logs/data:
+    get:
+      tags:
+        - Logs
+      summary: Get Log Data
+      description: Retrieve log entries with filtering and pagination
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum:
+              - system
+              - api
+              - security
+              - error
+              - debug
+          description: Filter by log category
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum:
+              - error
+              - warn
+              - info
+              - debug
+          description: Filter by log level
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start date for log entries
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End date for log entries
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search term in log messages
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+          description: Items per page
+      responses:
+        '200':
+          description: Log entries
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LogEntry'
+                      pagination:
+                        $ref: '#/components/schemas/PaginationInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /logs/categories:
+    get:
+      tags:
+        - Logs
+      summary: Get Log Categories
+      description: Get list of available log categories with counts
+      responses:
+        '200':
+          description: Log categories
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LogCategory'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /logs/stats:
+    get:
+      tags:
+        - Logs
+      summary: Get Log Statistics
+      description: Get statistics about log entries and system health
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum:
+              - hour
+              - day
+              - week
+              - month
+            default: day
+          description: Time period for statistics
+      responses:
+        '200':
+          description: Log statistics
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/LogStats'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'

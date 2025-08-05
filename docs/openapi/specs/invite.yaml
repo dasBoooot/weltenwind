@@ -1,0 +1,362 @@
+paths:
+  /invites:
+    post:
+      tags:
+        - Invites
+      summary: Create Invite
+      description: Create a new invitation to a world
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInviteRequest'
+      responses:
+        '201':
+          description: Invite created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Invite'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    get:
+      tags:
+        - Invites
+      summary: List My Invites
+      description: Get list of invites created by current user
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, accepted, declined, expired]
+          description: Filter by invite status
+        - name: worldId
+          in: query
+          schema:
+            type: integer
+          description: Filter by world ID
+      responses:
+        '200':
+          description: List of invites
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/InviteListItem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /invites/validate/{token}:
+    get:
+      tags:
+        - Invites
+      summary: Validate Invite
+      description: Validate an invitation token and get invite details
+      security: [] # No auth required for validation
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Invitation token
+      responses:
+        '200':
+          description: Valid invitation
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InviteValidation'
+        '400':
+          description: Invalid or expired invitation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /invites/accept/{token}:
+    post:
+      tags:
+        - Invites
+      summary: Accept Invite
+      description: Accept an invitation and join the world
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Invitation token
+      responses:
+        '200':
+          description: Invitation accepted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InviteAcceptance'
+        '400':
+          description: Invalid, expired, or already used invitation
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /invites/decline/{token}:
+    post:
+      tags:
+        - Invites
+      summary: Decline Invite
+      description: Decline an invitation
+      security: [] # No auth required for declining
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Invitation token
+      responses:
+        '200':
+          description: Invitation declined successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid or expired invitation
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /invites/{id}:
+    delete:
+      tags:
+        - Invites
+      summary: Delete Invite
+      description: Delete an invitation (only by creator)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Invitation ID
+      responses:
+        '200':
+          description: Invitation deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    CreateInviteRequest:
+      type: object
+      required:
+        - worldId
+        - email
+      properties:
+        worldId:
+          type: integer
+          example: 123
+        email:
+          type: string
+          format: email
+          example: "friend@example.com"
+        message:
+          type: string
+          maxLength: 500
+          example: "Komm und spiele mit uns!"
+
+    Invite:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 456
+        token:
+          type: string
+          example: "abc123xyz789"
+        worldId:
+          type: integer
+          example: 123
+        email:
+          type: string
+          format: email
+          example: "friend@example.com"
+        inviterUserId:
+          type: integer
+          example: 789
+        message:
+          type: string
+          example: "Komm und spiele mit uns!"
+        status:
+          type: string
+          enum: [pending, accepted, declined, expired]
+          example: "pending"
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        inviteUrl:
+          type: string
+          example: "https://weltenwind.com/invite/abc123xyz789"
+
+    InviteListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        worldId:
+          type: integer
+        worldName:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum: [pending, accepted, declined, expired]
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        inviteUrl:
+          type: string
+
+    InviteValidation:
+      type: object
+      properties:
+        invite:
+          type: object
+          properties:
+            id:
+              type: integer
+            email:
+              type: string
+            message:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            expiresAt:
+              type: string
+              format: date-time
+        world:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            description:
+              type: string
+            themeBundle:
+              type: string
+            themeVariant:
+              type: string
+            status:
+              type: string
+            playerCount:
+              type: integer
+            maxPlayers:
+              type: integer
+            creator:
+              type: object
+              properties:
+                username:
+                  type: string
+        inviter:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+        userStatus:
+          type: string
+          enum: [not_registered, not_logged_in, needs_login, wrong_email, can_accept, already_accepted]
+          description: Status of the current user relative to this invitation
+
+    InviteAcceptance:
+      type: object
+      properties:
+        world:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        player:
+          type: object
+          properties:
+            id:
+              type: integer
+            userId:
+              type: integer
+            worldId:
+              type: integer
+            joinedAt:
+              type: string
+              format: date-time
+            status:
+              type: string
+        invite:
+          type: object
+          properties:
+            id:
+              type: integer
+            acceptedAt:
+              type: string
+              format: date-time
+            status:
+              type: string

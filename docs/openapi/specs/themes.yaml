@@ -1,0 +1,181 @@
+paths:
+  /themes:
+    get:
+      tags:
+        - Themes
+      summary: List Available Themes
+      description: Get list of all available themes
+      responses:
+        '200':
+          description: List of themes
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Theme'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /themes/{id}:
+    get:
+      tags:
+        - Themes
+      summary: Get Theme Details
+      description: Get detailed information about a specific theme
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Theme ID
+      responses:
+        '200':
+          description: Theme details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ThemeDetails'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /themes/bundles:
+    get:
+      tags:
+        - Themes
+      summary: List Theme Bundles
+      description: Get list of available theme bundles
+      responses:
+        '200':
+          description: List of theme bundles
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ThemeBundle'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /themes/world/{worldId}:
+    get:
+      tags:
+        - Themes
+      summary: Get World Theme
+      description: Get theme configuration for a specific world
+      parameters:
+        - name: worldId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: World theme configuration
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WorldTheme'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    Theme:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "medieval"
+        name:
+          type: string
+          example: "Medieval"
+        description:
+          type: string
+          example: "A medieval fantasy theme"
+        category:
+          type: string
+          example: "fantasy"
+        variants:
+          type: array
+          items:
+            type: string
+          example: ["castle", "village", "forest"]
+
+    ThemeDetails:
+      allOf:
+        - $ref: '#/components/schemas/Theme'
+        - type: object
+          properties:
+            colors:
+              type: object
+              description: Theme color configuration
+            assets:
+              type: object
+              description: Theme asset URLs
+            styles:
+              type: object
+              description: Theme style configuration
+
+    ThemeBundle:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "full-gaming"
+        name:
+          type: string
+          example: "Full Gaming Experience"
+        description:
+          type: string
+          example: "Complete theme bundle for full gaming experience"
+        deviceTier:
+          type: string
+          enum: [high, medium, low]
+          example: "high"
+        themes:
+          type: array
+          items:
+            type: string
+          example: ["medieval", "sci-fi", "fantasy"]
+
+    WorldTheme:
+      type: object
+      properties:
+        worldId:
+          type: integer
+        themeId:
+          type: string
+        themeBundle:
+          type: string
+        themeVariant:
+          type: string
+        configuration:
+          type: object
+          description: World-specific theme configuration

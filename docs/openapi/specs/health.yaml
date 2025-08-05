@@ -1,0 +1,232 @@
+paths:
+  /health:
+    get:
+      summary: Basic Health Check
+      description: Returns the basic health status of the Weltenwind Backend API
+      tags:
+        - System
+      operationId: getHealthStatus
+      responses:
+        '200':
+          description: Service is healthy or degraded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+        '503':
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatusError'
+
+  /health/detailed:
+    get:
+      summary: Detailed Health Check
+      description: Returns detailed health status with system metrics and database statistics
+      tags:
+        - System
+      operationId: getDetailedHealthStatus
+      responses:
+        '200':
+          description: Detailed health information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedHealthStatus'
+        '503':
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatusError'
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [OK, DEGRADED, ERROR]
+          description: Overall health status
+          example: "OK"
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp when health check was performed
+          example: 1640995200000
+        uptime:
+          type: integer
+          description: Process uptime in seconds
+          example: 12345
+        environment:
+          type: string
+          description: Runtime environment
+          example: "production"
+        version:
+          type: string
+          description: API version
+          example: "1.0.0"
+        memory:
+          type: object
+          properties:
+            used:
+              type: integer
+              description: Used heap memory in MB
+              example: 45
+            total:
+              type: integer
+              description: Total heap memory in MB
+              example: 128
+            rss:
+              type: integer
+              description: Resident Set Size in MB
+              example: 67
+        pid:
+          type: integer
+          description: Process ID
+          example: 12345
+        database:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: [connected, disconnected]
+              example: "connected"
+            responseTime:
+              type: number
+              format: float
+              description: Database response time in milliseconds
+              example: 12.34
+            error:
+              type: string
+              description: Error message if database is disconnected
+              example: "Connection timeout"
+        services:
+          type: object
+          properties:
+            api:
+              type: string
+              example: "running"
+            auth:
+              type: string
+              example: "available"
+            worlds:
+              type: string
+              example: "available"
+            invites:
+              type: string
+              example: "available"
+            themes:
+              type: string
+              example: "available"
+            logs:
+              type: string
+              example: "available"
+        responseTime:
+          type: number
+          format: float
+          description: Health check response time in milliseconds
+          example: 45.67
+
+    DetailedHealthStatus:
+      allOf:
+        - $ref: '#/components/schemas/HealthStatus'
+        - type: object
+          properties:
+            uptime:
+              type: object
+              properties:
+                seconds:
+                  type: integer
+                  description: Uptime in seconds
+                  example: 12345
+                human:
+                  type: string
+                  description: Human-readable uptime
+                  example: "3h 25m 45s"
+            system:
+              type: object
+              properties:
+                platform:
+                  type: string
+                  description: Operating system platform
+                  example: "linux"
+                arch:
+                  type: string
+                  description: CPU architecture
+                  example: "x64"
+                nodeVersion:
+                  type: string
+                  description: Node.js version
+                  example: "v18.17.0"
+                memory:
+                  type: object
+                  properties:
+                    used:
+                      type: integer
+                      description: Used heap memory in MB
+                    total:
+                      type: integer
+                      description: Total heap memory in MB  
+                    rss:
+                      type: integer
+                      description: Resident Set Size in MB
+                    external:
+                      type: integer
+                      description: External memory usage in MB
+                cpu:
+                  type: object
+                  description: CPU usage statistics
+            database:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [connected, disconnected]
+                responseTime:
+                  type: number
+                  format: float
+                  description: Database response time in milliseconds
+                stats:
+                  type: object
+                  properties:
+                    users:
+                      type: integer
+                      description: Total number of users
+                      example: 150
+                    worlds:
+                      type: integer
+                      description: Total number of worlds
+                      example: 23
+                    activeSessions:
+                      type: integer
+                      description: Number of active user sessions
+                      example: 7
+
+    HealthStatusError:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ERROR]
+          example: "ERROR"
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp when error occurred
+          example: 1640995200000
+        uptime:
+          type: integer
+          description: Process uptime in seconds
+          example: 12345
+        error:
+          type: string
+          description: Error message describing the failure
+          example: "Database connection failed"
+        responseTime:
+          type: number
+          format: float
+          description: Health check response time in milliseconds
+          example: 123.45

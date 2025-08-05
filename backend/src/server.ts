@@ -21,6 +21,7 @@ import inviteRoutes from './routes/invites';
 import logRoutes from './routes/logs';
 import arbRoutes from './routes/arb';
 import themeRoutes from './routes/themes';
+import healthRoutes from './routes/health';
 import { cleanupExpiredSessions } from './services/session.service';
 import { cleanupExpiredLockouts } from './services/brute-force-protection.service';
 import prisma from './libs/prisma';
@@ -108,6 +109,7 @@ app.use(express.json());
 app.use(requestLoggingMiddleware);
 
 // === API-Routen ===
+app.use('/api', healthRoutes);  // Health-Check ohne Authentifizierung
 app.use('/api/auth', authRoutes);
 app.use('/api/worlds', worldRoutes);
 app.use('/api/invites', inviteRoutes);
@@ -118,7 +120,7 @@ app.use('/api/themes', themeRoutes);
 // === API-Doku (OpenAPI) ===
 // === API-combined.yaml direkt bereitstellen ===
 app.get('/api-combined.yaml', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../../docs/api-combined.yaml'));
+  res.sendFile(path.resolve(__dirname, '../../docs/openapi/generated/api-combined.yaml'));
 });
 
 // === Swagger Editor unter /docs ===
@@ -127,7 +129,7 @@ const swaggerEditorPath = path.dirname(require.resolve('swagger-editor-dist/inde
 app.use('/docs', express.static(swaggerEditorPath));
 
 // === ARB Manager unter /arb-manager ===
-const publicPath = path.resolve(__dirname, '../public');
+const publicPath = path.resolve(__dirname, '../tools/arb-editor');
 console.log(`🌍 ARB Manager-Pfad: ${publicPath}`);
 
 // Security-Middleware für ARB Manager
@@ -162,7 +164,7 @@ app.use('/arb-manager', (req, res, next) => {
 app.use('/arb-manager', express.static(publicPath));
 
 // === Theme Editor unter /theme-editor ===
-const themeEditorPath = path.resolve(__dirname, '../theme-editor');
+const themeEditorPath = path.resolve(__dirname, '../tools/theme-editor');
 console.log(`🎨 Theme-Editor-Pfad: ${themeEditorPath}`);
 
 // Cache-Busting für Theme Editor
@@ -178,6 +180,41 @@ app.use('/theme-editor', (req, res, next) => {
 });
 
 app.use('/theme-editor', express.static(themeEditorPath));
+
+// === Log Viewer unter /log-viewer ===
+const logViewerPath = path.resolve(__dirname, '../tools/log-viewer');
+console.log(`🔍 Log-Viewer-Pfad: ${logViewerPath}`);
+
+// Security-Middleware für Log Viewer
+app.use('/log-viewer', (req, res, next) => {
+  // XSS-Protection Headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // Content Security Policy für Log Viewer
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'", // Für onclick Event-Handler
+    "style-src 'self' 'unsafe-inline'",  // Für inline Styles
+    "connect-src 'self'",                // Für API-Calls
+    "img-src 'self' data:",              // Für Base64-Bilder falls nötig
+    "font-src 'self'",                   // Für Web-Fonts
+    "object-src 'none'",                 // Plugins blockieren
+    "base-uri 'self'",                   // Base-Tag Manipulation verhindern
+    "form-action 'self'"                 // Form-Submissions nur an eigene Domain
+  ].join('; '));
+  
+  // Cache-Control für sensible Log-Daten
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
+  next();
+});
+
+app.use('/log-viewer', express.static(logViewerPath));
 
 // === Flutter-Web-App unter /game ===
 // 1. Statische Dateien zuerst (für Assets)
@@ -320,7 +357,7 @@ app.listen(PORT, () => {
   console.log(`🎨 Theme Editor verfügbar unter: http://localhost:${PORT}/theme-editor/`);
   console.log(`📘 Swagger Editor verfügbar unter: http://localhost:${PORT}/docs`);
   console.log(`📄 API-Doku YAML erreichbar unter: http://localhost:${PORT}/api-combined.yaml`);
-  console.log(`🔍 Log-Viewer verfügbar unter: http://localhost:${PORT}/api/logs/viewer`);
+  console.log(`🔍 Log-Viewer verfügbar unter: http://localhost:${PORT}/log-viewer/`);
   console.log(`🧹 Session-Cleanup alle 5 Minuten aktiv`);
 
   // Startup-Log
@@ -339,7 +376,7 @@ app.listen(PORT, () => {
       arbManager: `http://localhost:${PORT}/arb-manager/`,
       themeEditor: `http://localhost:${PORT}/theme-editor/`,
       docs: `http://localhost:${PORT}/docs`,
-      logs: `http://localhost:${PORT}/api/logs/viewer`,
+      logs: `http://localhost:${PORT}/log-viewer/`,
       openapi: `http://localhost:${PORT}/api-combined.yaml`
     }
   });

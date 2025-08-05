@@ -7,7 +7,7 @@ import { authenticate } from '../middleware/authenticate';
 const router = express.Router();
 
 // Theme-Verzeichnis Pfad - Updated für modulare Schemas
-const THEMES_DIR = path.join(__dirname, '../../theme-editor/schemas');
+const THEMES_DIR = path.join(__dirname, '../../tools/theme-editor/schemas');
 
 /**
  * @swagger

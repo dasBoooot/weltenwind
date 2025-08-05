@@ -1,0 +1,298 @@
+paths:
+  /logs/viewer:
+    get:
+      tags:
+        - Logs
+      summary: Log Viewer Interface
+      description: Access the web-based log viewer interface
+      security: [] # Public access to viewer interface
+      responses:
+        '200':
+          description: Log viewer HTML interface
+          content:
+            text/html:
+              schema:
+                type: string
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /logs/data:
+    get:
+      tags:
+        - Logs
+      summary: Get Log Data
+      description: Retrieve log entries with filtering and pagination
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [system, api, security, error, debug]
+          description: Filter by log category
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum: [error, warn, info, debug]
+          description: Filter by log level
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start date for log entries
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End date for log entries
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search term in log messages
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+          description: Items per page
+      responses:
+        '200':
+          description: Log entries
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LogEntry'
+                      pagination:
+                        $ref: '#/components/schemas/PaginationInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /logs/categories:
+    get:
+      tags:
+        - Logs
+      summary: Get Log Categories
+      description: Get list of available log categories with counts
+      responses:
+        '200':
+          description: Log categories
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LogCategory'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /logs/stats:
+    get:
+      tags:
+        - Logs
+      summary: Get Log Statistics
+      description: Get statistics about log entries and system health
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [hour, day, week, month]
+            default: day
+          description: Time period for statistics
+      responses:
+        '200':
+          description: Log statistics
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/LogStats'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    LogEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "log_12345"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-01-05T14:30:00Z"
+        level:
+          type: string
+          enum: [error, warn, info, debug]
+          example: "info"
+        category:
+          type: string
+          enum: [system, api, security, error, debug]
+          example: "api"
+        message:
+          type: string
+          example: "User login successful"
+        userId:
+          type: integer
+          nullable: true
+          example: 123
+        sessionId:
+          type: string
+          nullable: true
+          example: "sess_abc123"
+        ip:
+          type: string
+          nullable: true
+          example: "192.168.1.100"
+        userAgent:
+          type: string
+          nullable: true
+          example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Additional log context data
+        stackTrace:
+          type: string
+          nullable: true
+          description: Stack trace for error logs
+
+    LogCategory:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "api"
+        displayName:
+          type: string
+          example: "API Requests"
+        description:
+          type: string
+          example: "HTTP API request and response logs"
+        count:
+          type: integer
+          example: 1234
+        lastEntry:
+          type: string
+          format: date-time
+          example: "2025-01-05T14:30:00Z"
+
+    LogStats:
+      type: object
+      properties:
+        period:
+          type: string
+          example: "day"
+        totalEntries:
+          type: integer
+          example: 5678
+        entriesByLevel:
+          type: object
+          properties:
+            error:
+              type: integer
+              example: 12
+            warn:
+              type: integer
+              example: 45
+            info:
+              type: integer
+              example: 4321
+            debug:
+              type: integer
+              example: 1300
+        entriesByCategory:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            system: 234
+            api: 3456
+            security: 67
+            error: 89
+            debug: 1832
+        topErrors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+              count:
+                type: integer
+              lastOccurrence:
+                type: string
+                format: date-time
+        systemHealth:
+          type: object
+          properties:
+            errorRate:
+              type: number
+              format: float
+              description: Error rate as percentage
+              example: 2.5
+            avgResponseTime:
+              type: number
+              format: float
+              description: Average API response time in ms
+              example: 145.6
+            activeUsers:
+              type: integer
+              example: 42
+
+    PaginationInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 100
+        total:
+          type: integer
+          example: 5678
+        pages:
+          type: integer
+          example: 57
+        hasNext:
+          type: boolean
+          example: true
+        hasPrev:
+          type: boolean
+          example: false

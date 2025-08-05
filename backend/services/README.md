@@ -4,12 +4,21 @@ Dieser Ordner enthält alle systemd Service-Definitionen für das Weltenwind-Pro
 
 ## Inhalt
 
-- `weltenwind-backend.service` - Backend API Service
+### Service-Definitionen
+- `weltenwind-backend.service` - Backend API Service (mit Health-Checks)
 - `weltenwind-docs.service` - Swagger Dokumentation Service  
 - `weltenwind-studio.service` - Prisma Studio Service
 - `weltenwind.target` - Gruppiert alle Services
+
+### Setup & Management Scripts
 - `setup-systemd-service.sh` - Installations-Script
 - `setup-logging.sh` - Logging-Setup Script
+- `setup-monitoring.sh` - **NEU:** Monitoring-Stack Setup (Uptime Kuma + Netdata)
+- `health-check.sh` - **NEU:** Umfassendes Health-Check-Script
+- `check-ports.sh` - Port-Status prüfen
+- `stop-old-services.sh` - Services sauber stoppen
+
+### Konfigurationsdateien
 - `weltenwind-logrotate.conf` - Log-Rotation Konfiguration
 - `SYSTEMD-SERVICE.md` - Ausführliche Dokumentation
 
@@ -52,7 +61,7 @@ Das Weltenwind-Backend verwendet **duales Logging**:
 - **Konfiguration:** `/etc/logrotate.d/weltenwind`
 
 ### Log-Viewer Web-UI:
-- **URL:** `http://your-server:3000/api/logs/viewer`
+- **URL:** `http://your-server:3000/log-viewer/`
 - **Berechtigung:** Nur Admins (`system.logs` Permission)
 - **Features:** Real-time, Filterung, Auto-Refresh
 

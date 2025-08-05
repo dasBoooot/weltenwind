@@ -1,0 +1,113 @@
+/* Weltenwind Log-Viewer CSS */
+/* Professional Admin Tool Styling */
+
+body { 
+    font-family: monospace; 
+    margin: 20px; 
+    background: #1a1a1a; 
+    color: #fff; 
+}
+
+.login-container { 
+    max-width: 400px; 
+    margin: 100px auto; 
+    padding: 30px; 
+    background: #333; 
+    border-radius: 10px; 
+    text-align: center; 
+}
+
+.controls { 
+    margin-bottom: 20px; 
+    padding: 10px; 
+    background: #333; 
+    border-radius: 5px; 
+}
+
+select, input, button { 
+    margin: 5px; 
+    padding: 8px; 
+    background: #555; 
+    color: #fff; 
+    border: 1px solid #777; 
+    border-radius: 3px; 
+}
+
+input[type="text"], input[type="password"] { 
+    width: 200px; 
+}
+
+button { 
+    cursor: pointer; 
+}
+
+button:hover { 
+    background: #666; 
+}
+
+.log-container { 
+    background: #222; 
+    padding: 15px; 
+    border-radius: 5px; 
+    height: 70vh; 
+    overflow-y: auto; 
+}
+
+.log-entry { 
+    margin: 2px 0; 
+    padding: 5px; 
+    border-left: 3px solid #555; 
+}
+
+.log-entry.INFO { 
+    border-color: #4CAF50; 
+}
+
+.log-entry.WARN { 
+    border-color: #FF9800; 
+}
+
+.log-entry.ERROR { 
+    border-color: #F44336; 
+}
+
+.timestamp { 
+    color: #888; 
+}
+
+.module { 
+    color: #2196F3; 
+    font-weight: bold; 
+}
+
+.username { 
+    color: #4CAF50; 
+}
+
+.ip { 
+    color: #FF9800; 
+}
+
+.message { 
+    color: #fff; 
+}
+
+.metadata { 
+    color: #999; 
+    font-size: 0.9em; 
+    margin-left: 20px; 
+}
+
+.hidden { 
+    display: none; 
+}
+
+.error { 
+    color: #F44336; 
+    margin: 10px 0; 
+}
+
+.success { 
+    color: #4CAF50; 
+    margin: 10px 0; 
+}
