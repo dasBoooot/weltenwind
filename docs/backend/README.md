@@ -18,6 +18,8 @@
 ### **🏗️ Infrastructure** (`/infrastructure/`)
 **System-Architektur & technische Infrastruktur**
 
+- **[SSL/TLS + nginx Setup](infrastructure/ssl-nginx-setup.md)** - HTTPS-Migration mit nginx Reverse Proxy
+- **[Environment Variables](infrastructure/environment-variables.md)** - Vollständige .env Konfiguration
 - **[Logging-Implementation](infrastructure/logging-implementation.md)** - Winston-basiertes Logging-System
 - **[Session-Config](infrastructure/session-config.md)** - Session-Management-Konfiguration
 - **[Error-Handling-Patterns](infrastructure/error-handling-patterns.md)** - Einheitliche Error-Handling-Strategien
@@ -34,10 +36,14 @@
 
 ### **Für Entwickler**:
 - 🚀 **Start hier**: [Development-Troubleshooting](operations/development-troubleshooting.md)
+- 🔐 **SSL Setup**: [SSL/TLS + nginx Setup](infrastructure/ssl-nginx-setup.md)
+- ⚙️ **Environment Config**: [Environment Variables](infrastructure/environment-variables.md)
 - 🔐 **Security-Guidelines**: [API-Security](security/api-security.md)
 - 📊 **Logging**: [Logging-Implementation](infrastructure/logging-implementation.md)
 
 ### **Für DevOps**:
+- 🚀 **SSL/HTTPS Setup**: [SSL/TLS + nginx Setup](infrastructure/ssl-nginx-setup.md)
+- ⚙️ **Production Config**: [Environment Variables](infrastructure/environment-variables.md)
 - 🚀 **Deployment**: [Production-Updates](operations/production-updates.md)
 - 🔐 **Security-Configuration**: [Security-Headers](security/security-headers.md)
 - 📈 **Monitoring**: [Logging-Implementation](infrastructure/logging-implementation.md)

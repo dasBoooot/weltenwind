@@ -4,6 +4,26 @@ import fs from 'fs';
 
 // Logs-Verzeichnis je nach Environment
 const isDevelopment = process.env.NODE_ENV !== 'production';
+
+// ✅ Log File Konfiguration aus .env
+const parseLogFileSize = (sizeStr: string): number => {
+  const match = sizeStr.match(/^(\d+)([kmg]?)$/i);
+  if (!match) return 50 * 1024 * 1024; // Default: 50MB
+  
+  const size = parseInt(match[1], 10);
+  const unit = (match[2] || '').toLowerCase();
+  
+  switch (unit) {
+    case 'k': return size * 1024;
+    case 'm': return size * 1024 * 1024;
+    case 'g': return size * 1024 * 1024 * 1024;
+    default: return size;
+  }
+};
+
+const LOG_FILE_MAX_SIZE = parseLogFileSize(process.env.LOG_FILE_MAX_SIZE || (isDevelopment ? '50m' : '100m'));
+const LOG_FILE_MAX_FILES = parseInt(process.env.LOG_FILE_MAX_FILES || (isDevelopment ? '10' : '20'), 10);
+const ERROR_LOG_MAX_FILES = parseInt(process.env.ERROR_LOG_MAX_FILES || (isDevelopment ? '5' : '10'), 10);
 const logsDir = isDevelopment 
   ? path.resolve(__dirname, '../../../logs')           // Development: ./logs/
   : '/var/log/weltenwind';                             // Production: systemd-Standard
@@ -46,8 +66,8 @@ const logFormat = winston.format.combine(
 const createFileTransport = (filename: string, options: any = {}) => {
   return new winston.transports.File({
     filename: path.join(logsDir, filename),
-    maxsize: isDevelopment ? 50 * 1024 * 1024 : 100 * 1024 * 1024, // Dev: 50MB, Prod: 100MB
-    maxFiles: isDevelopment ? 10 : 20,                               // Dev: 10, Prod: 20
+    maxsize: LOG_FILE_MAX_SIZE,  // Aus .env
+    maxFiles: LOG_FILE_MAX_FILES, // Aus .env
     tailable: true,
     ...options
   });
@@ -64,7 +84,7 @@ export const logger = winston.createLogger({
     // Error-Log (nur Fehler)
     createFileTransport('error.log', { 
       level: 'error',
-      maxFiles: isDevelopment ? 5 : 10
+      maxFiles: ERROR_LOG_MAX_FILES // Aus .env
     }),
     
     // Auth-spezifische Logs

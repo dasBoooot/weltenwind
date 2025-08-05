@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/services/theme_helper.dart';
 import 'package:flutter/services.dart';
-// REMOVED: import '../../core/providers/theme_context_provider.dart'; // DEPRECATED - using Theme.of(context)
 
 /// 🌍 World Status Types
 enum WorldStatus {

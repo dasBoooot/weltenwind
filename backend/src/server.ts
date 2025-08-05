@@ -8,6 +8,22 @@ import fs from 'fs';
 // Lade Environment-Variablen VOR allen anderen Imports
 dotenv.config();
 
+// ===========================================
+// 🌐 URL CONFIGURATION (SSL-Ready)
+// ===========================================
+
+// SSL & Proxy Konfiguration aus .env
+const SSL_ENABLED = process.env.SSL_ENABLED === 'true';
+const TRUST_PROXY_ENABLED = process.env.TRUST_PROXY === 'true';
+
+// Backend Internal URLs (für Logs, Health-Checks, interne Calls)
+const BASE_URL = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+
+// Public/External URLs (für Clients über nginx)
+const PUBLIC_API_URL = process.env.PUBLIC_API_URL || 'https://192.168.2.168/api';
+const PUBLIC_CLIENT_URL = process.env.PUBLIC_CLIENT_URL || 'https://192.168.2.168';
+const PUBLIC_ASSETS_URL = process.env.PUBLIC_ASSETS_URL || 'https://192.168.2.168';
+
 // JWT-Konfiguration initialisieren (prüft JWT_SECRET)
 import { jwtConfig } from './config/jwt.config';
 
@@ -45,18 +61,29 @@ configureTrustProxy(app);
 // Security Headers mit Helmet
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
+console.log(`🔐 SECURITY: isDevelopment=${isDevelopment}, NODE_ENV=${process.env.NODE_ENV}`);
+
+// ✅ Trust Proxy (für nginx Reverse Proxy) - SICHER konfiguriert
+if (TRUST_PROXY_ENABLED) {
+  app.set('trust proxy', 1); // Nur ersten Proxy (nginx) vertrauen - SICHERER!
+  console.log('🔗 Trust Proxy: AKTIVIERT (nginx Reverse Proxy - nur 1 Hop)');
+}
+
 app.use(helmet({
-  contentSecurityPolicy: isDevelopment ? false : {
+  // ✅ CSP für HTTPS-Development aktivieren (SSL-Testing)
+  contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-eval für Swagger UI
-      connectSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://www.gstatic.com"], // Flutter CanvasKit
+      scriptSrcElem: ["'self'", "'unsafe-inline'", "https://www.gstatic.com"], // Flutter CanvasKit scripts
+      connectSrc: ["'self'", "https://192.168.2.168", "https://www.gstatic.com", "https://fonts.gstatic.com"], // Flutter + Backend + Fonts
       frameSrc: ["'none'"],
       objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
+      // ⚠️ upgradeInsecureRequests nur in Production
+      ...(isDevelopment ? {} : { upgradeInsecureRequests: [] }),
     }
   },
   hsts: isDevelopment ? false : {
@@ -80,10 +107,16 @@ const corsOptions = {
     // In Development alle lokalen Origins erlauben
     if (isDevelopment) {
       const allowedPatterns = [
+        // HTTP für Development
         /^http:\/\/localhost(:\d+)?$/,
         /^http:\/\/127\.0\.0\.1(:\d+)?$/,
         /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/,
-        /^http:\/\/\[::1\](:\d+)?$/ // IPv6 localhost
+        /^http:\/\/\[::1\](:\d+)?$/,
+        // HTTPS für SSL-Setup
+        /^https:\/\/localhost(:\d+)?$/,
+        /^https:\/\/127\.0\.0\.1(:\d+)?$/,
+        /^https:\/\/192\.168\.\d+\.\d+(:\d+)?$/,
+        /^https:\/\/\[::1\](:\d+)?$/
       ];
       
       if (!origin || allowedPatterns.some(pattern => pattern.test(origin))) {
@@ -93,7 +126,7 @@ const corsOptions = {
       }
     } else {
       // Production: Nutze Environment Variable
-      const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:8080'];
+      const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [PUBLIC_CLIENT_URL];
       callback(null, allowedOrigins);
     }
   },
@@ -123,10 +156,19 @@ app.get('/api-combined.yaml', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../../docs/openapi/generated/api-combined.yaml'));
 });
 
-// === Swagger Editor unter /docs ===
-// → mit require.resolve (robuster als direkter Pfad)
-const swaggerEditorPath = path.dirname(require.resolve('swagger-editor-dist/index.html'));
-app.use('/docs', express.static(swaggerEditorPath));
+// === Swagger UI unter /docs ===
+// swagger-ui-express mit korrigierter YAML-URL
+const swaggerOptions = {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Weltenwind API Documentation',
+  swaggerOptions: {
+    // ✅ Hardcoded HTTPS-URL für nginx (statt HTTP:3000)
+    url: 'https://192.168.2.168/api-combined.yaml'
+  }
+};
+
+app.use('/docs', swaggerUi.serve);
+app.get('/docs', swaggerUi.setup(null, swaggerOptions));
 
 // === ARB Manager unter /arb-manager ===
 const publicPath = path.resolve(__dirname, '../tools/arb-editor');
@@ -284,8 +326,14 @@ app.get('/api/health', (req, res) => {
 });
 
 // === Session-Cleanup-Job ===
-// Alle 5 Minuten abgelaufene Sessions löschen
-setInterval(async () => {
+// Cleanup-Konfiguration aus .env
+const AUTO_CLEANUP_ENABLED = process.env.AUTO_CLEANUP_EXPIRED_SESSIONS === 'true';
+const SESSION_CLEANUP_INTERVAL = parseInt(process.env.SESSION_CLEANUP_INTERVAL_MINUTES || '5', 10) * 60 * 1000;
+
+// Nur Cleanup starten wenn aktiviert
+if (AUTO_CLEANUP_ENABLED) {
+  console.log('🧹 Auto Session Cleanup: AKTIVIERT');
+  setInterval(async () => {
   try {
     const result = await cleanupExpiredSessions();
     if (result.count > 0) {
@@ -301,7 +349,10 @@ setInterval(async () => {
       cleanupType: 'expired_sessions'
     });
   }
-}, 5 * 60 * 1000); // 5 Minuten
+  }, SESSION_CLEANUP_INTERVAL);
+} else {
+  console.log('🧹 Auto Session Cleanup: DEAKTIVIERT');
+}
 
 // Error-Logging Middleware (am Ende, vor Server-Start)
 app.use(errorLoggingMiddleware);
@@ -351,13 +402,13 @@ process.on('SIGTERM', async () => {
 
 // === Server starten ===
 app.listen(PORT, () => {
-  console.log(`🚀 Weltenwind-API läuft auf Port ${PORT}`);
-  console.log(`🎮 Flutter-Game verfügbar unter: http://localhost:${PORT}/game`);
-  console.log(`🌍 ARB Manager verfügbar unter: http://localhost:${PORT}/arb-manager/`);
-  console.log(`🎨 Theme Editor verfügbar unter: http://localhost:${PORT}/theme-editor/`);
-  console.log(`📘 Swagger Editor verfügbar unter: http://localhost:${PORT}/docs`);
-  console.log(`📄 API-Doku YAML erreichbar unter: http://localhost:${PORT}/api-combined.yaml`);
-  console.log(`🔍 Log-Viewer verfügbar unter: http://localhost:${PORT}/log-viewer/`);
+  console.log(`🚀 Weltenwind-API läuft auf Port ${PORT} (intern: ${BASE_URL})`);
+  console.log(`🎮 Flutter-Game verfügbar unter: ${PUBLIC_CLIENT_URL}/game`);
+  console.log(`🌍 ARB Manager verfügbar unter: ${PUBLIC_ASSETS_URL}/arb-manager/`);
+  console.log(`🎨 Theme Editor verfügbar unter: ${PUBLIC_ASSETS_URL}/theme-editor/`);
+  console.log(`📘 Swagger Editor verfügbar unter: ${PUBLIC_CLIENT_URL}/docs`);
+  console.log(`📄 API-Doku YAML erreichbar unter: ${PUBLIC_CLIENT_URL}/api-combined.yaml`);
+  console.log(`🔍 Log-Viewer verfügbar unter: ${PUBLIC_ASSETS_URL}/log-viewer/`);
   console.log(`🧹 Session-Cleanup alle 5 Minuten aktiv`);
 
   // Startup-Log
@@ -371,17 +422,17 @@ app.listen(PORT, () => {
       maxSessionsPerUser: parseInt(process.env.MAX_SESSIONS_PER_USER || '1', 10)
     },
     endpoints: {
-      api: `http://localhost:${PORT}/api`,
-      game: `http://localhost:${PORT}/game`,
-      arbManager: `http://localhost:${PORT}/arb-manager/`,
-      themeEditor: `http://localhost:${PORT}/theme-editor/`,
-      docs: `http://localhost:${PORT}/docs`,
-      logs: `http://localhost:${PORT}/log-viewer/`,
-      openapi: `http://localhost:${PORT}/api-combined.yaml`
+      api: PUBLIC_API_URL,
+      game: `${PUBLIC_CLIENT_URL}/game`,
+      arbManager: `${PUBLIC_ASSETS_URL}/arb-manager/`,
+      themeEditor: `${PUBLIC_ASSETS_URL}/theme-editor/`,
+      docs: `${PUBLIC_CLIENT_URL}/docs`,
+      logs: `${PUBLIC_ASSETS_URL}/log-viewer/`,
+      openapi: `${PUBLIC_CLIENT_URL}/api-combined.yaml`
     }
   });
 
-  // Session-Cleanup (detailliertere Intervals)
+  // Session-Cleanup (detailliertere Intervals - 2x Session-Cleanup-Intervall)
   setInterval(async () => {
     try {
       const result = await cleanupExpiredSessions();
@@ -389,7 +440,7 @@ app.listen(PORT, () => {
       loggers.system.info('Detailed session cleanup completed', {
         deletedSessions: result.count,
         cleanupType: 'expired_sessions_detailed',
-        interval: '10min'
+        interval: `${SESSION_CLEANUP_INTERVAL * 2 / 60000}min`
       });
     } catch (error) {
       console.error('[Session-Cleanup] Fehler:', error);
@@ -397,7 +448,7 @@ app.listen(PORT, () => {
         cleanupType: 'expired_sessions_detailed'
       });
     }
-  }, 10 * 60 * 1000); // 10 Minuten
+  }, SESSION_CLEANUP_INTERVAL * 2); // 2x Session-Cleanup-Intervall
 
   // Cleanup für abgelaufene Account-Lockouts
   setInterval(async () => {
@@ -415,5 +466,5 @@ app.listen(PORT, () => {
         cleanupType: 'expired_lockouts'
       });
     }
-  }, 15 * 60 * 1000); // 15 Minuten
+  }, SESSION_CLEANUP_INTERVAL * 3); // 3x Session-Cleanup-Intervall
 });

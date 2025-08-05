@@ -84,10 +84,8 @@ class ModularThemeService {
     try {
       AppLogger.app.i('📦 Lade Bundle-Konfigurationen...');
       
-      // Direkter HTTP-Call ohne API-Service da theme-editor statisch bereitgestellt wird
-      const urlPath = '/theme-editor/bundles/bundle-configs.json';
-      const urlPrefix = Env.apiUrl;
-      const url = '$urlPrefix$urlPath';
+      // ✅ Verwende Env-Konfiguration für theme-editor URL
+      const url = Env.bundleConfigsUrl;
       final response = await http.get(Uri.parse(url));
       
       if (response.statusCode != 200) {

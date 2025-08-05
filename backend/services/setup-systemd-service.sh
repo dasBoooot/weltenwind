@@ -103,3 +103,8 @@ echo "  - Prisma Studio: http://localhost:5555"
 echo
 echo "Starte alle Services jetzt mit:"
 echo "  sudo systemctl start weltenwind.target" 
+echo "🌐 Installing nginx service..."
+sudo cp /srv/weltenwind/backend/services/weltenwind-nginx.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable weltenwind-nginx
+echo "✅ nginx service installed"

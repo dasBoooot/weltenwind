@@ -3,6 +3,17 @@ import slowDown from 'express-slow-down';
 import { Request, Response } from 'express';
 import { loggers } from '../config/logger.config';
 
+// ✅ Rate Limiting Konfiguration aus .env
+const AUTH_RATE_LIMIT_WINDOW_MINUTES = parseInt(process.env.AUTH_RATE_LIMIT_WINDOW_MINUTES || '5', 10);
+const AUTH_RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.AUTH_RATE_LIMIT_MAX_REQUESTS || '20', 10);
+const AUTH_SLOWDOWN_WINDOW_MINUTES = parseInt(process.env.AUTH_SLOWDOWN_WINDOW_MINUTES || '15', 10);
+const API_RATE_LIMIT_WINDOW_MINUTES = parseInt(process.env.API_RATE_LIMIT_WINDOW_MINUTES || '1', 10);
+const API_RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.API_RATE_LIMIT_MAX_REQUESTS || '100', 10);
+const PASSWORD_RESET_WINDOW_HOURS = parseInt(process.env.PASSWORD_RESET_WINDOW_HOURS || '1', 10);
+const PASSWORD_RESET_MAX_REQUESTS = parseInt(process.env.PASSWORD_RESET_MAX_REQUESTS || '3', 10);
+const REGISTRATION_LIMIT_WINDOW_HOURS = parseInt(process.env.REGISTRATION_LIMIT_WINDOW_HOURS || '24', 10);
+const REGISTRATION_LIMIT_MAX_REQUESTS = parseInt(process.env.REGISTRATION_LIMIT_MAX_REQUESTS || '5', 10);
+
 // Erweitere Request-Type für rate-limit
 declare module 'express' {
   interface Request {
@@ -20,12 +31,11 @@ declare module 'express' {
 
 // Strenger Rate-Limiter für Auth-Endpoints (Login/Register)
 export const authLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 5 Minuten (reduziert für Development)
-  max: 20, // Max 20 Requests pro Window (erhöht für Development)
-  message: 'Zu viele Anfragen. Bitte versuche es in 5 Minuten erneut.',
+  windowMs: AUTH_RATE_LIMIT_WINDOW_MINUTES * 60 * 1000, // Aus .env
+  max: AUTH_RATE_LIMIT_MAX_REQUESTS, // Aus .env
+  message: `Zu viele Anfragen. Bitte versuche es in ${AUTH_RATE_LIMIT_WINDOW_MINUTES} Minuten erneut.`,
   standardHeaders: true,
   legacyHeaders: false,
-  // Kein custom keyGenerator - verwende den Standard (IP-basiert, IPv6-sicher)
   skipSuccessfulRequests: false, // Auch erfolgreiche Requests zählen
   handler: (req: Request, res: Response) => {
     const identifier = req.ip || 'unknown';
@@ -33,8 +43,8 @@ export const authLimiter = rateLimit({
     // Strukturiertes Logging
     loggers.security.rateLimitHit(identifier, req.originalUrl, {
       limitType: 'auth',
-      maxRequests: 20,
-      windowMs: '5min',
+      maxRequests: AUTH_RATE_LIMIT_MAX_REQUESTS,
+      windowMs: `${AUTH_RATE_LIMIT_WINDOW_MINUTES}min`,
       currentRequests: (req as any).rateLimit?.current,
       userAgent: req.headers['user-agent'],
       method: req.method
@@ -42,7 +52,7 @@ export const authLimiter = rateLimit({
     
     res.status(429).json({
       error: 'Zu viele Anfragen',
-      message: 'Bitte versuche es in 5 Minuten erneut.',
+      message: `Bitte versuche es in ${AUTH_RATE_LIMIT_WINDOW_MINUTES} Minuten erneut.`,
       retryAfter: (req as any).rateLimit?.resetTime
     });
   }
@@ -50,27 +60,25 @@ export const authLimiter = rateLimit({
 
 // Progressiver Slow-Down für wiederholte Auth-Versuche
 export const authSlowDown = slowDown({
-  windowMs: 15 * 60 * 1000, // 15 Minuten
+  windowMs: AUTH_SLOWDOWN_WINDOW_MINUTES * 60 * 1000, // Aus .env
   delayAfter: 2, // Nach 2 Requests langsamer werden
   delayMs: (hits) => hits * 1000, // Jeder weitere Request +1 Sekunde Verzögerung
   maxDelayMs: 10000, // Max 10 Sekunden Verzögerung
-  // Kein custom keyGenerator - verwende den Standard
 });
 
 // Moderater Limiter für API-Endpoints
 export const apiLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 Minute
-  max: 100, // Max 100 Requests pro Minute
+  windowMs: API_RATE_LIMIT_WINDOW_MINUTES * 60 * 1000, // Aus .env
+  max: API_RATE_LIMIT_MAX_REQUESTS, // Aus .env
   message: 'Zu viele API-Anfragen. Bitte reduziere die Anfragerate.',
   standardHeaders: true,
-  legacyHeaders: false,
-  // Kein custom keyGenerator - verwende den Standard
+  legacyHeaders: false
 });
 
 // Sehr strenger Limiter für Password-Reset
 export const passwordResetLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 Stunde
-  max: 3, // Max 3 Reset-Anfragen pro Stunde
+  windowMs: PASSWORD_RESET_WINDOW_HOURS * 60 * 60 * 1000, // Aus .env
+  max: PASSWORD_RESET_MAX_REQUESTS, // Aus .env
   message: 'Zu viele Passwort-Reset-Anfragen. Bitte versuche es später erneut.',
   skipSuccessfulRequests: false,
   handler: (req: Request, res: Response) => {
@@ -79,8 +87,8 @@ export const passwordResetLimiter = rateLimit({
     // Strukturiertes Logging
     loggers.security.rateLimitHit(identifier, req.originalUrl, {
       limitType: 'password_reset',
-      maxRequests: 3,
-      windowMs: '1hour',
+      maxRequests: PASSWORD_RESET_MAX_REQUESTS,
+      windowMs: `${PASSWORD_RESET_WINDOW_HOURS}hour`,
       currentRequests: (req as any).rateLimit?.current,
       userAgent: req.headers['user-agent'],
       method: req.method,
@@ -89,7 +97,7 @@ export const passwordResetLimiter = rateLimit({
     
     res.status(429).json({
       error: 'Zu viele Anfragen',
-      message: 'Du kannst maximal 3 Passwort-Reset-Anfragen pro Stunde stellen.',
+      message: `Du kannst maximal ${PASSWORD_RESET_MAX_REQUESTS} Passwort-Reset-Anfragen pro ${PASSWORD_RESET_WINDOW_HOURS} Stunde(n) stellen.`,
       retryAfter: (req as any).rateLimit?.resetTime
     });
   }
@@ -97,14 +105,14 @@ export const passwordResetLimiter = rateLimit({
 
 // IP-basierter Limiter für Registration (verhindert Spam-Accounts)
 export const registrationLimiter = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000, // 24 Stunden
-  max: 5, // Max 5 Registrierungen pro IP pro Tag
-  message: 'Zu viele Registrierungen von dieser IP. Bitte versuche es morgen erneut.',
-  skipSuccessfulRequests: false,
-  // Kein custom keyGenerator - der Standard ist bereits IP-basiert
+  windowMs: REGISTRATION_LIMIT_WINDOW_HOURS * 60 * 60 * 1000, // Aus .env
+  max: REGISTRATION_LIMIT_MAX_REQUESTS, // Aus .env
+  message: `Zu viele Registrierungen von dieser IP. Bitte versuche es in ${REGISTRATION_LIMIT_WINDOW_HOURS} Stunden erneut.`,
+  skipSuccessfulRequests: false
 });
 
 // Trust Proxy für korrekte IP-Erkennung hinter Reverse Proxy
 export const configureTrustProxy = (app: any) => {
-  app.set('trust proxy', true);
+  // ✅ SICHER: Nur ersten Proxy vertrauen (nginx), nicht allen
+  app.set('trust proxy', process.env.TRUST_PROXY === 'true' ? 1 : false);
 };

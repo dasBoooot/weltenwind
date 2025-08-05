@@ -8,6 +8,9 @@ import { jwtConfig } from '../config/jwt.config';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 
+// ✅ Konfiguration aus .env
+const INVITE_EXPIRY_DAYS = parseInt(process.env.INVITE_EXPIRY_DAYS || '7', 10);
+
 const router = express.Router();
 
 // Sichere User-Guard Funktion
@@ -502,7 +505,7 @@ router.post('/', authenticate, async (req: AuthenticatedRequest, res) => {
           email: mail,
           token,
           invitedById: req.user.id,
-          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 Tage gültig
+          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * INVITE_EXPIRY_DAYS) // Aus .env
         }
       });
       
@@ -528,7 +531,7 @@ router.post('/', authenticate, async (req: AuthenticatedRequest, res) => {
           id: i.id,
           email: i.email, 
           token: i.token,
-          link: `${process.env.CLIENT_URL || 'http://192.168.2.168:8080/game'}/go/invite/${i.token}`,
+          link: `${process.env.PUBLIC_CLIENT_URL || 'https://192.168.2.168'}/game/go/invite/${i.token}`,
           worldId: i.worldId,
           expiresAt: i.expiresAt
         })) 
@@ -595,7 +598,7 @@ router.post('/public', async (req, res) => {
           email: mail,
           token,
           invitedById: null, // Kein authentifizierter Benutzer
-          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 Tage gültig
+          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * INVITE_EXPIRY_DAYS) // Aus .env
         }
       });
       

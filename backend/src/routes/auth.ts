@@ -572,7 +572,7 @@ router.post('/request-reset',
         email: user.email,
         username: user.username,
         resetToken: token
-      }, process.env.BASE_URL || 'http://localhost:3000');
+      }, process.env.PUBLIC_CLIENT_URL || 'https://192.168.2.168');
       
       loggers.system.info('📧 Password-Reset-Mail versendet', {
         to: user.email,

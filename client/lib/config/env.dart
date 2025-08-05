@@ -1,13 +1,22 @@
 class Env {
-  static const String apiUrl = 'http://192.168.2.168:3000';
+  static const String apiUrl = 'https://192.168.2.168';
   static const String apiBasePath = '/api';
   
   // Client/Frontend URL (für Invite-Links und Web-Routing)
-  static const String clientUrl = 'http://192.168.2.168:3000/game';
+  static const String clientUrl = 'https://192.168.2.168/game';
+  
+  // ✅ Static Assets (nginx-proxied, über HTTPS)
+  static const String themeEditorUrl = '$apiUrl/theme-editor';
+  static const String bundleConfigsUrl = '$themeEditorUrl/bundles/bundle-configs.json';
+  
+  // ✅ Helper für Theme-Schema URLs
+  static String getThemeSchemaUrl(String themeName) => 
+    '$themeEditorUrl/schemas/$themeName.json';
   
   // API Endpoints
   static const String authEndpoint = '$apiBasePath/auth';
   static const String worldsEndpoint = '$apiBasePath/worlds';
+  static const String themesEndpoint = '$apiBasePath/themes';
   
   // App Configuration
   static const String appName = 'Weltenwind';

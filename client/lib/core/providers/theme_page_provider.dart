@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../services/modular_theme_service.dart';
 import '../../config/logger.dart';
+import '../../config/env.dart';
 
 /// 🎯 Theme Page Provider - Page-Level Theme Context
 /// 
@@ -70,7 +71,7 @@ class ThemePageProvider extends InheritedWidget {
   Future<String> _getBundleForTheme(String themeName) async {
     try {
       // 1. Theme-Schema von Server laden (same as ThemeContextConsumer)
-      final url = 'http://192.168.2.168:3000/theme-editor/schemas/$themeName.json';
+      final url = Env.getThemeSchemaUrl(themeName);
       final response = await http.get(Uri.parse(url));
       
       if (response.statusCode == 200) {

@@ -1,144 +1,142 @@
 #!/bin/bash
 
-# Weltenwind Services Health Check Script
-# Prüft alle Services und deren Gesundheitsstatus
-
-set -e
-
-# Farben für Output
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-echo -e "${BLUE}🏥 Weltenwind Services Health Check${NC}"
+# Weltenwind Services Health Check
+echo "🏥 Weltenwind Services Health Check"
 echo "===================================="
-echo
+echo ""
 
-# Health Check Funktionen
-check_backend_health() {
-    echo -n "Backend API (Port 3000): "
-    if curl -s -f http://localhost:3000/api/health >/dev/null 2>&1; then
-        echo -e "${GREEN}✅ HEALTHY${NC}"
-        return 0
-    else
-        echo -e "${RED}❌ UNHEALTHY${NC}"
-        return 1
-    fi
-}
+failed_services=0
 
-check_docs_health() {
-    echo -n "Swagger Docs (Port 3001): "
-    if nc -z localhost 3001 >/dev/null 2>&1; then
-        echo -e "${GREEN}✅ HEALTHY${NC}"
-        return 0
-    else
-        echo -e "${RED}❌ UNHEALTHY${NC}"
-        return 1
-    fi
-}
+echo "📊 Service Health Status:"
 
-check_studio_health() {
-    echo -n "Prisma Studio (Port 5555): "
-    if nc -z localhost 5555 >/dev/null 2>&1; then
-        echo -e "${GREEN}✅ HEALTHY${NC}"
-        return 0
-    else
-        echo -e "${RED}❌ UNHEALTHY${NC}"
-        return 1
-    fi
-}
+# Backend API Check
+echo -n "Backend API (Port 3000): "
+if nc -z localhost 3000 2>/dev/null; then
+    echo "✅ HEALTHY"
+else
+    echo "❌ UNHEALTHY"
+    failed_services=$((failed_services + 1))
+fi
 
-check_postgresql() {
-    echo -n "PostgreSQL Database: "
-    if systemctl is-active --quiet postgresql; then
-        echo -e "${GREEN}✅ ACTIVE${NC}"
-        return 0
-    else
-        echo -e "${RED}❌ INACTIVE${NC}"
-        return 1
-    fi
-}
+# Swagger Docs über nginx (nicht separater Port)
+echo -n "Swagger Docs (via nginx): "
+if curl -k -s https://localhost/docs/ | grep -q "swagger" 2>/dev/null; then
+    echo "✅ HEALTHY"
+else
+    echo "❌ UNHEALTHY"
+    failed_services=$((failed_services + 1))
+fi
 
-check_disk_space() {
-    echo -n "Disk Space (Root): "
-    usage=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
-    if [ "$usage" -lt 80 ]; then
-        echo -e "${GREEN}✅ OK (${usage}% used)${NC}"
-        return 0
-    elif [ "$usage" -lt 90 ]; then
-        echo -e "${YELLOW}⚠️  WARNING (${usage}% used)${NC}"
-        return 1
-    else
-        echo -e "${RED}❌ CRITICAL (${usage}% used)${NC}"
-        return 2
-    fi
-}
+# Prisma Studio Check  
+echo -n "Prisma Studio (Port 5555): "
+if nc -z localhost 5555 2>/dev/null; then
+    echo "✅ HEALTHY"
+else
+    echo "❌ UNHEALTHY"
+    failed_services=$((failed_services + 1))
+fi
 
-check_memory_usage() {
-    echo -n "Memory Usage: "
-    mem_usage=$(free | awk 'NR==2{printf "%.1f", $3*100/$2}')
-    mem_usage_int=${mem_usage%.*}
-    
-    if [ "$mem_usage_int" -lt 80 ]; then
-        echo -e "${GREEN}✅ OK (${mem_usage}% used)${NC}"
-        return 0
-    elif [ "$mem_usage_int" -lt 90 ]; then
-        echo -e "${YELLOW}⚠️  WARNING (${mem_usage}% used)${NC}"
-        return 1
-    else
-        echo -e "${RED}❌ CRITICAL (${mem_usage}% used)${NC}"
-        return 2
-    fi
-}
+# PostgreSQL Check
+echo -n "PostgreSQL Database: "
+if systemctl is-active postgresql >/dev/null 2>&1; then
+    echo "✅ ACTIVE"
+else
+    echo "❌ INACTIVE"
+    failed_services=$((failed_services + 1))
+fi
 
-# Main Health Checks
-echo -e "${YELLOW}📊 Service Health Status:${NC}"
-backend_status=0
-docs_status=0
-studio_status=0
-postgres_status=0
+echo ""
+echo "🌐 nginx Reverse Proxy Status:"
 
-check_backend_health || backend_status=$?
-check_docs_health || docs_status=$?
-check_studio_health || studio_status=$?
-check_postgresql || postgres_status=$?
+# nginx Service Check
+echo -n "nginx Service: "
+if systemctl is-active nginx >/dev/null 2>&1 || systemctl is-active weltenwind-nginx >/dev/null 2>&1; then
+    echo "✅ ACTIVE"
+else
+    echo "❌ INACTIVE"
+    failed_services=$((failed_services + 1))
+fi
 
-echo
-echo -e "${YELLOW}💽 System Resources:${NC}"
-check_disk_space
-check_memory_usage
+# HTTP Port Check
+echo -n "HTTP Port 80: "
+if nc -z localhost 80 2>/dev/null; then
+    echo "✅ OPEN"
+else
+    echo "❌ CLOSED"
+    failed_services=$((failed_services + 1))
+fi
 
-echo
-echo -e "${YELLOW}🔧 systemd Service Status:${NC}"
-for service in weltenwind-backend weltenwind-docs weltenwind-studio; do
+# HTTPS Port Check
+echo -n "HTTPS Port 443: "
+if nc -z localhost 443 2>/dev/null; then
+    echo "✅ OPEN"
+else
+    echo "❌ CLOSED"
+    failed_services=$((failed_services + 1))
+fi
+
+# HTTPS Proxy Check
+echo -n "HTTPS Proxy to Backend: "
+if curl -k -s https://localhost/api/health >/dev/null 2>&1; then
+    echo "✅ WORKING"
+else
+    echo "❌ FAILED"
+    failed_services=$((failed_services + 1))
+fi
+
+# API-Combined YAML Check  
+echo -n "API-Combined YAML (HTTPS): "
+if curl -k -s https://localhost/api-combined.yaml | grep -q "openapi:" 2>/dev/null; then
+    echo "✅ WORKING"
+else
+    echo "❌ FAILED"
+    failed_services=$((failed_services + 1))
+fi
+
+echo ""
+echo "💽 System Resources:"
+
+# Disk Space Check
+disk_usage=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
+echo -n "Disk Space (Root): "
+if [ "$disk_usage" -lt 80 ]; then
+    echo "✅ OK (${disk_usage}% used)"
+else
+    echo "⚠️ WARNING (${disk_usage}% used)"
+fi
+
+# Memory Check
+memory_usage=$(free | awk 'NR==2{printf "%.1f", $3*100/$2}')
+echo -n "Memory Usage: "
+echo "✅ OK (${memory_usage}% used)"
+
+echo ""
+echo "🔧 systemd Service Status:"
+
+# Service Status Checks (ohne weltenwind-docs)
+services="weltenwind-backend weltenwind-studio"
+if systemctl is-active weltenwind-nginx >/dev/null 2>&1 || systemctl is-active nginx >/dev/null 2>&1; then
+    services="$services weltenwind-nginx"
+fi
+
+for service in $services; do
     echo -n "$service: "
-    if systemctl is-active --quiet $service; then
-        echo -e "${GREEN}✅ ACTIVE${NC}"
+    if systemctl is-active "$service" >/dev/null 2>&1; then
+        echo "✅ ACTIVE"
     else
-        echo -e "${RED}❌ INACTIVE${NC}"
+        echo "❌ INACTIVE"
+        failed_services=$((failed_services + 1))
     fi
 done
 
-# Overall Status
-echo
+echo ""
 echo "===================================="
-failed_services=0
-[ $backend_status -ne 0 ] && ((failed_services++))
-[ $docs_status -ne 0 ] && ((failed_services++))
-[ $studio_status -ne 0 ] && ((failed_services++))
-[ $postgres_status -ne 0 ] && ((failed_services++))
 
+# Exit Status
 if [ $failed_services -eq 0 ]; then
-    echo -e "${GREEN}🎉 ALL SERVICES HEALTHY${NC}"
+    echo "✅ All systems healthy!"
     exit 0
 else
-    echo -e "${RED}⚠️  $failed_services SERVICE(S) UNHEALTHY${NC}"
-    echo
-    echo "Troubleshooting Commands:"
-    echo "- Check logs: sudo journalctl -u weltenwind-backend -f"
-    echo "- Restart services: sudo systemctl restart weltenwind.target"
-    echo "- Check ports: sudo netstat -tlnp | grep ':300[01]\\|:5555'"
+    echo "⚠️ $failed_services service(s) have issues"
     exit 1
 fi

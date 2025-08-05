@@ -97,8 +97,8 @@ class JWTConfig {
   public getTokenConfig() {
     return {
       secret: this.secret,
-      accessTokenExpiry: '15m',
-      refreshTokenExpiry: '7d',
+      accessTokenExpiry: process.env.JWT_EXPIRES_IN || '15m',
+      refreshTokenExpiry: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
       issuer: 'weltenwind-api',
       audience: 'weltenwind-client'
     };

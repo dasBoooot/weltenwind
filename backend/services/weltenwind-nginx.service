@@ -1,0 +1,35 @@
+[Unit]
+Description=Weltenwind nginx Reverse Proxy Service
+Documentation=https://github.com/weltenwind/backend
+After=network.target
+Before=weltenwind-backend.service
+PartOf=weltenwind.target
+
+[Service]
+Type=forking
+User=root
+Group=root
+PIDFile=/run/nginx.pid
+ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/nginx.conf
+ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx.conf
+ExecReload=/bin/bash -c '/bin/kill -s HUP $(/bin/cat /run/nginx.pid)'
+ExecStop=/bin/bash -c '/bin/kill -s TERM $(/bin/cat /run/nginx.pid)'
+
+# Health Check
+ExecStartPost=/bin/bash -c 'for i in {1..20}; do nc -z localhost 80 && nc -z localhost 443 >/dev/null 2>&1 && break || sleep 2; done'
+
+Restart=always
+RestartSec=5
+WatchdogSec=30
+
+# Logging
+StandardOutput=append:/var/log/weltenwind/nginx.log
+StandardError=append:/var/log/weltenwind/nginx.error.log
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ReadWritePaths=/var/log/weltenwind /var/log/nginx /var/lib/nginx
+
+[Install]
+WantedBy=weltenwind.target multi-user.target

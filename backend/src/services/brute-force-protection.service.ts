@@ -2,8 +2,9 @@ import prisma from '../libs/prisma';
 import { loggers } from '../config/logger.config';
 
 // Konfiguration
-const MAX_FAILED_ATTEMPTS = 5;           // Nach 5 fehlgeschlagenen Versuchen
-const LOCKOUT_DURATION_MINUTES = 30;     // 30 Minuten Sperrzeit
+// ✅ Konfiguration aus .env
+const MAX_FAILED_ATTEMPTS = parseInt(process.env.MAX_LOGIN_ATTEMPTS || '5', 10);
+const LOCKOUT_DURATION_MINUTES = parseInt(process.env.LOCKOUT_DURATION_MINUTES || '15', 10);
 const RESET_WINDOW_MINUTES = 15;         // Zähler zurücksetzen nach 15 Min ohne Fehler
 
 export interface LoginAttemptResult {

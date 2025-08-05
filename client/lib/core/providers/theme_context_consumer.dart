@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../services/theme_helper.dart';
 import '../../config/logger.dart';
+import '../../config/env.dart';
 
 /// 🎭 Theme Context Consumer - Component-Level Theme Overrides
 /// 
@@ -183,7 +184,7 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
 
   /// 🔄 Private: Theme-Schema von Server laden
   Future<Map<String, dynamic>> _loadThemeSchema(String themeName) async {
-    final url = 'http://192.168.2.168:3000/theme-editor/schemas/$themeName.json';
+    final url = Env.getThemeSchemaUrl(themeName);
     final response = await http.get(Uri.parse(url));
     
     if (response.statusCode == 200) {
