@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../config/logger.dart';
 import '../shared/navigation/smart_navigation.dart';
-import '../core/providers/theme_context_provider.dart';
-import '../main.dart';
+// ❌ REMOVED: Theme provider imports - AppScaffold handles themes!
+// import '../core/providers/theme_context_provider.dart';
+// import '../main.dart';
 
 /// 🎨 Initial Theme Detector - F5 Refresh Protection
 /// 
@@ -33,23 +34,16 @@ class InitialThemeDetector {
       
       AppLogger.navigation.i('🎯 Detected theme context: ${themeContext.contextId} → ${themeContext.bundleId}');
       
-      // Set theme in ThemeContextProvider for immediate use
-      final themeProvider = ServiceLocator.get<ThemeContextProvider>();
+      // ❌ REMOVED: Global theme loading - AppScaffold handles themes per page!
+      // final themeProvider = ServiceLocator.get<ThemeContextProvider>();
+      // await themeProvider.switchToBundle(themeContext.bundleId);
       
-      // Load the theme bundle (switchToBundle only accepts bundleId)
-      await themeProvider.switchToBundle(themeContext.bundleId);
-      
-      AppLogger.navigation.i('✅ Initial theme set successfully');
+      AppLogger.navigation.i('✅ Initial theme detection completed (AppScaffold handles actual theme loading)');
       
     } catch (e) {
       AppLogger.navigation.e('❌ Initial theme detection failed', error: e);
-      // Fallback: Ensure we have a working theme
-      try {
-        final themeProvider = ServiceLocator.get<ThemeContextProvider>();
-        await themeProvider.switchToBundle('pre-game-minimal');
-      } catch (fallbackError) {
-        AppLogger.navigation.e('❌ Fallback theme loading failed', error: fallbackError);
-      }
+      // ❌ REMOVED: Global theme fallback - AppScaffold provides fallbacks per page!
+      AppLogger.navigation.i('ℹ️ No global theme fallback needed - AppScaffold handles per-page themes');
     }
   }
   

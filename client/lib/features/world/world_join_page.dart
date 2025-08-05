@@ -66,29 +66,6 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     _checkAuthenticationStatus();
   }
 
-  /// 🎯 Theme Early Detection: Bestimme Theme schon vor API-Load
-  String _getWorldTheme() {
-    // 1. Wenn World bereits geladen → verwende themeVariant zuerst
-    if (_world != null) {
-      // 🎯 Erst themeVariant verwenden (direkt aus DB)
-      if (_world!.themeVariant != null && _world!.themeVariant!.isNotEmpty && _world!.themeVariant != 'standard') {
-        AppLogger.app.d('✅ [THEME-DEBUG] Using world.themeVariant: ${_world!.themeVariant}');
-        return _world!.themeVariant!;
-      }
-      
-      // 🛡️ Fallback: Simple bundle-to-theme conversion (no hardcoding!)
-      final worldBundle = _world!.themeBundle ?? 'world-preview';
-      AppLogger.app.d('🔍 [THEME-DEBUG] World loaded: themeBundle = $worldBundle, themeVariant = ${_world!.themeVariant}');
-      final fallbackTheme = _getBundleFallbackTheme(worldBundle);
-      AppLogger.app.d('🔄 [THEME-DEBUG] Simple fallback: $worldBundle → $fallbackTheme');
-      return fallbackTheme;
-    }
-    
-    // 2. Fallback wenn World noch nicht geladen → Generic Preview Theme
-    AppLogger.app.d('🎯 [THEME-DEBUG] World not loaded yet, using preview theme');
-    return 'world-preview'; // Generic fallback while loading
-  }
-
     /// 🎨 Build Navigation with correct theme context
   Widget _buildNavigationWithTheme(ThemeData theme) {
     return Theme(
@@ -100,19 +77,25 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
     );
   }
 
-  /// 🛡️ Simple fallback: Bundle-Name zu Theme-Name 
-  /// (Nur noch für Legacy-Support ohne themeVariant)
-  String _getBundleFallbackTheme(String bundleOrTheme) {
-    switch (bundleOrTheme) {
-      case 'world-preview': 
-      case 'pre-game-minimal':
-        return 'default'; // Neutral themes
-      case 'full-gaming':
-        return 'default'; // Generic fallback (themeVariant should be available)
-      default: 
-        return bundleOrTheme; // Assume it's already a theme name
+  /// 🎯 Get World Theme from loaded world data (similar to world_list_page)
+  String? _getWorldTheme() {
+    if (_world == null) {
+      return null; // Let AppScaffold use default theme while loading
     }
+    
+    // 1. Prioritize themeVariant (new API field)
+    if (_world!.themeVariant != null && _world!.themeVariant!.isNotEmpty && _world!.themeVariant != 'standard') {
+      AppLogger.app.d('✅ [WORLD-JOIN-THEME] Using world.themeVariant: ${_world!.themeVariant}');
+      return _world!.themeVariant!;
+    }
+    
+    // 2. ✅ DYNAMIC: themeBundle IS the theme name (no hardcoded mapping needed!)
+    final themeBundle = _world!.themeBundle ?? 'default';
+    AppLogger.app.d('🎯 [WORLD-JOIN-THEME] Using themeBundle directly: $themeBundle');
+    return themeBundle;
   }
+
+  // ✅ REMOVED: _getBundleFallbackTheme - no hardcoded mappings needed!
 
   void _initializeServices() {
     try {
@@ -178,6 +161,14 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
       // World laden
       _world = await _worldService.getWorld(int.parse(widget.worldId));
       
+      // 🔍 DEBUG: World-Daten ausgeben
+      AppLogger.app.d('🌍 [WORLD-DEBUG] Loaded world data for ID ${widget.worldId}:', error: {
+        'worldName': _world?.name,
+        'themeBundle': _world?.themeBundle,
+        'themeVariant': _world?.themeVariant,
+        'parentTheme': _world?.parentTheme,
+      });
+
       // Status prüfen
       await _checkWorldStatus();
       
@@ -194,10 +185,6 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
       });
     }
   }
-
-
-
-
 
   // Neue Methode: World-Status für normale Navigation prüfen
   Future<void> _checkWorldStatus() async {
@@ -463,22 +450,33 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🌍 NEW: Using AppScaffold with integrated world theme system
-    return AppScaffoldBuilder.forGameWithTheme(
-      themeContext: 'world-join',
-      themeBundle: 'world-preview',
-      worldTheme: _getWorldTheme(),
+    final worldTheme = _getWorldTheme();
+    AppLogger.app.d('🎯 [WORLD-JOIN-FIXED] Using AppScaffold with world theme: $worldTheme');
+    
+    return AppScaffold(
+      key: ValueKey('world-join-${widget.worldId}-${worldTheme ?? 'loading'}'), // ✅ FORCE REBUILD when theme changes!
+      themeContextId: 'world-join',
+      themeBundleId: 'full-gaming',
+      worldThemeOverride: worldTheme, // ✅ RESTORED: AppScaffold needs this parameter!
       componentName: 'WorldJoinPage',
-      body: _buildWorldJoinBody(context),
+      showBackgroundGradient: false,
+      extendBodyBehindAppBar: true,
+      body: _buildWorldJoinBody(context, worldTheme),
     );
   }
 
-  Widget _buildWorldJoinBody(BuildContext context) {
-    final theme = Theme.of(context);
-    final worldTheme = _getWorldTheme();
+  /// 🌍 Build main world join body content  
+  Widget _buildWorldJoinBody(BuildContext context, String? worldTheme) {
+    final theme = Theme.of(context); // ✅ Theme provided by AppScaffold
+    
+    // 🔍 DEBUG: Check what theme we actually get
+    print('🎨 [WORLD-JOIN-BODY] Theme primary color: ${theme.colorScheme.primary.toString()}, worldTheme: $worldTheme');
+    AppLogger.app.d('🎨 [WORLD-JOIN-BODY] Theme primary color: ${theme.colorScheme.primary.toString()}, worldTheme: $worldTheme');
     
     return BackgroundWidget(
-      worldTheme: worldTheme,  // 🌍 World-specific background
+      worldTheme: worldTheme, // ✅ World-specific background
+      waitForWorldTheme: true, // 🔄 RACE CONDITION FIX: Wait for world theme
+
       child: Stack(
         children: [
           // Main content
@@ -599,8 +597,6 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
       ),
     );
   }
-
-
 
   Widget _buildNotFoundState(ThemeData theme) {
     return Center(
@@ -1043,8 +1039,8 @@ class _WorldJoinPageState extends State<WorldJoinPage> {
                 const SizedBox(height: 8),
                 Text(
                   world.status == WorldStatus.closed
-                              ? AppLocalizations.of(context).worldJoinWorldClosedStatus
-    : AppLocalizations.of(context).worldJoinWorldArchivedStatus,
+                    ? AppLocalizations.of(context).worldJoinWorldClosedStatus
+                    : AppLocalizations.of(context).worldJoinWorldArchivedStatus,
                   style: TextStyle(
                     color: Colors.grey[700],
                     fontWeight: FontWeight.w500,

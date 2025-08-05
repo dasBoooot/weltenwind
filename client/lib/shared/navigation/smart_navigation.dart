@@ -52,9 +52,10 @@ class SmartNavigation {
           return;
         }
       }
-      // 1. Context-Detection: Welcher Theme-Context wird benötigt?
-      final themeContext = await detectThemeContext(routeName, pathParameters ?? {});
-      AppLogger.navigation.i('🎨 Detected theme context: ${themeContext.contextId} → ${themeContext.bundleId}');
+      // 1. Context-Detection: DEAKTIVIERT - AppScaffold übernimmt Theme-Handling
+      // final themeContext = await detectThemeContext(routeName, pathParameters ?? {});
+      AppLogger.navigation.i('🎨 [SMART-NAV-DISABLED] Theme context handling delegated to AppScaffold');
+      final themeContext = const ThemeContext(contextId: 'disabled', bundleId: 'disabled');
       
       // 2. Prüfe ob Preloading für diese Route verfügbar ist
       if (!skipPreloading && _shouldUsePreloading(routeName, forcePreload)) {
@@ -183,117 +184,43 @@ class SmartNavigation {
     return preloadableRoutes.contains(routeName);
   }
   
-  /// 🎨 Public: Theme Context Detection - Intelligente Theme-Auswahl (für F5-Refresh)
+  /// 🎨 Public: Theme Context Detection - DEAKTIVIERT
+  /// ⚠️ VOLLSTÄNDIG ENTFERNT: AppScaffold übernimmt komplettes Theme-Handling
+  @Deprecated('Theme context detection moved to AppScaffold architecture')
   static Future<ThemeContext> detectThemeContext(String routeName, Map<String, String> pathParameters) async {
-    try {
-      switch (routeName) {
-        case 'landing':
-          return const ThemeContext(
-            contextId: 'pre-game',
-            bundleId: 'pre-game-minimal',
-          );
-          
-        case 'login':
-        case 'register':
-        case 'forgotPassword':
-        case 'resetPassword':
-          return const ThemeContext(
-            contextId: 'auth',
-            bundleId: 'pre-game-minimal',
-          );
-          
-        case 'worldList':
-        case 'world-list': // Backward compatibility
-          return const ThemeContext(
-            contextId: 'world-selection',
-            bundleId: 'world-preview',
-          );
-          
-        case 'worldJoin':
-        case 'world-join': // Backward compatibility
-          // World-spezifisches Theme aus Parameter laden
-          final worldId = pathParameters['worldId'] ?? pathParameters['id'];
-          final worldTheme = await _getWorldTheme(worldId);
-          
-          return ThemeContext(
-            contextId: 'world-join',  
-            bundleId: 'world-preview',
-            worldTheme: worldTheme,
-          );
-          
-        case 'dashboard':
-        case 'world-dashboard': // Backward compatibility
-          // Aktuell aktive World aus Service laden
-          final activeWorldTheme = await _getActiveWorldTheme();
-          
-          return ThemeContext(
-            contextId: 'in-game',
-            bundleId: 'dashboard-base',
-            worldTheme: activeWorldTheme,
-          );
-          
-        case 'inviteLanding':
-        case 'invite-landing': // Backward compatibility  
-          final inviteWorldTheme = await _getInviteWorldTheme(pathParameters);
-          
-          return ThemeContext(
-            contextId: 'pre-game',
-            bundleId: 'pre-game-minimal',
-            worldTheme: inviteWorldTheme,
-          );
-          
-        default:
-          return const ThemeContext(
-            contextId: 'universal',
-            bundleId: 'pre-game-minimal',
-          );
-      }
-    } catch (e) {
-      AppLogger.navigation.w('⚠️ Theme context detection failed for $routeName', error: e);
-      return const ThemeContext(
-        contextId: 'universal',
-        bundleId: 'pre-game-minimal',
-      );
-    }
+    AppLogger.navigation.w('🚫 [DEPRECATED] detectThemeContext called - should use AppScaffold instead');
+    return const ThemeContext(
+      contextId: 'deprecated',
+      bundleId: 'deprecated',
+    );
   }
   
-  /// 🌍 Private: World Theme aus World ID laden
+  /// 🌍 Private: World Theme aus World ID laden - DEAKTIVIERT
+  @Deprecated('Theme loading moved to individual pages via AppScaffold')
   static Future<String?> _getWorldTheme(String? worldId) async {
-    if (worldId == null) return null;
-    
-    try {
-      final worldService = ServiceLocator.get<WorldService>();
-      final world = await worldService.getWorld(int.parse(worldId));
-      return world.themeBundle;
-    } catch (e) {
-      AppLogger.navigation.w('⚠️ Failed to load world theme for $worldId', error: e);
-      return null;
-    }
+    AppLogger.navigation.w('🚫 [DEPRECATED] _getWorldTheme called - should use page-level theme resolution');
+    return null;
+  }
+
+  /// 🛡️ Simple fallback: Bundle-Name zu Theme-Name - DEAKTIVIERT
+  @Deprecated('Theme loading moved to individual pages via AppScaffold')
+  static String _getBundleFallbackTheme(String bundleOrTheme) {
+    AppLogger.navigation.w('🚫 [DEPRECATED] _getBundleFallbackTheme called - should use page-level theme resolution');
+    return 'default';
   }
   
-  /// 🎮 Private: Aktive World Theme laden  
+  /// 🎮 Private: Aktive World Theme laden - DEAKTIVIERT
+  @Deprecated('Theme loading moved to individual pages via AppScaffold')
   static Future<String?> _getActiveWorldTheme() async {
-    try {
-      // TODO: Implement getCurrentWorld method in WorldService
-      return null;
-    } catch (e) {
-      AppLogger.navigation.w('⚠️ Failed to load active world theme', error: e);
-      return null;
-    }
+    AppLogger.navigation.w('🚫 [DEPRECATED] _getActiveWorldTheme called - should use page-level theme resolution');
+    return null;
   }
   
-  /// 💌 Private: World Theme aus Invite-Parametern laden
+  /// 💌 Private: World Theme aus Invite-Parametern laden - DEAKTIVIERT
+  @Deprecated('Theme loading moved to individual pages via AppScaffold')
   static Future<String?> _getInviteWorldTheme(Map<String, String> pathParameters) async {
-    final inviteCode = pathParameters['inviteCode'];
-    if (inviteCode == null) return null;
-    
-    try {
-      // TODO: Implement invite service integration
-      return null;
-    } catch (e) {
-      AppLogger.navigation.w('⚠️ Failed to load invite world theme for $inviteCode', error: e);
-      return null;
-    }
+    AppLogger.navigation.w('🚫 [DEPRECATED] _getInviteWorldTheme called - should use page-level theme resolution');
+    return null;
   }
   
   /// 🔐 Private: Prüfe ob Route Authentication benötigt

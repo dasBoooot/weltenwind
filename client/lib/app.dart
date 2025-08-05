@@ -9,8 +9,9 @@ import 'core/services/auth_service.dart';
 import 'core/services/world_service.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/providers/theme_provider.dart';
-import 'core/providers/theme_context_provider.dart';
-import 'package:provider/provider.dart';
+// ❌ REMOVED: Global theme provider imports - AppScaffold handles themes locally!
+// import 'core/providers/theme_context_provider.dart';
+// import 'package:provider/provider.dart';
 import 'l10n/app_localizations.dart';
 
 class WeltenwindApp extends StatefulWidget {
@@ -68,17 +69,13 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
         'Bereit!',
       ],
       appName: Env.appName,
-      child: ChangeNotifierProvider<ThemeContextProvider>(
-        create: (_) => ServiceLocator.get<ThemeContextProvider>(),
-        child: Consumer<ThemeContextProvider>(
-          builder: (context, themeProvider, child) {
-            return MaterialApp.router(
-              title: Env.appName,
-              theme: themeProvider.currentTheme ?? _createFallbackTheme(false),
-              darkTheme: themeProvider.currentDarkTheme ?? _createFallbackTheme(true),
-              themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-              routerConfig: AppRouter.router,
-              debugShowCheckedModeBanner: false,
+      child: MaterialApp.router(
+        title: Env.appName,
+        theme: _createFallbackTheme(false),    // ✅ Simple fallback theme
+        darkTheme: _createFallbackTheme(true), // ✅ AppScaffold overrides this locally
+        themeMode: ThemeMode.system,           // ✅ Use system preference
+        routerConfig: AppRouter.router,
+        debugShowCheckedModeBanner: false,
           
           // Lokalisierungs-Konfiguration
           localizationsDelegates: const [
@@ -92,10 +89,7 @@ class _WeltenwindAppState extends State<WeltenwindApp> {
             Locale('en'),
           ],
           locale: _localeProvider.currentLocale, // Dynamische Sprache vom Provider
-        );
-          },
         ),
-      ),
     );
   }
   

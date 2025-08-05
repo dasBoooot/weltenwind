@@ -71,7 +71,6 @@ class ThemeHelper {
   }
 
   /// 🎨 Get Current Theme Synchronous (nur cached)
-  /// 
   /// Synchrone Version für bereits gecachte Themes.
   /// Gibt null zurück wenn Theme noch nicht im Cache ist.
   static ThemeData? getCurrentThemeCached(
@@ -86,10 +85,10 @@ class ThemeHelper {
         if (themeData != null) return themeData;
       }
 
-      // Page-Level Context
       final pageProvider = ThemePageProvider.of(context);
       if (pageProvider != null) {
-        final bundle = pageProvider.effectiveBundleId;
+
+        final bundle = pageProvider.bundleId;
         final cachedTheme = _themeService.getCachedTheme(bundle, isDark: isDark);
         if (cachedTheme != null) return cachedTheme;
       }

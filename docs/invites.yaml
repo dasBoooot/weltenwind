@@ -90,6 +90,15 @@ paths:
                             type: string
                             enum: [upcoming, open, running, closed, archived]
                             example: "open"
+                          themeBundle:
+                            type: string
+                            example: "full-gaming"
+                            description: Theme-Bundle ID für diese Welt
+                          themeVariant:
+                            type: string
+                            nullable: true
+                            example: "cyberpunk"
+                            description: Theme-Variante (falls abweichend von Standard)
                           createdAt:
                             type: string
                             format: date-time

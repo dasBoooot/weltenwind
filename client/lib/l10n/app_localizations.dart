@@ -1309,6 +1309,66 @@ abstract class AppLocalizations {
   /// **'Invited by {username}'**
   String inviteFromUser(String username);
 
+  /// Personal invitation headline
+  ///
+  /// In en, this message translates to:
+  /// **'{inviterName} invites you to {worldName}!'**
+  String inviteWelcomePersonal(String inviterName, String worldName);
+
+  /// World preview section title
+  ///
+  /// In en, this message translates to:
+  /// **'Discover {worldName}'**
+  String inviteWorldPreviewTitle(String worldName);
+
+  /// World description label
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get inviteWorldDescription;
+
+  /// World theme label
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get inviteWorldTheme;
+
+  /// World player count label
+  ///
+  /// In en, this message translates to:
+  /// **'Players'**
+  String get inviteWorldPlayerCount;
+
+  /// World last activity label
+  ///
+  /// In en, this message translates to:
+  /// **'Last active'**
+  String get inviteWorldActivity;
+
+  /// World creator label
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get inviteWorldCreator;
+
+  /// Why join section title
+  ///
+  /// In en, this message translates to:
+  /// **'Why join?'**
+  String get inviteWhyJoin;
+
+  /// Call to action text
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for a new adventure?'**
+  String get inviteCallToAction;
+
+  /// Fallback when no world description
+  ///
+  /// In en, this message translates to:
+  /// **'No description available'**
+  String get inviteNoDescription;
+
   /// Invitation details section title
   ///
   /// In en, this message translates to:
@@ -1602,6 +1662,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invitation Link:'**
   String get inviteWidgetLinkTitle;
+
+  /// Message when user can accept or decline the invitation
+  ///
+  /// In en, this message translates to:
+  /// **'You can now accept or decline this invitation.'**
+  String get inviteActionReadyToAccept;
+
+  /// Message when invitation has already been accepted
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation has already been accepted. You can now go to the world.'**
+  String get inviteStatusAlreadyAccepted;
 
   /// No description provided for @worldInviteButton.
   ///

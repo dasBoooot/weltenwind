@@ -19,7 +19,6 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   World? _world;
-  String? _worldTheme;
   bool _isLoading = true;
 
   @override
@@ -27,6 +26,26 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     _loadWorldData();
   }
+
+  /// 🎯 Get World Theme from loaded world data (similar to world_list_page)
+  String? _getWorldTheme() {
+    if (_world == null) {
+      return null; // Let AppScaffold use default theme while loading
+    }
+    
+    // 1. Prioritize themeVariant (new API field)
+    if (_world!.themeVariant != null && _world!.themeVariant!.isNotEmpty && _world!.themeVariant != 'standard') {
+      AppLogger.app.d('✅ [DASHBOARD-THEME] Using world.themeVariant: ${_world!.themeVariant}');
+      return _world!.themeVariant!;
+    }
+    
+    // 2. ✅ DYNAMIC: themeBundle IS the theme name (no hardcoded mapping needed!)
+    final themeBundle = _world!.themeBundle ?? 'default';
+    AppLogger.app.d('🎯 [DASHBOARD-THEME] Using themeBundle directly: $themeBundle');
+    return themeBundle;
+  }
+
+  // ✅ REMOVED: _getBundleFallbackTheme - no hardcoded mappings needed!
 
   Future<void> _loadWorldData() async {
     AppLogger.app.d('🌍 [DASHBOARD-DEBUG] Loading world data for ID: ${widget.worldId}');
@@ -38,14 +57,12 @@ class _DashboardPageState extends State<DashboardPage> {
       
       setState(() {
         _world = world;
-        _worldTheme = world.themeBundle ?? 'default'; // ✅ Theme-Name, nicht Bundle-Name
         _isLoading = false;
       });
     } catch (e) {
       AppLogger.app.e('❌ [DASHBOARD-ERROR] Failed to load world: $e');
       setState(() {
         _world = null; // Explicitly set to null
-        _worldTheme = 'default'; // ✅ Theme-Name Fallback
         _isLoading = false;
       });
     }
@@ -53,20 +70,30 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🎮 NEW: Using AppScaffold with integrated game theme system
-    return AppScaffoldBuilder.forGameWithTheme(
-      themeContext: 'in-game',
-      themeBundle: 'full-gaming',
-      worldTheme: _worldTheme,
+    final worldTheme = _getWorldTheme();
+    AppLogger.app.d('🎯 [DASHBOARD-FIXED] Using AppScaffold with world theme: $worldTheme');
+    
+    return AppScaffold(
+      key: ValueKey('dashboard-${widget.worldId}-${worldTheme ?? 'loading'}'), // ✅ FORCE REBUILD when theme changes!
+      themeContextId: 'in-game',
+      themeBundleId: 'full-gaming',
+      worldThemeOverride: worldTheme, // ✅ RESTORED: AppScaffold needs this parameter!
       componentName: 'WorldDashboard',
-      body: _buildDashboardBody(context),
+      showBackgroundGradient: false,
+      extendBodyBehindAppBar: true,
+      body: _buildDashboardBody(context, worldTheme),
     );
   }
 
-  Widget _buildDashboardBody(BuildContext context) {
+  Widget _buildDashboardBody(BuildContext context, String? worldTheme) {
     final theme = Theme.of(context);
+    
+    // 🔍 DEBUG: Check what theme we actually get
+    print('🎨 [DASHBOARD-BODY] Theme primary color: ${theme.colorScheme.primary.toString()}, worldTheme: $worldTheme');
+    AppLogger.app.d('🎨 [DASHBOARD-BODY] Theme primary color: ${theme.colorScheme.primary.toString()}, worldTheme: $worldTheme');
     return BackgroundWidget(
-      worldTheme: _worldTheme,  // 🌍 World-specific background
+      worldTheme: worldTheme, // ✅ World-specific background
+      waitForWorldTheme: true, // 🔄 RACE CONDITION FIX: Wait for world theme
       child: Stack(
         children: [
           // Main content
@@ -76,7 +103,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                 )
               : WorldDashboardWidget(
-                  worldTheme: _worldTheme,
+                  worldTheme: worldTheme, // ✅ Pass worldTheme to widget
                   worldName: _world?.name,
                   worldId: int.tryParse(widget.worldId),
                   theme: theme,

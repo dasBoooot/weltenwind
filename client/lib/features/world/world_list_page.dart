@@ -57,32 +57,26 @@ class _WorldListPageState extends State<WorldListPage> {
 
   /// 🎯 Get correct theme for a world (prioritizes themeVariant over themeBundle)
   String _getWorldTheme(World world) {
+    // 🔍 DEBUG: World theme data ausgeben
+    AppLogger.app.d('🔍 [WORLD-LIST-DEBUG] Processing world ${world.id} "${world.name}":', error: {
+      'themeVariant': world.themeVariant,
+      'themeBundle': world.themeBundle,
+      'parentTheme': world.parentTheme,
+    });
+    
     // 1. Prioritize themeVariant (new API field)
     if (world.themeVariant != null && world.themeVariant!.isNotEmpty && world.themeVariant != 'standard') {
       AppLogger.app.d('✅ [WORLD-LIST-THEME] Using world.themeVariant: ${world.themeVariant} for world ${world.id}');
       return world.themeVariant!;
     }
     
-    // 2. Fallback: Simple bundle-to-theme conversion
-    final worldBundle = world.themeBundle ?? 'world-preview';
-    final fallbackTheme = _getBundleFallbackTheme(worldBundle);
-    AppLogger.app.d('🔄 [WORLD-LIST-THEME] Bundle fallback: $worldBundle → $fallbackTheme for world ${world.id}');
-    return fallbackTheme;
+    // 2. ✅ DYNAMIC: themeBundle IS the theme name (no hardcoded mapping needed!)
+    final themeBundle = world.themeBundle ?? 'default';
+    AppLogger.app.d('🎯 [WORLD-LIST-THEME] Using themeBundle directly: $themeBundle for world ${world.id}');
+    return themeBundle;
   }
 
-  /// 🛡️ Simple fallback: Bundle-Name zu Theme-Name 
-  /// (Nur noch für Legacy-Support ohne themeVariant)
-  String _getBundleFallbackTheme(String bundleOrTheme) {
-    switch (bundleOrTheme) {
-      case 'world-preview': 
-      case 'pre-game-minimal':
-        return 'default'; // Neutral themes
-      case 'full-gaming':
-        return 'default'; // Generic fallback (themeVariant should be available)
-      default: 
-        return bundleOrTheme; // Assume it's already a theme name
-    }
-  }
+  // ✅ REMOVED: _getBundleFallbackTheme - no hardcoded mappings needed!
 
   void _initializeServices() {
     try {
@@ -709,7 +703,7 @@ class _WorldListPageState extends State<WorldListPage> {
           child: ThemeContextConsumer(
             componentName: 'WorldCard_${world.id}',
             worldThemeOverride: worldTheme, // 🎯 Dynamic theme resolution!
-            fallbackBundle: 'world-preview',
+            fallbackBundle: 'full-gaming', // ✅ Use existing bundle
             builder: (cardContext, resolvedTheme, worldExtensions) {
               return Theme(
                 data: resolvedTheme,
@@ -783,7 +777,7 @@ class _WorldListPageState extends State<WorldListPage> {
     
     return AppScaffold(
       themeContextId: 'world-list',
-      themeBundleId: 'world-overview', // Neutral theme for the page itself
+      themeBundleId: 'full-gaming', // ✅ Use existing bundle for consistency
       componentName: 'WorldListPage',
       showBackgroundGradient: false, // Use BackgroundWidget instead
       extendBodyBehindAppBar: true,
@@ -805,4 +799,4 @@ class _WorldListPageState extends State<WorldListPage> {
       body: _buildWorldListBody(),
     );
   }
-} 
+}

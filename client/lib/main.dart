@@ -8,7 +8,7 @@ import 'core/services/auth_service.dart';
 import 'core/services/api_service.dart';
 import 'core/services/world_service.dart';
 import 'core/services/invite_service.dart';
-import 'core/providers/theme_context_provider.dart';
+// ❌ REMOVED: import 'core/providers/theme_context_provider.dart';
 
 // Service-Container für Dependency Injection
 class ServiceLocator {
@@ -127,9 +127,7 @@ Future<void> _initializeServices() async {
     final inviteService = InviteService();
     ServiceLocator.register<InviteService>(inviteService);
     
-    // 5. ThemeContextProvider als Singleton Service
-    final themeProvider = ThemeContextProvider();
-    ServiceLocator.register<ThemeContextProvider>(themeProvider);
+    // ❌ REMOVED: ThemeContextProvider - AppScaffold handles themes locally per page!
     
     AppLogger.app.i('⚙️ All services registered in ServiceLocator');
   } catch (e) {

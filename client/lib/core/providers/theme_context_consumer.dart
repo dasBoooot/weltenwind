@@ -65,12 +65,20 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
     if (oldWidget.contextOverrides != widget.contextOverrides ||
         oldWidget.worldThemeOverride != widget.worldThemeOverride ||
         oldWidget.fallbackBundle != widget.fallbackBundle) {
+      
+      AppLogger.app.d('🔄 [THEME-UPDATE] ThemeContextConsumer parameter changed:', error: {
+        'component': widget.componentName,
+        'oldWorldTheme': oldWidget.worldThemeOverride,
+        'newWorldTheme': widget.worldThemeOverride,
+      });
+      
       // Fix: Clear cached futures to force reload
       _cachedThemeFuture = null;
       _cachedDarkThemeFuture = null;
       _cachedTheme = null;
       _cachedDarkTheme = null;
       _loadTheme(isDark: false);
+      _loadTheme(isDark: true); // Load both light and dark themes
     }
   }
 
@@ -99,16 +107,20 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
       // 🎯 2. CONTEXT OVERRIDES  
       final contextOverrides = widget.contextOverrides;
       if (resolvedTheme == null && contextOverrides != null) {
-        resolvedTheme = await ThemeHelper.getCurrentTheme(
-          context, 
-          isDark: isDark, 
-          contextOverrides: contextOverrides,
-        );
-        AppLogger.app.d('🎯 Using context override theme');
+        // ✅ CLEAN: Use direct theme service instead of ThemeHelper
+        final firstOverride = contextOverrides.values.first;
+        final themeService = ThemeHelper.themeService;
+        resolvedTheme = await themeService.getBundle(firstOverride, isDark: isDark);
+        AppLogger.app.d('🎯 Using context override theme: $firstOverride');
       }
       
-      // 🎨 3. PAGE/GLOBAL THEME
-      resolvedTheme ??= await ThemeHelper.getCurrentTheme(context, isDark: isDark);
+      // 🎨 3. FALLBACK TO BUNDLE (NO MORE GLOBAL THEME SYSTEM!)
+      if (resolvedTheme == null) {
+        final fallbackBundle = widget.fallbackBundle ?? 'pre-game-minimal';
+        final themeService = ThemeHelper.themeService;
+        resolvedTheme = await themeService.getBundle(fallbackBundle, isDark: isDark);
+        AppLogger.app.d('🔄 Using fallback bundle theme: $fallbackBundle');
+      }
       
       // 🔄 4. FALLBACK BUNDLE & FLUTTER DEFAULT (dead code - ThemeHelper.getCurrentTheme never returns null)
       
@@ -180,10 +192,6 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
       throw Exception('Theme schema not found: $themeName');
     }
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -260,9 +268,11 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
       }
     }
 
-    // 3. ThemeHelper für Page/Global Context
+    // 3. ✅ CLEAN: Direct fallback to bundle (NO MORE GLOBAL THEME SYSTEM!)
+    final fallbackBundle = widget.fallbackBundle ?? 'pre-game-minimal';
     try {
-      final theme = await ThemeHelper.getCurrentTheme(context, isDark: isDark);
+      final themeService = ThemeHelper.themeService;
+      final theme = await themeService.getBundle(fallbackBundle, isDark: isDark);
       if (mounted) {
         setState(() {
           if (isDark) {
@@ -272,28 +282,24 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
           }
         });
       }
-      return theme;
-    } catch (e) {
-      AppLogger.app.e('❌ ThemeHelper failed for ${widget.componentName}', error: e);
-    }
-
-    // 4. Fallback Bundle als letzter Ausweg
-    final fallbackBundle = widget.fallbackBundle;
-    if (fallbackBundle != null) {
-      try {
-        final themeService = ThemeHelper.themeService;
-        final fallbackTheme = await themeService.getBundle(fallbackBundle, isDark: isDark);
-        if (fallbackTheme != null) {
-          AppLogger.app.i('🔄 Using fallback bundle: $fallbackBundle');
-          return fallbackTheme;
-        }
-      } catch (e) {
-        AppLogger.app.e('❌ Fallback bundle failed: $fallbackBundle', error: e);
+      AppLogger.app.d('🔄 _getEffectiveTheme using fallback bundle: $fallbackBundle');
+      if (theme != null) {
+        return theme;
       }
+    } catch (e) {
+      AppLogger.app.e('❌ Fallback bundle failed for ${widget.componentName}', error: e);
     }
 
-    // 5. Flutter Default als allerletzter Ausweg
-    return Theme.of(context);
+    // 4. ✅ FINAL FALLBACK: Material Design Default Theme
+    AppLogger.app.w('⚠️ All theme loading failed, using Material default theme for ${widget.componentName}');
+    return ThemeData(
+      useMaterial3: true,
+      brightness: isDark ? Brightness.dark : Brightness.light,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF6366F1),
+        brightness: isDark ? Brightness.dark : Brightness.light,
+      ),
+    );
   }
 
   /// 🔄 Loading Widget während Theme lädt
@@ -321,22 +327,5 @@ class _ThemeContextConsumerState extends State<ThemeContextConsumer> {
         ),
       ),
     );
-  }
-
-  /// 🔄 Load fallback theme when primary theme resolution fails
-  Future<ThemeData> _loadFallbackTheme(BuildContext context, bool isDark) async {
-    final fallbackBundle = widget.fallbackBundle;
-    if (fallbackBundle != null) {
-      // Direkt über ModularThemeService laden
-      final themeService = ThemeHelper.themeService;
-      final fallbackTheme = await themeService.getBundle(fallbackBundle, isDark: isDark);
-      if (fallbackTheme != null) {
-        AppLogger.app.d('🔄 Using fallback bundle: $fallbackBundle');
-        return fallbackTheme;
-      }
-    }
-    
-    // ⚠️ FLUTTER DEFAULT als letzter Ausweg
-    return Theme.of(context);
   }
 }

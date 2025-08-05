@@ -171,19 +171,11 @@ class ThemeContextProvider extends ChangeNotifier {
 
   /// 🎯 Public: Get Bundle for Theme Name - DYNAMISCH  
   String getBundleForTheme(String themeName) {
-    // TODO: Ersetze durch dynamisches Schema-Loading
-    // Temporärer Fallback bis alle Provider umgestellt sind
-    switch (themeName) {
-      case 'default': return 'pre-game-minimal';
-      case 'tolkien':
-      case 'space':
-      case 'roman':
-      case 'nature':
-      case 'cyberpunk':
-        return 'full-gaming';
-      default: 
-        return 'world-preview'; // Fallback
-    }
+    // ✅ DYNAMIC: Use async version for real schema loading, this is sync fallback
+    if (themeName == 'default') return 'pre-game-minimal';
+    
+    // For world themes, use full-gaming as bundle (schema loading happens in ThemeContextConsumer)
+    return 'full-gaming';
   }
 
   /// 📊 Private: Track loading states to prevent infinite loops

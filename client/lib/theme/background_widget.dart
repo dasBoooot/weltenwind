@@ -4,17 +4,30 @@ class BackgroundWidget extends StatelessWidget {
   final Widget child;
   final bool showOverlay;
   final String? worldTheme;  // NEW: For world-specific backgrounds
+  final bool waitForWorldTheme;  // NEW: Wait for world theme before showing background
 
   const BackgroundWidget({
     super.key,
     required this.child,
     this.showOverlay = false, // Changed default to false
     this.worldTheme,  // NEW: Optional world theme for background selection
+    this.waitForWorldTheme = false,  // NEW: Default false for backward compatibility
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    
+    // 🔄 RACE CONDITION FIX: Wait for world theme if requested
+    if (waitForWorldTheme && (worldTheme == null || worldTheme!.isEmpty || worldTheme == 'null')) {
+      // Show transparent background while waiting for world theme
+      return Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surface.withValues(alpha: 0.1), // Minimal background while loading
+        ),
+        child: child,
+      );
+    }
     
     return Container(
       decoration: BoxDecoration(

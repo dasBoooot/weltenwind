@@ -214,20 +214,9 @@ class _WorldPreviewCardState extends State<WorldPreviewCard> with TickerProvider
 
   @override
   Widget build(BuildContext context) {
-    // 🎯 MODULARES THEME SYSTEM - Smart Theme Loading
-    final cachedTheme = ThemeHelper.getCurrentThemeCached(context);
-    if (cachedTheme != null) {
-      return _buildWorldCard(context, cachedTheme, null);
-    }
-    
-    // Fallback für nicht-gecachte Themes
-    return FutureBuilder<ThemeData>(
-      future: ThemeHelper.getCurrentTheme(context),
-      builder: (context, snapshot) {
-        final theme = snapshot.data ?? Theme.of(context);
-        return _buildWorldCard(context, theme, null);
-      },
-    );
+    // ✅ CLEAN ARCHITECTURE: Use parent theme from AppScaffold
+    final theme = Theme.of(context);
+    return _buildWorldCard(context, theme, null);
   }
 
   Widget _buildWorldCard(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {

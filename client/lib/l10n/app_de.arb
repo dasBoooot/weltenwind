@@ -1096,6 +1096,72 @@
       }
     }
   },
+  "inviteWelcomePersonal": "{inviterName} lädt dich zu {worldName} ein!",
+  "@inviteWelcomePersonal": {
+    "description": "Personal invitation headline",
+    "context": "invite",
+    "placeholders": {
+      "inviterName": {
+        "type": "String",
+        "description": "The inviting user's name"
+      },
+      "worldName": {
+        "type": "String",
+        "description": "The name of the world"
+      }
+    }
+  },
+  "inviteWorldPreviewTitle": "Entdecke {worldName}",
+  "@inviteWorldPreviewTitle": {
+    "description": "World preview section title",
+    "context": "invite",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "The name of the world"
+      }
+    }
+  },
+  "inviteWorldDescription": "Beschreibung",
+  "@inviteWorldDescription": {
+    "description": "World description label",
+    "context": "invite"
+  },
+  "inviteWorldTheme": "Thema",
+  "@inviteWorldTheme": {
+    "description": "World theme label",
+    "context": "invite"
+  },
+  "inviteWorldPlayerCount": "Spieler",
+  "@inviteWorldPlayerCount": {
+    "description": "World player count label",
+    "context": "invite"
+  },
+  "inviteWorldActivity": "Zuletzt aktiv",
+  "@inviteWorldActivity": {
+    "description": "World last activity label",  
+    "context": "invite"
+  },
+  "inviteWorldCreator": "Erstellt von",
+  "@inviteWorldCreator": {
+    "description": "World creator label",
+    "context": "invite"
+  },
+  "inviteWhyJoin": "Warum beitreten?",
+  "@inviteWhyJoin": {
+    "description": "Why join section title",
+    "context": "invite"
+  },
+  "inviteCallToAction": "Bereit für ein neues Abenteuer?",
+  "@inviteCallToAction": {
+    "description": "Call to action text",
+    "context": "invite"
+  },
+  "inviteNoDescription": "Keine Beschreibung verfügbar",
+  "@inviteNoDescription": {
+    "description": "Fallback when no world description",
+    "context": "invite"
+  },
   "inviteDetailsTitle": "Einladungs-Details",
   "@inviteDetailsTitle": {
     "description": "Invitation details section title",
@@ -1369,6 +1435,16 @@
   },
   "inviteWidgetLinkTitle": "Einladungslink:",
   "@inviteWidgetLinkTitle": {
+    "context": "invite"
+  },
+  "inviteActionReadyToAccept": "Du kannst diese Einladung jetzt annehmen oder ablehnen.",
+  "@inviteActionReadyToAccept": {
+    "description": "Message when user can accept or decline the invitation",
+    "context": "invite"
+  },
+  "inviteStatusAlreadyAccepted": "Diese Einladung wurde bereits angenommen. Du kannst jetzt zur Welt gehen.",
+  "@inviteStatusAlreadyAccepted": {
+    "description": "Message when invitation has already been accepted",
     "context": "invite"
   },
   "worldInviteButton": "Einladen",

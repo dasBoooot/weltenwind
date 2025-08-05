@@ -1,7 +1,7 @@
 import '../../config/logger.dart';
 import '../../core/services/world_service.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/providers/theme_context_provider.dart';
+// ❌ REMOVED: import '../../core/providers/theme_context_provider.dart';
 import '../../main.dart';
 import 'smart_navigation.dart';
 
@@ -16,7 +16,7 @@ class PagePreloaders {
       // Core Services prüfen
       ServiceLocator.get<AuthService>();
       ServiceLocator.get<WorldService>();
-      ServiceLocator.get<ThemeContextProvider>();
+      // ❌ REMOVED: ThemeContextProvider - AppScaffold handles themes!
       
       AppLogger.navigation.d('✅ All service dependencies validated');
     } catch (e) {
@@ -178,54 +178,13 @@ class PagePreloaders {
   }
 
   /// 🎨 Private: Context-Aware Theme preloaden 
+  /// ⚠️ DEAKTIVIERT: AppScaffold übernimmt Theme-Loading vollständig
   static Future<void> _preloadContextTheme(ThemeContext themeContext) async {
-    try {
-      final themeProvider = ServiceLocator.get<ThemeContextProvider>();
-      
-      AppLogger.navigation.d('🎨 Loading context theme: $themeContext');
-      
-      // 1. Base Bundle laden
-      final cachedTheme = themeProvider.themeService.getCachedTheme(themeContext.bundleId, isDark: false);
-      if (cachedTheme == null) {
-        AppLogger.navigation.d('🔄 Loading base bundle: ${themeContext.bundleId}');
-        final theme = await themeProvider.themeService.getBundle(themeContext.bundleId, isDark: false);
-        
-        if (theme != null) {
-          await themeProvider.switchToBundle(themeContext.bundleId);
-          AppLogger.navigation.d('✅ Base theme loaded: ${themeContext.bundleId}');
-        } else {
-          AppLogger.navigation.w('⚠️ Base theme load failed: ${themeContext.bundleId}');
-        }
-      } else {
-        AppLogger.navigation.d('✅ Base theme already cached: ${themeContext.bundleId}');
-      }
-      
-      // 2. World-spezifisches Theme laden (falls vorhanden)
-      if (themeContext.worldTheme != null && themeContext.worldTheme != 'null') {
-        final worldCached = themeProvider.themeService.getCachedTheme(themeContext.worldTheme!, isDark: false);
-        if (worldCached == null) {
-          AppLogger.navigation.d('🔄 Loading world theme: ${themeContext.worldTheme}');
-          final worldTheme = await themeProvider.themeService.getBundle(themeContext.worldTheme!, isDark: false);
-          
-          if (worldTheme != null) {
-            // World Theme hat Vorrang über Base Theme
-            await themeProvider.switchToBundle(themeContext.worldTheme!);
-            AppLogger.navigation.d('✅ World theme loaded and applied: ${themeContext.worldTheme}');
-          } else {
-            AppLogger.navigation.w('⚠️ World theme load failed: ${themeContext.worldTheme}');
-          }
-        } else {
-          AppLogger.navigation.d('✅ World theme already cached: ${themeContext.worldTheme}');
-          // World Theme reaktivieren
-          await themeProvider.switchToBundle(themeContext.worldTheme!);
-        }
-      }
-      
-      AppLogger.navigation.d('✅ Context theme preload completed: $themeContext');
-    } catch (e) {
-      AppLogger.navigation.w('⚠️ Context theme preload failed: $themeContext', error: e);
-      // Theme-Fehler nicht weiterwerfen - Fallback Theme wird verwendet
-    }
+    // 🚫 THEME LOADING DEAKTIVIERT
+    // AppScaffold + ThemePageProvider + ThemeContextConsumer übernehmen das Theme-Loading
+    // Hier machen wir NUR noch Logging für Debugging
+    AppLogger.navigation.d('🎨 [PRELOADER-DISABLED] Theme context passed to AppScaffold: $themeContext');
+    AppLogger.navigation.d('📋 [PRELOADER-DISABLED] Theme loading handled by AppScaffold architecture');
   }
   
   /// 🎨 Private: Legacy Theme preloaden (für Backward Compatibility)

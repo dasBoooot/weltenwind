@@ -33,18 +33,39 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     _loadInviteData();
   }
 
-  /// 🛡️ Simple fallback: Bundle-Name zu Theme-Name 
-  /// (Nur noch für Legacy-Support ohne themeVariant)
-  String _getBundleFallbackTheme(String bundleOrTheme) {
-    switch (bundleOrTheme) {
-      case 'world-preview': 
-      case 'pre-game-minimal':
-        return 'default'; // Neutral themes
-      case 'full-gaming':
-        return 'default'; // Generic fallback (themeVariant should be available)
-      default: 
-        return bundleOrTheme; // Assume it's already a theme name
+  /// 🔧 Get World Theme from API data
+  String? _getWorldTheme() {
+    if (_inviteData != null && _inviteData!['world'] != null) {
+      final worldData = _inviteData!['world'];
+      
+      // Use themeVariant if available, otherwise themeBundle
+      final themeVariant = worldData['themeVariant'] as String?;
+      if (themeVariant != null && themeVariant.isNotEmpty && themeVariant != 'standard') {
+        AppLogger.app.d('🎨 [WORLD-THEME] Using themeVariant: $themeVariant');
+        return themeVariant;
+      }
+      
+      final themeBundle = worldData['themeBundle'] as String?;
+      if (themeBundle != null && themeBundle != 'full-gaming') {
+        AppLogger.app.d('🎨 [WORLD-THEME] Using themeBundle: $themeBundle');
+        return themeBundle;
+      }
     }
+    return null;
+  }
+
+  /// 🔧 Race condition detection
+  bool _isThemeCorrectForWorld(String? worldTheme, ThemeData theme) {
+    if (worldTheme == null) return true;
+    final primaryColor = theme.colorScheme.primary;
+    final isDefaultTheme = primaryColor.r > 0.7 && primaryColor.g > 0.7 && primaryColor.b > 0.9;
+    final isDefaultDarkTheme = primaryColor.r > 0.3 && primaryColor.r < 0.4 && primaryColor.g < 0.3;
+    
+    if (worldTheme != 'default' && (isDefaultTheme || isDefaultDarkTheme)) {
+      AppLogger.app.w('🚨 [RACE-CONDITION] WorldTheme: $worldTheme, but theme is default (${primaryColor.toString()})');
+      return false;
+    }
+    return true;
   }
 
   Future<void> _loadInviteData() async {
@@ -66,14 +87,15 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
           });
         } else {
           setState(() {
-            _error = responseData['error'] ?? AppLocalizations.of(context).inviteErrorInvalidOrExpired;
+            // Always use localized error messages, ignore server error messages
+            _error = AppLocalizations.of(context).inviteErrorInvalidOrExpired;
             _isLoading = false;
           });
         }
       } else {
-        final responseData = jsonDecode(response.body);
         setState(() {
-          _error = responseData['error'] ?? AppLocalizations.of(context).inviteErrorInvalidOrExpired;
+          // Always use localized error messages, ignore server error messages
+          _error = AppLocalizations.of(context).inviteErrorInvalidOrExpired;
           _isLoading = false;
         });
       }
@@ -111,15 +133,15 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
             }
           }
         } else {
-          final responseData = jsonDecode(response.body);
           setState(() {
-            _error = responseData['error'] ?? AppLocalizations.of(context).inviteErrorAcceptFailed;
+            // Always use localized error messages
+            _error = AppLocalizations.of(context).inviteErrorAcceptFailed;
           });
         }
       } else {
-        final responseData = jsonDecode(response.body);
         setState(() {
-          _error = responseData['error'] ?? AppLocalizations.of(context).inviteErrorAcceptFailed;
+          // Always use localized error messages
+          _error = AppLocalizations.of(context).inviteErrorAcceptFailed;
         });
       }
     } catch (e) {
@@ -145,9 +167,9 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
           await context.smartGoNamed('world-list');
         }
       } else {
-        final responseData = jsonDecode(response.body);
         setState(() {
-          _error = responseData['error'] ?? AppLocalizations.of(context).inviteErrorDeclineFailed;
+          // Always use localized error messages
+          _error = AppLocalizations.of(context).inviteErrorDeclineFailed;
         });
       }
     } catch (e) {
@@ -160,44 +182,19 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    // Only use world theme if invite data is valid, otherwise use default
+    final worldTheme = (_error == null && _inviteData != null) ? _getWorldTheme() : null;
     
-    // 🌍 WORLD-SPECIFIC THEME: Verwende World-Theme wenn verfügbar
-    String? worldTheme;
-    AppLogger.app.d('🔍 [INVITE-DEBUG] _inviteData: ${_inviteData != null ? 'EXISTS' : 'NULL'}');
-    if (_inviteData != null) {
-      AppLogger.app.d('🔍 [INVITE-DEBUG] _inviteData.keys: ${_inviteData!.keys}');
-      if (_inviteData!['world'] != null) {
-        final worldData = _inviteData!['world'];
-        final rawTheme = worldData['themeBundle'] as String?;
-        final worldId = worldData['id']?.toString();
-        
-        AppLogger.app.d('🔍 [INVITE-DEBUG] Raw themeBundle: "$rawTheme"');
-        AppLogger.app.d('🔍 [INVITE-DEBUG] World ID: "$worldId"');
-        
-        // 🎯 Erst themeVariant verwenden (neue API)
-        final themeVariant = worldData['themeVariant'] as String?;
-        if (themeVariant != null && themeVariant.isNotEmpty && themeVariant != 'standard') {
-          worldTheme = themeVariant;
-          AppLogger.app.d('✅ [INVITE-DEBUG] Using themeVariant: $themeVariant');
-        } else if (rawTheme != null) {
-          // 🛡️ Fallback: Simple bundle-to-theme conversion (no hardcoding!)
-          worldTheme = _getBundleFallbackTheme(rawTheme);
-          AppLogger.app.d('🔄 [INVITE-DEBUG] Simple fallback: $rawTheme → $worldTheme');
-        }
-        
-        AppLogger.app.d('🔍 [INVITE-DEBUG] Final worldTheme: "$worldTheme"');
-        AppLogger.app.d('🔍 [INVITE-DEBUG] World data: $worldData');
-      } else {
-        AppLogger.app.d('🔍 [INVITE-DEBUG] No world data in _inviteData');
-      }
-    }
-    
-    // 🌍 NEW: Using AppScaffold with integrated world theme system
-    return AppScaffoldBuilder.forGameWithTheme(
-      themeContext: 'invite-landing',
-      themeBundle: 'world-preview', // Base bundle für Invite Pages
-      worldTheme: worldTheme, // 🎯 Corrected world-specific theme!
+    AppLogger.app.d('🎨 [BUILD] WorldTheme: $worldTheme, InviteData: ${_inviteData != null ? 'EXISTS' : 'NULL'}, Error: ${_error != null ? 'EXISTS' : 'NULL'}');
+
+    return AppScaffold(
+      key: ValueKey('invite-${worldTheme ?? (_error != null ? 'error' : 'loading')}-${_inviteData?['world']?['id']}'),
+      themeContextId: 'invite-landing',
+      themeBundleId: 'full-gaming',
+      worldThemeOverride: worldTheme, // null for error cases = default theme
       componentName: 'InviteLandingPage',
+      showBackgroundGradient: false,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(l10n.invitePageTitle),
         centerTitle: true,
@@ -210,44 +207,40 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
           ),
         ],
       ),
-      body: _buildInviteBody(context, worldTheme),
+      bodyBuilder: (context, theme, extensions) {
+        final isReady = _isThemeCorrectForWorld(worldTheme, theme);
+        if (worldTheme != null && !isReady) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        
+        return Theme(
+          data: theme,
+          child: _buildContent(context, worldTheme, theme, l10n),
+        );
+      },
     );
   }
 
-  Widget _buildInviteBody(BuildContext context, String? worldTheme) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
-    
+  Widget _buildContent(BuildContext context, String? worldTheme, ThemeData theme, AppLocalizations l10n) {
     return BackgroundWidget(
-      worldTheme: worldTheme,  // 🌍 World-specific background
+      worldTheme: worldTheme,
+      waitForWorldTheme: _error == null, // Don't wait for world theme on errors
       child: Center(
         child: Container(
           constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width > 900 ? 800 : 600, // 🎯 RESPONSIVE BREITE
+            maxWidth: MediaQuery.of(context).size.width > 900 ? 800 : 600,
           ),
           padding: const EdgeInsets.all(16.0),
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500), // 🎯 SMOOTH TRANSITION
+            duration: const Duration(milliseconds: 500),
             child: _isLoading
               ? Center(
                 key: const ValueKey('loading'),
-                child: CircularProgressIndicator(
-                  color: theme.colorScheme.primary,
-                ),
+                child: CircularProgressIndicator(color: theme.colorScheme.primary),
               )
             : _error != null
-            ? _buildErrorState(
-                context, 
-                theme,
-                l10n,
-                key: const ValueKey('error'),
-              )
-            : _buildContent(
-                context, 
-                theme,
-                l10n,
-                key: const ValueKey('content'),
-              ),
+            ? _buildErrorState(context, theme, l10n, key: const ValueKey('error'))
+            : _buildInviteContent(context, worldTheme, theme, l10n, key: const ValueKey('content')),
           ),
         ),
       ),
@@ -260,17 +253,9 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 64,
-            color: theme.colorScheme.error,
-          ),
+          Icon(Icons.error_outline, size: 64, color: theme.colorScheme.error),
           const SizedBox(height: 16),
-          Text(
-            _error!,
-            style: theme.textTheme.titleMedium,
-            textAlign: TextAlign.center,
-          ),
+          Text(_error!, style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _loadInviteData,
@@ -281,191 +266,308 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     );
   }
 
-  Widget _buildContent(BuildContext context, ThemeData theme, AppLocalizations l10n, {Key? key}) {
+  Widget _buildInviteContent(BuildContext context, String? worldTheme, ThemeData theme, AppLocalizations l10n, {Key? key}) {
     if (_inviteData == null) {
-      return Center(
-        key: key,
-        child: Text(l10n.inviteErrorNoData),
-      );
+      return Center(key: key, child: Text(l10n.inviteErrorNoData));
     }
 
     final invite = _inviteData!['invite'];
     final world = _inviteData!['world'];
     final inviter = _inviteData!['inviter'];
-    
-    // 🔧 FIX: userStatus kann ein Objekt sein - extrahiere das 'status' Feld
     final userStatusRaw = _inviteData!['userStatus'];
     final userStatus = userStatusRaw is Map<String, dynamic> 
         ? userStatusRaw['status'] as String?
         : userStatusRaw as String?;
-    
-
 
     return SingleChildScrollView(
       key: key,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 🎮 APP BRANDING SECTION
-          _buildAppBranding(context, l10n),
-          const SizedBox(height: 16),
-          
-          // 🖼️ HERO IMAGE (optional)
-          _buildHeroImage(context, world),
-          
-          // 🎨 HERO SECTION - Modernes Design
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Theme.of(context).primaryColor.withValues(alpha: 0.8),
-                  Theme.of(context).primaryColor.withValues(alpha: 0.6),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.all(32.0),
-            child: Column(
-              children: [
-                // 🎮 Gaming Icon statt Mail
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.gamepad,
-                    size: 48,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                
-                // 🎯 Einladungs-Header
-                Text(
-                  l10n.inviteWelcomeTitle,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                
-                // 🌍 Welt-Name prominent
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Text(
-                    world?['name'] ?? l10n.worldJoinUnknownWorldName,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                // 👤 Einlader-Info
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.person, color: Colors.white70, size: 20),
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.inviteFromUser(inviter?['username'] ?? l10n.worldJoinUnknownWorld),
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
+          _buildAppBranding(context, l10n, theme),
           const SizedBox(height: 24),
-
-          // 📋 INVITE DETAILS EXPANSION
-          _buildInviteDetails(context, l10n, invite),
-
+          _buildWorldPreview(context, world, inviter, l10n, theme),
+          const SizedBox(height: 24),
+          _buildInviteDetails(context, l10n, invite, theme),
           const SizedBox(height: 16),
-
-          // 📋 STATUS DEBUG (temporär für Diagnose)
-          if (userStatusRaw != null)
-            Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Theme.of(context).dividerColor),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.info_outline, size: 20, color: Theme.of(context).colorScheme.primary),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Raw Status:',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$userStatusRaw',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontFamily: 'monospace',
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  if (userStatus != null) ...[
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(Icons.check_circle_outline, size: 16, color: Colors.green),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Extracted: $userStatus',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontFamily: 'monospace',
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-
-          // 🎯 Actions
-          _buildActions(context, l10n, userStatus),
-          
-          const SizedBox(height: 32),
-          
-          // 🌍 MARKETING SECTION - Weitere Welten
-          _buildMarketingSection(context, l10n),
+          _buildActions(context, l10n, userStatus, theme),
         ],
       ),
     );
   }
 
-  Widget _buildDetailRow(BuildContext context, String label, String value) {
+  Widget _buildAppBranding(BuildContext context, AppLocalizations l10n, ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(20.0),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.explore, size: 32, color: theme.colorScheme.primary),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.appTitle,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.landingSubtitle,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWorldPreview(BuildContext context, Map<String, dynamic>? world, Map<String, dynamic>? inviter, AppLocalizations l10n, ThemeData theme) {
+    final worldName = world?['name'] ?? l10n.worldJoinUnknownWorldName;
+    final inviterName = inviter?['username'] ?? l10n.worldJoinUnknownWorld;
+    final worldDescription = world?['description'] ?? l10n.inviteNoDescription;
+    final worldTheme = world?['themeBundle'] ?? world?['themeVariant'] ?? 'Standard';
+    final worldCreator = world?['createdBy'] ?? world?['creator']?['username'] ?? '-';
+
+    return Card(
+      elevation: 4,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+              theme.colorScheme.secondaryContainer.withValues(alpha: 0.2),
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 🎉 Emotional Headline
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(Icons.celebration, color: theme.colorScheme.primary, size: 24),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      l10n.inviteWelcomePersonal(inviterName, worldName),
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // 🌍 World Preview Title
+              Text(
+                l10n.inviteWorldPreviewTitle(worldName),
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // 📝 World Description
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface.withValues(alpha: 0.7),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.description_outlined, size: 18, color: theme.colorScheme.primary),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.inviteWorldDescription,
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      worldDescription,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // 📊 World Info Grid
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildWorldInfoTile(
+                      icon: Icons.palette_outlined,
+                      label: l10n.inviteWorldTheme,
+                      value: worldTheme,
+                      theme: theme,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildWorldInfoTile(
+                      icon: Icons.person_outline,
+                      label: l10n.inviteWorldCreator,
+                      value: worldCreator,
+                      theme: theme,
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // 🎯 Call to Action
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.rocket_launch, color: theme.colorScheme.primary, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.inviteCallToAction,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWorldInfoTile({
+    required IconData icon,
+    required String label,
+    required String value,
+    required ThemeData theme,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 16, color: theme.colorScheme.primary),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInviteDetails(BuildContext context, AppLocalizations l10n, Map<String, dynamic>? invite, ThemeData theme) {
+    return Card(
+      color: theme.colorScheme.surface,
+      child: ExpansionTile(
+        leading: Icon(Icons.info_outline, color: theme.colorScheme.primary),
+        title: Text(
+          l10n.inviteDetailsTitle,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildDetailRow(context, l10n.inviteDetailsEmail, invite?['email'] ?? '-', theme),
+                const SizedBox(height: 8),
+                _buildDetailRow(context, l10n.inviteDetailsCreated, _formatDate(invite?['createdAt']), theme),
+                const SizedBox(height: 8),
+                _buildDetailRow(context, l10n.inviteDetailsExpires, _formatDate(invite?['expiresAt']), theme),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(BuildContext context, String label, String value, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -475,203 +577,68 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
             width: 80,
             child: Text(
               '$label:',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 🖼️ HERO IMAGE SECTION (optional)
-  Widget _buildHeroImage(BuildContext context, Map<String, dynamic>? world) {
-    final imageUrl = world?['bannerUrl'] ?? world?['imageUrl'];
-    
-    if (imageUrl != null && imageUrl.toString().isNotEmpty) {
-      return Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              height: 160,
-              width: double.infinity,
-              errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(context),
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  height: 160,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Center(child: CircularProgressIndicator()),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      );
-    }
-    
-    // Fallback: Placeholder image für visuelle Aufwertung
-    return Column(
-      children: [
-        _buildPlaceholderImage(context),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  // 🎨 PLACEHOLDER IMAGE
-  Widget _buildPlaceholderImage(BuildContext context) {
-    return Container(
-      height: 160,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Theme.of(context).primaryColor.withValues(alpha: 0.3),
-            Theme.of(context).primaryColor.withValues(alpha: 0.1),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.landscape,
-              size: 48,
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Welt-Banner',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface,
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // 📋 INVITE DETAILS EXPANSION
-  Widget _buildInviteDetails(BuildContext context, AppLocalizations l10n, Map<String, dynamic>? invite) {
-    return Card(
-      child: ExpansionTile(
-        leading: const Icon(Icons.info_outline),
-        title: Text(
-          l10n.inviteDetailsTitle,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                _buildDetailRow(
-                  context, 
-                  l10n.inviteDetailsEmail, 
-                  invite?['email'] ?? '-',
-                ),
-                const SizedBox(height: 8),
-                _buildDetailRow(
-                  context, 
-                  l10n.inviteDetailsCreated,
-                  _formatDate(invite?['createdAt']),
-                ),
-                const SizedBox(height: 8),
-                _buildDetailRow(
-                  context, 
-                  l10n.inviteDetailsExpires, 
-                  _formatDate(invite?['expiresAt']),
-                ),
-              ],
-            ),
           ),
         ],
       ),
     );
   }
 
-  // 🕒 DATE FORMATTER HELPER
   String _formatDate(String? dateString) {
     if (dateString == null || dateString.isEmpty) return '-';
     try {
       final date = DateTime.parse(dateString);
       return '${date.day}.${date.month}.${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
     } catch (e) {
-      return dateString; // Fallback to original string
+      return dateString;
     }
   }
 
-  Widget _buildActions(BuildContext context, AppLocalizations l10n, String? userStatus) {
+  Widget _buildActions(BuildContext context, AppLocalizations l10n, String? userStatus, ThemeData theme) {
     switch (userStatus) {
       case 'not_registered':
-      case 'not_logged_in': // 🔧 FIX: Für unbekannte User die sich registrieren müssen
-        return _buildRegisterActions(context, l10n);
+      case 'not_logged_in':
+        return _buildRegisterActions(context, l10n, theme);
       case 'needs_login':
-      case 'user_exists_not_logged_in': // 🔧 FIX: Status von Backend-Objekt
-      case 'logged_out': // 🔧 Zusätzlicher möglicher Status
-        return _buildLoginActions(context, l10n);
+      case 'user_exists_not_logged_in':
+      case 'logged_out':
+        return _buildLoginActions(context, l10n, theme);
       case 'correct_email':
-      case 'can_accept': // 🔧 Zusätzlicher möglicher Status
-        return _buildAcceptActions(context, l10n);
+      case 'can_accept':
+        return _buildAcceptActions(context, l10n, theme);
       case 'wrong_email':
-      case 'email_mismatch': // 🔧 Zusätzlicher möglicher Status
-        return _buildWrongEmailActions(context, l10n);
+      case 'email_mismatch':
+        return _buildWrongEmailActions(context, l10n, theme);
       case 'already_accepted':
       case 'invite_used':
-        return _buildAlreadyAcceptedActions(context, l10n);
+        return _buildAlreadyAcceptedActions(context, l10n, theme);
       case null:
       case '':
-        return _buildLoadingActions(context, l10n);
+        return _buildLoadingActions(context, l10n, theme);
       default:
-        // 🚨 ERWEITERTE DEBUG-INFO für unbekannte Status
         return Card(
-          color: Theme.of(context).colorScheme.errorContainer,
+          color: theme.colorScheme.errorContainer,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Icon(
-                  Icons.warning_amber_outlined,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                  size: 32,
-                ),
+                Icon(Icons.warning_amber_outlined, color: theme.colorScheme.onErrorContainer, size: 32),
                 const SizedBox(height: 8),
                 Text(
-                  l10n.inviteActionUnknownStatus,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Status: "$userStatus"',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer.withValues(alpha: 0.8),
-                    fontFamily: 'monospace',
-                  ),
+                  '${l10n.inviteActionUnknownStatus}: "$userStatus"',
+                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onErrorContainer),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -681,45 +648,67 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     }
   }
 
-  Widget _buildRegisterActions(BuildContext context, AppLocalizations l10n) {
+  Widget _buildRegisterActions(BuildContext context, AppLocalizations l10n, ThemeData theme) {
     final inviteEmail = _inviteData?['invite']?['email'];
     
     return Card(
+      color: theme.colorScheme.surface,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Text(
               l10n.inviteActionRegisterHint,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () async {
-                // 🎯 CLEAN NAVIGATION: Direkt zur Register-Seite mit invite_token im State
+                // 🔧 FIX: Clear AuthService before navigation
+                final authService = ServiceLocator.get<AuthService>();
+                if (await authService.isLoggedIn()) {
+                  AppLogger.app.i('Clearing auth session before register navigation');
+                  await authService.logout();
+                  
+                  // Wait for logout to complete
+                  await Future.delayed(const Duration(milliseconds: 100));
+                }
+                
                 await context.smartGoNamed('register', extra: {
                   'invite_token': widget.token,
                   'email': inviteEmail,
-                  'auto_accept_invite': true,  // Flag für Auto-Accept nach Registrierung
+                  'auto_accept_invite': true,
                   'redirect_to_invite': '/go/invite/${widget.token}',
                 });
               },
               icon: const Icon(Icons.person_add),
               label: Text(l10n.inviteActionRegisterAndJoin),
               style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
               ),
             ),
             const SizedBox(height: 8),
             TextButton(
               onPressed: () async {
-                // 🎯 CLEAN NAVIGATION: Direkt zur Login-Seite mit invite_token im State
+                // 🔧 FIX: Clear AuthService before navigation  
+                final authService = ServiceLocator.get<AuthService>();
+                if (await authService.isLoggedIn()) {
+                  AppLogger.app.i('Clearing auth session before login navigation');
+                  await authService.logout();
+                  
+                  // Wait for logout to complete
+                  await Future.delayed(const Duration(milliseconds: 100));
+                }
+                
                 await context.smartGoNamed('login', extra: {
                   'invite_token': widget.token,
                   'redirect_to_invite': '/go/invite/${widget.token}',
                 });
               },
+              style: TextButton.styleFrom(foregroundColor: theme.colorScheme.primary),
               child: Text(l10n.inviteActionAlreadyHaveAccount),
             ),
           ],
@@ -728,11 +717,11 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     );
   }
 
-  Widget _buildLoginActions(BuildContext context, AppLocalizations l10n) {
+  Widget _buildLoginActions(BuildContext context, AppLocalizations l10n, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -744,49 +733,38 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
       ),
       child: Column(
         children: [
-          // 🔑 Login Header
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.login,
-                color: Theme.of(context).primaryColor,
-                size: 24,
-              ),
+              Icon(Icons.login, color: theme.colorScheme.primary, size: 24),
               const SizedBox(width: 8),
               Text(
-                l10n.inviteActionLoginHint.split('.').first, // Erster Satz für Header
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                l10n.inviteActionLoginHint.split('.').first,
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             l10n.inviteActionLoginHint,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
-          
-          // 🔐 Login Button
           Container(
             width: double.infinity,
             height: 56,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).primaryColor.withValues(alpha: 0.8),
+                  theme.colorScheme.primary,
+                  theme.colorScheme.primary.withValues(alpha: 0.8),
                 ],
               ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -794,28 +772,32 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
             ),
             child: ElevatedButton.icon(
               onPressed: () async {
-                // 🎯 CLEAN NAVIGATION: Direkt zur Login-Seite mit invite_token im State
+                // 🔧 FIX: Clear AuthService before navigation
+                final authService = ServiceLocator.get<AuthService>();
+                if (await authService.isLoggedIn()) {
+                  AppLogger.app.i('Clearing auth session before login navigation');
+                  await authService.logout();
+                  
+                  // Wait for logout to complete
+                  await Future.delayed(const Duration(milliseconds: 100));
+                }
+                
                 await context.smartGoNamed('login', extra: {
                   'invite_token': widget.token,
-                  'auto_accept_invite': true,  // Flag für Auto-Accept nach Login
+                  'auto_accept_invite': true,
                   'redirect_to_invite': '/go/invite/${widget.token}',
                 });
               },
               icon: const Icon(Icons.key, size: 24),
               label: Text(
                 l10n.inviteActionLogin,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 foregroundColor: Colors.white,
                 shadowColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ),
@@ -824,14 +806,14 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     );
   }
 
-  Widget _buildAcceptActions(BuildContext context, AppLocalizations l10n) {
+  Widget _buildAcceptActions(BuildContext context, AppLocalizations l10n, ThemeData theme) {
     final authService = ServiceLocator.get<AuthService>();
     final currentUser = authService.currentUser;
     
     return Container(
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -843,37 +825,25 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
       ),
       child: Column(
         children: [
-          // 👤 User Info
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.account_circle,
-                color: Theme.of(context).primaryColor,
-                size: 24,
-              ),
+              Icon(Icons.account_circle, color: theme.colorScheme.primary, size: 24),
               const SizedBox(width: 8),
               Text(
                 l10n.inviteActionAcceptHint(currentUser?.username ?? l10n.worldJoinUnknownWorld),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ),
           const SizedBox(height: 20),
-          
-          // 🎯 Action Buttons - Moderne Version
           Row(
             children: [
-              // ✅ ACCEPT Button
               Expanded(
                 child: Container(
                   height: 56,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.green.shade400, Colors.green.shade600],
-                    ),
+                    gradient: LinearGradient(colors: [Colors.green.shade400, Colors.green.shade600]),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
@@ -888,25 +858,18 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                     icon: const Icon(Icons.check_circle, size: 24),
                     label: Text(
                       l10n.inviteActionAccept,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       foregroundColor: Colors.white,
                       shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                 ),
               ),
               const SizedBox(width: 16),
-              
-              // ❌ DECLINE Button  
               Expanded(
                 child: SizedBox(
                   height: 56,
@@ -915,17 +878,12 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                     icon: const Icon(Icons.cancel_outlined, size: 24),
                     label: Text(
                       l10n.inviteActionDecline,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.red.shade300, width: 2),
                       foregroundColor: Colors.red.shade600,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                 ),
@@ -937,7 +895,7 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     );
   }
 
-  Widget _buildWrongEmailActions(BuildContext context, AppLocalizations l10n) {
+  Widget _buildWrongEmailActions(BuildContext context, AppLocalizations l10n, ThemeData theme) {
     final authService = ServiceLocator.get<AuthService>();
     final currentEmail = authService.currentUser?.email ?? 'N/A';
     final inviteEmail = _inviteData?['invite']?['email'];
@@ -945,30 +903,25 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     return Container(
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.errorContainer,
+        color: theme.colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
+          color: theme.colorScheme.error.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
       child: Column(
         children: [
-          // ⚠️ Warning Header
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.warning_amber,
-                color: Theme.of(context).colorScheme.error,
-                size: 24,
-              ),
+              Icon(Icons.warning_amber, color: theme.colorScheme.error, size: 24),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   l10n.inviteActionWrongEmailHint(currentEmail, inviteEmail ?? 'N/A'),
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onErrorContainer,
                     fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
@@ -977,8 +930,6 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
             ],
           ),
           const SizedBox(height: 20),
-          
-          // 🔧 Logout + Register Button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
@@ -986,15 +937,18 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                 try {
                   await authService.logout();
                   if (mounted) {
-                    await context.smartGoNamed('register', queryParameters: {
+                    final navigator = context;
+                    await navigator.smartGoNamed('register', queryParameters: {
                       'redirect': '/go/invite/${widget.token}',
                       if (inviteEmail != null) 'email': inviteEmail,
                     });
                   }
                 } catch (e) {
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(AppLocalizations.of(context).errorLogout(e.toString()))),
+                    final scaffoldMessenger = ScaffoldMessenger.of(context);
+                    final localizations = AppLocalizations.of(context);
+                    scaffoldMessenger.showSnackBar(
+                      SnackBar(content: Text(localizations.errorLogout(e.toString()))),
                     );
                   }
                 }
@@ -1011,108 +965,21 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     );
   }
 
-  // 🎮 APP BRANDING SECTION
-  Widget _buildAppBranding(BuildContext context, AppLocalizations l10n) {
-    return Container(
-      padding: const EdgeInsets.all(20.0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          // 🎮 Game Logo/Icon
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              Icons.explore,
-              size: 32,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          const SizedBox(width: 16),
-          
-          // 🎯 App Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppLocalizations.of(context).appTitle,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  AppLocalizations.of(context).landingSubtitle,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 🔄 LOADING ACTIONS (wenn Status noch nicht geladen)
-  Widget _buildLoadingActions(BuildContext context, AppLocalizations l10n) {
+  Widget _buildAlreadyAcceptedActions(BuildContext context, AppLocalizations l10n, ThemeData theme) {
     return Card(
+      color: theme.colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const CircularProgressIndicator(),
+            Icon(Icons.check_circle_outline, size: 48, color: theme.colorScheme.primary),
             const SizedBox(height: 16),
             Text(
-              'Status wird geladen...', // TODO: Add to l10n if needed
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ✅ ALREADY ACCEPTED ACTIONS (Einladung bereits angenommen)
-  Widget _buildAlreadyAcceptedActions(BuildContext context, AppLocalizations l10n) {
-    return Card(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            Icon(
-              Icons.check_circle_outline,
-              size: 48,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Einladung bereits angenommen!', // TODO: Add to l10n if needed
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              l10n.inviteStatusAlreadyAccepted,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
+                color: theme.colorScheme.primary,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Du hast diese Einladung bereits angenommen. Du kannst jetzt zur Welt gehen.',
-              style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -1123,14 +990,12 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
                   await context.smartGoNamed('world-list');
                 },
                 icon: const Icon(Icons.explore),
-                label: Text(AppLocalizations.of(context).buttonToWorlds),
+                label: Text(l10n.buttonToWorlds),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ),
@@ -1140,167 +1005,19 @@ class _InviteLandingPageState extends State<InviteLandingPage> {
     );
   }
 
-  // 🌍 MARKETING SECTION
-  Widget _buildMarketingSection(BuildContext context, AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // 📢 Marketing Header
-        Row(
+  Widget _buildLoadingActions(BuildContext context, AppLocalizations l10n, ThemeData theme) {
+    return Card(
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
           children: [
-            Icon(
-              Icons.explore_outlined,
-              color: Theme.of(context).colorScheme.primary,
-              size: 24,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              AppLocalizations.of(context).marketingDiscoverMoreWorlds,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
+            CircularProgressIndicator(color: theme.colorScheme.primary),
+            const SizedBox(height: 16),
+            // Loading indicator is self-explanatory, no text needed
           ],
         ),
-        const SizedBox(height: 16),
-        
-        // 🎯 Marketing Cards
-        Container(
-          padding: const EdgeInsets.all(20.0),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
-                Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-              width: 1,
-            ),
-          ),
-          child: Column(
-            children: [
-              // 🚀 Call to Action
-              Row(
-                children: [
-                  Icon(
-                    Icons.public,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context).marketingCallToAction,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              
-              // 📊 Features
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildFeatureItem(
-                      context,
-                      Icons.groups,
-                      AppLocalizations.of(context).marketingFeatureCommunityTitle,
-                      AppLocalizations.of(context).marketingFeatureCommunityDesc,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildFeatureItem(
-                      context,
-                      Icons.create,
-                      AppLocalizations.of(context).marketingFeatureCreateTitle,
-                      AppLocalizations.of(context).marketingFeatureCreateDesc,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildFeatureItem(
-                      context,
-                      Icons.explore,
-                      AppLocalizations.of(context).marketingFeatureExploreTitle,
-                      AppLocalizations.of(context).marketingFeatureExploreDesc,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              
-              // 🔗 Browse Button
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    await context.smartGoNamed('world-list');
-                  },
-                  icon: const Icon(Icons.explore_outlined),
-                  label: Text(AppLocalizations.of(context).marketingBrowseAllWorlds),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.primary,
-                      width: 2,
-                    ),
-                    foregroundColor: Theme.of(context).colorScheme.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  // 🎯 Feature Item Helper
-  Widget _buildFeatureItem(BuildContext context, IconData icon, String title, String subtitle) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            icon,
-            color: Theme.of(context).colorScheme.primary,
-            size: 24,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          title,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 2),
-        Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+      ),
     );
   }
 }

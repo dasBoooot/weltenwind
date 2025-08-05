@@ -678,6 +678,40 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String inviteWelcomePersonal(String inviterName, String worldName) {
+    return '$inviterName lädt dich zu $worldName ein!';
+  }
+
+  @override
+  String inviteWorldPreviewTitle(String worldName) {
+    return 'Entdecke $worldName';
+  }
+
+  @override
+  String get inviteWorldDescription => 'Beschreibung';
+
+  @override
+  String get inviteWorldTheme => 'Thema';
+
+  @override
+  String get inviteWorldPlayerCount => 'Spieler';
+
+  @override
+  String get inviteWorldActivity => 'Zuletzt aktiv';
+
+  @override
+  String get inviteWorldCreator => 'Erstellt von';
+
+  @override
+  String get inviteWhyJoin => 'Warum beitreten?';
+
+  @override
+  String get inviteCallToAction => 'Bereit für ein neues Abenteuer?';
+
+  @override
+  String get inviteNoDescription => 'Keine Beschreibung verfügbar';
+
+  @override
   String get inviteDetailsTitle => 'Einladungs-Details';
 
   @override
@@ -845,6 +879,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get inviteWidgetLinkTitle => 'Einladungslink:';
+
+  @override
+  String get inviteActionReadyToAccept =>
+      'Du kannst diese Einladung jetzt annehmen oder ablehnen.';
+
+  @override
+  String get inviteStatusAlreadyAccepted =>
+      'Diese Einladung wurde bereits angenommen. Du kannst jetzt zur Welt gehen.';
 
   @override
   String get worldInviteButton => 'Einladen';

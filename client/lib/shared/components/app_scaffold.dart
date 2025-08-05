@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/index.dart'; // Theme System für ThemePageProvider und ThemeContextConsumer
+import '../../config/logger.dart'; // AppLogger für Debug-Ausgaben
 
 /// 🏗️ App Scaffold based on Schema Configuration
 /// 
@@ -7,7 +8,8 @@ import '../../core/theme/index.dart'; // Theme System für ThemePageProvider und
 /// and integrated theme system support
 class AppScaffold extends StatelessWidget {
   final PreferredSizeWidget? appBar;
-  final Widget body;
+  final Widget? body;
+  final Widget Function(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions)? bodyBuilder;
   final Widget? floatingActionButton;
   final Widget? bottomNavigationBar;
   final Widget? drawer;
@@ -26,7 +28,8 @@ class AppScaffold extends StatelessWidget {
   const AppScaffold({
     super.key,
     this.appBar,
-    required this.body,
+    this.body,
+    this.bodyBuilder,
     this.floatingActionButton,
     this.bottomNavigationBar,
     this.drawer,
@@ -40,7 +43,7 @@ class AppScaffold extends StatelessWidget {
     this.themeBundleId,
     this.worldThemeOverride,
     this.componentName,
-  });
+  }) : assert(body != null || bodyBuilder != null, 'Either body or bodyBuilder must be provided');
 
   @override
   Widget build(BuildContext context) {
@@ -64,30 +67,42 @@ class AppScaffold extends StatelessWidget {
   }
 
   Widget _buildScaffold(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
-    return Scaffold(
-      appBar: _shouldShowAppBar() ? appBar : null,
-      body: _buildBody(context, theme, extensions),
-      floatingActionButton: _shouldShowFloatingActionButton() ? floatingActionButton : null,
-      bottomNavigationBar: bottomNavigationBar,
-      drawer: drawer,
-      endDrawer: endDrawer,
-      resizeToAvoidBottomInset: _getResizeToAvoidBottomInset(),
-      extendBodyBehindAppBar: _getExtendBodyBehindAppBar(),
-      backgroundColor: _getBackgroundColor(theme, extensions),
+    // 🔍 DEBUG: Log theme details for debugging
+    print('🎨 [APP-SCAFFOLD] Applying theme: ${theme.colorScheme.primary.toString()}, Extensions: ${extensions?.keys}');
+    AppLogger.app.d('🎨 [APP-SCAFFOLD] Applying theme: ${theme.colorScheme.primary.toString()}, Extensions: ${extensions?.keys}');
+    
+    // ✅ CRITICAL FIX: Apply theme explicitly (like WorldCard does)
+    return Theme(
+      data: theme,
+      child: Scaffold(
+        appBar: _shouldShowAppBar() ? appBar : null,
+        body: _buildBody(context, theme, extensions),
+        floatingActionButton: _shouldShowFloatingActionButton() ? floatingActionButton : null,
+        bottomNavigationBar: bottomNavigationBar,
+        drawer: drawer,
+        endDrawer: endDrawer,
+        resizeToAvoidBottomInset: _getResizeToAvoidBottomInset(),
+        extendBodyBehindAppBar: _getExtendBodyBehindAppBar(),
+        backgroundColor: _getBackgroundColor(theme, extensions),
+      ),
     );
   }
 
   /// Build body with optional background gradient
   Widget _buildBody(BuildContext context, ThemeData theme, Map<String, dynamic>? extensions) {
+    final effectiveBody = bodyBuilder != null 
+        ? bodyBuilder!(context, theme, extensions) 
+        : body!;
+    
     if (!_shouldShowBackgroundGradient()) {
-      return body;
+      return effectiveBody;
     }
 
     return Container(
       decoration: BoxDecoration(
         gradient: _getBackgroundGradient(theme, extensions),
       ),
-      child: body,
+      child: effectiveBody,
     );
   }
 
