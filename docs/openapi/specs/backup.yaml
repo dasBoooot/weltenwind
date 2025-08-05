@@ -1,0 +1,531 @@
+paths:
+  /api/backup:
+    get:
+      summary: Backup-System-Übersicht
+      description: Liefert umfassende Informationen über das Backup-System, Konfiguration, Statistiken und Health-Status
+      tags:
+        - Backup Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Backup-System-Übersicht
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupOverview'
+        '401':
+          description: Unauthorized - Nicht authentifiziert
+        '403':
+          description: Forbidden - Keine Admin-Berechtigung
+        '500':
+          description: Interner Serverfehler
+
+  /api/backup/health:
+    get:
+      summary: Backup-System Health Check
+      description: Detaillierter Health-Status des Backup-Systems mit spezifischen Checks
+      tags:
+        - Backup Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Health-Status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupHealth'
+
+  /api/backup/jobs:
+    get:
+      summary: Backup-Jobs verwalten
+      description: Liste aller aktiven und kürzlich ausgeführten Backup-Jobs
+      tags:
+        - Backup Jobs
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Job-Liste
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupJobsList'
+
+  /api/backup/tables:
+    get:
+      summary: Datenbank-Tabellen-Analyse
+      description: Intelligente Analyse aller Datenbank-Tabellen mit Kategorisierung und Backup-Strategien
+      tags:
+        - Database Analysis
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Tabellen-Analyse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TablesAnalysis'
+
+  /api/backup/create:
+    post:
+      summary: Manuelles Backup erstellen
+      description: Erstellt ein manuelles Backup mit optionaler Tabellen-Auswahl
+      tags:
+        - Backup Jobs
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBackupRequest'
+      responses:
+        '202':
+          description: Accepted - Backup-Job gestartet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupJobResponse'
+        '400':
+          description: Bad Request - Ungültige Parameter
+        '503':
+          description: Service Unavailable - Backup-System deaktiviert
+
+  /api/backup/stats:
+    get:
+      summary: Backup-Statistiken
+      description: Detaillierte Statistiken über Backups, Speicherplatz und Success-Rate
+      tags:
+        - Backup Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Backup-Statistiken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupStats'
+
+  /api/backup/discover:
+    post:
+      summary: Datenbank-Struktur neu analysieren
+      description: Führt eine erneute Auto-Discovery der Datenbank-Struktur durch
+      tags:
+        - Database Analysis
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Struktur neu analysiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryResult'
+        '500':
+          description: Fehler bei der Analyse
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    BackupOverview:
+      type: object
+      properties:
+        config:
+          $ref: '#/components/schemas/BackupConfig'
+        stats:
+          $ref: '#/components/schemas/BackupStats'
+        health:
+          $ref: '#/components/schemas/BackupHealth'
+        timestamp:
+          type: integer
+          description: Unix timestamp der Datenerhebung
+
+    BackupConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Backup-System aktiviert
+        backupDir:
+          type: string
+          description: Backup-Verzeichnis
+        retention:
+          $ref: '#/components/schemas/RetentionConfig'
+        compression:
+          $ref: '#/components/schemas/CompressionConfig'
+        autoDiscovery:
+          type: boolean
+          description: Automatische Tabellen-Erkennung
+        smartScheduling:
+          type: boolean
+          description: Intelligente Schedule-Anpassung
+        healthCheckEnabled:
+          type: boolean
+          description: Health-Check aktiviert
+        autoVerification:
+          type: boolean
+          description: Automatische Backup-Verifikation
+        offsite:
+          $ref: '#/components/schemas/OffsiteConfig'
+
+    RetentionConfig:
+      type: object
+      properties:
+        dailyDays:
+          type: integer
+          description: Tägliche Backups aufbewahren (Tage)
+        weeklyWeeks:
+          type: integer
+          description: Wöchentliche Backups aufbewahren (Wochen)
+        monthlyMonths:
+          type: integer
+          description: Monatliche Backups aufbewahren (Monate)
+
+    CompressionConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Komprimierung aktiviert
+        level:
+          type: integer
+          description: Komprimierungsgrad (1-9)
+
+    OffsiteConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Offsite-Backup aktiviert
+        s3Bucket:
+          type: string
+          description: S3-Bucket für Offsite-Backup
+        s3Region:
+          type: string
+          description: AWS Region
+
+    BackupHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, critical]
+          description: Allgemeiner Health-Status
+        checks:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthCheck'
+
+    HealthCheck:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name des Checks
+        status:
+          type: string
+          enum: [pass, fail]
+          description: Check-Status
+        message:
+          type: string
+          description: Check-Ergebnis-Nachricht
+
+    BackupJobsList:
+      type: object
+      properties:
+        jobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/BackupJob'
+        summary:
+          $ref: '#/components/schemas/JobsSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+
+    BackupJob:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Eindeutige Job-ID
+        type:
+          type: string
+          enum: [daily, weekly, monthly, manual]
+          description: Backup-Typ
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+          description: Job-Status
+        startTime:
+          type: string
+          format: date-time
+          description: Start-Zeit
+        endTime:
+          type: string
+          format: date-time
+          description: End-Zeit (falls abgeschlossen)
+        duration:
+          type: integer
+          description: Dauer in Millisekunden
+        filePath:
+          type: string
+          description: Pfad zur Backup-Datei
+        fileSize:
+          type: integer
+          description: Dateigröße in Bytes
+        tables:
+          type: array
+          items:
+            type: string
+          description: Liste der gesicherten Tabellen
+        error:
+          type: string
+          description: Fehlermeldung (bei Fehlern)
+        verification:
+          $ref: '#/components/schemas/BackupVerification'
+
+    BackupVerification:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, passed, failed]
+          description: Verifikations-Status
+        error:
+          type: string
+          description: Verifikations-Fehler
+
+    JobsSummary:
+      type: object
+      properties:
+        active:
+          type: integer
+          description: Aktive Jobs
+        completed:
+          type: integer
+          description: Abgeschlossene Jobs
+        failed:
+          type: integer
+          description: Fehlgeschlagene Jobs
+        total:
+          type: integer
+          description: Gesamtzahl Jobs
+
+    TablesAnalysis:
+      type: object
+      properties:
+        tables:
+          type: array
+          items:
+            $ref: '#/components/schemas/TableInfo'
+        summary:
+          $ref: '#/components/schemas/TablesSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+
+    TableInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Tabellenname
+        schema:
+          type: string
+          description: Schema (meist 'public')
+        estimatedRows:
+          type: integer
+          description: Geschätzte Anzahl Zeilen
+        estimatedSizeMB:
+          type: number
+          description: Geschätzte Größe in MB
+        category:
+          type: string
+          enum: [critical, important, optional, logs]
+          description: Automatisch erkannte Kategorie
+        changeFrequency:
+          type: string
+          enum: [high, medium, low, static]
+          description: Änderungshäufigkeit
+        backupStrategy:
+          type: string
+          enum: [full, incremental, skip]
+          description: Empfohlene Backup-Strategie
+        backupPriority:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: Backup-Priorität (1-10)
+        lastBackup:
+          type: string
+          format: date-time
+          description: Letztes Backup (optional)
+
+    TablesSummary:
+      type: object
+      properties:
+        totalTables:
+          type: integer
+          description: Gesamtzahl Tabellen
+        totalSizeMB:
+          type: number
+          description: Gesamtgröße in MB
+        categories:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Anzahl Tabellen pro Kategorie
+        strategies:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Anzahl Tabellen pro Backup-Strategie
+        priorities:
+          $ref: '#/components/schemas/PrioritiesSummary'
+
+    PrioritiesSummary:
+      type: object
+      properties:
+        high:
+          type: integer
+          description: Tabellen mit hoher Priorität (8-10)
+        medium:
+          type: integer
+          description: Tabellen mit mittlerer Priorität (5-7)
+        low:
+          type: integer
+          description: Tabellen mit niedriger Priorität (1-4)
+
+    CreateBackupRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [manual, daily, weekly, monthly]
+          default: manual
+          description: Backup-Typ
+        tables:
+          type: array
+          items:
+            type: string
+          description: Spezifische Tabellen (optional, sonst alle)
+
+    BackupJobResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Erfolgs-Nachricht
+        job:
+          $ref: '#/components/schemas/BackupJobInfo'
+        estimatedDuration:
+          type: string
+          description: Geschätzte Dauer
+
+    BackupJobInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Job-ID
+        type:
+          type: string
+          description: Backup-Typ
+        status:
+          type: string
+          description: Aktueller Status
+        startTime:
+          type: string
+          format: date-time
+          description: Start-Zeit
+        tables:
+          type: integer
+          description: Anzahl Tabellen
+
+    BackupStats:
+      type: object
+      properties:
+        totalBackups:
+          type: integer
+          description: Gesamtzahl Backups
+        totalSize:
+          type: integer
+          description: Gesamtgröße aller Backups (Bytes)
+        successRate:
+          type: number
+          description: Erfolgsquote (%)
+        avgDuration:
+          type: integer
+          description: Durchschnittliche Dauer (ms)
+        lastBackup:
+          type: string
+          format: date-time
+          description: Letztes Backup
+        nextScheduled:
+          type: string
+          format: date-time
+          description: Nächstes geplantes Backup
+        diskUsage:
+          $ref: '#/components/schemas/DiskUsage'
+
+    DiskUsage:
+      type: object
+      properties:
+        used:
+          type: integer
+          description: Verwendeter Speicherplatz (Bytes)
+        available:
+          type: integer
+          description: Verfügbarer Speicherplatz (Bytes)
+        percentage:
+          type: number
+          description: Nutzung in Prozent
+
+    DiscoveryResult:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Erfolgs-Nachricht
+        duration:
+          type: string
+          description: Analyse-Dauer
+        tablesDiscovered:
+          type: integer
+          description: Anzahl entdeckter Tabellen
+        summary:
+          $ref: '#/components/schemas/DiscoverySummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+
+    DiscoverySummary:
+      type: object
+      properties:
+        categories:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Anzahl Tabellen pro Kategorie
+        totalSizeMB:
+          type: number
+          description: Gesamtgröße aller Tabellen
+
+tags:
+  - name: Backup Management
+    description: Backup-System-Verwaltung und -Konfiguration
+  - name: Backup Jobs
+    description: Backup-Job-Erstellung und -Monitoring
+  - name: Database Analysis
+    description: Intelligente Datenbank-Analyse und Auto-Discovery

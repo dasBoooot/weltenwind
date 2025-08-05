@@ -147,22 +147,61 @@ DEBUG_SQL=false
 DEBUG_AUTH=false
 ENABLE_SWAGGER=true
 
-# ===========================================
-# 📝 ENVIRONMENT NOTES
-# ===========================================
-# 
-# SSL-Setup (Development):
-# - BASE_URL: Intern für Backend-Logs (http://localhost:3000)
-# - PUBLIC_*: Extern über nginx Reverse Proxy (https://...)
-# 
-# Production-Setup:
-# - Alle PUBLIC_* URLs auf echte Domain ändern
-# - SSL-Zertifikate von Let's Encrypt verwenden
-# - NODE_ENV=production setzen
-# - DEBUG_* auf false setzen
-# 
-# VM-Setup (aktuell):
-# - nginx läuft auf Port 80/443
-# - Backend läuft auf Port 3000 (intern)
-# - Alle externen Zugriffe über nginx Proxy
+# =====================================================
+# 🗄️ BACKUP-SYSTEM KONFIGURATION
+# =====================================================
+
+# Backup-System aktivieren/deaktivieren
+BACKUP_ENABLED=true
+
+# Backup-Verzeichnis (absoluter Pfad auf dem Server)
+BACKUP_DIR="/srv/weltenwind/backups"
+
+# Backup-Retention (Aufbewahrungszeiten)
+BACKUP_RETENTION_DAILY_DAYS=7          # Tägliche Backups aufbewahren (Tage)
+BACKUP_RETENTION_WEEKLY_WEEKS=4        # Wöchentliche Backups aufbewahren (Wochen)
+BACKUP_RETENTION_MONTHLY_MONTHS=12     # Monatliche Backups aufbewahren (Monate)
+
+# Backup-Timing (Cron-Expressions)
+BACKUP_SCHEDULE_DAILY="0 2 * * *"      # Täglich um 2:00 Uhr
+BACKUP_SCHEDULE_WEEKLY="0 1 * * 0"     # Sonntags um 1:00 Uhr
+BACKUP_SCHEDULE_MONTHLY="0 0 1 * *"    # Ersten des Monats um 0:00 Uhr
+
+# Backup-Komprimierung
+BACKUP_COMPRESSION_ENABLED=true        # gzip-Komprimierung aktivieren
+BACKUP_COMPRESSION_LEVEL=6             # Komprimierungsgrad (1-9, 6=Standard)
+
+# Backup-Parallel-Jobs (für große Datenbanken)
+BACKUP_PARALLEL_JOBS=2                 # Anzahl paralleler pg_dump Jobs
+
+# Adaptive Backup-Features
+BACKUP_AUTO_DISCOVERY=true             # Automatische Table-Erkennung
+BACKUP_SMART_SCHEDULING=true           # Intelligente Schedule-Anpassung
+BACKUP_SIZE_OPTIMIZATION=true          # Größenbasierte Optimierung
+
+# Backup-Monitoring
+BACKUP_HEALTH_CHECK_ENABLED=true       # Backup-Health-Checks aktivieren
+BACKUP_NOTIFICATION_ENABLED=false      # E-Mail-Benachrichtigungen (TODO: Mail-Setup erforderlich)
+BACKUP_NOTIFICATION_EMAIL=""           # E-Mail für Backup-Alerts
+
+# Backup-Recovery Testing
+BACKUP_AUTO_VERIFICATION=true          # Automatische Backup-Verifikation
+BACKUP_RECOVERY_TEST_ENABLED=false     # Recovery-Tests (vorsichtig verwenden!)
+
+# Offsite-Backup (für Production)
+BACKUP_OFFSITE_ENABLED=false           # Remote-Backup aktivieren
+BACKUP_S3_BUCKET=""                    # S3-Bucket für Offsite-Backup
+BACKUP_S3_REGION="eu-central-1"        # AWS Region
+BACKUP_S3_ACCESS_KEY=""                # AWS Access Key
+BACKUP_S3_SECRET_KEY=""                # AWS Secret Key
+
+# Backup-Performance Limits
+BACKUP_MAX_FILE_SIZE_MB=1000           # Max. Backup-Dateigröße (MB)
+BACKUP_IO_NICE_LEVEL=3                 # IO-Priorität (0-7, 3=niedrig)
+BACKUP_CPU_NICE_LEVEL=10               # CPU-Priorität (0-20, 10=niedrig)
+
+# Debug & Logging
+BACKUP_DEBUG_MODE=false                # Ausführliches Backup-Logging
+BACKUP_LOG_RETENTION_DAYS=30           # Backup-Logs aufbewahren (Tage)
+
 #

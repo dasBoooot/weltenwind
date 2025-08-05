@@ -30,6 +30,14 @@
 - **[Development-Troubleshooting](operations/development-troubleshooting.md)** - Häufige Entwicklungsprobleme & Lösungen
 - **[Production-Updates](operations/production-updates.md)** - Production-Deployment & Update-Strategien
 
+### **📊 Monitoring & Backup** (`/monitoring/`)
+**System-Überwachung & Datenbank-Management**
+
+- **[Metrics API](../openapi/specs/metrics.yaml)** - Performance-Monitoring & System-Metriken
+- **[Backup API](../openapi/specs/backup.yaml)** - Intelligentes Backup-Management
+- **[Query Performance API](../openapi/specs/query-performance.yaml)** - Database-Performance-Monitoring
+- **[Web Tools](#admin-web-tools)** - Browser-basierte Admin-Dashboards
+
 ---
 
 ## 🎯 **Quick Navigation**
@@ -47,6 +55,8 @@
 - 🚀 **Deployment**: [Production-Updates](operations/production-updates.md)
 - 🔐 **Security-Configuration**: [Security-Headers](security/security-headers.md)
 - 📈 **Monitoring**: [Logging-Implementation](infrastructure/logging-implementation.md)
+- 📊 **Performance Monitoring**: [Metrics API](../openapi/specs/metrics.yaml)
+- 🗄️ **Backup Management**: [Backup API](../openapi/specs/backup.yaml)
 
 ### **Für Security-Audits**:
 - 🔒 **JWT-Implementation**: [JWT-Security](security/jwt-security.md)

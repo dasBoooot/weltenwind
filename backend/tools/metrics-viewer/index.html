@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weltenwind Metrics Viewer</title>
+    <link rel="stylesheet" href="metrics-viewer.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginContainer" class="login-container">
+        <h1>📊 Weltenwind Metrics Viewer</h1>
+        <p>Admin-Login erforderlich</p>
+        <div id="loginError" class="error hidden"></div>
+        <form id="loginForm">
+            <div>
+                <input type="text" id="username" placeholder="Username oder E-Mail" required>
+            </div>
+            <div>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <div>
+                <button type="submit" id="loginButton">🔓 Anmelden</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Metrics Viewer (hidden initially) -->
+    <div id="metricsViewer" class="hidden">
+        <header class="header">
+            <h1>📊 Weltenwind Metrics Viewer</h1>
+            <div class="header-controls">
+                <span id="userInfo"></span>
+                <button id="refreshButton" onclick="refreshAllMetrics()">🔄 Refresh</button>
+                <button onclick="logout()">🚪 Abmelden</button>
+            </div>
+        </header>
+
+        <!-- System Status Overview -->
+        <section class="status-overview">
+            <h2>⚡ System Status</h2>
+            <div class="status-grid">
+                <div class="status-card" id="systemStatus">
+                    <div class="status-indicator" id="systemIndicator"></div>
+                    <div class="status-info">
+                        <div class="status-title">System</div>
+                        <div class="status-value" id="systemStatusText">-</div>
+                    </div>
+                </div>
+                <div class="status-card" id="databaseStatus">
+                    <div class="status-indicator" id="dbIndicator"></div>
+                    <div class="status-info">
+                        <div class="status-title">Database</div>
+                        <div class="status-value" id="dbStatusText">-</div>
+                    </div>
+                </div>
+                <div class="status-card" id="sessionStatus">
+                    <div class="status-indicator" id="sessionIndicator"></div>
+                    <div class="status-info">
+                        <div class="status-title">Sessions</div>
+                        <div class="status-value" id="sessionStatusText">-</div>
+                    </div>
+                </div>
+                <div class="status-card" id="queryStatus">
+                    <div class="status-indicator" id="queryIndicator"></div>
+                    <div class="status-info">
+                        <div class="status-title">Query Performance</div>
+                        <div class="status-value" id="queryStatusText">-</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metrics Dashboard Tabs -->
+        <section class="metrics-tabs">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab('overview')">📈 Overview</button>
+                <button class="tab-button" onclick="switchTab('api')">🌐 API</button>
+                <button class="tab-button" onclick="switchTab('users')">👥 Users</button>
+                <button class="tab-button" onclick="switchTab('system')">💻 System</button>
+                <button class="tab-button" onclick="switchTab('queries')">🔍 Queries</button>
+            </div>
+
+            <!-- Overview Tab -->
+            <div id="overviewTab" class="tab-content active">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>📊 API Requests</h3>
+                        <div class="metric-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="totalRequests">-</div>
+                                <div class="stat-label">Total Requests</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="avgResponseTime">-</div>
+                                <div class="stat-label">Avg Response (ms)</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="errorRate">-</div>
+                                <div class="stat-label">Error Rate (%)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <h3>👥 User Activity</h3>
+                        <div class="metric-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="totalUsers">-</div>
+                                <div class="stat-label">Total Users</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="activeUsers">-</div>
+                                <div class="stat-label">Active Users</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="recentLogins">-</div>
+                                <div class="stat-label">Recent Logins</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <h3>💻 System Resources</h3>
+                        <div class="metric-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="memoryUsage">-</div>
+                                <div class="stat-label">Memory Usage</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="uptime">-</div>
+                                <div class="stat-label">Uptime</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="dbResponseTime">-</div>
+                                <div class="stat-label">DB Response (ms)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <h3>🎮 Game Metrics</h3>
+                        <div class="metric-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="totalWorlds">-</div>
+                                <div class="stat-label">Total Worlds</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="activeWorlds">-</div>
+                                <div class="stat-label">Active Worlds</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="totalPlayers">-</div>
+                                <div class="stat-label">Total Players</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-section">
+                    <div class="chart-container">
+                        <h3>📈 API Requests Over Time</h3>
+                        <canvas id="requestsChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>⚡ Response Times</h3>
+                        <canvas id="responseTimesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Tab -->
+            <div id="apiTab" class="tab-content">
+                <div class="section">
+                    <h3>🌐 API Performance Metrics</h3>
+                    <div id="apiMetricsTable" class="data-table">
+                        <div class="loading">📊 Loading API metrics...</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>🔥 Top Endpoints</h3>
+                    <div class="chart-container">
+                        <canvas id="endpointsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="usersTab" class="tab-content">
+                <div class="section">
+                    <h3>👥 User Activity Metrics</h3>
+                    <div id="userMetricsTable" class="data-table">
+                        <div class="loading">👥 Loading user metrics...</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>📊 User Growth</h3>
+                    <div class="chart-container">
+                        <canvas id="userGrowthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Tab -->
+            <div id="systemTab" class="tab-content">
+                <div class="section">
+                    <h3>💻 System Performance</h3>
+                    <div id="systemMetricsTable" class="data-table">
+                        <div class="loading">💻 Loading system metrics...</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>📊 Resource Usage</h3>
+                    <div class="charts-row">
+                        <div class="chart-container">
+                            <h4>Memory Usage</h4>
+                            <canvas id="memoryChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h4>Database Health</h4>
+                            <canvas id="dbHealthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Queries Tab -->
+            <div id="queriesTab" class="tab-content">
+                <div class="section">
+                    <h3>🔍 Query Performance Analysis</h3>
+                    <div id="queryMetricsTable" class="data-table">
+                        <div class="loading">🔍 Loading query performance...</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>🐌 Slow Queries</h3>
+                    <div id="slowQueriesTable" class="data-table">
+                        <div class="loading">🐌 Loading slow queries...</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>💡 Index Recommendations</h3>
+                    <div id="indexRecommendations" class="recommendations">
+                        <div class="loading">💡 Loading recommendations...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-info">
+                <span>Last Updated: <span id="lastUpdated">-</span></span>
+                <span>Auto-refresh: <input type="checkbox" id="autoRefresh" checked> <label for="autoRefresh">30s</label></span>
+            </div>
+        </footer>
+
+        <!-- Error Modal -->
+        <div id="errorModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('errorModal')">&times;</span>
+                <h3>❌ Error</h3>
+                <p id="errorMessage"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="metrics-viewer.js"></script>
+</body>
+</html>

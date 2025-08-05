@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weltenwind Backup Manager</title>
+    <link rel="stylesheet" href="backup-manager.css">
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginContainer" class="login-container">
+        <h1>🗄️ Weltenwind Backup Manager</h1>
+        <p>Admin-Login erforderlich</p>
+        <div id="loginError" class="error hidden"></div>
+        <form id="loginForm">
+            <div>
+                <input type="text" id="username" placeholder="Username oder E-Mail" required>
+            </div>
+            <div>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <div>
+                <button type="submit" id="loginButton">🔓 Anmelden</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Backup Manager (hidden initially) -->
+    <div id="backupManager" class="hidden">
+        <header class="header">
+            <h1>🗄️ Weltenwind Backup Manager</h1>
+            <div class="header-controls">
+                <span id="userInfo"></span>
+                <button id="refreshButton" onclick="refreshData()">🔄 Refresh</button>
+                <button onclick="logout()">🚪 Abmelden</button>
+            </div>
+        </header>
+
+        <!-- System Status Overview -->
+        <section class="status-overview">
+            <h2>📊 Backup System Status</h2>
+            <div class="status-grid">
+                <div class="status-card" id="backupSystemStatus">
+                    <div class="status-indicator" id="systemIndicator"></div>
+                    <div class="status-info">
+                        <div class="status-title">Backup System</div>
+                        <div class="status-value" id="systemStatusText">-</div>
+                    </div>
+                </div>
+                <div class="status-card" id="lastBackupStatus">
+                    <div class="status-indicator" id="lastBackupIndicator"></div>
+                    <div class="status-info">
+                        <div class="status-title">Last Backup</div>
+                        <div class="status-value" id="lastBackupText">-</div>
+                    </div>
+                </div>
+                <div class="status-card" id="diskUsageStatus">
+                    <div class="status-indicator" id="diskIndicator"></div>
+                    <div class="status-info">
+                        <div class="status-title">Disk Usage</div>
+                        <div class="status-value" id="diskUsageText">-</div>
+                    </div>
+                </div>
+                <div class="status-card" id="activeJobsStatus">
+                    <div class="status-indicator" id="jobsIndicator"></div>
+                    <div class="status-info">
+                        <div class="status-title">Active Jobs</div>
+                        <div class="status-value" id="activeJobsText">-</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+            <h2>⚡ Quick Actions</h2>
+            <div class="action-buttons">
+                <button class="action-btn primary" onclick="createManualBackup()">
+                    💾 Create Manual Backup
+                </button>
+                <button class="action-btn secondary" onclick="rediscoverDatabase()">
+                    🔍 Rediscover Database
+                </button>
+                <button class="action-btn info" onclick="downloadBackup()">
+                    📥 Download Backup
+                </button>
+                <button class="action-btn warning" onclick="showRecoveryModal()">
+                    🔄 Recovery Mode
+                </button>
+            </div>
+        </section>
+
+        <!-- Backup Tabs -->
+        <section class="backup-tabs">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab('overview')">📈 Overview</button>
+                <button class="tab-button" onclick="switchTab('jobs')">👷 Jobs</button>
+                <button class="tab-button" onclick="switchTab('tables')">📋 Tables</button>
+                <button class="tab-button" onclick="switchTab('schedule')">⏰ Schedule</button>
+                <button class="tab-button" onclick="switchTab('recovery')">🔄 Recovery</button>
+            </div>
+
+            <!-- Overview Tab -->
+            <div id="overviewTab" class="tab-content active">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>📊 Backup Statistics</h3>
+                        <div class="metric-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="totalBackups">-</div>
+                                <div class="stat-label">Total Backups</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="totalSize">-</div>
+                                <div class="stat-label">Total Size</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="successRate">-</div>
+                                <div class="stat-label">Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <h3>🎯 System Health</h3>
+                        <div id="healthChecks" class="health-checks">
+                            <div class="loading">Loading health checks...</div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <h3>💾 Disk Usage</h3>
+                        <div class="disk-usage-visual">
+                            <div class="disk-bar">
+                                <div class="disk-used" id="diskUsedBar" style="width: 0%"></div>
+                            </div>
+                            <div class="disk-info">
+                                <span id="diskUsedText">-</span> / <span id="diskTotalText">-</span>
+                                (<span id="diskPercentText">-%</span>)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <h3>⚙️ Configuration</h3>
+                        <div class="config-info">
+                            <div class="config-item">
+                                <span class="config-label">Auto Discovery:</span>
+                                <span class="config-value" id="autoDiscovery">-</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Compression:</span>
+                                <span class="config-value" id="compressionEnabled">-</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Verification:</span>
+                                <span class="config-value" id="autoVerification">-</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Offsite Backup:</span>
+                                <span class="config-value" id="offsiteEnabled">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs Tab -->
+            <div id="jobsTab" class="tab-content">
+                <div class="section">
+                    <h3>👷 Active & Recent Backup Jobs</h3>
+                    <div id="jobsList" class="jobs-list">
+                        <div class="loading">Loading backup jobs...</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>📊 Job Statistics</h3>
+                    <div id="jobStats" class="job-stats">
+                        <div class="loading">Loading job statistics...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tables Tab -->
+            <div id="tablesTab" class="tab-content">
+                <div class="section">
+                    <h3>📋 Database Tables Analysis</h3>
+                    <div class="table-filters">
+                        <button class="filter-btn active" onclick="filterTables('all')">All</button>
+                        <button class="filter-btn" onclick="filterTables('critical')">Critical</button>
+                        <button class="filter-btn" onclick="filterTables('important')">Important</button>
+                        <button class="filter-btn" onclick="filterTables('optional')">Optional</button>
+                        <button class="filter-btn" onclick="filterTables('logs')">Logs</button>
+                    </div>
+                    <div id="tablesGrid" class="tables-grid">
+                        <div class="loading">Loading database tables...</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>📊 Table Summary</h3>
+                    <div id="tablesSummary" class="tables-summary">
+                        <div class="loading">Loading table summary...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Tab -->
+            <div id="scheduleTab" class="tab-content">
+                <div class="section">
+                    <h3>⏰ Backup Schedule</h3>
+                    <div class="schedule-info">
+                        <div class="schedule-card">
+                            <h4>📅 Daily Backup</h4>
+                            <div class="schedule-details">
+                                <div class="schedule-time">Every day at 2:00 AM</div>
+                                <div class="schedule-retention">Retention: 7 days</div>
+                                <div class="schedule-status">Status: <span id="dailyStatus">-</span></div>
+                            </div>
+                        </div>
+                        <div class="schedule-card">
+                            <h4>📅 Weekly Backup</h4>
+                            <div class="schedule-details">
+                                <div class="schedule-time">Every Sunday at 1:00 AM</div>
+                                <div class="schedule-retention">Retention: 4 weeks</div>
+                                <div class="schedule-status">Status: <span id="weeklyStatus">-</span></div>
+                            </div>
+                        </div>
+                        <div class="schedule-card">
+                            <h4>📅 Monthly Backup</h4>
+                            <div class="schedule-details">
+                                <div class="schedule-time">1st day of month at 12:00 AM</div>
+                                <div class="schedule-retention">Retention: 12 months</div>
+                                <div class="schedule-status">Status: <span id="monthlyStatus">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>🔧 Schedule Management</h3>
+                    <div class="schedule-actions">
+                        <button class="action-btn info" onclick="testSchedule()">
+                            🧪 Test Schedule
+                        </button>
+                        <button class="action-btn secondary" onclick="showCronSetup()">
+                            ⚙️ Setup Cron Jobs
+                        </button>
+                        <button class="action-btn warning" onclick="checkNextRun()">
+                            ⏰ Check Next Run Times
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recovery Tab -->
+            <div id="recoveryTab" class="tab-content">
+                <div class="section">
+                    <h3>🔄 Recovery Management</h3>
+                    <div class="recovery-warning">
+                        <h4>⚠️ Important Recovery Information</h4>
+                        <p>Recovery operations can completely replace your database. Always ensure you have recent backups before proceeding.</p>
+                        <ul>
+                            <li><strong>Test Recovery:</strong> Safe mode that tests backup integrity without affecting production</li>
+                            <li><strong>Full Recovery:</strong> Completely replaces production database (DANGEROUS)</li>
+                            <li><strong>Partial Recovery:</strong> Restore specific tables only</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>💾 Available Backups</h3>
+                    <div id="availableBackups" class="available-backups">
+                        <div class="loading">Loading available backups...</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>🧪 Recovery Actions</h3>
+                    <div class="recovery-actions">
+                        <button class="action-btn info" onclick="testRecovery()">
+                            🧪 Test Recovery (Safe)
+                        </button>
+                        <button class="action-btn warning" onclick="showFullRecoveryModal()">
+                            🔄 Full Recovery (DANGER)
+                        </button>
+                        <button class="action-btn secondary" onclick="downloadRecoveryScript()">
+                            📋 Download Recovery Script
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-info">
+                <span>Last Updated: <span id="lastUpdated">-</span></span>
+                <span>Auto-refresh: <input type="checkbox" id="autoRefresh" checked> <label for="autoRefresh">30s</label></span>
+            </div>
+        </footer>
+
+        <!-- Modals -->
+        
+        <!-- Manual Backup Modal -->
+        <div id="manualBackupModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('manualBackupModal')">&times;</span>
+                <h3>💾 Create Manual Backup</h3>
+                <form id="manualBackupForm">
+                    <div class="form-group">
+                        <label for="backupType">Backup Type:</label>
+                        <select id="backupType">
+                            <option value="manual">Manual</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="selectedTables">Tables (optional):</label>
+                        <textarea id="selectedTables" placeholder="Leave empty for all tables, or specify: users,worlds,sessions"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" onclick="closeModal('manualBackupModal')">Cancel</button>
+                        <button type="submit" class="primary">Create Backup</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recovery Modal -->
+        <div id="recoveryModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('recoveryModal')">&times;</span>
+                <h3>🔄 Recovery Mode</h3>
+                <div class="recovery-options">
+                    <div class="recovery-option" onclick="selectRecoveryType('test')">
+                        <h4>🧪 Test Recovery</h4>
+                        <p>Safely test backup integrity without affecting production database</p>
+                    </div>
+                    <div class="recovery-option dangerous" onclick="selectRecoveryType('full')">
+                        <h4>🔄 Full Recovery</h4>
+                        <p><strong>DANGER:</strong> Completely replaces production database</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cron Setup Modal -->
+        <div id="cronSetupModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('cronSetupModal')">&times;</span>
+                <h3>⚙️ Cron Jobs Setup</h3>
+                <div class="cron-instructions">
+                    <h4>🔧 Automated Backup Setup</h4>
+                    <p>To enable automated backups, run the following command on your server:</p>
+                    <div class="code-block">
+                        <code>sudo bash /srv/weltenwind/backend/scripts/backup/setup-cron-jobs.sh install</code>
+                    </div>
+                    <h4>📋 Manual Commands:</h4>
+                    <ul>
+                        <li><code>sudo bash setup-cron-jobs.sh status</code> - Check status</li>
+                        <li><code>sudo bash setup-cron-jobs.sh uninstall</code> - Remove cron jobs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Modal -->
+        <div id="progressModal" class="modal hidden">
+            <div class="modal-content">
+                <h3 id="progressTitle">⏳ Processing...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="progressText">Please wait...</div>
+                <div id="progressLog" class="progress-log"></div>
+            </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div id="errorModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('errorModal')">&times;</span>
+                <h3>❌ Error</h3>
+                <p id="errorMessage"></p>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="successModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('successModal')">&times;</span>
+                <h3>✅ Success</h3>
+                <p id="successMessage"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="backup-manager.js"></script>
+</body>
+</html>

@@ -125,6 +125,9 @@ flutter run -d chrome --web-port 8080
 | 🎨 **Dynamic Themes** | ✅ Ready | World-specific visual themes and branding |
 | 📱 **Cross-Platform** | ✅ Ready | Web, iOS, Android from single codebase |
 | 🌐 **Internationalization** | ✅ Ready | German & English support, easily extensible |
+| 📊 **Monitoring & Metrics** | ✅ Ready | Real-time performance monitoring with web dashboard |
+| 🗄️ **Intelligent Backup** | ✅ Ready | Auto-discovery backup system with recovery tools |
+| 🔍 **Query Performance** | ✅ Ready | Database optimization with slow-query detection |
 | 🔄 **Real-time Gaming** | 📋 Planned | WebSocket integration for live multiplayer |
 | 🎮 **Advanced Gaming** | 📋 Planned | Rich game mechanics and interactions |
 
@@ -148,6 +151,12 @@ flutter run -d chrome --web-port 8080
 - 🚀 **[Deployment Guide](docs/guides/deployment-guide.md)** - Production setup
 - 🔐 **[Security Guide](docs/backend/authentication.md)** - Security best practices
 - 💾 **[Database Schema](docs/database/schema.md)** - DB structure & migrations
+
+### **🔧 Admin Web Tools**
+- 📊 **[Metrics Viewer](https://your-domain/metrics-viewer)** - Real-time performance monitoring
+- 🗄️ **[Backup Manager](https://your-domain/backup-manager)** - Intelligent backup management
+- 🎨 **[Theme Editor](https://your-domain/theme-editor)** - Visual theme customization
+- 🔍 **[Log Viewer](https://your-domain/log-viewer)** - System log monitoring
 
 ---
 

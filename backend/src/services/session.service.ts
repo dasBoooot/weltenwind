@@ -2,6 +2,7 @@ import { Session } from '@prisma/client';
 import { createHash } from 'crypto';
 import prisma from '../libs/prisma';
 import { loggers } from '../config/logger.config';
+import { trackSessionQuery } from './query-performance.service';
 
 // 🔍 Session-Security-Konfiguration
 const MAX_CONCURRENT_SESSIONS = parseInt(process.env.MAX_CONCURRENT_SESSIONS || '3', 10);
@@ -43,29 +44,33 @@ export async function createSession(
   const now = new Date();
   const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 Tage
 
-  return prisma.session.create({
-    data: {
-      userId,
-      token: refreshToken, // Refresh-Token als Session-Token speichern
-      expiresAt,
-      ipHash: hashIp(ip),
-      deviceFingerprint: fingerprint,
-      timezone: timezone || 'UTC'
-    }
-  });
+  return trackSessionQuery('create', () => 
+    prisma.session.create({
+      data: {
+        userId,
+        token: refreshToken, // Refresh-Token als Session-Token speichern
+        expiresAt,
+        ipHash: hashIp(ip),
+        deviceFingerprint: fingerprint,
+        timezone: timezone || 'UTC'
+      }
+    }), { userId, hasFingerprint: !!fingerprint }
+  );
 }
 
 export async function getValidSession(userId: number, refreshToken: string, fingerprint?: string): Promise<Session | null> {
   // Erst versuchen ohne Device-Fingerprint (für Swagger UI, etc.)
-  const session = await prisma.session.findFirst({
-    where: {
-      userId,
-      token: refreshToken,
-      expiresAt: {
-        gt: new Date()
+  const session = await trackSessionQuery('findFirst_validate', () =>
+    prisma.session.findFirst({
+      where: {
+        userId,
+        token: refreshToken,
+        expiresAt: {
+          gt: new Date()
+        }
       }
-    }
-  });
+    }), { userId, hasFingerprint: !!fingerprint }
+  );
   
   if (session) {
     return session;
@@ -73,16 +78,18 @@ export async function getValidSession(userId: number, refreshToken: string, fing
   
   // Fallback: Mit Device-Fingerprint (für spezifische Clients)
   if (fingerprint && fingerprint !== 'unknown') {
-    return prisma.session.findFirst({
-      where: {
-        userId,
-        token: refreshToken,
-        deviceFingerprint: fingerprint,
-        expiresAt: {
-          gt: new Date()
+    return trackSessionQuery('findFirst_with_fingerprint', () =>
+      prisma.session.findFirst({
+        where: {
+          userId,
+          token: refreshToken,
+          deviceFingerprint: fingerprint,
+          expiresAt: {
+            gt: new Date()
+          }
         }
-      }
-    });
+      }), { userId, fingerprint }
+    );
   }
   
   return null;

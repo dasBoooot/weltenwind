@@ -12,6 +12,7 @@ nohup.out
 /client/pubspec.lock
 
 /logs/
+/backup/
 
 # SSL Certificates (managed on server)
 *.crt

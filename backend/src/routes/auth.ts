@@ -19,6 +19,7 @@ import { csrfProtection, getCsrfToken } from '../middleware/csrf-protection';
 import { rotateSession, CriticalAction } from '../services/session-rotation.service';
 import { loggers } from '../config/logger.config';
 import { mailService } from '../services/mail.service';
+import { WeltenwingMetrics } from '../middleware/metrics.middleware';
 
 const router = express.Router();
 

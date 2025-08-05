@@ -10,6 +10,9 @@ const arbFile = path.join(__dirname, 'specs', 'arb.yaml');
 const themesFile = path.join(__dirname, 'specs', 'themes.yaml');
 const logsFile = path.join(__dirname, 'specs', 'logs.yaml');
 const healthFile = path.join(__dirname, 'specs', 'health.yaml');
+const metricsFile = path.join(__dirname, 'specs', 'metrics.yaml');
+const backupFile = path.join(__dirname, 'specs', 'backup.yaml');
+const queryPerformanceFile = path.join(__dirname, 'specs', 'query-performance.yaml');
 const combinedPath = path.join(__dirname, 'generated', 'api-combined.yaml');
 
 // Hilfsfunktion zum Deep-Merge von Objekten
@@ -38,6 +41,9 @@ const arb = yaml.load(fs.readFileSync(arbFile, 'utf8'));
 const themes = yaml.load(fs.readFileSync(themesFile, 'utf8'));
 const logs = yaml.load(fs.readFileSync(logsFile, 'utf8'));
 const health = yaml.load(fs.readFileSync(healthFile, 'utf8'));
+const metrics = yaml.load(fs.readFileSync(metricsFile, 'utf8'));
+const backup = yaml.load(fs.readFileSync(backupFile, 'utf8'));
+const queryPerformance = yaml.load(fs.readFileSync(queryPerformanceFile, 'utf8'));
 
 // Kombinieren
 const combined = {
@@ -56,6 +62,9 @@ Object.assign(combined.paths, arb.paths || {});
 Object.assign(combined.paths, themes.paths || {});
 Object.assign(combined.paths, logs.paths || {});
 Object.assign(combined.paths, health.paths || {});
+Object.assign(combined.paths, metrics.paths || {});
+Object.assign(combined.paths, backup.paths || {});
+Object.assign(combined.paths, queryPerformance.paths || {});
 
 // components zusammenführen (z.B. securitySchemes, schemas)
 if (base.components) deepMerge(combined.components, base.components);
@@ -66,8 +75,11 @@ if (arb.components) deepMerge(combined.components, arb.components);
 if (themes.components) deepMerge(combined.components, themes.components);
 if (logs.components) deepMerge(combined.components, logs.components);
 if (health.components) deepMerge(combined.components, health.components);
+if (metrics.components) deepMerge(combined.components, metrics.components);
+if (backup.components) deepMerge(combined.components, backup.components);
+if (queryPerformance.components) deepMerge(combined.components, queryPerformance.components);
 
 // In YAML schreiben
 fs.writeFileSync(combinedPath, yaml.dump(combined, { lineWidth: 120 }));
 console.log('✅ api-combined.yaml erfolgreich generiert.');
-console.log('📦 Einbezogene API-Module: auth.yaml, worlds.yaml, invite.yaml, arb.yaml, themes.yaml, logs.yaml, health.yaml');
+console.log('📦 Einbezogene API-Module: auth.yaml, worlds.yaml, invite.yaml, arb.yaml, themes.yaml, logs.yaml, health.yaml, metrics.yaml, backup.yaml, query-performance.yaml');

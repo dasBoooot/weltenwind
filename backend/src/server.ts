@@ -38,11 +38,15 @@ import logRoutes from './routes/logs';
 import arbRoutes from './routes/arb';
 import themeRoutes from './routes/themes';
 import healthRoutes from './routes/health';
+import metricsRoutes from './routes/metrics';
+import queryPerformanceRoutes from './routes/query-performance';
+import backupRoutes from './routes/backup';
 import { cleanupExpiredSessions } from './services/session.service';
 import { cleanupExpiredLockouts } from './services/brute-force-protection.service';
 import prisma from './libs/prisma';
 import swaggerUi from 'swagger-ui-express';
 import { configureTrustProxy } from './middleware/rateLimiter';
+import { metricsMiddleware, startSystemMetricsCollection, errorTrackingMiddleware } from './middleware/metrics.middleware';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -138,6 +142,9 @@ app.use(cors(corsOptions));
 // Middleware
 app.use(express.json());
 
+// 📊 Metriken-Collection Middleware (vor Routen)
+app.use('/api', metricsMiddleware);
+
 // Request-Logging Middleware (nach JSON-Parsing)
 app.use(requestLoggingMiddleware);
 
@@ -149,6 +156,9 @@ app.use('/api/invites', inviteRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/arb', arbRoutes);
 app.use('/api/themes', themeRoutes);
+app.use('/api/metrics', metricsRoutes);  // 📊 Metriken-Dashboard
+app.use('/api/query-performance', queryPerformanceRoutes);  // 🔍 Query-Performance-Monitoring
+app.use('/api/backup', backupRoutes);  // 🗄️ Backup-Management
 
 // === API-Doku (OpenAPI) ===
 // === API-combined.yaml direkt bereitstellen ===
@@ -257,6 +267,76 @@ app.use('/log-viewer', (req, res, next) => {
 });
 
 app.use('/log-viewer', express.static(logViewerPath));
+
+// === Metrics-Viewer unter /metrics-viewer ===
+const metricsViewerPath = path.resolve(__dirname, '../tools/metrics-viewer');
+console.log(`📊 Metrics-Viewer-Pfad: ${metricsViewerPath}`);
+
+// Security & Cache-Control für Metrics Viewer
+app.use('/metrics-viewer', (req, res, next) => {
+  // Security Headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // Content Security Policy für Metrics Viewer
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net", // Chart.js CDN
+    "style-src 'self' 'unsafe-inline'",
+    "connect-src 'self'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'"
+  ].join('; '));
+  
+  // Cache-Control für aktuelle Metrics-Daten
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
+  next();
+});
+
+app.use('/metrics-viewer', express.static(metricsViewerPath));
+
+// === Backup-Manager unter /backup-manager ===
+const backupManagerPath = path.resolve(__dirname, '../tools/backup-manager');
+console.log(`🗄️ Backup-Manager-Pfad: ${backupManagerPath}`);
+
+// Security & Cache-Control für Backup Manager
+app.use('/backup-manager', (req, res, next) => {
+  // Security Headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // Content Security Policy für Backup Manager
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline'",
+    "connect-src 'self'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'"
+  ].join('; '));
+  
+  // Cache-Control für kritische Backup-Daten
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
+  next();
+});
+
+app.use('/backup-manager', express.static(backupManagerPath));
 
 // === Flutter-Web-App unter /game ===
 // 1. Statische Dateien zuerst (für Assets)
@@ -400,6 +480,12 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
+// 📊 Starte System-Metriken-Collection
+startSystemMetricsCollection();
+
+// 🚨 Error-Tracking Middleware (nach Routen)
+app.use(errorTrackingMiddleware);
+
 // === Server starten ===
 app.listen(PORT, () => {
   console.log(`🚀 Weltenwind-API läuft auf Port ${PORT} (intern: ${BASE_URL})`);
@@ -409,7 +495,9 @@ app.listen(PORT, () => {
   console.log(`📘 Swagger Editor verfügbar unter: ${PUBLIC_CLIENT_URL}/docs`);
   console.log(`📄 API-Doku YAML erreichbar unter: ${PUBLIC_CLIENT_URL}/api-combined.yaml`);
   console.log(`🔍 Log-Viewer verfügbar unter: ${PUBLIC_ASSETS_URL}/log-viewer/`);
+  console.log(`📊 Metrics-Dashboard verfügbar unter: ${BASE_URL}/api/metrics`);
   console.log(`🧹 Session-Cleanup alle 5 Minuten aktiv`);
+  console.log(`📈 Metriken-Collection aktiv (30s Intervall)`);
 
   // Startup-Log
   loggers.system.info('Weltenwind Backend started successfully', {
@@ -419,7 +507,9 @@ app.listen(PORT, () => {
     features: {
       sessionCleanup: '5min',
       multiDeviceLogin: process.env.ALLOW_MULTI_DEVICE_LOGIN === 'true',
-      maxSessionsPerUser: parseInt(process.env.MAX_SESSIONS_PER_USER || '1', 10)
+      maxSessionsPerUser: parseInt(process.env.MAX_SESSIONS_PER_USER || '1', 10),
+      metricsCollection: 'enabled',
+      systemMonitoring: '30s'
     },
     endpoints: {
       api: PUBLIC_API_URL,
