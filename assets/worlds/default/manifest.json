@@ -1,0 +1,67 @@
+{
+  "id": "default",
+  "name": "Weltenwind Default",
+  "version": "1.3.0",
+  "description": "Ein magisch-dezent abgestimmtes Theme für Weltenwind – ideal für Pre-Game-Erlebnisse in geheimnisvoller Atmosphäre",
+  "category": "neutral",
+  "author": "Weltenwind Team",
+  "createdAt": "2025-08-02T11:00:00.000Z",
+  "entrypoints": {
+    "themes": {
+      "pre-game": {
+        "file": "themes/pre-game/theme.json"
+      },
+      "game": {
+        "file": "themes/game/theme.ts",
+        "export": "defaultGameTheme"
+      },
+      "loading": {
+        "file": "themes/loading/theme.ts",
+        "export": "defaultLoadingTheme"
+      }
+    },
+    "themeCss": "theme.css",
+    "preThemeCss": "pre/pre_theme.css"
+  },
+  "assets": {
+    "icons": "icons/",
+    "maps": "maps/",
+    "materials": "materials/",
+    "sounds": {
+      "ambient": "sounds/ambient/",
+      "events": "sounds/events/"
+    },
+    "ui": {
+      "headers": "ui/headers/",
+      "buttons": "ui/buttons/",
+      "tooltips": "ui/tooltips/"
+    }
+  },
+  "config": {
+    "settings": "config/world-settings.json",
+    "components": "config/components.json",
+    "assets": "config/assets.json"
+  },
+  "pre": {
+    "splash": "pre/splash.png",
+    "intro": "pre/intro-video.mp4",
+    "locale": "de",
+    "themeMode": "auto"
+  },
+  "bundle": {
+    "name": "pre-game-minimal",
+    "type": "minimal_bundle",
+    "context": "pre-game",
+    "compatibility": [
+      "login",
+      "setup",
+      "loading",
+      "fallback"
+    ],
+    "modules": ["colors", "typography", "spacing", "radius", "effects.visual"],
+    "estimatedSize": "12KB",
+    "loadTime": "fast",
+    "priority": 1,
+    "autoLoad": true
+  }
+}

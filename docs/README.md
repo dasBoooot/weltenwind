@@ -35,7 +35,7 @@ docs/
 │
 ├── 📁 frontend/                 # 📱 Flutter Client Dokumentation
 │   ├── README.md                # Frontend-Architektur & Übersicht
-│   ├── theming-system.md        # Theme & Design System
+│   ├── THEME_SYSTEM.md          # 🎨 Named Entrypoints Theme System
 │   ├── navigation.md            # Smart Navigation System
 │   ├── internationalization.md  # i18n & Localization
 │   └── deployment.md            # Build & Deployment
@@ -98,6 +98,13 @@ docs/
 - **World Preview Cards**: Welt-Informationen vor Beitritt  
 - **Session Management Fix**: Robuste Auth-Handling
 - **Vollständige API-Dokumentation**: [Invite System Guide](api/invites.md)
+
+### **🎨 Named Entrypoints Theme System**
+- **Modulare Theme-Architektur**: Context-spezifische Themes (pre-game, game, loading)
+- **Vollständige Flutter Integration**: Material 3 Design System
+- **Comprehensive API**: OpenAPI 3.0 Spezifikation
+- **Performance Optimiert**: Caching & Lazy Loading
+- **Dokumentation**: [Theme System Guide](frontend/THEME_SYSTEM.md)
 
 ### **🎨 Theme System Enhancement**
 - **World-spezifische Themes**: Visuelle Identität pro Welt

@@ -92,13 +92,7 @@ class AppLogger {
 
   /// Log API Request
   static void logApiRequest(String method, String url, {Map<String, dynamic>? headers, dynamic body}) {
-    api.i('🔄 $method $url', error: {
-      'method': method,
-      'url': url,
-      'headers': headers,
-      'body': body,
-      'timestamp': DateTime.now().toIso8601String(),
-    });
+    api.i('🔄 $method $url');
   }
 
   /// Log API Response
@@ -106,14 +100,7 @@ class AppLogger {
     final isSuccess = statusCode >= 200 && statusCode < 300;
     final logger = isSuccess ? api.i : api.w;
     
-    logger('${isSuccess ? '✅' : '⚠️'} $method $url → $statusCode', error: {
-      'method': method,
-      'url': url,
-      'statusCode': statusCode,
-      'body': body,
-      'success': isSuccess,
-      'timestamp': DateTime.now().toIso8601String(),
-    });
+    logger('${isSuccess ? '✅' : '⚠️'} $method $url → $statusCode');
   }
 
   /// Log API Error
@@ -123,41 +110,22 @@ class AppLogger {
 
   /// Log Authentication Event 
   static void logAuthEvent(String event, {String? username, Map<String, dynamic>? metadata}) {
-    auth.i('🔐 $event', error: {
-      'event': event,
-      'username': username,
-      'metadata': metadata,
-      'timestamp': DateTime.now().toIso8601String(),
-    });
+    auth.i('🔐 $event');
   }
 
   /// Log Navigation Event
   static void logNavigation(String from, String to, {Map<String, dynamic>? params}) {
-    navigation.i('🧭 $from → $to', error: {
-      'from': from,
-      'to': to,
-      'params': params,
-      'timestamp': DateTime.now().toIso8601String(),
-    });
+    navigation.i('🧭 $from → $to');
   }
 
   /// Log Error with Context
   static void logError(String message, dynamic error, {StackTrace? stackTrace, Map<String, dynamic>? context}) {
-    AppLogger.error.e('💥 $message', error: {
-      'message': message,
-      'error': error.toString(),
-      'context': context,
-      'timestamp': DateTime.now().toIso8601String(),
-    }, stackTrace: stackTrace);
+    AppLogger.error.e('💥 $message', error: error, stackTrace: stackTrace);
   }
 
   /// Log User Action
   static void logUserAction(String action, {Map<String, dynamic>? context}) {
-    app.i('👤 User: $action', error: {
-      'action': action,
-      'context': context,
-      'timestamp': DateTime.now().toIso8601String(),
-    });
+    app.i('👤 User: $action');
   }
 }
 

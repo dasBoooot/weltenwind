@@ -1,505 +1,542 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/theme/index.dart';
-import '../../shared/navigation/smart_navigation.dart';
-import '../../shared/components/index.dart' hide ThemeSwitcher;
-import '../../theme/background_widget.dart';
+import '../../main.dart';
+import '../../shared/components/layout/app_scaffold.dart';
+import '../../shared/components/inputs/app_text_field.dart';
+import '../../shared/components/buttons/app_button.dart';
+import '../../shared/components/cards/app_card.dart';
+import '../../shared/components/layout/app_container.dart';
+import '../../core/utils/validators.dart';
+import '../../core/utils/security_utils.dart';
 import '../../l10n/app_localizations.dart';
-import '../../shared/widgets/language_switcher.dart';
-import '../../shared/widgets/theme_switcher.dart';
-import '../../shared/utils/dynamic_components.dart';
+import '../../shared/theme/theme_manager.dart';
+import '../../core/models/world.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   final String token;
-  
+  final String? email;
+
   const ResetPasswordPage({
     super.key,
     required this.token,
+    this.email,
   });
 
   @override
   State<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-class _ResetPasswordPageState extends State<ResetPasswordPage> with SingleTickerProviderStateMixin {
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final AuthService _authService = AuthService();
-  
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
   
   bool _isLoading = false;
-  bool _isSuccess = false;
-  String? _errorMessage;
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  bool _showPasswordRequirements = false;
+  bool _tokenValid = true;
+  String? _tokenValidationError;
   
-  // Für bessere Validierung (removed unused variables to fix focus loss)
-  // bool _hasInteractedWithPassword = false;  // Removed to prevent setState focus issues
-  // bool _hasInteractedWithConfirmPassword = false;  // Removed to prevent setState focus issues
+  late ThemeManager _themeManager;
+  final _securityUtils = SecurityUtils();
 
   @override
   void initState() {
     super.initState();
+    _themeManager = ThemeManager();
+    _loadDefaultTheme();
     
-    // Animation Setup
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeIn,
-    ));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _validateResetToken();
+    });
     
-    _animationController.forward();
+    _passwordController.addListener(() {
+      if (mounted) {
+        if (_passwordController.text.isNotEmpty && !_showPasswordRequirements) {
+          setState(() => _showPasswordRequirements = true);
+        }
+        setState(() {}); // Re-render to update requirements
+      }
+    });
+  }
+
+  /// Load default world theme for pre-game context
+  Future<void> _loadDefaultTheme() async {
+    try {
+      // Create a default world for the reset password page
+      final defaultWorld = World(
+        id: 0,
+        name: 'Default',
+        status: WorldStatus.open,
+        createdAt: DateTime.now(),
+        startsAt: DateTime.now(),
+        description: 'Default world for authentication',
+        themeBundle: 'default',
+        themeVariant: 'pre-game',
+        parentTheme: null,
+        themeOverrides: null,
+      );
+
+      // Set the theme for pre-game context
+      await _themeManager.setWorldTheme(defaultWorld, context: 'pre-game');
+    } catch (e) {
+      AppLogger.app.w('⚠️ Failed to load default theme: $e');
+      // Continue with fallback theme
+    }
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _securityUtils.clearSensitiveData();
     super.dispose();
   }
 
-  Future<void> _resetPassword() async {
+  Future<void> _validateResetToken() async {
+    final l10n = AppLocalizations.of(context);
+    
+    try {
+      setState(() => _isLoading = true);
+
+      if (widget.token.isEmpty || widget.token.length < 32) {
+        throw SecurityException('Invalid reset token format');
+      }
+
+      final authService = ServiceLocator.get<AuthService>();
+      final isValid = await authService.validateResetToken(widget.token);
+
+      if (mounted) {
+        setState(() {
+          _tokenValid = isValid;
+          _isLoading = false;
+          if (!isValid) {
+            _tokenValidationError = l10n.authResetLinkInvalidExpired;
+          }
+        });
+      }
+
+    } catch (e) {
+      AppLogger.app.e('❌ Token validation failed', error: e);
+      if (mounted) {
+        setState(() {
+          _tokenValid = false;
+          _isLoading = false;
+          _tokenValidationError = _getSecureErrorMessage(e, l10n);
+        });
+      }
+    }
+  }
+
+  Future<void> _handleResetPassword() async {
+    final l10n = AppLocalizations.of(context);
+    
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    setState(() => _isLoading = true);
 
     try {
-      final success = await _authService.resetPassword(
-        widget.token,
-        _passwordController.text,
-      );
+      await _performSecurityChecks(l10n);
+
+      final authService = ServiceLocator.get<AuthService>();
+      final success = await authService.resetPassword(widget.token, _passwordController.text);
 
       if (success && mounted) {
-        setState(() {
-          _isSuccess = true;
-        });
-        AppLogger.app.i('✅ Password Reset erfolgreich');
+        _showSuccess(l10n.authResetPasswordSuccess);
         
-        // Nach 3 Sekunden zur Login-Seite weiterleiten
-        Future.delayed(const Duration(seconds: 3), () async {
-          if (mounted) {
-            await context.smartGoNamed('login');
-          }
-        });
-      } else {
-        setState(() {
-          _errorMessage = AppLocalizations.of(context).errorGeneral;
-        });
-      }
-    } catch (e) {
-      AppLogger.app.e('❌ Password Reset Fehler', error: e);
-      final error = e.toString().replaceAll('Exception: ', '');
-      
-      setState(() {
-        if (error.contains('expired') || error.contains('invalid')) {
-          _errorMessage = AppLocalizations.of(context).authResetPasswordInvalidToken;
-        } else {
-          _errorMessage = AppLocalizations.of(context).errorGeneral;
+        await Future.delayed(const Duration(seconds: 2));
+        
+        if (mounted) {
+          context.go('/login');
         }
-      });
-    } finally {
+      } else if (mounted) {
+        _showError(l10n.authResetPasswordFailed);
+      }
+
+    } catch (e) {
+      AppLogger.app.e('❌ Reset password failed', error: e);
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
+        _showError(_getSecureErrorMessage(e, l10n));
       }
     }
   }
 
-  bool get _passwordsMatch => 
-      _passwordController.text.isNotEmpty && 
-      _passwordController.text == _confirmPasswordController.text;
+  Future<void> _performSecurityChecks(AppLocalizations l10n) async {
+    final canProceed = await _securityUtils.checkRateLimit('reset_password');
+    if (!canProceed) {
+      throw SecurityException(l10n.authTooManyResetAttempts);
+    }
 
-  bool get _passwordLengthValid => _passwordController.text.length >= 6;
+    final passwordStrength = _securityUtils.calculatePasswordStrength(_passwordController.text);
+    if (passwordStrength < 60) {
+      throw SecurityException(l10n.authPasswordTooWeak);
+    }
+    
+    AppLogger.app.d('✅ Reset password security checks passed');
+  }
 
-  bool get _passwordHasNoSpaces => !_passwordController.text.contains(' ');
+  String _getSecureErrorMessage(dynamic error, AppLocalizations l10n) {
+    if (error is SecurityException) {
+      return error.message;
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    // 🎨 NEW: Using AppScaffold with integrated theme system
-    return AppScaffoldBuilder.forAuthWithTheme(
-      themeContext: 'auth',
-      themeBundle: 'pre-game-minimal',
-      body: _buildResetPasswordBody(context),
+    final errorString = error.toString().toLowerCase();
+    
+    if (errorString.contains('token') && errorString.contains('invalid')) {
+      return l10n.authResetLinkInvalidRequest;
+    }
+    if (errorString.contains('token') && errorString.contains('expired')) {
+      return l10n.authResetLinkExpiredRequest;
+    }
+    if (errorString.contains('network') || errorString.contains('connection')) {
+      return l10n.authNetworkError;
+    }
+    
+    return l10n.authUnableToResetPassword;
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        duration: const Duration(seconds: 4),
+      ),
     );
   }
 
-  Widget _buildResetPasswordBody(BuildContext context) {
-    return Stack(
-      children: [
-        BackgroundWidget(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 420),
-                    child: _isSuccess
-                        ? _buildSuccessView(Theme.of(context))
-                        : _buildFormView(Theme.of(context)),
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return AuthScaffold(
+      titleText: l10n.authResetPassword,
+      body: AppContent(
+        maxWidth: 450,
+        child: _isLoading 
+            ? Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).colorScheme.primary,
                   ),
                 ),
-              ),
+              )
+            : _tokenValid ? _buildResetForm(l10n) : _buildInvalidTokenView(l10n),
+      ),
+    );
+  }
+
+  Widget _buildResetForm(AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          AppCard(
+            type: AppCardType.outlined,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.security,
+                  size: 48,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.authCreateNewPassword,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.authResetPasswordSubtitle,
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+                if (widget.email != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    widget.email!,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.primary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ],
             ),
           ),
+          
+          const SizedBox(height: 32),
+          
+          AppCard(
+            type: AppCardType.elevated,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppTextField(
+                  label: l10n.authNewPassword,
+                  controller: _passwordController,
+                  type: AppTextFieldType.password,
+                  hint: l10n.authPasswordHint,
+                  prefixIcon: Icons.lock_outline,
+                  isRequired: true,
+                  validator: (value) => Validators.password(value, l10n),
+                  autofocus: true,
+                ),
+                
+                if (_showPasswordRequirements) ...[
+                  const SizedBox(height: 12),
+                  _buildPasswordRequirements(l10n),
+                ],
+                
+                const SizedBox(height: 20),
+                
+                AppTextField(
+                  label: l10n.authConfirmPassword,
+                  controller: _confirmPasswordController,
+                  type: AppTextFieldType.password,
+                  hint: l10n.authConfirmPasswordHint,
+                  prefixIcon: Icons.lock_outline,
+                  isRequired: true,
+                  validator: (value) => Validators.confirmPassword(value, _passwordController.text, l10n),
+                ),
+                
+                const SizedBox(height: 32),
+                
+                AppButton(
+                  onPressed: _isLoading ? null : _handleResetPassword,
+                  type: AppButtonType.primary,
+                  size: AppButtonSize.large,
+                  fullWidth: true,
+                  isLoading: _isLoading,
+                  icon: Icons.security,
+                  child: Text(l10n.authResetPassword),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                _buildSecurityTips(l10n),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInvalidTokenView(AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        AppCard(
+          type: AppCardType.outlined,
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 64,
+                color: theme.colorScheme.error,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                l10n.authInvalidResetLink,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.error,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                _tokenValidationError ?? l10n.authResetLinkInvalidExpired,
+                style: theme.textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              
+              const SizedBox(height: 32),
+              
+              AppButton(
+                onPressed: () => context.go('/forgot-password'),
+                type: AppButtonType.primary,
+                size: AppButtonSize.large,
+                fullWidth: true,
+                icon: Icons.email_outlined,
+                child: Text(l10n.authRequestNewResetLink),
+              ),
+              
+              const SizedBox(height: 12),
+              
+              TextButton(
+                onPressed: () => context.go('/login'),
+                child: Text(l10n.authBackToLogin),
+              ),
+            ],
+          ),
         ),
-        _buildLoadingOverlay(context),
-        _buildLanguageSwitcher(),
-        _buildThemeSwitcher(context),
       ],
     );
   }
 
-  Widget _buildLoadingOverlay(BuildContext context) {
+  Widget _buildPasswordRequirements(AppLocalizations l10n) {
     final theme = Theme.of(context);
-    if (!_isLoading) return const SizedBox.shrink();
-    
-    return Container(
-      color: theme.colorScheme.surface.withValues(alpha: 0.9),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-              strokeWidth: 3,
-            ),
-            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-            Text(
-              AppLocalizations.of(context).authLoginLoading,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+    final password = _passwordController.text;
+    final requirements = Validators.getPasswordRequirements(password, l10n);
+    final strength = _securityUtils.calculatePasswordStrength(password);
 
-  Widget _buildLanguageSwitcher() {
-    return const Positioned(
-      top: 40.0,
-      left: 20.0,
-      child: SafeArea(
-        child: LanguageSwitcher(),
-      ),
-    );
-  }
-
-  Widget _buildThemeSwitcher(BuildContext context) {
-    return Positioned(
-      top: 40.0,
-      right: 20.0,
-      child: SafeArea(
-        child: ThemeSwitcher(
-          themeProvider: ThemeProvider(),
-          isCompact: true,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFormView(ThemeData theme) {
-    return DynamicComponents.authFrame(
-      welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
-      pageTitle: AppLocalizations.of(context).authResetPasswordTitle,
-      subtitle: AppLocalizations.of(context).authResetPasswordDescription,
-      padding: theme.dialogTheme.contentTextStyle != null 
-          ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
-          : const EdgeInsets.all(32.0),
-      context: context,
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            
-            // 🔒 New Password field
-            TextFormField(
-              controller: _passwordController,
-              obscureText: _obscurePassword,
-              autofillHints: const [AutofillHints.newPassword],
-              textInputAction: TextInputAction.next,
-                              onChanged: (_) {
-                  // Fix: Removed setState to prevent focus loss during typing
-                  // Password validation will happen on form submission
-                },
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).authNewPasswordLabel,
-                helperText: AppLocalizations.of(context).authPasswordHelperText,
-                prefixIcon: Icon(Icons.lock_outline, color: theme.colorScheme.primary),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return AppLocalizations.of(context).authNewPasswordRequired;
-                }
-                if (value.length < 6) {
-                  return AppLocalizations.of(context).authPasswordMinLength;
-                }
-                if (value.contains(' ')) {
-                  return AppLocalizations.of(context).authPasswordNoSpaces;
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-            
-            // 🔒 Confirm Password field
-            TextFormField(
-              controller: _confirmPasswordController,
-              obscureText: _obscureConfirmPassword,
-              autofillHints: const [AutofillHints.newPassword],
-              textInputAction: TextInputAction.done,
-              onFieldSubmitted: (_) => _isLoading ? null : _resetPassword(),
-                              onChanged: (_) {
-                  // Fix: Removed setState to prevent focus loss during typing
-                  // Password validation will happen on form submission
-                },
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).authConfirmPasswordLabel,
-                prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureConfirmPassword = !_obscureConfirmPassword;
-                    });
-                  },
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return AppLocalizations.of(context).authConfirmPasswordRequired;
-                }
-                if (value != _passwordController.text) {
-                  return AppLocalizations.of(context).authPasswordsDoNotMatch;
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-            
-            // 📋 Password Requirements
-            // Always show password requirements (was: if (_hasInteractedWithPassword))
-            if (true)
-              Container(
-                padding: EdgeInsets.all(theme.textTheme.bodySmall?.fontSize ?? 8.0),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context).authPasswordRequirementsTitle,
-                      style: theme.textTheme.labelLarge,
-                    ),
-                    SizedBox(height: theme.textTheme.bodySmall?.fontSize ?? 4.0),
-                    _buildRequirement(
-                      AppLocalizations.of(context).authRequirementMinLength,
-                      _passwordLengthValid,
-                      theme,
-                    ),
-                    _buildRequirement(
-                      AppLocalizations.of(context).authRequirementNoSpaces,
-                      _passwordHasNoSpaces,
-                      theme,
-                    ),
-                    _buildRequirement(
-                      AppLocalizations.of(context).authRequirementPasswordsMatch,
-                      _passwordsMatch,
-                      theme,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
-            
-            // Error message
-            if (_errorMessage != null)
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(theme.textTheme.bodySmall?.fontSize ?? 8.0),
-                margin: EdgeInsets.only(bottom: theme.textTheme.bodyMedium?.fontSize ?? 16.0),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.error.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: theme.colorScheme.error.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: theme.colorScheme.error,
-                      size: 20,
-                    ),
-                    SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 4.0),
-                    Expanded(
-                      child: Text(
-                        _errorMessage!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.error,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            
-            // 🎯 Reset Password Button
-            SizedBox(
-              width: double.infinity,
-              child: DynamicComponents.primaryButton(
-                text: AppLocalizations.of(context).authResetPasswordButton,
-                onPressed: _isLoading ? null : _resetPassword,
-                isLoading: _isLoading,
-                icon: Icons.lock_reset_rounded,
-              ),
-            ),
-            SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
-            
-            // Back to Login
-            DynamicComponents.tertiaryButton(
-              text: AppLocalizations.of(context).authBackToLogin,
-              onPressed: () async => await context.smartGoNamed('login'),
-              size: AppButtonSize.small,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSuccessView(ThemeData theme) {
-    return DynamicComponents.authFrame(
-      welcomeTitle: AppLocalizations.of(context).authLoginWelcome,
-      pageTitle: AppLocalizations.of(context).authResetPasswordTitle,
-      subtitle: AppLocalizations.of(context).authBackToLogin,
-      padding: theme.dialogTheme.contentTextStyle != null 
-          ? EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 32.0)
-          : const EdgeInsets.all(32.0),
-      context: context,
+    return AppCard(
+      type: AppCardType.filled,
+      padding: const EdgeInsets.all(16),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Success Icon
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.0, end: 1.0),
-            duration: const Duration(milliseconds: 800),
-            curve: Curves.elasticOut,
-            builder: (context, value, child) {
-              return Transform.scale(
-                scale: value,
-                child: child,
-              );
-            },
-            child: Container(
-              padding: EdgeInsets.all(theme.textTheme.headlineSmall?.fontSize ?? 24.0),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: theme.colorScheme.tertiary.withValues(alpha: 0.1),
-                border: Border.all(
-                  color: theme.colorScheme.tertiary.withValues(alpha: 0.3),
-                  width: 2,
+          Row(
+            children: [
+              Text(
+                l10n.authPasswordStrengthLabel,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              child: Icon(
-                Icons.check_circle_rounded,
-                size: 48,
-                color: theme.colorScheme.tertiary,
+              Text(
+                _getStrengthText(strength, l10n),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: _getStrengthColor(strength),
+                ),
               ),
-            ),
+            ],
           ),
-          SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
-          
-          // Success Message
-          Text(
-            AppLocalizations.of(context).authResetPasswordSuccessTitle,
-            style: theme.textTheme.headlineMedium,
-            textAlign: TextAlign.center,
+          const SizedBox(height: 8),
+          LinearProgressIndicator(
+            value: strength / 100,
+            backgroundColor: theme.colorScheme.surfaceContainerHighest,
+            valueColor: AlwaysStoppedAnimation<Color>(_getStrengthColor(strength)),
           ),
-          SizedBox(height: theme.textTheme.bodySmall?.fontSize ?? 8.0),
-          Text(
-            AppLocalizations.of(context).authResetPasswordSuccessMessage,
-            style: theme.textTheme.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: theme.textTheme.bodyLarge?.fontSize ?? 18.0),
-          SizedBox(height: theme.textTheme.headlineSmall?.fontSize ?? 24.0),
-          
-          // Manual redirect button
-          SizedBox(
-            width: double.infinity,
-            child: DynamicComponents.secondaryButton(
-              text: AppLocalizations.of(context).authBackToLogin,
-              onPressed: () async => await context.smartGoNamed('login'),
-              size: AppButtonSize.medium,
-              icon: Icons.arrow_forward_rounded,
-            ),
-          ),
+          const SizedBox(height: 12),
+          ...requirements.map((req) => _buildRequirementItem(req)),
         ],
       ),
     );
   }
 
-  Widget _buildRequirement(String text, bool isMet, ThemeData theme) {
+  Widget _buildRequirementItem(PasswordRequirement req) {
+    final theme = Theme.of(context);
+    final color = req.isMet 
+        ? theme.colorScheme.primary 
+        : theme.colorScheme.onSurface.withValues(alpha: 0.6);
+    
+    final icon = req.isMet ? Icons.check_circle : Icons.radio_button_unchecked;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Icon(
-            isMet ? Icons.check_circle : Icons.circle_outlined,
-            size: 16,
-            color: isMet ? theme.colorScheme.tertiary : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 8),
+          Text(
+            req.description,
+            style: TextStyle(color: color, fontSize: 12),
           ),
-          SizedBox(width: theme.textTheme.bodySmall?.fontSize ?? 4.0),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSecurityTips(AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    return AppCard(
+      type: AppCardType.filled,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.tips_and_updates,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                l10n.authSecurityTips,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ..._securityUtils.getSecurityRecommendations()
+              .take(3)
+              .map((tip) => _buildTipItem(tip, l10n)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTipItem(String tip, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.authListBullet,
+            style: TextStyle(
+              color: theme.colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           Expanded(
             child: Text(
-              text,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: isMet ? theme.colorScheme.tertiary : theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
+              tip,
+              style: theme.textTheme.bodySmall,
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _getStrengthText(int strength, AppLocalizations l10n) {
+    if (strength < 30) return l10n.authPasswordStrengthVeryWeak;
+    if (strength < 50) return l10n.authPasswordStrengthWeak;
+    if (strength < 70) return l10n.authPasswordStrengthFair;
+    if (strength < 85) return l10n.authPasswordStrengthGood;
+    return l10n.authPasswordStrengthStrong;
+  }
+
+  Color _getStrengthColor(int strength) {
+    final theme = Theme.of(context);
+    if (strength < 30) return theme.colorScheme.error;
+    if (strength < 50) return theme.colorScheme.tertiary;
+    if (strength < 70) return theme.colorScheme.secondary;
+    if (strength < 85) return theme.colorScheme.primaryContainer;
+    return theme.colorScheme.primary;
   }
 }

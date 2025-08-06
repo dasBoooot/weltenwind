@@ -468,6 +468,29 @@ class AuthService {
     }
   }
 
+  // Reset-Token validieren
+  Future<bool> validateResetToken(String token) async {
+    try {
+      AppLogger.auth.d('🛡️ Reset-Token wird validiert', error: {'tokenPreview': '${token.substring(0, 8)}...'});
+      final response = await _apiService.get('/auth/validate-reset-token/$token');
+
+      if (response.statusCode == 200) {
+        AppLogger.auth.i('✅ Reset-Token ist gültig');
+        return true;
+      } else {
+        final errorData = jsonDecode(response.body);
+        AppLogger.auth.w('❌ Reset-Token ungültig', error: {
+          'statusCode': response.statusCode,
+          'response': errorData
+        });
+        return false;
+      }
+    } catch (e) {
+      AppLogger.auth.e('❌ Fehler bei der Reset-Token Validierung', error: e);
+      return false;
+    }
+  }
+
   // Token-Status überprüfen (für Debugging und Monitoring)
   Future<Map<String, dynamic>> getTokenStatus() async {
     try {

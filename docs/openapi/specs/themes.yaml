@@ -1,13 +1,15 @@
 paths:
-  /themes:
+  /api/themes/named-entrypoints:
     get:
       tags:
         - Themes
-      summary: List Available Themes
-      description: Get list of all available themes
+      summary: List Available Worlds and Their Entrypoints
+      description: |
+        Get list of all available worlds and their theme entrypoints.
+        This endpoint returns the manifest of all worlds with their available theme contexts.
       responses:
         '200':
-          description: List of themes
+          description: List of worlds with their theme entrypoints
           content:
             application/json:
               schema:
@@ -18,79 +20,36 @@ paths:
                       data:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Theme'
+                          $ref: '#/components/schemas/WorldEntrypoint'
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /themes/{id}:
+  /api/themes/named-entrypoints/{worldId}/{context}:
     get:
       tags:
         - Themes
-      summary: Get Theme Details
-      description: Get detailed information about a specific theme
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Theme ID
-      responses:
-        '200':
-          description: Theme details
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/ThemeDetails'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /themes/bundles:
-    get:
-      tags:
-        - Themes
-      summary: List Theme Bundles
-      description: Get list of available theme bundles
-      responses:
-        '200':
-          description: List of theme bundles
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/ThemeBundle'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /themes/world/{worldId}:
-    get:
-      tags:
-        - Themes
-      summary: Get World Theme
-      description: Get theme configuration for a specific world
+      summary: Get Theme Data for World Context
+      description: |
+        Get theme configuration for a specific world and context (e.g., pre-game, game, loading).
+        Returns the complete theme data including colors, typography, spacing, and effects.
       parameters:
         - name: worldId
           in: path
           required: true
           schema:
-            type: integer
-          description: World ID
+            type: string
+          description: World identifier (e.g., "default", "medieval", "sci-fi")
+          example: "default"
+        - name: context
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Theme context (e.g., "pre-game", "game", "loading")
+          example: "pre-game"
       responses:
         '200':
-          description: World theme configuration
+          description: Theme data for the specified world and context
           content:
             application/json:
               schema:
@@ -99,7 +58,12 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: '#/components/schemas/WorldTheme'
+                        allOf:
+                          - $ref: '#/components/schemas/WorldManifest'
+                          - type: object
+                            properties:
+                              theme:
+                                $ref: '#/components/schemas/ThemeData'
         '404':
           $ref: '#/components/responses/NotFoundError'
         '500':
@@ -107,75 +71,425 @@ paths:
 
 components:
   schemas:
-    Theme:
+    WorldEntrypoint:
       type: object
       properties:
         id:
           type: string
-          example: "medieval"
+          description: World identifier
+          example: "default"
         name:
           type: string
-          example: "Medieval"
+          description: Human-readable world name
+          example: "Default World"
         description:
           type: string
-          example: "A medieval fantasy theme"
-        category:
+          description: World description
+          example: "Default world with basic theme configuration"
+        status:
           type: string
-          example: "fantasy"
-        variants:
+          enum: [open, closed, maintenance]
+          description: Current world status
+          example: "open"
+        entrypoints:
           type: array
           items:
-            type: string
-          example: ["castle", "village", "forest"]
+            $ref: '#/components/schemas/ThemeEntrypoint'
+          description: Available theme contexts for this world
+          example:
+            - context: "pre-game"
+              description: "Pre-game authentication and setup screens"
+            - context: "game"
+              description: "Main game interface"
+            - context: "loading"
+              description: "Loading screens and transitions"
 
-    ThemeDetails:
-      allOf:
-        - $ref: '#/components/schemas/Theme'
-        - type: object
-          properties:
-            colors:
-              type: object
-              description: Theme color configuration
-            assets:
-              type: object
-              description: Theme asset URLs
-            styles:
-              type: object
-              description: Theme style configuration
+    ThemeEntrypoint:
+      type: object
+      properties:
+        context:
+          type: string
+          description: Theme context identifier
+          example: "pre-game"
+        description:
+          type: string
+          description: Description of this theme context
+          example: "Pre-game authentication and setup screens"
+        available:
+          type: boolean
+          description: Whether this context is currently available
+          example: true
 
-    ThemeBundle:
+    WorldManifest:
+      type: object
+      properties:
+        world:
+          $ref: '#/components/schemas/WorldInfo'
+        theme:
+          $ref: '#/components/schemas/ThemeData'
+
+    WorldInfo:
       type: object
       properties:
         id:
           type: string
-          example: "full-gaming"
+          example: "default"
         name:
           type: string
-          example: "Full Gaming Experience"
+          example: "Default World"
         description:
           type: string
-          example: "Complete theme bundle for full gaming experience"
-        deviceTier:
+          example: "Default world with basic theme configuration"
+        status:
           type: string
-          enum: [high, medium, low]
-          example: "high"
-        themes:
-          type: array
-          items:
-            type: string
-          example: ["medieval", "sci-fi", "fantasy"]
+          enum: [open, closed, maintenance]
+          example: "open"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-01T00:00:00Z"
+        startsAt:
+          type: string
+          format: date-time
+          example: "2024-01-01T00:00:00Z"
 
-    WorldTheme:
+    ThemeData:
       type: object
+      description: Complete theme configuration data
       properties:
-        worldId:
-          type: integer
-        themeId:
-          type: string
-        themeBundle:
-          type: string
-        themeVariant:
-          type: string
-        configuration:
+        colors:
+          $ref: '#/components/schemas/ColorScheme'
+        fonts:
+          $ref: '#/components/schemas/FontConfiguration'
+        typography:
+          $ref: '#/components/schemas/TypographyConfiguration'
+        spacing:
+          $ref: '#/components/schemas/SpacingConfiguration'
+        radius:
+          $ref: '#/components/schemas/RadiusConfiguration'
+        effects:
+          $ref: '#/components/schemas/EffectsConfiguration'
+        borderRadius:
           type: object
-          description: World-specific theme configuration
+          description: Border radius configuration
+          additionalProperties:
+            type: string
+        iconStyle:
+          type: object
+          description: Icon style configuration
+          additionalProperties:
+            type: string
+
+    ColorScheme:
+      type: object
+      properties:
+        primary:
+          $ref: '#/components/schemas/ColorVariant'
+        secondary:
+          $ref: '#/components/schemas/ColorVariant'
+        tertiary:
+          $ref: '#/components/schemas/ColorVariant'
+        background:
+          $ref: '#/components/schemas/ColorVariant'
+        text:
+          $ref: '#/components/schemas/ColorVariant'
+        status:
+          $ref: '#/components/schemas/StatusColors'
+        border:
+          $ref: '#/components/schemas/BorderColors'
+        interactive:
+          $ref: '#/components/schemas/InteractiveColors'
+
+    ColorVariant:
+      type: object
+      properties:
+        main:
+          type: string
+          description: Main color value
+          example: "#3B82F6"
+        light:
+          type: string
+          description: Light variant
+          example: "#60A5FA"
+        dark:
+          type: string
+          description: Dark variant
+          example: "#2563EB"
+        contrast:
+          type: string
+          description: Contrast color for text/icons
+          example: "#FFFFFF"
+
+    StatusColors:
+      type: object
+      properties:
+        success:
+          type: string
+          example: "#10B981"
+        warning:
+          type: string
+          example: "#F59E0B"
+        error:
+          type: string
+          example: "#EF4444"
+        info:
+          type: string
+          example: "#3B82F6"
+
+    BorderColors:
+      type: object
+      properties:
+        default:
+          type: string
+          example: "#E5E7EB"
+        muted:
+          type: string
+          example: "#F3F4F6"
+        accent:
+          type: string
+          example: "#3B82F6"
+
+    InteractiveColors:
+      type: object
+      properties:
+        hover:
+          type: string
+          example: "#F8FAFC"
+        active:
+          type: string
+          example: "#F1F5F9"
+        focus:
+          type: string
+          example: "#DBEAFE"
+
+    FontConfiguration:
+      type: object
+      properties:
+        primary:
+          $ref: '#/components/schemas/FontFamily'
+        secondary:
+          $ref: '#/components/schemas/FontFamily'
+
+    FontFamily:
+      type: object
+      properties:
+        family:
+          type: string
+          example: "Inter"
+        fallback:
+          type: array
+          items:
+            type: string
+          example: ["system-ui", "sans-serif"]
+        weights:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            light: 300
+            normal: 400
+            medium: 500
+            semibold: 600
+            bold: 700
+
+    TypographyConfiguration:
+      type: object
+      properties:
+        headings:
+          $ref: '#/components/schemas/HeadingSizes'
+        body:
+          $ref: '#/components/schemas/BodySizes'
+        lineHeights:
+          $ref: '#/components/schemas/LineHeights'
+        fontWeights:
+          $ref: '#/components/schemas/FontWeights'
+        letterSpacing:
+          $ref: '#/components/schemas/LetterSpacing'
+
+    HeadingSizes:
+      type: object
+      properties:
+        h1:
+          type: string
+          example: "2.25rem"
+        h2:
+          type: string
+          example: "1.875rem"
+        h3:
+          type: string
+          example: "1.5rem"
+        h4:
+          type: string
+          example: "1.25rem"
+        h5:
+          type: string
+          example: "1.125rem"
+        h6:
+          type: string
+          example: "1rem"
+
+    BodySizes:
+      type: object
+      properties:
+        xs:
+          type: string
+          example: "0.75rem"
+        sm:
+          type: string
+          example: "0.875rem"
+        base:
+          type: string
+          example: "1rem"
+        lg:
+          type: string
+          example: "1.125rem"
+        xl:
+          type: string
+          example: "1.25rem"
+
+    LineHeights:
+      type: object
+      properties:
+        tight:
+          type: string
+          example: "1.25"
+        normal:
+          type: string
+          example: "1.5"
+        relaxed:
+          type: string
+          example: "1.75"
+
+    FontWeights:
+      type: object
+      properties:
+        light:
+          type: integer
+          example: 300
+        normal:
+          type: integer
+          example: 400
+        medium:
+          type: integer
+          example: 500
+        semibold:
+          type: integer
+          example: 600
+        bold:
+          type: integer
+          example: 700
+
+    LetterSpacing:
+      type: object
+      properties:
+        tight:
+          type: string
+          example: "-0.025em"
+        normal:
+          type: string
+          example: "0em"
+        wide:
+          type: string
+          example: "0.025em"
+
+    SpacingConfiguration:
+      type: object
+      properties:
+        xs:
+          type: string
+          example: "0.25rem"
+        sm:
+          type: string
+          example: "0.5rem"
+        md:
+          type: string
+          example: "1rem"
+        lg:
+          type: string
+          example: "1.5rem"
+        xl:
+          type: string
+          example: "2rem"
+        xxl:
+          type: string
+          example: "3rem"
+        xxxl:
+          type: string
+          example: "4rem"
+        section:
+          type: string
+          example: "6rem"
+
+    RadiusConfiguration:
+      type: object
+      properties:
+        none:
+          type: string
+          example: "0"
+        sm:
+          type: string
+          example: "0.125rem"
+        md:
+          type: string
+          example: "0.375rem"
+        lg:
+          type: string
+          example: "0.5rem"
+        xl:
+          type: string
+          example: "0.75rem"
+        full:
+          type: string
+          example: "9999px"
+
+    EffectsConfiguration:
+      type: object
+      properties:
+        animations:
+          $ref: '#/components/schemas/AnimationConfiguration'
+        shadows:
+          $ref: '#/components/schemas/ShadowConfiguration'
+
+    AnimationConfiguration:
+      type: object
+      properties:
+        easing:
+          type: string
+          example: "cubic-bezier(0.4, 0, 0.2, 1)"
+        duration:
+          $ref: '#/components/schemas/DurationConfiguration'
+        scale:
+          $ref: '#/components/schemas/ScaleConfiguration'
+
+    DurationConfiguration:
+      type: object
+      properties:
+        fast:
+          type: string
+          example: "150ms"
+        normal:
+          type: string
+          example: "300ms"
+        slow:
+          type: string
+          example: "500ms"
+
+    ScaleConfiguration:
+      type: object
+      properties:
+        hover:
+          type: string
+          example: "1.05"
+        active:
+          type: string
+          example: "0.95"
+
+    ShadowConfiguration:
+      type: object
+      properties:
+        softGlow:
+          type: string
+          example: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+        focusRing:
+          type: string
+          example: "0 0 0 3px rgba(59, 130, 246, 0.5)"

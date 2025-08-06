@@ -11,82 +11,97 @@ const router = express.Router();
 // Theme-Verzeichnis Pfad - Updated für modulare Schemas
 const THEMES_DIR = path.join(__dirname, '../../tools/theme-editor/schemas');
 
+// Asset-Verzeichnis Pfad für modulare Welten (im Projekt-Root)
+const ASSETS_DIR = path.join(__dirname, '../../../assets/worlds');
+
 /**
  * @swagger
- * /api/themes:
+ * /api/themes/named-entrypoints:
  *   get:
- *     summary: Liste aller verfügbaren modularen Themes
+ *     summary: Liste aller verfügbaren Named Entrypoints (manifest.json)
  *     tags: [Themes]
- *     description: Lädt alle verfügbaren modularen Themes aus dem schemas-Verzeichnis
+ *     description: Lädt alle manifest.json Dateien aus dem assets/worlds Verzeichnis.
  *     responses:
  *       200:
- *         description: Liste der verfügbaren modularen Themes
+ *         description: Liste der verfügbaren Named Entrypoints
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 themes:
+ *                 entrypoints:
  *                   type: array
  *                   items:
  *                     type: object
  *                     properties:
  *                       name:
  *                         type: string
- *                         description: Theme-Name
+ *                         description: Name des Entrypoints
  *                       filename:
  *                         type: string
  *                         description: Dateiname ohne .json Endung
  *                       description:
  *                         type: string
- *                         description: Theme-Beschreibung
+ *                         description: Beschreibung des Entrypoints
  *                       version:
  *                         type: string
- *                         description: Theme-Version (Semantic Versioning)
+ *                         description: Version des Entrypoints
  */
-router.get('/', async (req, res) => {
+router.get('/named-entrypoints', async (req, res) => {
   try {
-    loggers.system.info('📋 Lade Theme-Liste', {});
+    // Debug: Welche Route wurde aufgerufen
+    loggers.system.info('📋 Named Entrypoints Route aufgerufen', { 
+      originalUrl: req.originalUrl,
+      path: req.path,
+      params: req.params
+    });
     
-    // Theme-Dateien lesen (Schema-Dateien, Audit-Dateien und Backup-Dateien ausschließen)
-    const files = fs.readdirSync(THEMES_DIR)
-      .filter(file => 
-        file.endsWith('.json') && 
-        !file.includes('.schema.json') && 
-        !file.includes('.audit.json') &&
-        !file.includes('.backup_') &&
-        file !== 'main.schema.json'
-      );
+    loggers.system.info('📋 Lade Named Entrypoints-Liste', {});
     
-    const themes = [];
+    // Debug: Pfad ausgeben
+    loggers.system.info('🔍 Debug: ASSETS_DIR Pfad', { 
+      assetsDir: ASSETS_DIR,
+      exists: fs.existsSync(ASSETS_DIR),
+      currentDir: process.cwd()
+    });
     
-    for (const file of files) {
-      try {
-        const filePath = path.join(THEMES_DIR, file);
-        const content = fs.readFileSync(filePath, 'utf8');
-        const theme = JSON.parse(content);
-        
-        themes.push({
-          name: theme.name || file.replace('.json', ''),
-          filename: file.replace('.json', ''),
-          description: theme.description || 'Kein Beschreibung verfügbar',
-          version: theme.version || '1.0.0'
-        });
-      } catch (parseError) {
-        loggers.system.warn('⚠️ Fehler beim Parsen der Theme-Datei', { 
-          file,
-          error: parseError instanceof Error ? parseError.message : 'Unknown error'
-        });
+    const entrypoints = [];
+    
+    if (fs.existsSync(ASSETS_DIR)) {
+      const worldDirs = fs.readdirSync(ASSETS_DIR, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => dirent.name);
+      
+      for (const worldDir of worldDirs) {
+        try {
+          const manifestPath = path.join(ASSETS_DIR, worldDir, 'manifest.json');
+          if (fs.existsSync(manifestPath)) {
+            const content = fs.readFileSync(manifestPath, 'utf8');
+            const manifest = JSON.parse(content);
+            
+            entrypoints.push({
+              name: manifest.name || worldDir,
+              filename: worldDir,
+              description: manifest.description || 'Keine Beschreibung verfügbar',
+              version: manifest.version || '1.0.0'
+            });
+          }
+        } catch (parseError) {
+          loggers.system.warn('⚠️ Fehler beim Parsen der Named Entrypoint-Datei', { 
+            worldDir,
+            error: parseError instanceof Error ? parseError.message : 'Unknown error'
+          });
+        }
       }
     }
     
-    loggers.system.info('✅ Theme-Liste erfolgreich geladen', { count: themes.length });
-    res.json({ themes });
+    loggers.system.info('✅ Named Entrypoints-Liste erfolgreich geladen', { count: entrypoints.length });
+    res.json({ entrypoints });
     
   } catch (error) {
-    loggers.system.error('❌ Fehler beim Laden der Theme-Liste', error instanceof Error ? error : new Error('Unknown error'), {});
+    loggers.system.error('❌ Fehler beim Laden der Named Entrypoints-Liste', error instanceof Error ? error : new Error('Unknown error'), {});
     res.status(500).json({ 
-      error: 'Fehler beim Laden der Theme-Liste',
+      error: 'Fehler beim Laden der Named Entrypoints-Liste',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
@@ -94,92 +109,104 @@ router.get('/', async (req, res) => {
 
 /**
  * @swagger
- * /api/themes/{name}:
+ * /api/themes/named-entrypoints/{worldId}/{context}:
  *   get:
- *     summary: Einzelnes modulares Theme laden
+ *     summary: Named Entrypoint für spezifische Welt und Kontext laden
  *     tags: [Themes]
- *     description: Lädt ein spezifisches modulares Theme mit allen verfügbaren Modulen
+ *     description: Lädt manifest.json und theme.ts für eine bestimmte Welt und einen bestimmten Kontext (pre-game, game, loading)
  *     parameters:
  *       - in: path
- *         name: name
+ *         name: worldId
  *         required: true
  *         schema:
  *           type: string
- *         description: Theme-Dateiname (ohne .json)
+ *         description: Welt-ID (z.B. default, cyberpunk, space)
+ *       - in: path
+ *         name: context
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Theme-Kontext (pre-game, game, loading)
  *     responses:
  *       200:
- *         description: Modulare Theme-Daten
+ *         description: Named Entrypoint Daten
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 name:
- *                   type: string
- *                   description: Theme-Name
- *                 version:
- *                   type: string
- *                   description: Theme-Version
- *                 description:
- *                   type: string
- *                   description: Theme-Beschreibung
- *                 category:
- *                   type: string
- *                   description: Theme-Kategorie (fantasy, sci-fi, etc.)
- *                 bundle:
+ *                 manifest:
  *                   type: object
- *                   description: Bundle-Konfiguration
- *                 colors:
+ *                   description: Manifest-Daten
+ *                 theme:
  *                   type: object
- *                   description: Farb-Modul (optional)
- *                 typography:
- *                   type: object
- *                   description: Typography-Modul (optional)
- *                 spacing:
- *                   type: object
- *                   description: Spacing-Modul (optional)
- *                 radius:
- *                   type: object
- *                   description: Border-Radius-Modul (optional)
- *                 gaming:
- *                   type: object
- *                   description: Gaming-spezifische Elemente (optional)
- *                 effects:
- *                   type: object
- *                   description: Visual Effects und Animationen (optional)
- *                 extensions:
- *                   type: object
- *                   description: Theme-spezifische Erweiterungen (optional)
+ *                   description: Theme-Daten
  *       404:
- *         description: Theme nicht gefunden
+ *         description: Named Entrypoint nicht gefunden
  */
-router.get('/:name', async (req, res) => {
+router.get('/named-entrypoints/:worldId/:context', async (req, res) => {
   try {
-    const themeName = req.params.name;
-    const filePath = path.join(THEMES_DIR, `${themeName}.json`);
+    const { worldId, context } = req.params;
     
-    loggers.system.info('🎨 Lade Theme', { theme: themeName });
+    loggers.system.info('🎨 Lade Named Entrypoint', { worldId, context });
     
-    if (!fs.existsSync(filePath)) {
-      loggers.system.warn('⚠️ Theme nicht gefunden', { theme: themeName });
+    // Manifest-Datei laden
+    const manifestPath = path.join(ASSETS_DIR, worldId, 'manifest.json');
+    if (!fs.existsSync(manifestPath)) {
+      loggers.system.warn('⚠️ Manifest nicht gefunden', { worldId });
       return res.status(404).json({ 
-        error: 'Theme nicht gefunden',
-        theme: themeName
+        error: 'Manifest nicht gefunden',
+        worldId
       });
     }
     
-    const content = fs.readFileSync(filePath, 'utf8');
-    const theme = JSON.parse(content);
+    const manifestContent = fs.readFileSync(manifestPath, 'utf8');
+    const manifest = JSON.parse(manifestContent);
     
-    loggers.system.info('✅ Theme erfolgreich geladen', { theme: themeName });
-    res.json(theme);
+    // Prüfen ob der gewünschte Kontext existiert
+    if (!manifest.entrypoints?.themes?.[context]) {
+      loggers.system.warn('⚠️ Theme-Kontext nicht gefunden', { worldId, context });
+      return res.status(404).json({ 
+        error: 'Theme-Kontext nicht gefunden',
+        worldId,
+        context,
+        availableContexts: Object.keys(manifest.entrypoints?.themes || {})
+      });
+    }
+    
+    const themeEntrypoint = manifest.entrypoints.themes[context];
+    const themePath = path.join(ASSETS_DIR, worldId, themeEntrypoint.file);
+    
+    if (!fs.existsSync(themePath)) {
+      loggers.system.warn('⚠️ Theme-Datei nicht gefunden', { worldId, context, file: themeEntrypoint.file });
+      return res.status(404).json({ 
+        error: 'Theme-Datei nicht gefunden',
+        worldId,
+        context,
+        file: themeEntrypoint.file
+      });
+    }
+    
+    // JSON-Datei direkt parsen (kein TypeScript mehr!)
+    const themeContent = fs.readFileSync(themePath, 'utf8');
+    const themeData = JSON.parse(themeContent);
+    
+    loggers.system.info('✅ Named Entrypoint erfolgreich geladen', { worldId, context });
+    res.json({
+      manifest,
+      theme: {
+        context,
+        data: themeData
+      }
+    });
     
   } catch (error) {
-    loggers.system.error('❌ Fehler beim Laden des Themes', error instanceof Error ? error : new Error('Unknown error'), {
-      theme: req.params.name
+    loggers.system.error('❌ Fehler beim Laden des Named Entrypoints', error instanceof Error ? error : new Error('Unknown error'), {
+      worldId: req.params.worldId,
+      context: req.params.context
     });
     res.status(500).json({ 
-      error: 'Fehler beim Laden des Themes',
+      error: 'Fehler beim Laden des Named Entrypoints',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
@@ -407,7 +434,7 @@ router.put('/:name',
         }
       }
       
-      loggers.system.info('📋 Erweitetes Theme-Backup erstellt', { 
+      loggers.system.info('📋 Erweitertes Theme-Backup erstellt', { 
         theme: themeName,
         user: user?.username || 'Unknown',
         userId: user?.id || null,
@@ -613,6 +640,91 @@ router.post('/:name/clone',
     });
     res.status(500).json({ 
       error: 'Fehler beim Klonen des Themes',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// === THEME BACKUP MANAGEMENT (basierend auf ARB-Manager Pattern) ===
+
+
+
+/**
+ * @swagger
+ * /api/themes:
+ *   get:
+ *     summary: Liste aller verfügbaren modularen Themes
+ *     tags: [Themes]
+ *     description: Lädt alle verfügbaren modularen Themes aus dem schemas-Verzeichnis
+ *     responses:
+ *       200:
+ *         description: Liste der verfügbaren modularen Themes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 themes:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         description: Theme-Name
+ *                       filename:
+ *                         type: string
+ *                         description: Dateiname ohne .json Endung
+ *                       description:
+ *                         type: string
+ *                         description: Theme-Beschreibung
+ *                       version:
+ *                         type: string
+ *                         description: Theme-Version (Semantic Versioning)
+ */
+router.get('/', async (req, res) => {
+  try {
+    loggers.system.info('📋 Lade Theme-Liste', {});
+    
+    // Theme-Dateien lesen (Schema-Dateien, Audit-Dateien und Backup-Dateien ausschließen)
+    const files = fs.readdirSync(THEMES_DIR)
+      .filter(file => 
+        file.endsWith('.json') && 
+        !file.includes('.schema.json') && 
+        !file.includes('.audit.json') &&
+        !file.includes('.backup_') &&
+        file !== 'main.schema.json'
+      );
+    
+    const themes = [];
+    
+    for (const file of files) {
+      try {
+        const filePath = path.join(THEMES_DIR, file);
+        const content = fs.readFileSync(filePath, 'utf8');
+        const theme = JSON.parse(content);
+        
+        themes.push({
+          name: theme.name || file.replace('.json', ''),
+          filename: file.replace('.json', ''),
+          description: theme.description || 'Kein Beschreibung verfügbar',
+          version: theme.version || '1.0.0'
+        });
+      } catch (parseError) {
+        loggers.system.warn('⚠️ Fehler beim Parsen der Theme-Datei', { 
+          file,
+          error: parseError instanceof Error ? parseError.message : 'Unknown error'
+        });
+      }
+    }
+    
+    loggers.system.info('✅ Theme-Liste erfolgreich geladen', { count: themes.length });
+    res.json({ themes });
+    
+  } catch (error) {
+    loggers.system.error('❌ Fehler beim Laden der Theme-Liste', error instanceof Error ? error : new Error('Unknown error'), {});
+    res.status(500).json({ 
+      error: 'Fehler beim Laden der Theme-Liste',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
@@ -862,6 +974,105 @@ router.get('/:name/audit', authenticate, async (req, res) => {
     });
     res.status(500).json({ 
       error: 'Fehler beim Laden des Audit-Trails' 
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /api/themes/{name}:
+ *   get:
+ *     summary: Einzelnes modulares Theme laden
+ *     tags: [Themes]
+ *     description: Lädt ein spezifisches modulares Theme mit allen verfügbaren Modulen
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Theme-Dateiname (ohne .json)
+ *     responses:
+ *       200:
+ *         description: Modulare Theme-Daten
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   description: Theme-Name
+ *                 version:
+ *                   type: string
+ *                   description: Theme-Version
+ *                 description:
+ *                   type: string
+ *                   description: Theme-Beschreibung
+ *                 category:
+ *                   type: string
+ *                   description: Theme-Kategorie (fantasy, sci-fi, etc.)
+ *                 bundle:
+ *                   type: object
+ *                   description: Bundle-Konfiguration
+ *                 colors:
+ *                   type: object
+ *                   description: Farb-Modul (optional)
+ *                 typography:
+ *                   type: object
+ *                   description: Typography-Modul (optional)
+ *                 spacing:
+ *                   type: object
+ *                   description: Spacing-Modul (optional)
+ *                 radius:
+ *                   type: object
+ *                   description: Border-Radius-Modul (optional)
+ *                 gaming:
+ *                   type: object
+ *                   description: Gaming-spezifische Elemente (optional)
+ *                 effects:
+ *                   type: object
+ *                   description: Visual Effects und Animationen (optional)
+ *                 extensions:
+ *                   type: object
+ *                   description: Theme-spezifische Erweiterungen (optional)
+ *       404:
+ *         description: Theme nicht gefunden
+ */
+router.get('/:name', async (req, res) => {
+  try {
+    const themeName = req.params.name;
+    const filePath = path.join(THEMES_DIR, `${themeName}.json`);
+    
+    // Debug: Welche Route wurde aufgerufen
+    loggers.system.info('🎨 Lade Theme (/:name Route)', { 
+      theme: themeName,
+      originalUrl: req.originalUrl,
+      path: req.path,
+      params: req.params
+    });
+    
+    if (!fs.existsSync(filePath)) {
+      loggers.system.warn('⚠️ Theme nicht gefunden', { theme: themeName });
+      return res.status(404).json({ 
+        error: 'Theme nicht gefunden',
+        theme: themeName
+      });
+    }
+    
+    const content = fs.readFileSync(filePath, 'utf8');
+    const theme = JSON.parse(content);
+    
+    loggers.system.info('✅ Theme erfolgreich geladen', { theme: themeName });
+    res.json(theme);
+    
+  } catch (error) {
+    loggers.system.error('❌ Fehler beim Laden des Themes', error instanceof Error ? error : new Error('Unknown error'), {
+      theme: req.params.name
+    });
+    res.status(500).json({ 
+      error: 'Fehler beim Laden des Themes',
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });

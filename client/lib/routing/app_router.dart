@@ -1,685 +1,98 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
-import '../config/logger.dart';
 import '../features/auth/login_page.dart';
 import '../features/auth/register_page.dart';
 import '../features/auth/forgot_password_page.dart';
 import '../features/auth/reset_password_page.dart';
 import '../features/world/world_list_page.dart';
-import '../features/world/world_join_page.dart';
-import '../features/invite/invite_landing_page.dart';
-import '../features/dashboard/dashboard_page.dart';
-import '../features/landing/landing_page.dart';
+import '../config/logger.dart';
 import '../core/services/auth_service.dart';
-import '../shared/navigation/smart_navigation.dart';
-import '../shared/navigation/elegant_transitions.dart';
-import 'initial_theme_detector.dart';
 import '../main.dart';
 
-// Custom Navigation Observer für Logging
-class AppNavigationObserver extends NavigatorObserver {
-  @override
-  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
-    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
-    _logNavigation(oldRoute?.settings.name, newRoute?.settings.name, 'replace');
-  }
-
-  @override
-  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    super.didPop(route, previousRoute);
-    _logNavigation(route.settings.name, previousRoute?.settings.name, 'pop');
-  }
-
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    super.didPush(route, previousRoute);
-    _logNavigation(previousRoute?.settings.name, route.settings.name, 'push');
-  }
-
-  void _logNavigation(String? from, String? to, String action) {
-    // Nur wichtige Navigation-Events loggen (Fehler werden separat gehandelt)
-    if (to != null && (to.contains('error') || to.contains('invite'))) {
-      AppLogger.navigation.i('🧭 Navigation: → $to');
-    }
-  }
-}
-
 class AppRouter {
-  // Named Routes für bessere Navigation
-  static const String landingRoute = 'landing';
-  static const String loginRoute = 'login';
-  static const String registerRoute = 'register';
-  static const String forgotPasswordRoute = 'forgot-password';
-  static const String resetPasswordRoute = 'reset-password';
-  static const String worldListRoute = 'world-list';
-  static const String worldDashboardRoute = 'world-dashboard';
-  static const String worldJoinRoute = 'world-join';
-  static const String errorRoute = 'error';
-
-  // NavigatorKey für zukünftige Shell-Integration (z.B. BottomNav)
-  static final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
-
-  static GoRouter? _routerInstance;
-  static bool _isInitialized = false;
-  
-  // Helper method to safely get AuthService - komplett unabhängig von ServiceLocator
-  static AuthService? _getAuthService() {
-    try {
-      if (ServiceLocator.has<AuthService>()) {
-        return ServiceLocator.get<AuthService>();
-      }
-    } catch (e) {
-      AppLogger.navigation.w('⚠️ ServiceLocator Fehler', error: e);
-    }
-    // Kein Fallback - Services sind nicht verfügbar
-    return null;
-  }
-  
-  // Navigation loading helpers removed - using direct page transitions now
-  
-  static GoRouter get router {
-    if (_routerInstance != null) {
-      return _routerInstance!;
-    }
-    
-    // Router nur einmal initialisieren
-    if (!_isInitialized) {
-      try {
-        _routerInstance = GoRouter(
-          navigatorKey: _rootNavigatorKey,
-          
-          // Navigation Observer für User Journey Tracking
-          observers: [
-            AppNavigationObserver(),
-          ],
-          
-          // 🎯 HYBRID ROUTER - Cross-Platform Deep-Link Fix
-          redirect: (context, state) async {
-        try {
-          final uriPath = state.uri.path;
-          
-          // Navigation handling...
-          
-          // 🌐 WEB-SPEZIFISCHE DEEP-LINK-FIXES
-          if (kIsWeb) {
-            // 🔧 Deep-Link-Fix: Wenn GoRouter "/go" zeigt, aber Browser mehr hat
-            if (uriPath == '/go') {
-              final browserPath = Uri.base.path;
-              if (browserPath.contains('/invite/')) {
-                // Extrahiere echte Route aus Browser-URL
-                String realPath = browserPath;
-                if (realPath.startsWith('/game/')) {
-                  realPath = realPath.substring(5); // Entferne "/game" Prefix
-                }
-                AppLogger.navigation.i('🔧 Web Deep-Link-Fix: $uriPath → $realPath');
-                return realPath;
-              }
-            }
-          }
-          
-          // ✅ INVITE-ROUTES: Immer direkt erlauben (Cross-Platform)
-          if (uriPath.startsWith('/go/invite/')) {
-            return null; // Invite-Routes immer erlauben
-          }
-          
-          // 🎨 F5-REFRESH THEME DETECTION - Wichtig für Web!
-          // Setup Theme-Context für Direct Page Loads (F5-Refresh)
-          if (kIsWeb && (uriPath.startsWith('/go/worlds') || 
-                        uriPath.contains('/join') || 
-                        uriPath.contains('/dashboard'))) {
-            try {
-              // Theme-Detection für F5-Refresh ausführen
-              await InitialThemeDetector.detectAndSetThemeFromRoute(context, uriPath);
-              AppLogger.navigation.i('🎨 F5-Refresh theme set for: $uriPath');
-            } catch (e) {
-              AppLogger.navigation.w('⚠️ F5-Refresh theme detection failed', error: e);
-            }
-          }
-          
-          // 🔄 STANDARD AUTH & PROTECTION LOGIC
-          final authService = _getAuthService();
-          if (authService == null) {
-            AppLogger.navigation.w('❌ AuthService nicht verfügbar');
-            return uriPath == '/' || uriPath.isEmpty ? '/go' : null;
-          }
-          
-          final isLoggedIn = await authService.isLoggedIn();
-          final isAuthRoute = uriPath.startsWith('/go/auth');
-          final isProtectedRoute = (uriPath.startsWith('/go/worlds') ||
-                                  uriPath.startsWith('/go/dashboard'));
-
-          if (!isLoggedIn && isProtectedRoute) {
-            AppLogger.navigation.i('🔒 Auth required for: $uriPath');
-            return '/go/auth/login';
-          }
-
-          if (isLoggedIn && isAuthRoute) {
-            return '/go/worlds'; // Redirect authenticated users
-          }
-          
-          // 📍 ROOT FALLBACK
-          if (uriPath == '/' || uriPath.isEmpty) {
-            return '/go';
-          }
-          
-          return null;
-        } catch (e) {
-          AppLogger.navigation.e('❌ Router Redirect Fehler', error: e);
-          return null; // Bei Fehlern KEINEN Redirect
-        }
-      },
-    
+  static final GoRouter router = GoRouter(
+    initialLocation: '/login',
+    redirect: _redirect,
     routes: [
-      // Landing page
       GoRoute(
-        path: '/go',
-        name: landingRoute,
-        pageBuilder: (context, state) => CustomTransitionPage(
-          child: const LandingPage(),
-          transitionDuration: const Duration(milliseconds: 2400),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            ElegantTransitions.elegantSlideWithOverlay(
-              context, 
-              animation, 
-              secondaryAnimation, 
-              child,
-              direction: SlideDirection.fromTop,
-            ),
-        ),
-      ),
-
-      // Auth routes
-      GoRoute(
-        path: '/go/auth/login',
-        name: loginRoute,
-        pageBuilder: (context, state) => CustomTransitionPage(
-          child: const LoginPage(),
-          transitionDuration: const Duration(milliseconds: 2400),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            ElegantTransitions.elegantSlideWithOverlay(
-              context, 
-              animation, 
-              secondaryAnimation, 
-              child,
-              direction: SlideDirection.fromRight,
-            ),
-        ),
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
-        path: '/go/auth/register',
-        name: registerRoute,
-        pageBuilder: (context, state) => CustomTransitionPage(
-          child: const RegisterPage(),
-          transitionDuration: const Duration(milliseconds: 2400),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            ElegantTransitions.elegantSlideWithOverlay(
-              context, 
-              animation, 
-              secondaryAnimation, 
-              child,
-              direction: SlideDirection.fromRight,
-            ),
-        ),
+        path: '/register',
+        name: 'register',
+        builder: (context, state) => const RegisterPage(),
       ),
       GoRoute(
-        path: '/go/auth/forgot-password',
-        name: forgotPasswordRoute,
-        pageBuilder: (context, state) => CustomTransitionPage(
-          child: const ForgotPasswordPage(),
-          transitionDuration: const Duration(milliseconds: 2400),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            ElegantTransitions.elegantSlideWithOverlay(
-              context, 
-              animation, 
-              secondaryAnimation, 
-              child,
-              direction: SlideDirection.fromRight,
-            ),
-        ),
+        path: '/forgot-password',
+        name: 'forgot-password',
+        builder: (context, state) => const ForgotPasswordPage(),
       ),
       GoRoute(
-        path: '/go/auth/reset-password',
-        name: resetPasswordRoute,
-        pageBuilder: (context, state) {
-          // Token aus Query-Parametern holen
-          final token = state.uri.queryParameters['token'];
-          if (token == null || token.isEmpty) {
-            // Ohne Token zur Passwort-vergessen Seite weiterleiten
-            return CustomTransitionPage(
-              child: const ForgotPasswordPage(),
-              transitionDuration: const Duration(milliseconds: 2400),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                ElegantTransitions.elegantSlideWithOverlay(
-                  context, 
-                  animation, 
-                  secondaryAnimation, 
-                  child,
-                  direction: SlideDirection.fromRight,
-                ),
-            );
-          }
-          return CustomTransitionPage(
-            child: ResetPasswordPage(token: token),
-            transitionDuration: const Duration(milliseconds: 2400),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              ElegantTransitions.elegantSlideWithOverlay(
-                context, 
-                animation, 
-                secondaryAnimation, 
-                child,
-                direction: SlideDirection.fromRight,
-              ),
+        path: '/reset-password',
+        name: 'reset-password',
+        builder: (context, state) {
+          final token = state.uri.queryParameters['token'] ?? '';
+          final email = state.uri.queryParameters['email'];
+          
+          return ResetPasswordPage(
+            token: token,
+            email: email,
           );
         },
       ),
-
-      // 🎟️ INVITE ROUTES - Cross-Platform Deep-Links
       GoRoute(
-        path: '/go/invite/:token',
-        pageBuilder: (context, state) {
-          final token = state.pathParameters['token'];
-          if (token == null || token.isEmpty) {
-            return CustomTransitionPage(
-              child: const ErrorPage(),
-              transitionDuration: const Duration(milliseconds: 2400),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                ElegantTransitions.elegantSlideWithOverlay(
-                  context, 
-                  animation, 
-                  secondaryAnimation, 
-                  child,
-                  direction: SlideDirection.fromBottom,
-                ),
-            );
-          }
-          return CustomTransitionPage(
-            child: InviteLandingPage(token: token),
-            transitionDuration: const Duration(milliseconds: 2400),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              ElegantTransitions.elegantSlideWithOverlay(
-                context, 
-                animation, 
-                secondaryAnimation, 
-                child,
-                direction: SlideDirection.fromBottom,
-              ),
-          );
-        },
-      ),
-
-      // World routes - MIT NAVIGATION LOADING
-      GoRoute(
-        path: '/go/worlds',
-        name: worldListRoute,
-        pageBuilder: (context, state) => CustomTransitionPage(
-          child: const WorldListPage(),
-          transitionDuration: const Duration(milliseconds: 2400),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            ElegantTransitions.elegantSlideWithOverlay(
-              context, 
-              animation, 
-              secondaryAnimation, 
-              child,
-              direction: SlideDirection.fromBottom,
-            ),
-        ),
-      ),
-      GoRoute(
-        path: '/go/worlds/:id',
-        name: worldDashboardRoute,
-        pageBuilder: (context, state) {
-          final worldId = state.pathParameters['id'];
-          if (worldId == null) {
-            return CustomTransitionPage(
-              child: const ErrorPage(),
-              transitionDuration: const Duration(milliseconds: 2400),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                ElegantTransitions.elegantSlideWithOverlay(
-                  context, 
-                  animation, 
-                  secondaryAnimation, 
-                  child,
-                  direction: SlideDirection.fromBottom,
-                ),
-            );
-          }
-          return CustomTransitionPage(
-            child: DashboardPage(worldId: worldId),
-            transitionDuration: const Duration(milliseconds: 2400),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              ElegantTransitions.elegantSlideWithOverlay(
-                context, 
-                animation, 
-                secondaryAnimation, 
-                child,
-                direction: SlideDirection.fromBottom,
-              ),
-          );
-        },
-      ),
-      // NORMALE WORLD-JOIN Route (über interne Navigation)
-      GoRoute(
-        path: '/go/worlds/:id/join',
-        name: worldJoinRoute,
-        pageBuilder: (context, state) {
-          final worldId = state.pathParameters['id'];
-          if (worldId == null) {
-            return CustomTransitionPage(
-              child: const ErrorPage(),
-              transitionDuration: const Duration(milliseconds: 2400),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                ElegantTransitions.elegantSlideWithOverlay(
-                  context, 
-                  animation, 
-                  secondaryAnimation, 
-                  child,
-                  direction: SlideDirection.fromBottom,
-                ),
-            );
-          }
-          return CustomTransitionPage(
-            child: WorldJoinPage(
-              worldId: worldId,
-            ),
-            transitionDuration: const Duration(milliseconds: 2400),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              ElegantTransitions.elegantSlideWithOverlay(
-                context, 
-                animation, 
-                secondaryAnimation, 
-                child,
-                direction: SlideDirection.fromBottom,
-              ),
-          );
-        },
+        path: '/worlds',
+        name: 'worlds',
+        builder: (context, state) => const WorldListPage(),
       ),
     ],
-    
-    // Verbesserte Fehlerbehandlung mit robuster 404-Erkennung
-    errorBuilder: (context, state) {
-      // Spezifische Fehlerbehandlung basierend auf Error-Typ
-      if (state.error is GoException) {
-        final goException = state.error as GoException;
-        
-        // Auth-Fehler
-        if (goException.message.contains('401')) {
-          return const AuthErrorPage();
-        }
-        
-        // Welt nicht gefunden - robuste Erkennung
-        if (goException.message.contains('404') && 
-            (state.matchedLocation.contains('/worlds/') || 
-             state.uri.pathSegments.contains('worlds'))) {
-          return const WorldNotFoundPage();
-        }
-      }
-      
-      // Standard 404-Fehlerseite
-      return const ErrorPage();
-    },
-  );
-        
-        _isInitialized = true;
-      } catch (e) {
-        // Bei Fehler während der Initialisierung
-        AppLogger.navigation.e('❌ Router Initialisierungs-Fehler', error: e);
-        // Fallback: Minimaler Router nur mit Error Page
-        _routerInstance = GoRouter(
-          routes: [
-            GoRoute(
-              path: '/go',
-              builder: (context, state) => const ErrorPage(),
+    errorBuilder: (context, state) => Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Text('Page not found: ${state.matchedLocation}'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => context.go('/login'),
+              child: const Text('Go to Login'),
             ),
           ],
-        );
-        _isInitialized = true;
+        ),
+      ),
+    ),
+  );
+
+  static String? _redirect(BuildContext context, GoRouterState state) {
+    try {
+      final authService = ServiceLocator.get<AuthService>();
+      final isAuthenticated = authService.isAuthenticated.value;
+      final currentPath = state.matchedLocation;
+      
+      // Public auth routes (no redirect needed)
+      final publicAuthRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+      final isOnPublicAuthRoute = publicAuthRoutes.any((route) => currentPath.startsWith(route));
+
+      // If not authenticated and not on a public auth route, go to login
+      if (!isAuthenticated && !isOnPublicAuthRoute) {
+        AppLogger.app.d('🔒 Redirecting to login - not authenticated');
+        return '/login';
       }
+
+      // If authenticated and on login/register page, go to worlds
+      if (isAuthenticated && (currentPath == '/login' || currentPath == '/register')) {
+        AppLogger.app.d('✅ Redirecting to worlds - already authenticated');
+        return '/worlds';
+      }
+
+      return null; // No redirect needed
+    } catch (e) {
+      AppLogger.app.e('❌ Auth redirect failed', error: e);
+      return '/login'; // Safe fallback
     }
-    return _routerInstance!;
-  }
-
-  // Getter für NavigatorKey (für zukünftige Shell-Integration)
-  static GlobalKey<NavigatorState> get rootNavigatorKey => _rootNavigatorKey;
-  
-  // Public Methoden für Cache-Management
-  static void invalidateAuthCache() {
-    // Caching entfernt, daher keine Cache-Invalidierung mehr nötig
-  }
-  static bool? get cachedLoginState => null; // Caching entfernt
-  
-  // Cache beim App-Start invalidieren
-  static void invalidateCacheOnStart() {
-    // Caching entfernt, daher keine Cache-Invalidierung mehr nötig
   }
 }
-
-// Verbesserte Fehlerseiten
-class ErrorPage extends StatelessWidget {
-  const ErrorPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-              Theme.of(context).colorScheme.surface,
-            ],
-          ),
-        ),
-        child: Center(
-          child: Card(
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Seite nicht gefunden',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Die angeforderte Seite existiert nicht oder wurde verschoben.',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () async => await context.smartGoNamed('landing'),
-                        icon: const Icon(Icons.home),
-                        label: const Text('Startseite'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: () async => await context.smartGoNamed('world-list'),
-                        icon: const Icon(Icons.public),
-                        label: const Text('Welten'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.surface,
-                          foregroundColor: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class AuthErrorPage extends StatelessWidget {
-  const AuthErrorPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
-              Theme.of(context).colorScheme.surface,
-            ],
-          ),
-        ),
-        child: Center(
-          child: Card(
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.lock_outline,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Zugriff verweigert',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Du musst dich anmelden, um auf diese Seite zuzugreifen.',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-                  ElevatedButton.icon(
-                    onPressed: () async => await context.smartGoNamed('login'),
-                    icon: const Icon(Icons.login),
-                    label: const Text('Anmelden'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class WorldNotFoundPage extends StatelessWidget {
-  const WorldNotFoundPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-              Theme.of(context).colorScheme.surface,
-            ],
-          ),
-        ),
-        child: Center(
-          child: Card(
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.public_off,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Welt nicht gefunden',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Die angeforderte Welt existiert nicht oder wurde entfernt.',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-                  ElevatedButton.icon(
-                    onPressed: () async => await context.smartGoNamed('world-list'),
-                    icon: const Icon(Icons.list),
-                    label: const Text('Alle Welten anzeigen'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-} 

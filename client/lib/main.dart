@@ -8,7 +8,11 @@ import 'core/services/auth_service.dart';
 import 'core/services/api_service.dart';
 import 'core/services/world_service.dart';
 import 'core/services/invite_service.dart';
-// ❌ REMOVED: import 'core/providers/theme_context_provider.dart';
+import 'core/infrastructure/error_handler.dart';
+import 'core/infrastructure/performance_monitor.dart';
+import 'shared/theme/theme_manager.dart';
+import 'core/providers/theme_provider.dart';
+
 
 // Service-Container für Dependency Injection
 class ServiceLocator {
@@ -43,48 +47,26 @@ void main() async {
     usePathUrlStrategy();
   }
 
-  // Initialisiere das Logging-System
+  // 📋 INFRASTRUCTURE LAYER INITIALISIERUNG
   try {
+    // 1. Logging-System
     AppLogger.initialize();
     AppLogger.app.i('🚀 Weltenwind App starting...');
-  } catch (e) {
-    AppLogger.error.e('❌ AppLogger initialization FAILED: $e');
-  }
-
-  // Flutter Error Handling
-  FlutterError.onError = (FlutterErrorDetails details) {
-    AppLogger.error.e('❌ Flutter Error: ${details.exception}');
-    AppLogger.logError(
-      'Flutter Framework Error',
-      details.exception,
-      stackTrace: details.stack,
-      context: {
-        'library': details.library,
-        'context': details.context?.toString(),
-        'informationCollector': details.informationCollector?.toString(),
-      },
-    );
     
-    // In Debug Mode auch zur Console
-    if (kDebugMode) {
-      FlutterError.presentError(details);
-    }
-  };
-
-  // Dart Error Handling (für unhandled exceptions)
-  WidgetsBinding.instance.platformDispatcher.onError = (error, stack) {
-    AppLogger.error.e('❌ Dart Error: $error');
-    AppLogger.logError(
-      'Unhandled Dart Error',
-      error,
-      stackTrace: stack,
-      context: {
-        'type': 'dart_unhandled',
-        'isolate': 'main',
-      },
-    );
-    return true; // Handled
-  };
+    // 2. Professional Error Handling
+    await ErrorHandler.initialize();
+    
+    // 3. Performance Monitoring
+    await PerformanceMonitor.initialize();
+    
+    // 4. Theme Management System
+    await _initializeThemeSystem();
+    
+    AppLogger.app.i('🏗️ Infrastructure layer initialized');
+  } catch (e) {
+    AppLogger.error.e('❌ Infrastructure initialization FAILED: $e');
+    // Continue app startup even if infrastructure fails
+  }
 
   // Set preferred orientations
   try {
@@ -99,6 +81,13 @@ void main() async {
   // 🔧 SERVICES INITIALISIEREN VOR APP-START
   try {
     await _initializeServices();
+    
+    // ThemeManager initialisieren
+    await ThemeManager.initialize();
+    
+    // ThemeProvider initialisieren (mit ThemeManager Integration)
+    await ThemeProvider.initialize();
+    
     AppLogger.app.i('✅ All services initialized - App ready');
   } catch (e) {
     AppLogger.error.e('❌ Service initialization FAILED: $e');
@@ -106,6 +95,17 @@ void main() async {
   }
 
   runApp(const WeltenwindApp());
+}
+
+/// Initialize theme management system
+Future<void> _initializeThemeSystem() async {
+  try {
+    // Initialize theme manager directly
+    await ThemeManager.initialize();
+    AppLogger.app.i('🎨 Theme Manager initialized');
+  } catch (e) {
+    AppLogger.app.w('⚠️ Theme Manager initialization failed - using defaults', error: e);
+  }
 }
 
 /// Initialisiert alle Services bevor die App gestartet wird
@@ -127,7 +127,7 @@ Future<void> _initializeServices() async {
     final inviteService = InviteService();
     ServiceLocator.register<InviteService>(inviteService);
     
-    // ❌ REMOVED: ThemeContextProvider - AppScaffold handles themes locally per page!
+
     
     AppLogger.app.i('⚙️ All services registered in ServiceLocator');
   } catch (e) {

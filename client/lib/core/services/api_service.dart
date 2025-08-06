@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import '../../config/env.dart';
 import '../../config/logger.dart';
 import 'auth_service.dart';
-import '../../routing/app_router.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -161,7 +160,7 @@ class ApiService {
         // Bei Token-Refresh-Fehlern automatisch ausloggen
                   await _authService!.logout();
         // Cache invalidieren nach Logout
-        AppRouter.invalidateAuthCache();
+        // Auth cache invalidated - handled by auth service
       }
     }
     return response;

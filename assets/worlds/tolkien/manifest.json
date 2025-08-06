@@ -1,0 +1,61 @@
+{
+  "id": "tolkien",
+  "name": "Middle-earth",
+  "version": "1.0.0",
+  "description": "Episches Fantasy-Theme inspiriert von Tolkiens Mittelerde mit mystischen Farben und altertümlicher Atmosphäre",
+  "category": "fantasy",
+  "author": "Weltenwind Team",
+  "createdAt": "2025-08-02T11:00:00.000Z",
+  "entrypoints": {
+    "themes": {
+      "pre-game": {
+        "file": "themes/pre-game/theme.json"
+      },
+      "game": {
+        "file": "themes/game/theme.ts",
+        "export": "tolkienGameTheme"
+      },
+      "loading": {
+        "file": "themes/loading/theme.ts",
+        "export": "tolkienLoadingTheme"
+      }
+    },
+    "themeCss": "theme.css",
+    "preThemeCss": "pre/pre_theme.css"
+  },
+  "assets": {
+    "icons": "icons/",
+    "maps": "maps/",
+    "materials": "materials/",
+    "sounds": {
+      "ambient": "sounds/ambient/",
+      "events": "sounds/events/"
+    },
+    "ui": {
+      "headers": "ui/headers/",
+      "buttons": "ui/buttons/",
+      "tooltips": "ui/tooltips/"
+    }
+  },
+  "config": {
+    "settings": "config/world-settings.json",
+    "components": "config/components.json",
+    "assets": "config/assets.json"
+  },
+  "pre": {
+    "splash": "pre/splash.png",
+    "intro": "pre/intro-video.mp4",
+    "locale": "en",
+    "themeMode": "auto"
+  },
+  "bundle": {
+    "name": "middle-earth",
+    "type": "fantasy_world_bundle",
+    "context": "world-fantasy",
+    "modules": ["colors", "typography", "spacing", "radius", "effects.visual", "effects.animations"],
+    "estimatedSize": "100KB",
+    "loadTime": "medium",
+    "priority": 2,
+    "autoLoad": false
+  }
+}

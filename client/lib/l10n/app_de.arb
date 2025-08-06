@@ -1,1733 +1,560 @@
 {
   "@@locale": "de",
   "@@context": "weltenwind-game",
+  
   "appTitle": "Weltenwind",
   "@appTitle": {
     "description": "The application title",
-    "context": "app"
+    "context": "app_core"
   },
   "authLoginTitle": "Anmelden",
   "@authLoginTitle": {
-    "description": "Title for the login page",
-    "context": "authentication"
-  },
-  "authLoginButton": "Anmelden",
-  "@authLoginButton": {
-    "description": "Button text for login",
-    "context": "authentication"
-  },
-  "authRegisterTitle": "Registrieren",
-  "@authRegisterTitle": {
-    "description": "Title for the registration page",
-    "context": "authentication"
-  },
-  "authRegisterButton": "Account erstellen",
-  "@authRegisterButton": {
-    "description": "Button text for registration",
-    "context": "authentication"
-  },
-  "authLogoutButton": "Abmelden",
-  "@authLogoutButton": {
-    "description": "Button for signing out",
-    "context": "authentication"
-  },
-  "authLogoutConfirmMessage": "Möchtest du dich wirklich abmelden?",
-  "@authLogoutConfirmMessage": {
-    "description": "Confirmation message for logout dialog",
-    "context": "authentication"
-  },
-  "authAccountLocked": "Account gesperrt",
-  "@authAccountLocked": {
-    "description": "Message when user account is locked",
-    "context": "authentication"
-  },
-  "authEmailLabel": "E-Mail",
-  "@authEmailLabel": {
-    "description": "Label for email input field",
-    "context": "authentication"
-  },
-  "authPasswordLabel": "Passwort",
-  "@authPasswordLabel": {
-    "description": "Label for password input field",
-    "context": "authentication"
-  },
-  "authUsernameLabel": "Spielername",
-  "@authUsernameLabel": {
-    "description": "Label for username input field",
-    "context": "authentication"
+    "description": "Titel der Anmeldeseite",
+    "context": "auth_login"
   },
   "authLoginWelcome": "Willkommen bei Weltenwind",
   "@authLoginWelcome": {
-    "description": "Welcome title on login page",
-    "context": "authentication"
+    "description": "Willkommensnachricht auf der Anmeldeseite",
+    "context": "auth_login"
   },
-  "authLoginSubtitle": "Melde dich an um deine Welten zu verwalten",
+  "authLoginSubtitle": "Melde dich an, um deine Welten zu verwalten",
   "@authLoginSubtitle": {
-    "description": "Subtitle on login page",
-    "context": "authentication"
+    "description": "Untertitel auf der Anmeldeseite",
+    "context": "auth_login"
   },
-  "authUsernameRequired": "Bitte gib deinen Spielernamen ein",
-  "@authUsernameRequired": {
-    "description": "Validation error for empty username field",
-    "context": "authentication"
+  "authLoginButton": "Anmelden",
+  "@authLoginButton": {
+    "description": "Text des Anmelde-Buttons",
+    "context": "auth_login"
   },
-  "authUsernameMinLength": "Spielername muss mindestens 3 Zeichen lang sein",
-  "@authUsernameMinLength": {
-    "description": "Validation error for username too short",
-    "context": "authentication"
+  "authLoginFailedCredentials": "Anmeldung fehlgeschlagen. Bitte überprüfe deine Anmeldedaten.",
+  "@authLoginFailedCredentials": {
+    "description": "Fehlermeldung bei ungültigen Anmeldedaten",
+    "context": "auth_login"
   },
-  "authPasswordRequired": "Bitte gib dein Passwort ein",
-  "@authPasswordRequired": {
-    "description": "Validation error for empty password field",
-    "context": "authentication"
+  "authLoginFailedGeneric": "Anmeldung fehlgeschlagen: {error}",
+  "@authLoginFailedGeneric": {
+    "description": "Allgemeine Anmeldung-Fehlermeldung mit Details",
+    "context": "auth_login",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-  "authPasswordMinLength": "Passwort muss mindestens 6 Zeichen lang sein",
-  "@authPasswordMinLength": {
-    "description": "Validation error for password too short",
-    "context": "authentication"
+  "authDontHaveAccountRegister": "Noch kein Account? Registrieren",
+  "@authDontHaveAccountRegister": {
+    "description": "Link-Text zur Registrierungsseite",
+    "context": "auth_login"
   },
-  "authRememberMe": "Angemeldet bleiben",
-  "@authRememberMe": {
-    "description": "Checkbox text for 'Stay signed in'",
-    "context": "authentication"
+  "authRegisterTitle": "Registrieren",
+  "@authRegisterTitle": {
+    "description": "Titel der Registrierungsseite",
+    "context": "auth_register"
   },
-  "authForgotPassword": "Passwort vergessen?",
-  "@authForgotPassword": {
-    "description": "Link text for forgot password",
-    "context": "authentication"
-  },
-  "authNoAccount": "Noch kein Account?",
-  "@authNoAccount": {
-    "description": "Text before registration link",
-    "context": "authentication"
-  },
-  "authLoginLoading": "Anmeldung läuft...",
-  "@authLoginLoading": {
-    "description": "Loading text during login",
-    "context": "authentication"
-  },
-  "authGoogleLabel": "Google",
-  "@authGoogleLabel": {
-    "description": "Label for Google login button",
-    "context": "authentication"
-  },
-  "authGithubLabel": "GitHub",
-  "@authGithubLabel": {
-    "description": "Label for GitHub login button",
-    "context": "authentication"
-  },
-  "authGoogleComingSoon": "Google-Anmeldung kommt bald",
-  "@authGoogleComingSoon": {
-    "description": "Coming soon text for Google login",
-    "context": "authentication"
-  },
-  "authGithubComingSoon": "GitHub-Anmeldung kommt bald",
-  "@authGithubComingSoon": {
-    "description": "Coming soon text for GitHub login",
-    "context": "authentication"
-  },
-  "authRegisterWelcome": "Bei Weltenwind registrieren",
-  "@authRegisterWelcome": {
-    "description": "Welcome title on registration page",
-    "context": "authentication"
+  "authJoinWeltenwind": "Bei Weltenwind registrieren",
+  "@authJoinWeltenwind": {
+    "description": "Willkommenstitel auf der Registrierungsseite",
+    "context": "auth_register"
   },
   "authRegisterSubtitle": "Erstelle deinen Account und starte dein Abenteuer",
   "@authRegisterSubtitle": {
-    "description": "Subtitle on registration page",
-    "context": "authentication"
+    "description": "Untertitel auf der Registrierungsseite",
+    "context": "auth_register"
   },
-  "authUsernameRequiredAlt": "Spielername ist erforderlich",
-  "@authUsernameRequiredAlt": {
-    "description": "Alternative validation error for empty username field",
-    "context": "authentication"
+  "authRegisterButton": "Registrieren",
+  "@authRegisterButton": {
+    "description": "Text des Registrierungs-Buttons",
+    "context": "auth_register"
   },
-  "authUsernameInvalidChars": "Spielername darf nur Buchstaben, Zahlen und Unterstriche enthalten",
-  "@authUsernameInvalidChars": {
-    "description": "Validation error for invalid username characters",
-    "context": "authentication"
+  "authAlreadyHaveAccount": "Bereits einen Account? Anmelden",
+  "@authAlreadyHaveAccount": {
+    "description": "Link-Text zur Anmeldeseite",
+    "context": "auth_register"
   },
-  "authEmailRequired": "Bitte gib deine E-Mail ein",
-  "@authEmailRequired": {
-    "description": "Validation error for empty email field",
-    "context": "authentication"
+  "authValidationFixErrors": "Bitte behebe die obigen Fehler",
+  "@authValidationFixErrors": {
+    "description": "Allgemeine Validierungsfehlermeldung",
+    "context": "auth_register"
   },
-  "authHaveAccount": "Bereits einen Account?",
-  "@authHaveAccount": {
-    "description": "Text before login link on register page",
-    "context": "authentication"
+  "authAcceptTermsRequired": "Bitte akzeptiere die Nutzungsbedingungen und Datenschutzerklärung",
+  "@authAcceptTermsRequired": {
+    "description": "Fehlermeldung bei nicht akzeptierten Nutzungsbedingungen",
+    "context": "auth_register"
   },
-  "authRegisterSuccessWelcome": "Registrierung erfolgreich! Willkommen bei Weltenwind!",
-  "@authRegisterSuccessWelcome": {
-    "description": "Success message after registration",
-    "context": "authentication"
+  "authRegisterSuccessMessage": "Registrierung erfolgreich! Willkommen bei Weltenwind!",
+  "@authRegisterSuccessMessage": {
+    "description": "Erfolgsmeldung nach der Registrierung",
+    "context": "auth_register"
+  },
+  "authRegisterFailedGeneric": "Registrierung fehlgeschlagen. Bitte versuche es erneut.",
+  "@authRegisterFailedGeneric": {
+    "description": "Allgemeine Registrierungsfehlermeldung",
+    "context": "auth_register"
+  },
+  "authEmailExistsError": "Ein Account mit dieser E-Mail existiert bereits",
+  "@authEmailExistsError": {
+    "description": "Fehler wenn E-Mail bereits existiert",
+    "context": "auth_register"
+  },
+  "authUsernameTakenError": "Dieser Benutzername ist bereits vergeben",
+  "@authUsernameTakenError": {
+    "description": "Fehler wenn Benutzername vergeben ist",
+    "context": "auth_register"
+  },
+  "authForgotPassword": "Passwort vergessen?",
+  "@authForgotPassword": {
+    "description": "Link-Text für Passwort vergessen",
+    "context": "auth_forgot_password"
   },
   "authForgotPasswordTitle": "Passwort zurücksetzen",
   "@authForgotPasswordTitle": {
-    "description": "Title for forgot password page",
-    "context": "authentication"
+    "description": "Titel auf der Passwort-vergessen-Seite",
+    "context": "auth_forgot_password"
   },
-  "authForgotPasswordDescription": "Wir senden dir einen Link zum Zurücksetzen deines Passworts.",
-  "@authForgotPasswordDescription": {
-    "description": "Description on forgot password page",
-    "context": "authentication"
+  "authForgotPasswordSubtitle": "Gib deine E-Mail-Adresse ein und wir senden dir Anweisungen zum Zurücksetzen deines Passworts.",
+  "@authForgotPasswordSubtitle": {
+    "description": "Anweisungen auf der Passwort-vergessen-Seite",
+    "context": "auth_forgot_password"
   },
-  "authForgotPasswordEmailLabel": "E-Mail-Adresse",
-  "@authForgotPasswordEmailLabel": {
-    "description": "Label for email input on forgot password page",
-    "context": "authentication"
+  "authSendResetEmail": "Reset-E-Mail senden",
+  "@authSendResetEmail": {
+    "description": "Button zum Senden der Reset-E-Mail",
+    "context": "auth_forgot_password"
   },
-  "authForgotPasswordEmailRequired": "Bitte gib deine E-Mail-Adresse ein",
-  "@authForgotPasswordEmailRequired": {
-    "description": "Validation error for empty email on forgot password",
-    "context": "authentication"
+  "authEmailSentTitle": "E-Mail versendet!",
+  "@authEmailSentTitle": {
+    "description": "Titel wenn Reset-E-Mail versendet wurde",
+    "context": "auth_forgot_password"
   },
-  "authForgotPasswordSuccess": "E-Mail versendet! Prüfe dein Postfach.",
-  "@authForgotPasswordSuccess": {
-    "description": "Success message after sending password reset email",
-    "context": "authentication"
+  "authEmailSentMessage": "Wir haben Anweisungen zum Zurücksetzen des Passworts an deine E-Mail-Adresse gesendet.",
+  "@authEmailSentMessage": {
+    "description": "Nachricht wenn Reset-E-Mail versendet wurde",
+    "context": "auth_forgot_password"
   },
-  "authForgotPasswordSendButton": "Link senden",
-  "@authForgotPasswordSendButton": {
-    "description": "Button text for sending password reset link",
-    "context": "authentication"
+  "authNextStepsTitle": "Nächste Schritte:",
+  "@authNextStepsTitle": {
+    "description": "Titel für nächste Schritte Sektion",
+    "context": "auth_forgot_password"
   },
-  "authForgotPasswordBackToLogin": "Zurück zur Anmeldung",
-  "@authForgotPasswordBackToLogin": {
-    "description": "Button text to go back to login after successful sending",
-    "context": "authentication"
+  "authStepCheckEmail": "1. Prüfe deinen E-Mail-Posteingang",
+  "@authStepCheckEmail": {
+    "description": "Schritt 1 im Passwort-Reset-Prozess",
+    "context": "auth_forgot_password"
   },
-  "authForgotPasswordCancel": "Abbrechen",
-  "@authForgotPasswordCancel": {
-    "description": "Button text to cancel password reset request",
-    "context": "authentication"
+  "authStepClickLink": "2. Klicke auf den Reset-Link in der E-Mail",
+  "@authStepClickLink": {
+    "description": "Schritt 2 im Passwort-Reset-Prozess",
+    "context": "auth_forgot_password"
   },
-  "authResetPasswordInvalidToken": "Der Reset-Link ist ungültig oder abgelaufen. Bitte fordere einen neuen Link an.",
-  "@authResetPasswordInvalidToken": {
-    "description": "Error message for invalid reset token",
-    "context": "authentication"
+  "authStepCreatePassword": "3. Erstelle ein neues sicheres Passwort",
+  "@authStepCreatePassword": {
+    "description": "Schritt 3 im Passwort-Reset-Prozess",
+    "context": "auth_forgot_password"
   },
-  "authResetPasswordSuccessTitle": "Passwort erfolgreich geändert!",
-  "@authResetPasswordSuccessTitle": {
-    "description": "Title after successful password reset",
-    "context": "authentication"
+  "authStepLogin": "4. Melde dich mit deinem neuen Passwort an",
+  "@authStepLogin": {
+    "description": "Schritt 4 im Passwort-Reset-Prozess",
+    "context": "auth_forgot_password"
   },
-  "authResetPasswordTitle": "Neues Passwort setzen",
-  "@authResetPasswordTitle": {
-    "description": "Title on password reset page",
-    "context": "authentication"
+  "authResendEmail": "E-Mail erneut senden",
+  "@authResendEmail": {
+    "description": "Button zum erneuten Senden der Reset-E-Mail",
+    "context": "auth_forgot_password"
   },
-  "authResetPasswordSuccessMessage": "Du wirst automatisch zur Anmeldung weitergeleitet...",
-  "@authResetPasswordSuccessMessage": {
-    "description": "Message after successful password reset",
-    "context": "authentication"
+  "authPasswordResetSentMessage": "Passwort-Reset-Anweisungen an deine E-Mail gesendet",
+  "@authPasswordResetSentMessage": {
+    "description": "Erfolgsmeldung wenn Reset-E-Mail gesendet wurde",
+    "context": "auth_forgot_password"
   },
-  "authResetPasswordDescription": "Bitte gib dein neues Passwort ein.",
-  "@authResetPasswordDescription": {
-    "description": "Description on password reset page",
-    "context": "authentication"
+  "authTooManyResendAttempts": "Zu viele Wiederholungsversuche. Bitte warte, bevor du es erneut versuchst.",
+  "@authTooManyResendAttempts": {
+    "description": "Rate-Limit-Fehler für Wiederholungsversuche",
+    "context": "auth_forgot_password"
   },
-  "authNewPasswordLabel": "Neues Passwort",
-  "@authNewPasswordLabel": {
-    "description": "Label for new password input field",
-    "context": "authentication"
+  "authResendEmailSuccess": "Passwort-Reset-E-Mail erneut gesendet",
+  "@authResendEmailSuccess": {
+    "description": "Erfolgsmeldung wenn E-Mail erneut gesendet wurde",
+    "context": "auth_forgot_password"
   },
-  "authPasswordHelperText": "Mindestens 6 Zeichen",
-  "@authPasswordHelperText": {
-    "description": "Helper text under password input field",
-    "context": "authentication"
+  "authResendEmailFailed": "E-Mail konnte nicht erneut gesendet werden. Bitte versuche es später erneut.",
+  "@authResendEmailFailed": {
+    "description": "Fehlermeldung wenn erneutes Senden fehlschlägt",
+    "context": "auth_forgot_password"
   },
-  "authNewPasswordRequired": "Bitte gib ein neues Passwort ein",
-  "@authNewPasswordRequired": {
-    "description": "Validation error for empty new password",
-    "context": "authentication"
+  "authEmailNotFoundSecure": "Falls diese E-Mail in unserem System existiert, erhältst du Reset-Anweisungen.",
+  "@authEmailNotFoundSecure": {
+    "description": "Sichere Nachricht wenn E-Mail nicht gefunden",
+    "context": "auth_forgot_password"
   },
-  "authPasswordNoSpaces": "Passwort darf keine Leerzeichen enthalten",
-  "@authPasswordNoSpaces": {
-    "description": "Validation error for spaces in password",
-    "context": "authentication"
+  "authUnableToProcessRequest": "Anfrage konnte nicht verarbeitet werden. Bitte versuche es später erneut.",
+  "@authUnableToProcessRequest": {
+    "description": "Allgemeiner Fehler für Anfrageverarbeitung",
+    "context": "auth_forgot_password"
   },
-  "authConfirmPasswordLabel": "Passwort bestätigen",
-  "@authConfirmPasswordLabel": {
-    "description": "Label for password confirmation input field",
-    "context": "authentication"
+  "authResetPassword": "Passwort zurücksetzen",
+  "@authResetPassword": {
+    "description": "Titel für Passwort-zurücksetzen-Seite",
+    "context": "auth_reset_password"
   },
-  "authConfirmPasswordRequired": "Bitte bestätige dein neues Passwort",
-  "@authConfirmPasswordRequired": {
-    "description": "Validation error for empty password confirmation",
-    "context": "authentication"
+  "authCreateNewPassword": "Neues Passwort erstellen",
+  "@authCreateNewPassword": {
+    "description": "Titel für Passwort-Reset-Formular",
+    "context": "auth_reset_password"
   },
-  "authPasswordsDoNotMatch": "Passwörter stimmen nicht überein",
-  "@authPasswordsDoNotMatch": {
-    "description": "Validation error when passwords don't match",
-    "context": "authentication"
+  "authResetPasswordSubtitle": "Gib ein starkes neues Passwort für deinen Account ein.",
+  "@authResetPasswordSubtitle": {
+    "description": "Anweisungen auf der Passwort-zurücksetzen-Seite",
+    "context": "auth_reset_password"
   },
-  "authPasswordRequirementsTitle": "Passwort-Anforderungen:",
-  "@authPasswordRequirementsTitle": {
-    "description": "Title for password requirements section",
-    "context": "authentication"
+  "authNewPassword": "Neues Passwort",
+  "@authNewPassword": {
+    "description": "Label für neues Passwort Feld",
+    "context": "auth_reset_password"
   },
-  "authRequirementMinLength": "Mindestens 6 Zeichen",
-  "@authRequirementMinLength": {
-    "description": "Password requirement: minimum length",
-    "context": "authentication"
+  "authInvalidResetLink": "Ungültiger Reset-Link",
+  "@authInvalidResetLink": {
+    "description": "Titel wenn Reset-Link ungültig ist",
+    "context": "auth_reset_password"
   },
-  "authRequirementNoSpaces": "Keine Leerzeichen erlaubt",
-  "@authRequirementNoSpaces": {
-    "description": "Password requirement: no spaces",
-    "context": "authentication"
+  "authRequestNewResetLink": "Neuen Reset-Link anfordern",
+  "@authRequestNewResetLink": {
+    "description": "Button-Text für neuen Reset-Link anfordern",
+    "context": "auth_reset_password"
   },
-  "authRequirementPasswordsMatch": "Passwörter stimmen überein",
-  "@authRequirementPasswordsMatch": {
-    "description": "Password requirement: passwords match validation",
-    "context": "authentication"
+  "authResetLinkInvalidExpired": "Dieser Reset-Link ist ungültig oder abgelaufen",
+  "@authResetLinkInvalidExpired": {
+    "description": "Fehler wenn Reset-Token ungültig ist",
+    "context": "auth_reset_password"
   },
-  "authResetPasswordButton": "Passwort zurücksetzen",
-  "@authResetPasswordButton": {
-    "description": "Button text for password reset",
-    "context": "authentication"
+  "authResetPasswordSuccess": "Passwort erfolgreich zurückgesetzt! Du kannst dich jetzt mit deinem neuen Passwort anmelden.",
+  "@authResetPasswordSuccess": {
+    "description": "Erfolgsmeldung nach Passwort-Reset",
+    "context": "auth_reset_password"
+  },
+  "authResetPasswordFailed": "Passwort-Reset fehlgeschlagen. Bitte versuche es erneut.",
+  "@authResetPasswordFailed": {
+    "description": "Fehlermeldung wenn Passwort-Reset fehlschlägt",
+    "context": "auth_reset_password"
+  },
+  "authResetLinkInvalidRequest": "Dieser Reset-Link ist ungültig oder abgelaufen. Bitte fordere einen neuen an.",
+  "@authResetLinkInvalidRequest": {
+    "description": "Fehler wenn Reset-Link ungültig mit Handlungsvorschlag",
+    "context": "auth_reset_password"
+  },
+  "authResetLinkExpiredRequest": "Dieser Reset-Link ist abgelaufen. Bitte fordere einen neuen an.",
+  "@authResetLinkExpiredRequest": {
+    "description": "Fehler wenn Reset-Link abgelaufen mit Handlungsvorschlag",
+    "context": "auth_reset_password"
+  },
+  "authUnableToResetPassword": "Passwort konnte nicht zurückgesetzt werden. Bitte versuche es erneut oder fordere einen neuen Reset-Link an.",
+  "@authUnableToResetPassword": {
+    "description": "Allgemeiner Fehler für Passwort-Reset mit Handlungsvorschlägen",
+    "context": "auth_reset_password"
+  },
+  "authSecurityTips": "Sicherheitstipps:",
+  "@authSecurityTips": {
+    "description": "Titel für Sicherheitstipps-Bereich",
+    "context": "auth_reset_password"
+  },
+  "authEmailLabel": "E-Mail",
+  "@authEmailLabel": {
+    "description": "Label für E-Mail-Eingabefeld",
+    "context": "auth_fields"
+  },
+  "authEmailHint": "Gib deine E-Mail-Adresse ein",
+  "@authEmailHint": {
+    "description": "Hinweistext für E-Mail-Eingabe",
+    "context": "auth_fields"
+  },
+  "authEmailRequired": "E-Mail ist erforderlich",
+  "@authEmailRequired": {
+    "description": "Validierungsfehler für fehlende E-Mail",
+    "context": "auth_fields"
+  },
+  "authPasswordLabel": "Passwort",
+  "@authPasswordLabel": {
+    "description": "Label für Passwort-Eingabefeld",
+    "context": "auth_fields"
+  },
+  "authPasswordHint": "Erstelle ein starkes Passwort",
+  "@authPasswordHint": {
+    "description": "Hinweistext für Passwort-Eingabe",
+    "context": "auth_fields"
+  },
+  "authPasswordRequired": "Passwort ist erforderlich",
+  "@authPasswordRequired": {
+    "description": "Validierungsfehler für fehlendes Passwort",
+    "context": "auth_fields"
+  },
+  "authUsernameLabel": "Benutzername",
+  "@authUsernameLabel": {
+    "description": "Label für Benutzername-Eingabefeld",
+    "context": "auth_fields"
+  },
+  "authUsernameHint": "Wähle einen eindeutigen Benutzernamen",
+  "@authUsernameHint": {
+    "description": "Hinweistext für Benutzername-Eingabe",
+    "context": "auth_fields"
+  },
+  "authConfirmPassword": "Passwort bestätigen",
+  "@authConfirmPassword": {
+    "description": "Label für Passwort-Bestätigungs-Feld",
+    "context": "auth_fields"
+  },
+  "authConfirmPasswordHint": "Gib dein Passwort erneut ein",
+  "@authConfirmPasswordHint": {
+    "description": "Hinweistext für Passwort-Bestätigung",
+    "context": "auth_fields"
   },
   "authBackToLogin": "Zurück zur Anmeldung",
   "@authBackToLogin": {
-    "description": "Link text to go back to login",
-    "context": "authentication"
+    "description": "Link-Text zurück zur Anmeldung",
+    "context": "auth_navigation"
   },
-  "navDashboard": "Übersicht",
-  "@navDashboard": {
-    "description": "Navigation item for dashboard",
-    "context": "navigation"
+  "authNetworkError": "Netzwerkfehler. Bitte überprüfe deine Verbindung und versuche es erneut.",
+  "@authNetworkError": {
+    "description": "Netzwerk-Fehlermeldung",
+    "context": "auth_errors"
   },
-  "navWorldList": "Spielwelten",
-  "@navWorldList": {
-    "description": "Navigation item for world list",
-    "context": "navigation"
+  "authPasswordStrengthLabel": "Passwort-Stärke: ",
+  "@authPasswordStrengthLabel": {
+    "description": "Label für Passwort-Stärke-Anzeige",
+    "context": "auth_password_strength"
   },
-  "navProfile": "Profil",
-  "@navProfile": {
-    "description": "Navigation item for user profile",
-    "context": "navigation"
+  "authPasswordStrengthVeryWeak": "Sehr schwach",
+  "@authPasswordStrengthVeryWeak": {
+    "description": "Passwort-Stärke-Level",
+    "context": "auth_password_strength"
   },
-  "worldsTitle": "Spielwelten",
-  "@worldsTitle": {
-    "description": "Title for worlds section",
-    "context": "worlds"
+  "authPasswordStrengthWeak": "Schwach",
+  "@authPasswordStrengthWeak": {
+    "description": "Passwort-Stärke-Level",
+    "context": "auth_password_strength"
   },
-  "worldLeaveButton": "Verlassen",
-  "@worldLeaveButton": {
-    "description": "Button text to leave a world",
-    "context": "worlds"
+  "authPasswordStrengthFair": "Akzeptabel",
+  "@authPasswordStrengthFair": {
+    "description": "Passwort-Stärke-Level",
+    "context": "auth_password_strength"
   },
-  "worldPreRegisterButton": "Vorregistrieren",
-  "@worldPreRegisterButton": {
-    "description": "Button text to pre-register for a world",
-    "context": "worlds"
+  "authPasswordStrengthGood": "Gut",
+  "@authPasswordStrengthGood": {
+    "description": "Passwort-Stärke-Level",
+    "context": "auth_password_strength"
   },
-  "worldCancelPreRegisterButton": "Vorregistrierung abbrechen",
-  "@worldCancelPreRegisterButton": {
-    "description": "Button text to cancel pre-registration",
-    "context": "worlds"
+  "authPasswordStrengthStrong": "Stark",
+  "@authPasswordStrengthStrong": {
+    "description": "Passwort-Stärke-Level",
+    "context": "auth_password_strength"
   },
-  "worldStatusUpcoming": "Demnächst",
+  "authIAgreeToThe": "Ich stimme den ",
+  "@authIAgreeToThe": {
+    "description": "Zustimmungs-Präfix-Text",
+    "context": "auth_legal"
+  },
+  "authTermsOfService": "Nutzungsbedingungen",
+  "@authTermsOfService": {
+    "description": "Nutzungsbedingungen-Link-Text",
+    "context": "auth_legal"
+  },
+  "authPrivacyPolicy": "Datenschutzerklärung",
+  "@authPrivacyPolicy": {
+    "description": "Datenschutzerklärung-Link-Text",
+    "context": "auth_legal"
+  },
+  "authPasswordRequirementsTitle": "Passwort-Anforderungen:",
+  "@authPasswordRequirementsTitle": {
+    "description": "Titel für Passwort-Anforderungen-Bereich",
+    "context": "auth_legal"
+  },
+  "authListBullet": "• ",
+  "@authListBullet": {
+    "description": "Aufzählungspunkt für Listen",
+    "context": "ui_elements"
+  },
+  "authTooManyResetAttempts": "Zu viele Versuche zum Zurücksetzen des Passworts. Bitte versuchen Sie es später noch einmal.",
+  "@authTooManyResetAttempts": {
+    "description": "Fehlermeldung bei zu vielen Reset-Versuchen",
+    "context": "auth_reset_password"
+  },
+  "authPasswordTooWeak": "Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort.",
+  "@authPasswordTooWeak": {
+    "description": "Fehlermeldung bei zu schwachem Passwort",
+    "context": "auth_reset_password"
+  },
+  "authTooManyRegistrationAttempts": "Zu viele Registrierungsversuche. Bitte versuchen Sie es später noch einmal.",
+  "@authTooManyRegistrationAttempts": {
+    "description": "Fehlermeldung bei zu vielen Registrierungsversuchen",
+    "context": "auth_register"
+  },
+  "authUsernameRequired": "Benutzername ist erforderlich",
+  "@authUsernameRequired": {
+    "description": "Validierungsfehler für fehlenden Benutzername",
+    "context": "auth_fields"
+  },
+  "authUsernameMinLength": "Benutzername muss mindestens {minLength} Zeichen lang sein",
+  "@authUsernameMinLength": {
+    "description": "Validierungsfehler für zu kurzen Benutzername",
+    "context": "auth_fields",
+    "placeholders": {
+      "minLength": {
+        "type": "int"
+      }
+    }
+  },
+  "authUsernameMaxLength": "Benutzername darf maximal {maxLength} Zeichen lang sein",
+  "@authUsernameMaxLength": {
+    "description": "Validierungsfehler für zu langen Benutzername",
+    "context": "auth_fields",
+    "placeholders": {
+      "maxLength": {
+        "type": "int"
+      }
+    }
+  },
+  "authUsernameInvalidChars": "Benutzername enthält ungültige Zeichen",
+  "@authUsernameInvalidChars": {
+    "description": "Validierungsfehler für ungültige Zeichen im Benutzername",
+    "context": "auth_fields"
+  },
+  "authUsernameInvalidStart": "Benutzername darf nicht mit einer Zahl beginnen",
+  "@authUsernameInvalidStart": {
+    "description": "Validierungsfehler für Benutzername der mit Zahl beginnt",
+    "context": "auth_fields"
+  },
+  "authUsernameReserved": "Dieser Benutzername ist reserviert",
+  "@authUsernameReserved": {
+    "description": "Validierungsfehler für reservierten Benutzername",
+    "context": "auth_fields"
+  },
+  "authEmailTooLong": "E-Mail-Adresse ist zu lang",
+  "@authEmailTooLong": {
+    "description": "Validierungsfehler für zu lange E-Mail",
+    "context": "auth_fields"
+  },
+  "authEmailInvalid": "Ungültige E-Mail-Adresse",
+  "@authEmailInvalid": {
+    "description": "Validierungsfehler für ungültige E-Mail",
+    "context": "auth_fields"
+  },
+  "authEmailInvalidChars": "E-Mail-Adresse enthält ungültige Zeichen",
+  "@authEmailInvalidChars": {
+    "description": "Validierungsfehler für ungültige Zeichen in E-Mail",
+    "context": "auth_fields"
+  },
+  "authEmailInvalidDomain": "Ungültige E-Mail-Domain",
+  "@authEmailInvalidDomain": {
+    "description": "Validierungsfehler für ungültige E-Mail-Domain",
+    "context": "auth_fields"
+  },
+  "authConfirmPasswordRequired": "Passwort-Bestätigung ist erforderlich",
+  "@authConfirmPasswordRequired": {
+    "description": "Validierungsfehler für fehlende Passwort-Bestätigung",
+    "context": "auth_fields"
+  },
+  "authPasswordsDoNotMatch": "Passwörter stimmen nicht überein",
+  "@authPasswordsDoNotMatch": {
+    "description": "Validierungsfehler für nicht übereinstimmende Passwörter",
+    "context": "auth_fields"
+  },
+  "authPasswordMinLength": "Passwort muss mindestens {minLength} Zeichen lang sein",
+  "@authPasswordMinLength": {
+    "description": "Validierungsfehler für zu kurzes Passwort",
+    "context": "auth_fields",
+    "placeholders": {
+      "minLength": {
+        "type": "int"
+      }
+    }
+  },
+  "authPasswordUppercase": "Mindestens ein Großbuchstabe erforderlich",
+  "@authPasswordUppercase": {
+    "description": "Passwort-Anforderung für Großbuchstaben",
+    "context": "auth_fields"
+  },
+  "authPasswordLowercase": "Mindestens ein Kleinbuchstabe erforderlich",
+  "@authPasswordLowercase": {
+    "description": "Passwort-Anforderung für Kleinbuchstaben",
+    "context": "auth_fields"
+  },
+  "authPasswordNumber": "Mindestens eine Zahl erforderlich",
+  "@authPasswordNumber": {
+    "description": "Passwort-Anforderung für Zahlen",
+    "context": "auth_fields"
+  },
+  "authPasswordSpecialChar": "Mindestens ein Sonderzeichen erforderlich",
+  "@authPasswordSpecialChar": {
+    "description": "Passwort-Anforderung für Sonderzeichen",
+    "context": "auth_fields"
+  },
+  "authPasswordNotCommon": "Passwort darf nicht zu einfach sein",
+  "@authPasswordNotCommon": {
+    "description": "Passwort-Anforderung für Komplexität",
+    "context": "auth_fields"
+  },
+  "authPasswordNoSequential": "Keine aufeinanderfolgenden Zeichen",
+  "@authPasswordNoSequential": {
+    "description": "Passwort-Anforderung gegen sequentielle Zeichen",
+    "context": "auth_fields"
+  },
+  "authFieldRequired": "{fieldName} ist erforderlich",
+  "@authFieldRequired": {
+    "description": "Allgemeine Validierungsfehlermeldung für erforderliche Felder",
+    "context": "auth_fields",
+    "placeholders": {
+      "fieldName": {
+        "type": "String"
+      }
+    }
+  },
+  "authThisField": "Dieses Feld",
+  "@authThisField": {
+    "description": "Generischer Feldname für Validierungsfehler",
+    "context": "auth_fields"
+  },
+  "worldStatusUpcoming": "Bevorstehend",
   "@worldStatusUpcoming": {
-    "description": "Status label for upcoming worlds",
-    "context": "worlds"
+    "description": "Status für bevorstehende Welten",
+    "context": "world_status"
   },
   "worldStatusOpen": "Offen",
   "@worldStatusOpen": {
-    "description": "Status label for open worlds",
-    "context": "worlds"
+    "description": "Status für offene Welten",
+    "context": "world_status"
   },
-  "worldStatusRunning": "Aktiv",
+  "worldStatusRunning": "Laufend",
   "@worldStatusRunning": {
-    "description": "Status label for running worlds",
-    "context": "worlds"
+    "description": "Status für laufende Welten",
+    "context": "world_status"
   },
   "worldStatusClosed": "Geschlossen",
   "@worldStatusClosed": {
-    "description": "Status label for closed worlds",
-    "context": "worlds"
-  },
-  "errorGeneral": "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
-  "@errorGeneral": {
-    "description": "General error message",
-    "context": "errors"
-  },
-  "errorNetwork": "Netzwerkfehler. Bitte prüfe deine Verbindung.",
-  "@errorNetwork": {
-    "description": "Network error message",
-    "context": "errors"
-  },
-  "errorUnauthorized": "Du bist nicht berechtigt auf diese Ressource zuzugreifen.",
-  "@errorUnauthorized": {
-    "description": "Unauthorized access error message",
-    "context": "errors"
-  },
-  "errorValidationEmail": "Bitte gib eine gültige E-Mail-Adresse ein",
-  "@errorValidationEmail": {
-    "description": "Email validation error message",
-    "context": "errors"
-  },
-  "errorValidationPassword": "Password must be at least 8 characters long",
-  "@errorValidationPassword": {
-    "description": "Password validation error message",
-    "context": "errors"
-  },
-  "buttonOk": "OK",
-  "@buttonOk": {
-    "description": "OK button text",
-    "context": "common"
-  },
-  "commonOr": "oder",
-  "@commonOr": {
-    "description": "Or conjunction text",
-    "context": "common"
-  },
-  "commonLanguage": "Sprache",
-  "@commonLanguage": {
-    "description": "Language selection label",
-    "context": "common"
-  },
-  "buttonCancel": "Abbrechen",
-  "@buttonCancel": {
-    "description": "Cancel button text",
-    "context": "common"
-  },
-  "buttonConfirm": "Bestätigen",
-  "@buttonConfirm": {
-    "description": "Confirm button text",
-    "context": "common"
-  },
-  "buttonSave": "Speichern",
-  "@buttonSave": {
-    "description": "Save button text",
-    "context": "common"
-  },
-  "buttonRetry": "Erneut versuchen",
-  "@buttonRetry": {
-    "description": "Retry button text",
-    "context": "common"
-  },
-  "loadingText": "Lädt...",
-  "@loadingText": {
-    "description": "Generic loading text",
-    "context": "common"
-  },
-  "landingSubtitle": "Dein Portal zu unendlichen Welten",
-  "@landingSubtitle": {
-    "description": "Subtitle on the landing page",
-    "context": "landing"
-  },
-  "landingTagline": "🎮 Spielen • 🌍 Erkunden • 🤝 Verbinden",
-  "@landingTagline": {
-    "description": "Tagline on the landing page",
-    "context": "landing"
-  },
-  "landingStartButton": "Jetzt kostenlos starten",
-  "@landingStartButton": {
-    "description": "Main CTA button on landing page",
-    "context": "landing"
-  },
-  "landingNoCreditCard": "Keine Kreditkarte erforderlich",
-  "@landingNoCreditCard": {
-    "description": "No credit card disclaimer",
-    "context": "landing"
-  },
-  "landingLoginPrompt": "Bereits Mitglied? Anmelden",
-  "@landingLoginPrompt": {
-    "description": "Login prompt for existing users",
-    "context": "landing"
-  },
-  "landingRegisterButton": "Kostenlos registrieren →",
-  "@landingRegisterButton": {
-    "description": "Registration button text",
-    "context": "landing"
-  },
-  "landingStatsPlayers": "Spieler",
-  "@landingStatsPlayers": {
-    "description": "Player count label in stats",
-    "context": "landing"
-  },
-  "landingStatsOnline": "Online",
-  "@landingStatsOnline": {
-    "description": "Online count label in stats",
-    "context": "landing"
-  },
-  "landingDiscoverMore": "Mehr entdecken",
-  "@landingDiscoverMore": {
-    "description": "Discover more button text",
-    "context": "landing"
-  },
-  "landingFeaturesTitle": "Was macht Weltenwind besonders?",
-  "@landingFeaturesTitle": {
-    "description": "Features section title",
-    "context": "landing"
-  },
-  "landingFeaturesSubtitle": "Erlebe Gaming auf einem neuen Level",
-  "@landingFeaturesSubtitle": {
-    "description": "Features section subtitle",
-    "context": "landing"
-  },
-  "landingFeatureWorldsTitle": "Unendliche Welten",
-  "@landingFeatureWorldsTitle": {
-    "description": "Worlds feature title",
-    "context": "landing"
-  },
-  "landingFeatureWorldsDesc": "Erkunde hunderte einzigartige Spielwelten oder erschaffe deine eigene",
-  "@landingFeatureWorldsDesc": {
-    "description": "Worlds feature description",
-    "context": "landing"
-  },
-  "landingFeatureCommunityTitle": "Community",
-  "@landingFeatureCommunityTitle": {
-    "description": "Community feature title",
-    "context": "landing"
-  },
-  "landingFeatureCommunityDesc": "Verbinde dich mit Spielern aus aller Welt",
-  "@landingFeatureCommunityDesc": {
-    "description": "Community feature description",
-    "context": "landing"
-  },
-  "landingFeatureSecurityTitle": "Sicher & Fair",
-  "@landingFeatureSecurityTitle": {
-    "description": "Security feature title",
-    "context": "landing"
-  },
-  "landingFeatureSecurityDesc": "Modernste Sicherheit und faire Regeln für alle",
-  "@landingFeatureSecurityDesc": {
-    "description": "Security feature description",
-    "context": "landing"
-  },
-  "landingFeatureSpeedTitle": "Blitzschnell",
-  "@landingFeatureSpeedTitle": {
-    "description": "Speed feature title",
-    "context": "landing"
-  },
-  "landingFeatureSpeedDesc": "Optimierte Server für minimale Latenz",
-  "@landingFeatureSpeedDesc": {
-    "description": "Speed feature description",
-    "context": "landing"
-  },
-  "landingFeatureMobileTitle": "Überall spielen",
-  "@landingFeatureMobileTitle": {
-    "description": "Mobile feature title",
-    "context": "landing"
-  },
-  "landingFeatureMobileDesc": "Am PC, Tablet oder Smartphone - immer dabei",
-  "@landingFeatureMobileDesc": {
-    "description": "Mobile feature description",
-    "context": "landing"
-  },
-  "landingFeatureRewardsTitle": "Belohnungen",
-  "@landingFeatureRewardsTitle": {
-    "description": "Rewards feature title",
-    "context": "landing"
-  },
-  "landingFeatureRewardsDesc": "Sammle Erfolge und exklusive Belohnungen",
-  "@landingFeatureRewardsDesc": {
-    "description": "Rewards feature description",
-    "context": "landing"
-  },
-  "landingCtaTitle": "Bereit für dein Abenteuer?",
-  "@landingCtaTitle": {
-    "description": "Final CTA section title",
-    "context": "landing"
-  },
-  "landingCtaSubtitle": "Schließe dich tausenden Spielern an und starte noch heute!",
-  "@landingCtaSubtitle": {
-    "description": "Final CTA section subtitle",
-    "context": "landing"
-  },
-  "footerCopyright": "© 2024 Weltenwind. Alle Rechte vorbehalten.",
-  "@footerCopyright": {
-    "description": "Copyright notice in footer",
-    "context": "footer"
-  },
-  "footerPrivacy": "Datenschutz",
-  "@footerPrivacy": {
-    "description": "Privacy link in footer",
-    "context": "footer"
-  },
-  "footerLegal": "Rechtliches",
-  "@footerLegal": {
-    "description": "Legal link in footer",
-    "context": "footer"
-  },
-  "footerSupport": "Support",
-  "@footerSupport": {
-    "description": "Support link in footer",
-    "context": "footer"
-  },
-  "worldListTitle": "Wähle deine Welt",
-  "@worldListTitle": {
-    "description": "Main title on world list page",
-    "context": "worlds"
-  },
-  "worldListSubtitle": "Wähle deine Spielwelt aus",
-  "@worldListSubtitle": {
-    "description": "Subtitle on world list page",
-    "context": "worlds"
-  },
-  "worldListLoadingError": "Fehler beim Laden der Welten: {error}",
-  "@worldListLoadingError": {
-    "description": "Error message when loading worlds",
-    "context": "worlds",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "worldListErrorTitle": "Fehler beim Laden der Welten",
-  "@worldListErrorTitle": {
-    "description": "Title for world loading error",
-    "context": "worlds"
-  },
-  "worldListErrorUnknown": "Unbekannter Fehler",
-  "@worldListErrorUnknown": {
-    "description": "Unknown error when loading worlds",
-    "context": "worlds"
-  },
-  "worldListEmptyTitle": "Keine Welten gefunden",
-  "@worldListEmptyTitle": {
-    "description": "Title when no worlds available",
-    "context": "worlds"
-  },
-  "worldListEmptyMessage": "Versuche andere Filtereinstellungen.",
-  "@worldListEmptyMessage": {
-    "description": "Message when no worlds found",
-    "context": "worlds"
-  },
-  "worldListRefreshButton": "Aktualisieren",
-  "@worldListRefreshButton": {
-    "description": "Button to refresh world list",
-    "context": "worlds"
-  },
-  "worldListCreateButton": "Neue Welt",
-  "@worldListCreateButton": {
-    "description": "Button to create new world",
-    "context": "worlds"
-  },
-  "worldListLoadingText": "Lade Welten...",
-  "@worldListLoadingText": {
-    "description": "Loading text for world list",
-    "context": "worlds"
-  },
-  "worldAlreadyMember": "Du bist bereits Mitglied der Welt \"{worldName}\"!",
-  "@worldAlreadyMember": {
-    "description": "Message when user is already member of world",
-    "context": "worlds",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "The name of the world"
-      }
-    }
-  },
-  "worldPreRegisterSuccessful": "Erfolgreich für {worldName} vorregistriert!",
-  "@worldPreRegisterSuccessful": {
-    "description": "Success message for pre-registration",
-    "context": "worlds",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "The name of the world"
-      }
-    }
-  },
-  "worldPreRegisterCancelled": "Vorregistrierung für {worldName} abgebrochen.",
-  "@worldPreRegisterCancelled": {
-    "description": "Message when pre-registration is cancelled",
-    "context": "worlds",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "The name of the world"
-      }
-    }
-  },
-  "worldLeaveDialogTitle": "Welt verlassen?",
-  "@worldLeaveDialogTitle": {
-    "description": "Dialog title for leaving world",
-    "context": "worlds"
-  },
-  "worldLeaveDialogMessage": "Willst du die Welt \"{worldName}\" wirklich verlassen?",
-  "@worldLeaveDialogMessage": {
-    "description": "Dialog message for leaving world",
-    "context": "worlds",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "The name of the world"
-      }
-    }
-  },
-  "worldLeaveConfirm": "Verlassen",
-  "@worldLeaveConfirm": {
-    "description": "Confirm button for leaving world",
-    "context": "worlds"
-  },
-  "worldLeaveSuccessful": "Du hast {worldName} verlassen.",
-  "@worldLeaveSuccessful": {
-    "description": "Success message when leaving world",
-    "context": "worlds",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "The name of the world"
-      }
-    }
-  },
-  "worldPlayButton": "Spielen",
-  "@worldPlayButton": {
-    "description": "Button to start playing in world",
-    "context": "worlds"
-  },
-  "worldLogoutError": "Fehler beim Abmelden",
-  "@worldLogoutError": {
-    "description": "Error message when logout fails",
-    "context": "worlds"
-  },
-  "worldRegisterNow": "Jetzt registrieren",
-  "@worldRegisterNow": {
-    "description": "Register now button text",
-    "context": "worlds"
-  },
-  "worldAlreadyRegistered": "Bereits registriert? Anmelden",
-  "@worldAlreadyRegistered": {
-    "description": "Sign in prompt for registered users",
-    "context": "worlds"
-  },
-  "worldLogoutAndRegister": "Abmelden & neu registrieren",
-  "@worldLogoutAndRegister": {
-    "description": "Sign out and register again button",
-    "context": "worlds"
-  },
-  "worldBackToHome": "Zurück zur Startseite",
-  "@worldBackToHome": {
-    "description": "Back to home button text",
-    "context": "worlds"
-  },
-  "worldBackToWorlds": "Zurück zu den Welten",
-  "@worldBackToWorlds": {
-    "description": "Back to worlds button text",
-    "context": "worlds"
-  },
-  "worldLoginButton": "Anmelden",
-  "@worldLoginButton": {
-    "description": "Sign in button text",
-    "context": "worlds"
-  },
-  "worldRegisterButton": "Registrieren",
-  "@worldRegisterButton": {
-    "description": "Register button text",
-    "context": "worlds"
-  },
-  "worldLogoutButton": "Abmelden",
-  "@worldLogoutButton": {
-    "description": "Sign out button text",
-    "context": "worlds"
-  },
-  "worldNotFoundTitle": "Welt nicht gefunden",
-  "@worldNotFoundTitle": {
-    "description": "Title when world not found",
-    "context": "worlds"
-  },
-  "worldNotFoundMessage": "Die angeforderte Welt existiert nicht oder ist nicht verfügbar.",
-  "@worldNotFoundMessage": {
-    "description": "Message when world not found",
-    "context": "worlds"
-  },
-  "worldLoadingError": "Fehler beim Laden",
-  "@worldLoadingError": {
-    "description": "Generic world loading error",
-    "context": "worlds"
-  },
-  "worldInformationTitle": "Informationen",
-  "@worldInformationTitle": {
-    "description": "World information section title",
-    "context": "worlds"
-  },
-  "worldStartDate": "Start: {date}",
-  "@worldStartDate": {
-    "description": "World start date label",
-    "context": "worlds",
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "description": "The start date"
-      }
-    }
-  },
-  "worldEndDate": "Ende: {date}",
-  "@worldEndDate": {
-    "description": "World end date label",
-    "context": "worlds",
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "description": "The end date"
-      }
-    }
-  },
-  "worldDateUnknown": "Unbekannt",
-  "@worldDateUnknown": {
-    "description": "Unknown date placeholder",
-    "context": "worlds"
-  },
-  "worldAboutTitle": "Über diese Welt",
-  "@worldAboutTitle": {
-    "description": "World about section title",
-    "context": "worlds"
-  },
-  "worldAboutDescription": "Das ist eine aufregende Welt voller Abenteuer und Herausforderungen. Erkunde unbekannte Gebiete, schmiede Allianzen und werde zur Legende!",
-  "@worldAboutDescription": {
-    "description": "Default world description",
-    "context": "worlds"
-  },
-  "worldRulesTitle": "Regeln",
-  "@worldRulesTitle": {
-    "description": "World rules section title",
-    "context": "worlds"
-  },
-  "worldStatsTitle": "Welt-Statistiken",
-  "@worldStatsTitle": {
-    "description": "World statistics section title",
-    "context": "worlds"
-  },
-  "worldPlayersActive": "{count} Spieler aktiv",
-  "@worldPlayersActive": {
-    "description": "Active players count",
-    "context": "worlds",
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "description": "Number of active players"
-      }
-    }
-  },
-  "worldDefaultDescription": "Eine aufregende Welt voller Abenteuer",
-  "@worldDefaultDescription": {
-    "description": "Default world description",
-    "context": "worlds"
-  },
-  "worldCategoryClassic": "Klassisch",
-  "@worldCategoryClassic": {
-    "description": "Classic world category",
-    "context": "worlds"
-  },
-  "worldCategoryPvP": "Spieler vs Spieler",
-  "@worldCategoryPvP": {
-    "description": "PvP world category",
-    "context": "worlds"
-  },
-  "worldCategoryEvent": "Event",
-  "@worldCategoryEvent": {
-    "description": "Event world category",
-    "context": "worlds"
-  },
-  "worldCategoryExperimental": "Experimentell",
-  "@worldCategoryExperimental": {
-    "description": "Experimental world category",
-    "context": "worlds"
-  },
-  "worldFiltersStatus": "Status:",
-  "@worldFiltersStatus": {
-    "description": "Status filter label",
-    "context": "worlds"
-  },
-  "worldFiltersCategory": "Kategorie:",
-  "@worldFiltersCategory": {
-    "description": "Category filter label",
-    "context": "worlds"
-  },
-  "worldFiltersSortBy": "Sortieren nach:",
-  "@worldFiltersSortBy": {
-    "description": "Sort by filter label",
-    "context": "worlds"
-  },
-  "worldFiltersSortStartDate": "Startdatum",
-  "@worldFiltersSortStartDate": {
-    "description": "Sort by start date option",
-    "context": "worlds"
-  },
-  "worldFiltersSortName": "Name",
-  "@worldFiltersSortName": {
-    "description": "Sort by name option",
-    "context": "worlds"
-  },
-  "worldFiltersSortStatus": "Status",
-  "@worldFiltersSortStatus": {
-    "description": "Sort by status option",
-    "context": "worlds"
-  },
-  "worldFiltersSortPlayerCount": "Spieleranzahl",
-  "@worldFiltersSortPlayerCount": {
-    "description": "Sort by player count option",
-    "context": "worlds"
-  },
-  "worldFiltersActiveFilters": "Aktive Filter:",
-  "@worldFiltersActiveFilters": {
-    "description": "Active filters label",
-    "context": "worlds"
-  },
-  "worldFiltersResetAll": "Alle zurücksetzen",
-  "@worldFiltersResetAll": {
-    "description": "Reset all filters button",
-    "context": "worlds"
+    "description": "Status für geschlossene Welten",
+    "context": "world_status"
   },
   "worldStatusArchived": "Archiviert",
   "@worldStatusArchived": {
-    "description": "Archived world status",
-    "context": "worlds"
-  },
-  "userInfoClickForDetails": "Klicken für Details",
-  "@userInfoClickForDetails": {
-    "description": "Click for details tooltip",
-    "context": "common"
-  },
-  "userInfoRoles": "Rollen:",
-  "@userInfoRoles": {
-    "description": "User roles label",
-    "context": "common"
-  },
-  "navigationJoinRequiredMessage": "Du musst zuerst der Welt beitreten um das Dashboard zu sehen",
-  "@navigationJoinRequiredMessage": {
-    "description": "Message when user needs to join world for dashboard",
-    "context": "navigation"
-  },
-  "navigationBack": "Zurück",
-  "@navigationBack": {
-    "description": "Back navigation button",
-    "context": "navigation"
-  },
-  "navigationWorldOverview": "Welt-Übersicht",
-  "@navigationWorldOverview": {
-    "description": "World overview navigation item",
-    "context": "navigation"
-  },
-  "navigationWorldDetails": "Welt-Details",
-  "@navigationWorldDetails": {
-    "description": "World details navigation item",
-    "context": "navigation"
-  },
-  "navigationDashboard": "Zum Dashboard",
-  "@navigationDashboard": {
-    "description": "Dashboard navigation item",
-    "context": "navigation"
-  },
-  "navigationDashboardRequiresJoin": "Dashboard (Beitritt erforderlich)",
-  "@navigationDashboardRequiresJoin": {
-    "description": "Dashboard navigation when join required",
-    "context": "navigation"
-  },
-  "navigationTitle": "Navigation",
-  "@navigationTitle": {
-    "description": "Navigation section title",
-    "context": "navigation"
-  },
-  "navigationOpenMenu": "Menü öffnen",
-  "@navigationOpenMenu": {
-    "description": "Open menu button text",
-    "context": "navigation"
-  },
-  "navigationTooltipJoinRequired": "Du musst der Welt beitreten um das Dashboard zu sehen",
-  "@navigationTooltipJoinRequired": {
-    "description": "Tooltip when join required for dashboard",
-    "context": "navigation"
-  },
-  "worldJoinSuccess": "Erfolgreich der Welt \"{worldName}\" beigetreten!",
-  "@worldJoinSuccess": {
-    "description": "Success message when joining world",
-    "context": "worldActions",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "The name of the world"
-      }
-    }
-  },
-  "worldJoinFailed": "Beitritt fehlgeschlagen. Bitte versuche es erneut.",
-  "@worldJoinFailed": {
-    "description": "Error message when joining world fails",
-    "context": "worldActions"
-  },
-  "worldJoinPreRegistrationError": "Fehler bei der Vorregistrierung",
-  "@worldJoinPreRegistrationError": {
-    "description": "Error message for pre-registration failure",
-    "context": "worldActions"
-  },
-  "worldJoinCancelPreRegistrationError": "Fehler beim Abbrechen der Vorregistrierung",
-  "@worldJoinCancelPreRegistrationError": {
-    "description": "Error message when canceling pre-registration fails",
-    "context": "worldActions"
-  },
-  "worldJoinLeaveDialogTitle": "Welt verlassen?",
-  "@worldJoinLeaveDialogTitle": {
-    "description": "Leave world dialog title",
-    "context": "worldActions"
-  },
-  "worldJoinLeaveDialogContent": "Willst du die Welt \"{worldName}\" wirklich verlassen?",
-  "@worldJoinLeaveDialogContent": {
-    "description": "Leave world dialog content",
-    "context": "worldActions",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "The name of the world"
-      }
-    }
-  },
-  "worldJoinUnknownWorld": "Unbekannt",
-  "@worldJoinUnknownWorld": {
-    "description": "Unknown world placeholder",
-    "context": "worldActions"
-  },
-  "worldJoinBackToWorldsButton": "Zurück zu den Welten",
-  "@worldJoinBackToWorldsButton": {
-    "description": "Back to worlds button text",
-    "context": "worldActions"
-  },
-  "worldJoinCancelPreRegistrationButton": "Vorregistrierung abbrechen",
-  "@worldJoinCancelPreRegistrationButton": {
-    "description": "Cancel pre-registration button text",
-    "context": "worldActions"
-  },
-  "worldJoinCancelPreRegistrationInProgress": "Wird abgebrochen...",
-  "@worldJoinCancelPreRegistrationInProgress": {
-    "description": "Canceling pre-registration loading text",
-    "context": "worldActions"
-  },
-  "worldJoinGenericError": "Ein Fehler ist aufgetreten: {error}",
-  "@worldJoinGenericError": {
-    "description": "Generic error message with details",
-    "context": "worldActions",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "worldJoinUnknownError": "Unbekannter Fehler",
-  "@worldJoinUnknownError": {
-    "description": "Unknown error message",
-    "context": "worldActions"
-  },
-  "worldJoinUnknownWorldName": "Unbekannte Welt",
-  "@worldJoinUnknownWorldName": {
-    "description": "Unknown world name placeholder",
-    "context": "worldActions"
-  },
-  "worldJoinPreRegisterButton": "Vorregistrieren",
-  "@worldJoinPreRegisterButton": {
-    "description": "Pre-register button text",
-    "context": "worldActions"
-  },
-  "worldJoinPreRegisterInProgress": "Registriere...",
-  "@worldJoinPreRegisterInProgress": {
-    "description": "Pre-registration loading text",
-    "context": "worldActions"
-  },
-  "worldJoinLeaveInProgress": "Verlasse...",
-  "@worldJoinLeaveInProgress": {
-    "description": "Leaving world loading text",
-    "context": "worldActions"
-  },
-  "worldJoinNowButton": "Jetzt beitreten",
-  "@worldJoinNowButton": {
-    "description": "Join now button text",
-    "context": "worldActions"
-  },
-  "worldJoinInProgress": "Trete bei...",
-  "@worldJoinInProgress": {
-    "description": "Joining world loading text",
-    "context": "worldActions"
-  },
-  "worldJoinWorldClosedStatus": "Diese Welt ist derzeit geschlossen",
-  "@worldJoinWorldClosedStatus": {
-    "description": "Message when world is closed",
-    "context": "worldActions"
-  },
-  "worldJoinWorldArchivedStatus": "Diese Welt ist archiviert",
-  "@worldJoinWorldArchivedStatus": {
-    "description": "Message when world is archived",
-    "context": "worldActions"
-  },
-  "worldJoinErrorLoadingWorldData": "Fehler beim Laden der Weltdaten: {error}",
-  "@worldJoinErrorLoadingWorldData": {
-    "description": "Error loading world data",
-    "context": "worldActions",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "invitePageTitle": "Einladung",
-  "@invitePageTitle": {
-    "description": "Invite page title",
-    "context": "invite"
-  },
-  "inviteWelcomeTitle": "Du wurdest eingeladen!",
-  "@inviteWelcomeTitle": {
-    "description": "Invite welcome title",
-    "context": "invite"
-  },
-  "inviteWelcomeSubtitle": "Du wurdest zur Welt \"{worldName}\" eingeladen",
-  "@inviteWelcomeSubtitle": {
-    "description": "Invite welcome subtitle",
-    "context": "invite",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "The name of the world"
-      }
-    }
-  },
-  "inviteFromUser": "Eingeladen von {username}",
-  "@inviteFromUser": {
-    "description": "Invited by user text",
-    "context": "invite",
-    "placeholders": {
-      "username": {
-        "type": "String",
-        "description": "The username who sent the invitation"
-      }
-    }
-  },
-  "inviteWelcomePersonal": "{inviterName} lädt dich zu {worldName} ein!",
-  "@inviteWelcomePersonal": {
-    "description": "Personal invitation headline",
-    "context": "invite",
-    "placeholders": {
-      "inviterName": {
-        "type": "String",
-        "description": "The inviting user's name"
-      },
-      "worldName": {
-        "type": "String",
-        "description": "The name of the world"
-      }
-    }
-  },
-  "inviteWorldPreviewTitle": "Entdecke {worldName}",
-  "@inviteWorldPreviewTitle": {
-    "description": "World preview section title",
-    "context": "invite",
-    "placeholders": {
-      "worldName": {
-        "type": "String",
-        "description": "The name of the world"
-      }
-    }
-  },
-  "inviteWorldDescription": "Beschreibung",
-  "@inviteWorldDescription": {
-    "description": "World description label",
-    "context": "invite"
-  },
-  "inviteWorldTheme": "Thema",
-  "@inviteWorldTheme": {
-    "description": "World theme label",
-    "context": "invite"
-  },
-  "inviteWorldPlayerCount": "Spieler",
-  "@inviteWorldPlayerCount": {
-    "description": "World player count label",
-    "context": "invite"
-  },
-  "inviteWorldActivity": "Zuletzt aktiv",
-  "@inviteWorldActivity": {
-    "description": "World last activity label",  
-    "context": "invite"
-  },
-  "inviteWorldCreator": "Erstellt von",
-  "@inviteWorldCreator": {
-    "description": "World creator label",
-    "context": "invite"
-  },
-  "inviteWhyJoin": "Warum beitreten?",
-  "@inviteWhyJoin": {
-    "description": "Why join section title",
-    "context": "invite"
-  },
-  "inviteCallToAction": "Bereit für ein neues Abenteuer?",
-  "@inviteCallToAction": {
-    "description": "Call to action text",
-    "context": "invite"
-  },
-  "inviteNoDescription": "Keine Beschreibung verfügbar",
-  "@inviteNoDescription": {
-    "description": "Fallback when no world description",
-    "context": "invite"
-  },
-  "inviteDetailsTitle": "Einladungs-Details",
-  "@inviteDetailsTitle": {
-    "description": "Invitation details section title",
-    "context": "invite"
-  },
-  "inviteDetailsEmail": "E-Mail",
-  "@inviteDetailsEmail": {
-    "description": "Email field label",
-    "context": "invite"
-  },
-  "inviteDetailsWorld": "Welt",
-  "@inviteDetailsWorld": {
-    "description": "World field label",
-    "context": "invite"
-  },
-  "inviteDetailsStatus": "Status",
-  "@inviteDetailsStatus": {
-    "description": "Status field label",
-    "context": "invite"
-  },
-  "inviteDetailsExpires": "Läuft ab",
-  "@inviteDetailsExpires": {
-    "description": "Expiration field label",
-    "context": "invite"
-  },
-  "inviteActionRegisterHint": "Du brauchst einen Account um der Welt beizutreten.",
-  "@inviteActionRegisterHint": {
-    "description": "Hint to register for joining world",
-    "context": "invite"
-  },
-  "inviteActionRegisterAndJoin": "Registrieren & Beitreten",
-  "@inviteActionRegisterAndJoin": {
-    "description": "Register and join button text",
-    "context": "invite"
-  },
-  "inviteActionAlreadyHaveAccount": "Bereits einen Account? Anmelden",
-  "@inviteActionAlreadyHaveAccount": {
-    "description": "Sign in prompt for existing users",
-    "context": "invite"
-  },
-  "inviteActionLoginHint": "Du hast bereits einen Account. Melde dich an um der Welt beizutreten.",
-  "@inviteActionLoginHint": {
-    "description": "Hint to login for joining world",
-    "context": "invite"
-  },
-  "inviteActionLogin": "Anmelden",
-  "@inviteActionLogin": {
-    "description": "Sign in button text",
-    "context": "invite"
-  },
-  "inviteActionAcceptHint": "Hallo {username}! Du kannst die Einladung jetzt annehmen oder ablehnen.",
-  "@inviteActionAcceptHint": {
-    "description": "Accept invitation hint",
-    "context": "invite",
-    "placeholders": {
-      "username": {
-        "type": "String",
-        "description": "The username"
-      }
-    }
-  },
-  "inviteActionAccept": "Einladung annehmen",
-  "@inviteActionAccept": {
-    "description": "Accept invitation button text",
-    "context": "invite"
-  },
-  "inviteActionDecline": "Ablehnen",
-  "@inviteActionDecline": {
-    "description": "Decline invitation button text",
-    "context": "invite"
-  },
-  "inviteActionWrongEmailHint": "Du bist als {currentEmail} angemeldet, aber die Einladung ist für {inviteEmail}. Du musst dich abmelden und mit der korrekten E-Mail registrieren.",
-  "@inviteActionWrongEmailHint": {
-    "description": "Wrong email hint",
-    "context": "invite",
-    "placeholders": {
-      "currentEmail": {
-        "type": "String",
-        "description": "Current user's email"
-      },
-      "inviteEmail": {
-        "type": "String",
-        "description": "Invitation target email"
-      }
-    }
-  },
-  "inviteActionLogoutAndRegister": "Abmelden & Registrieren",
-  "@inviteActionLogoutAndRegister": {
-    "description": "Sign out and register button text",
-    "context": "invite"
-  },
-  "inviteActionUnknownStatus": "Unbekannter Status. Bitte versuche es später erneut.",
-  "@inviteActionUnknownStatus": {
-    "description": "Unknown status message",
-    "context": "invite"
-  },
-  "inviteErrorNoData": "Keine Einladungsdaten verfügbar.",
-  "@inviteErrorNoData": {
-    "description": "No invitation data error",
-    "context": "invite"
-  },
-  "inviteErrorInvalidOrExpired": "Einladung ungültig oder abgelaufen",
-  "@inviteErrorInvalidOrExpired": {
-    "description": "Invalid or expired invitation error",
-    "context": "invite"
-  },
-  "inviteErrorLoadingData": "Fehler beim Laden der Einladungsdaten: {error}",
-  "@inviteErrorLoadingData": {
-    "description": "Error loading invitation data",
-    "context": "invite",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "inviteErrorAcceptFailed": "Fehler beim Annehmen der Einladung",
-  "@inviteErrorAcceptFailed": {
-    "description": "Error accepting invitation",
-    "context": "invite"
-  },
-  "inviteErrorAcceptException": "Fehler beim Annehmen der Einladung: {error}",
-  "@inviteErrorAcceptException": {
-    "description": "Error accepting invitation with details",
-    "context": "invite",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "inviteErrorDeclineFailed": "Fehler beim Ablehnen der Einladung",
-  "@inviteErrorDeclineFailed": {
-    "description": "Error declining invitation",
-    "context": "invite"
-  },
-  "inviteErrorDeclineException": "Fehler beim Ablehnen der Einladung: {error}",
-  "@inviteErrorDeclineException": {
-    "description": "Error declining invitation with details",
-    "context": "invite",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "inviteDeclineSuccess": "Einladung abgelehnt",
-  "@inviteDeclineSuccess": {
-    "description": "Invitation declined success message",
-    "context": "invite"
-  },
-  "marketingDiscoverMoreWorlds": "Entdecke weitere spannende Welten",
-  "@marketingDiscoverMoreWorlds": {
-    "description": "Discover more worlds header in marketing",
-    "context": "marketing"
-  },
-  "marketingCallToAction": "Entdecke hunderte Welten, erschaffe deine eigene oder schließe dich bestehenden Communities an!",
-  "@marketingCallToAction": {
-    "description": "Marketing call-to-action text",
-    "context": "marketing"
-  },
-  "marketingFeatureCommunityTitle": "Community",
-  "@marketingFeatureCommunityTitle": {
-    "description": "Community feature title in marketing",
-    "context": "marketing"
-  },
-  "marketingFeatureCommunityDesc": "Spiele mit Freunden",
-  "@marketingFeatureCommunityDesc": {
-    "description": "Community feature description in marketing",
-    "context": "marketing"
-  },
-  "marketingFeatureCreateTitle": "Erschaffen",
-  "@marketingFeatureCreateTitle": {
-    "description": "Create feature title in marketing",
-    "context": "marketing"
-  },
-  "marketingFeatureCreateDesc": "Baue deine Welt",
-  "@marketingFeatureCreateDesc": {
-    "description": "Create feature description in marketing",
-    "context": "marketing"
-  },
-  "marketingFeatureExploreTitle": "Erkunden",
-  "@marketingFeatureExploreTitle": {
-    "description": "Explore feature title in marketing",
-    "context": "marketing"
-  },
-  "marketingFeatureExploreDesc": "Neue Abenteuer",
-  "@marketingFeatureExploreDesc": {
-    "description": "Explore feature description in marketing",
-    "context": "marketing"
-  },
-  "marketingBrowseAllWorlds": "Alle Welten durchsuchen",
-  "@marketingBrowseAllWorlds": {
-    "description": "Browse all worlds button text",
-    "context": "marketing"
-  },
-  "inviteDetailsCreated": "Erstellt am",
-  "@inviteDetailsCreated": {
-    "description": "Invitation creation date label",
-    "context": "invite"
-  },
-  "inviteWidgetTitle": "Einladung für {worldName} senden",
-  "@inviteWidgetTitle": {
-    "description": "Invite widget title",
-    "context": "invite",
-    "placeholders": {
-      "worldName": {
-        "type": "String"
-      }
-    }
-  },
-  "inviteWidgetEmailLabel": "E-Mail-Adresse",
-  "@inviteWidgetEmailLabel": {
-    "context": "invite"
-  },
-  "inviteWidgetEmailHint": "freund@beispiel.de",
-  "@inviteWidgetEmailHint": {
-    "context": "invite"
-  },
-  "inviteWidgetEmailRequired": "E-Mail-Adresse ist erforderlich",
-  "@inviteWidgetEmailRequired": {
-    "context": "invite"
-  },
-  "inviteWidgetEmailInvalid": "Ungültige E-Mail-Adresse",
-  "@inviteWidgetEmailInvalid": {
-    "context": "invite"
-  },
-  "inviteWidgetSendEmailOption": "E-Mail automatisch senden",
-  "@inviteWidgetSendEmailOption": {
-    "context": "invite"
-  },
-  "inviteWidgetSendEmailHint": "Deaktivieren um nur Einladungslink zu erstellen",
-  "@inviteWidgetSendEmailHint": {
-    "context": "invite"
-  },
-  "inviteWidgetSendButton": "Einladung senden",
-  "@inviteWidgetSendButton": {
-    "context": "invite"
-  },
-  "inviteWidgetCreateLinkButton": "Link erstellen",
-  "@inviteWidgetCreateLinkButton": {
-    "context": "invite"
-  },
-  "inviteWidgetSuccessWithEmail": "Einladung erfolgreich an {email} gesendet!",
-  "@inviteWidgetSuccessWithEmail": {
-    "context": "invite",
-    "placeholders": {
-      "email": {
-        "type": "String"
-      }
-    }
-  },
-  "inviteWidgetSuccessLinkOnly": "Einladungslink erfolgreich erstellt!",
-  "@inviteWidgetSuccessLinkOnly": {
-    "context": "invite"
-  },
-  "inviteWidgetCopyLink": "Kopieren",
-  "@inviteWidgetCopyLink": {
-    "context": "invite"
-  },
-  "inviteWidgetDialogTitle": "Spieler einladen",
-  "@inviteWidgetDialogTitle": {
-    "context": "invite"
-  },
-  "inviteWidgetCancel": "Abbrechen",
-  "@inviteWidgetCancel": {
-    "context": "invite"
-  },
-  "inviteWidgetLinkTitle": "Einladungslink:",
-  "@inviteWidgetLinkTitle": {
-    "context": "invite"
-  },
-  "inviteActionReadyToAccept": "Du kannst diese Einladung jetzt annehmen oder ablehnen.",
-  "@inviteActionReadyToAccept": {
-    "description": "Message when user can accept or decline the invitation",
-    "context": "invite"
-  },
-  "inviteStatusAlreadyAccepted": "Diese Einladung wurde bereits angenommen. Du kannst jetzt zur Welt gehen.",
-  "@inviteStatusAlreadyAccepted": {
-    "description": "Message when invitation has already been accepted",
-    "context": "invite"
-  },
-  "worldInviteButton": "Einladen",
-  "@worldInviteButton": {
-    "context": "worldActions"
-  },
-  "authLoginSuccessButInviteFailed": "Anmeldung erfolgreich, aber Einladung konnte nicht angenommen werden.",
-  "@authLoginSuccessButInviteFailed": {
-    "context": "auth"
-  },
-  "authRegisterSuccessButInviteFailed": "Registrierung erfolgreich, aber Einladung konnte nicht angenommen werden.",
-  "@authRegisterSuccessButInviteFailed": {
-    "context": "auth"
-  },
-  "navigationLoadingGeneric": "Seite wird geladen...",
-  "@navigationLoadingGeneric": {
-    "description": "Generic navigation loading text",
-    "context": "navigation"
-  },
-  "navigationLoadingError": "Fehler beim Laden der Seite",
-  "@navigationLoadingError": {
-    "description": "Navigation loading error text",
-    "context": "navigation"
-  },
-  "navigationLoadingRetry": "Erneut versuchen",
-  "@navigationLoadingRetry": {
-    "description": "Navigation loading retry button",
-    "context": "navigation"
-  },
-  "navigationLoadingWorldList": "Welten werden geladen...",
-  "@navigationLoadingWorldList": {
-    "description": "Loading text for world list page",
-    "context": "navigation"
-  },
-  "navigationLoadingDashboard": "Dashboard wird vorbereitet...",
-  "@navigationLoadingDashboard": {
-    "description": "Loading text for dashboard page",
-    "context": "navigation"
-  },
-  "navigationLoadingWorldJoin": "Welt wird geladen...",
-  "@navigationLoadingWorldJoin": {
-    "description": "Loading text for world join page",
-    "context": "navigation"
-  },
-  "navigationErrorServiceUnavailable": "Service nicht verfügbar. App wird neu gestartet...",
-  "@navigationErrorServiceUnavailable": {
-    "description": "Error message when services are not available",
-    "context": "navigation"
-  },
-  "navigationErrorNetwork": "Netzwerkfehler. Prüfe deine Internetverbindung.",
-  "@navigationErrorNetwork": {
-    "description": "Error message for network issues",
-    "context": "navigation"
-  },
-  "navigationErrorTimeout": "Ladevorgang dauert zu lange. Versuche es erneut.",
-  "@navigationErrorTimeout": {
-    "description": "Error message for loading timeout",
-    "context": "navigation"
-  },
-  "navigationErrorTheme": "Theme-Ladeprobleme. Page wird mit Standard-Theme angezeigt.",
-  "@navigationErrorTheme": {
-    "description": "Error message for theme loading issues",
-    "context": "navigation"
-  },
-  "navigationErrorGeneric": "Unerwarteter Fehler beim Laden der Seite.",
-  "@navigationErrorGeneric": {
-    "description": "Generic error message for navigation",
-    "context": "navigation"
-  },
-  
-  "worldListLoading": "Welten werden geladen...",
-  "@worldListLoading": {
-    "description": "Loading message for world list",
-    "context": "world"
-  },
-  "worldListEmpty": "Keine Welten verfügbar",
-  "@worldListEmpty": {
-    "description": "Empty state message for world list",
-    "context": "world"
-  },
-  "worldListEmptyDescription": "Es sind noch keine Welten erstellt worden. Erstelle deine erste Welt!",
-  "@worldListEmptyDescription": {
-    "description": "Empty state description for world list",
-    "context": "world"
-  },
-  "worldListError": "Fehler beim Laden der Welten",
-  "@worldListError": {
-    "description": "Error message for world list",
-    "context": "world"
-  },
-  "retry": "Erneut versuchen",
-  "@retry": {
-    "description": "Retry button text",
-    "context": "general"
-  },
-  "worldListNoResults": "Keine Ergebnisse gefunden",
-  "@worldListNoResults": {
-    "description": "No results message for world list",
-    "context": "world"
-  },
-  "clearFilters": "Filter zurücksetzen",
-  "@clearFilters": {
-    "description": "Clear filters button text",
-    "context": "general"
-  },
-  "logoutConfirmTitle": "Ausloggen bestätigen",
-  "@logoutConfirmTitle": {
-    "description": "Title for logout confirmation dialog",
-    "context": "authentication"
-  },
-  "logoutConfirmMessage": "Möchten Sie sich wirklich ausloggen?",
-  "@logoutConfirmMessage": {
-    "description": "Message for logout confirmation dialog",
-    "context": "authentication"
-  },
-  "buttonLogout": "Ausloggen",
-  "@buttonLogout": {
-    "description": "Logout button text",
-    "context": "authentication"
-  },
-  "errorInviteDialogOpen": "Fehler beim Öffnen des Einladungs-Dialogs: {error}",
-  "@errorInviteDialogOpen": {
-    "description": "Error message when invite dialog fails to open",
-    "context": "errors",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "errorLogout": "Fehler beim Abmelden: {error}",
-  "@errorLogout": {
-    "description": "Error message when logout fails",
-    "context": "errors",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "errorInviteLinkCopy": "Fehler beim Kopieren des Links",
-  "@errorInviteLinkCopy": {
-    "description": "Error message when copying invite link fails",
-    "context": "errors"
-  },
-  "errorGenericWithDetails": "Fehler: {error}",
-  "@errorGenericWithDetails": {
-    "description": "Generic error message with error details",
-    "context": "errors",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "buttonSkip": "Überspringen",
-  "@buttonSkip": {
-    "description": "Skip button text",
-    "context": "buttons"
-  },
-  "buttonClearAll": "Alle löschen",
-  "@buttonClearAll": {
-    "description": "Clear all button text",
-    "context": "buttons"
-  },
-  "buttonAccept": "Annehmen",
-  "@buttonAccept": {
-    "description": "Accept button text",
-    "context": "buttons"
-  },
-  "buttonDecline": "Ablehnen",
-  "@buttonDecline": {
-    "description": "Decline button text",
-    "context": "buttons"
-  },
-  "buttonToWorlds": "Zu den Welten",
-  "@buttonToWorlds": {
-    "description": "Button text to navigate to worlds",
-    "context": "buttons"
-  },
-  "tooltipThemeMode": "Theme-Modus: {mode}",
-  "@tooltipThemeMode": {
-    "description": "Tooltip for theme mode indicator",
-    "context": "tooltips",
-    "placeholders": {
-      "mode": {
-        "type": "String",
-        "description": "The current theme mode"
-      }
-    }
-  },
-  "tooltipThemeSettings": "Theme-Einstellungen",
-  "@tooltipThemeSettings": {
-    "description": "Tooltip for theme settings button",
-    "context": "tooltips"
-  },
-  "tooltipClose": "Schließen",
-  "@tooltipClose": {
-    "description": "Tooltip for close button",
-    "context": "tooltips"
-  },
-  "tooltipCopySchema": "Schema kopieren",
-  "@tooltipCopySchema": {
-    "description": "Tooltip for copy schema button",
-    "context": "tooltips"
-  },
-  "tooltipRefresh": "Aktualisieren",
-  "@tooltipRefresh": {
-    "description": "Tooltip for refresh button",
-    "context": "tooltips"
-  },
-  "tooltipInfo": "Information",
-  "@tooltipInfo": {
-    "description": "Tooltip for info button",
-    "context": "tooltips"
-  },
-  "emailHintExample": "ihre@email.de",
-  "@emailHintExample": {
-    "description": "Hint text example for email input",
-    "context": "labels"
-  },
-  "labelFilters": "Filter",
-  "@labelFilters": {
-    "description": "Label for filters section",
-    "context": "labels"
-  },
-  "labelTags": "Tags",
-  "@labelTags": {
-    "description": "Label for tags section",
-    "context": "labels"
-  },
-  "labelFavoritesOnly": "Nur Favoriten",
-  "@labelFavoritesOnly": {
-    "description": "Label for favorites only filter",
-    "context": "labels"
-  },
-  "preRegistrationSuccess": "Vorregistrierung erfolgreich!",
-  "@preRegistrationSuccess": {
-    "description": "Success message for pre-registration without parameters",
-    "context": "messages"
-  },
-  "schemaCopiedToClipboard": "Schema-Daten in Zwischenablage kopiert",
-  "@schemaCopiedToClipboard": {
-    "description": "Success message when schema is copied to clipboard",
-    "context": "messages"
-  },
-  "sortOptionName": "Name",
-  "@sortOptionName": {
-    "description": "Sort option for name",
-    "context": "sorting"
-  },
-  "sortOptionPlayers": "Spieler",
-  "@sortOptionPlayers": {
-    "description": "Sort option for player count",
-    "context": "sorting"
-  },
-  "sortOptionStatus": "Status",
-  "@sortOptionStatus": {
-    "description": "Sort option for status",
-    "context": "sorting"
-  },
-  "sortOptionLastPlayed": "Zuletzt gespielt",
-  "@sortOptionLastPlayed": {
-    "description": "Sort option for last played",
-    "context": "sorting"
-  },
-  "sortOptionCreated": "Erstellt",
-  "@sortOptionCreated": {
-    "description": "Sort option for created date",
-    "context": "sorting"
-  },
-  "sortOptionDescending": "{option} (absteigend)",
-  "@sortOptionDescending": {
-    "description": "Sort option with descending indicator",
-    "context": "sorting",
-    "placeholders": {
-      "option": {
-        "type": "String",
-        "description": "The sort option name"
-      }
-    }
+    "description": "Status für archivierte Welten",
+    "context": "world_status"
+  },
+  "worldCategoryClassic": "Klassisch",
+  "@worldCategoryClassic": {
+    "description": "Kategorie für klassische Welten",
+    "context": "world_category"
+  },
+  "worldCategoryPvP": "PvP",
+  "@worldCategoryPvP": {
+    "description": "Kategorie für PvP-Welten",
+    "context": "world_category"
+  },
+  "worldCategoryEvent": "Event",
+  "@worldCategoryEvent": {
+    "description": "Kategorie für Event-Welten",
+    "context": "world_category"
+  },
+  "worldCategoryExperimental": "Experimentell",
+  "@worldCategoryExperimental": {
+    "description": "Kategorie für experimentelle Welten",
+    "context": "world_category"
   }
 }

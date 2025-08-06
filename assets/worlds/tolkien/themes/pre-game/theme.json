@@ -1,0 +1,164 @@
+{
+  "colors": {
+    "primary": {
+      "main": "#3C5233",
+      "light": "#5F7A4D",
+      "dark": "#2B3D24",
+      "contrast": "#F8F8F5"
+    },
+    "secondary": {
+      "main": "#C2B280",
+      "light": "#DDD1A7",
+      "dark": "#A89C6A",
+      "contrast": "#1E1E1E"
+    },
+    "tertiary": {
+      "main": "#4E342E",
+      "light": "#6D4C41",
+      "dark": "#2E1D18",
+      "contrast": "#FFFFFF"
+    },
+    "background": {
+      "primary": "#1B1F1A",
+      "secondary": "#252A22",
+      "surface_dark": "#2E342C",
+      "surface_light": "#3C4436",
+      "overlay": "rgba(27, 31, 26, 0.8)"
+    },
+    "text": {
+      "primary": "#ECEBE6",
+      "secondary": "#BBB8AA",
+      "muted": "#7A7A6C",
+      "inverse": "#1B1F1A",
+      "link": "#C2B280"
+    },
+    "status": {
+      "success": "#32CD32",
+      "warning": "#FFD700",
+      "error": "#CD5C5C",
+      "info": "#4682B4"
+    },
+    "fantasy": {
+      "magic": "#9370DB",
+      "elvish": "#98FB98",
+      "dwarish": "#A0522D",
+      "hobbit": "#F4A460",
+      "wizard": "#483D8B"
+    },
+    "border": {
+      "primary": "#3E4539",
+      "secondary": "#2C3128",
+      "accent": "#5F7A4D",
+      "muted": "#7A7A6C"
+    },
+    "interactive": {
+      "hover": "rgba(95, 122, 77, 0.15)",
+      "active": "rgba(95, 122, 77, 0.3)",
+      "focus": "rgba(95, 122, 77, 0.45)",
+      "disabled": "#5C5C52"
+    }
+  },
+  "fonts": {
+    "primary": {
+      "family": "Cinzel",
+      "fallback": "Georgia, serif",
+      "weights": [400, 600, 700]
+    },
+    "secondary": {
+      "family": "Crimson Text",
+      "fallback": "serif",
+      "weights": [400, 600, 700]
+    },
+    "fantasy": {
+      "family": "UnifrakturMaguntia",
+      "fallback": "fantasy",
+      "weights": [400]
+    },
+    "body": {
+      "family": "Libre Baskerville",
+      "fallback": "serif",
+      "weights": [400, 600, 700]
+    }
+  },
+  "typography": {
+    "headingSizes": {
+      "h1": "2.5rem",
+      "h2": "2rem",
+      "h3": "1.5rem",
+      "h4": "1.25rem",
+      "h5": "1.125rem",
+      "h6": "1rem"
+    },
+    "bodySizes": {
+      "large": "1.125rem",
+      "normal": "1rem",
+      "small": "0.875rem",
+      "tiny": "0.75rem"
+    },
+    "lineHeights": {
+      "tight": "1.2",
+      "normal": "1.5",
+      "relaxed": "1.8"
+    },
+    "fontWeights": {
+      "light": 300,
+      "normal": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "letterSpacing": {
+      "tight": "-0.01em",
+      "normal": "0em",
+      "wide": "0.01em",
+      "wider": "0.03em"
+    }
+  },
+  "spacing": {
+    "xs": "0.25rem",
+    "sm": "0.5rem",
+    "md": "1rem",
+    "lg": "1.5rem",
+    "xl": "2rem",
+    "xxl": "3rem",
+    "xxxl": "4rem",
+    "section": "6rem"
+  },
+  "radius": {
+    "none": "0px",
+    "small": "6px",
+    "medium": "10px",
+    "large": "14px",
+    "xl": "18px",
+    "full": "9999px"
+  },
+  "effects": {
+    "animations": {
+      "duration": {
+        "fast": "250ms",
+        "normal": "500ms",
+        "slow": "750ms"
+      },
+      "easing": {
+        "linear": "linear",
+        "ease": "ease",
+        "ease_in": "cubic-bezier(0.4, 0, 1, 1)",
+        "ease_out": "cubic-bezier(0, 0, 0.2, 1)",
+        "ease_in_out": "cubic-bezier(0.4, 0, 0.2, 1)"
+      },
+      "scale": {
+        "hover": "1.03",
+        "active": "0.97"
+      }
+    },
+    "shadows": {
+      "mystical": "0 0 20px rgba(147, 112, 219, 0.3)",
+      "elvish": "0 0 25px rgba(152, 251, 152, 0.4)",
+      "ancient": "0 0 30px rgba(194, 178, 128, 0.3)",
+      "focus_ring": "0 0 0 3px rgba(95, 122, 77, 0.5)",
+      "tooltip": "0 4px 20px rgba(0, 0, 0, 0.5)"
+    }
+  },
+  "borderRadius": "10px",
+  "iconStyle": "fantasy"
+}

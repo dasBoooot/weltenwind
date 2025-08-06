@@ -1,0 +1,163 @@
+{
+  "colors": {
+    "primary": {
+      "main": "#191970",
+      "light": "#4169E1",
+      "dark": "#000814",
+      "contrast": "#FFFFFF"
+    },
+    "secondary": {
+      "main": "#00CED1",
+      "light": "#00D9FF",
+      "dark": "#008B8B",
+      "contrast": "#000000"
+    },
+    "tertiary": {
+      "main": "#4169E1",
+      "light": "#6495ED",
+      "dark": "#191970",
+      "contrast": "#FFFFFF"
+    },
+    "background": {
+      "primary": "#000814",
+      "secondary": "#001D3D",
+      "surface_dark": "#003566",
+      "surface_light": "#0077B6",
+      "overlay": "rgba(0, 8, 20, 0.9)"
+    },
+    "text": {
+      "primary": "#E6F3FF",
+      "secondary": "#B8D4E3",
+      "muted": "#8DA3B0",
+      "inverse": "#000814",
+      "link": "#00CED1"
+    },
+    "status": {
+      "success": "#00FF9F",
+      "warning": "#FFB700",
+      "error": "#FF006E",
+      "info": "#00D9FF"
+    },
+    "space": {
+      "void": "#000814",
+      "nebula": "#4361EE",
+      "star": "#FFFFFF",
+      "comet": "#00D9FF",
+      "asteroid": "#6C757D",
+      "plasma": "#9D4EDD",
+      "antimatter": "#FF006E"
+    },
+    "station": {
+      "hull": "#495057",
+      "window": "#00D9FF",
+      "reactor": "#9D4EDD",
+      "thruster": "#FF9F1C",
+      "navigation": "#00FF9F",
+      "emergency": "#FF006E"
+    }
+  },
+  "fonts": {
+    "primary": {
+      "family": "Rajdhani",
+      "fallback": "sans-serif",
+      "weights": [300, 400, 500, 600, 700]
+    },
+    "secondary": {
+      "family": "Titillium Web",
+      "fallback": "sans-serif",
+      "weights": [300, 400, 600, 700, 900]
+    },
+    "mono": {
+      "family": "Space Mono",
+      "fallback": "monospace",
+      "weights": [400, 700]
+    },
+    "display": {
+      "family": "Russo One",
+      "fallback": "sans-serif",
+      "weights": [400]
+    }
+  },
+  "typography": {
+    "headingSizes": {
+      "h1": "2.5rem",
+      "h2": "2rem",
+      "h3": "1.5rem",
+      "h4": "1.25rem",
+      "h5": "1.125rem",
+      "h6": "1rem"
+    },
+    "bodySizes": {
+      "large": "1.125rem",
+      "normal": "1rem",
+      "small": "0.875rem",
+      "tiny": "0.75rem"
+    },
+    "lineHeights": {
+      "tight": "1.1",
+      "normal": "1.4",
+      "relaxed": "1.6"
+    },
+    "fontWeights": {
+      "light": 300,
+      "normal": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700,
+      "black": 900
+    },
+    "letterSpacing": {
+      "tight": "-0.02em",
+      "normal": "0em",
+      "wide": "0.02em",
+      "wider": "0.05em"
+    }
+  },
+  "spacing": {
+    "xs": "0.25rem",
+    "sm": "0.5rem",
+    "md": "1rem",
+    "lg": "1.5rem",
+    "xl": "2rem",
+    "xxl": "3rem",
+    "xxxl": "4rem",
+    "section": "6rem"
+  },
+  "radius": {
+    "none": "0px",
+    "small": "4px",
+    "medium": "8px",
+    "large": "12px",
+    "xl": "16px",
+    "full": "9999px"
+  },
+  "effects": {
+    "animations": {
+      "duration": {
+        "fast": "150ms",
+        "normal": "300ms",
+        "slow": "500ms"
+      },
+      "easing": {
+        "linear": "linear",
+        "ease": "ease",
+        "ease_in": "cubic-bezier(0.4, 0, 1, 1)",
+        "ease_out": "cubic-bezier(0, 0, 0.2, 1)",
+        "ease_in_out": "cubic-bezier(0.4, 0, 0.2, 1)"
+      },
+      "scale": {
+        "hover": "1.02",
+        "active": "0.98"
+      }
+    },
+    "shadows": {
+      "cosmic": "0 0 20px rgba(0, 206, 209, 0.4)",
+      "nebula": "0 0 25px rgba(67, 97, 238, 0.3)",
+      "stellar": "0 0 30px rgba(255, 255, 255, 0.2)",
+      "focus_ring": "0 0 0 3px rgba(0, 206, 209, 0.6)",
+      "tooltip": "0 4px 20px rgba(0, 0, 0, 0.8)"
+    }
+  },
+  "borderRadius": "8px",
+  "iconStyle": "futuristic"
+}

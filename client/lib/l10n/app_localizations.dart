@@ -115,61 +115,7 @@ abstract class AppLocalizations {
   /// **'Sign In'**
   String get authLoginTitle;
 
-  /// Button text for login
-  ///
-  /// In en, this message translates to:
-  /// **'Sign In'**
-  String get authLoginButton;
-
-  /// Title for the registration page
-  ///
-  /// In en, this message translates to:
-  /// **'Register'**
-  String get authRegisterTitle;
-
-  /// Button text for registration
-  ///
-  /// In en, this message translates to:
-  /// **'Register'**
-  String get authRegisterButton;
-
-  /// Button for signing out
-  ///
-  /// In en, this message translates to:
-  /// **'Sign Out'**
-  String get authLogoutButton;
-
-  /// Confirmation message for logout dialog
-  ///
-  /// In en, this message translates to:
-  /// **'Do you really want to sign out?'**
-  String get authLogoutConfirmMessage;
-
-  /// Message when user account is locked
-  ///
-  /// In en, this message translates to:
-  /// **'Account locked'**
-  String get authAccountLocked;
-
-  /// Label for email input field
-  ///
-  /// In en, this message translates to:
-  /// **'Email'**
-  String get authEmailLabel;
-
-  /// Label for password input field
-  ///
-  /// In en, this message translates to:
-  /// **'Password'**
-  String get authPasswordLabel;
-
-  /// Label for username input field
-  ///
-  /// In en, this message translates to:
-  /// **'Username'**
-  String get authUsernameLabel;
-
-  /// Welcome title on login page
+  /// Welcome message on login page
   ///
   /// In en, this message translates to:
   /// **'Welcome to Weltenwind'**
@@ -181,83 +127,41 @@ abstract class AppLocalizations {
   /// **'Sign in to manage your worlds'**
   String get authLoginSubtitle;
 
-  /// Validation error for empty username field
+  /// Login button text
   ///
   /// In en, this message translates to:
-  /// **'Please enter your username'**
-  String get authUsernameRequired;
+  /// **'Sign In'**
+  String get authLoginButton;
 
-  /// Validation error for username too short
+  /// Error message for invalid credentials
   ///
   /// In en, this message translates to:
-  /// **'Username must be at least 3 characters long'**
-  String get authUsernameMinLength;
+  /// **'Login failed. Please check your credentials.'**
+  String get authLoginFailedCredentials;
 
-  /// Validation error for empty password field
+  /// Generic login error with details
   ///
   /// In en, this message translates to:
-  /// **'Please enter your password'**
-  String get authPasswordRequired;
+  /// **'Login failed: {error}'**
+  String authLoginFailedGeneric(String error);
 
-  /// Validation error for password too short
+  /// Link text to registration page
   ///
   /// In en, this message translates to:
-  /// **'Password must be at least 6 characters long'**
-  String get authPasswordMinLength;
+  /// **'Don\'t have an account? Register'**
+  String get authDontHaveAccountRegister;
 
-  /// Checkbox text for 'Stay signed in'
+  /// Title for the registration page
   ///
   /// In en, this message translates to:
-  /// **'Stay signed in'**
-  String get authRememberMe;
-
-  /// Link text for forgot password
-  ///
-  /// In en, this message translates to:
-  /// **'Forgot password?'**
-  String get authForgotPassword;
-
-  /// Text before registration link
-  ///
-  /// In en, this message translates to:
-  /// **'Don\'t have an account?'**
-  String get authNoAccount;
-
-  /// Loading text during login
-  ///
-  /// In en, this message translates to:
-  /// **'Signing in...'**
-  String get authLoginLoading;
-
-  /// Label for Google login button
-  ///
-  /// In en, this message translates to:
-  /// **'Google'**
-  String get authGoogleLabel;
-
-  /// Label for GitHub login button
-  ///
-  /// In en, this message translates to:
-  /// **'GitHub'**
-  String get authGithubLabel;
-
-  /// Coming soon text for Google login
-  ///
-  /// In en, this message translates to:
-  /// **'Google login will be available soon'**
-  String get authGoogleComingSoon;
-
-  /// Coming soon text for GitHub login
-  ///
-  /// In en, this message translates to:
-  /// **'GitHub login will be available soon'**
-  String get authGithubComingSoon;
+  /// **'Register'**
+  String get authRegisterTitle;
 
   /// Welcome title on registration page
   ///
   /// In en, this message translates to:
   /// **'Join Weltenwind'**
-  String get authRegisterWelcome;
+  String get authJoinWeltenwind;
 
   /// Subtitle on registration page
   ///
@@ -265,155 +169,365 @@ abstract class AppLocalizations {
   /// **'Create your account and start your adventure'**
   String get authRegisterSubtitle;
 
-  /// Alternative validation error for empty username field
+  /// Registration button text
   ///
   /// In en, this message translates to:
-  /// **'Username is required'**
-  String get authUsernameRequiredAlt;
+  /// **'Register'**
+  String get authRegisterButton;
 
-  /// Validation error for invalid username characters
+  /// Link text to login page
   ///
   /// In en, this message translates to:
-  /// **'Username can only contain letters, numbers, and underscores'**
-  String get authUsernameInvalidChars;
+  /// **'Already have an account? Login'**
+  String get authAlreadyHaveAccount;
 
-  /// Validation error for empty email field
+  /// General validation error message
   ///
   /// In en, this message translates to:
-  /// **'Please enter your email'**
-  String get authEmailRequired;
+  /// **'Please fix the errors above'**
+  String get authValidationFixErrors;
 
-  /// Text before login link on register page
+  /// Terms acceptance validation error
   ///
   /// In en, this message translates to:
-  /// **'Already have an account?'**
-  String get authHaveAccount;
+  /// **'Please accept Terms of Service and Privacy Policy'**
+  String get authAcceptTermsRequired;
 
   /// Success message after registration
   ///
   /// In en, this message translates to:
   /// **'Registration successful! Welcome to Weltenwind!'**
-  String get authRegisterSuccessWelcome;
+  String get authRegisterSuccessMessage;
 
-  /// Title for forgot password page
+  /// Generic registration failure message
+  ///
+  /// In en, this message translates to:
+  /// **'Registration failed. Please try again.'**
+  String get authRegisterFailedGeneric;
+
+  /// Error when email already exists
+  ///
+  /// In en, this message translates to:
+  /// **'An account with this email already exists'**
+  String get authEmailExistsError;
+
+  /// Error when username is taken
+  ///
+  /// In en, this message translates to:
+  /// **'This username is already taken'**
+  String get authUsernameTakenError;
+
+  /// Link text for forgot password
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get authForgotPassword;
+
+  /// Title on forgot password page
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Your Password'**
+  String get authForgotPasswordTitle;
+
+  /// Instructions on forgot password page
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address and we\'ll send you instructions to reset your password.'**
+  String get authForgotPasswordSubtitle;
+
+  /// Button to send reset email
+  ///
+  /// In en, this message translates to:
+  /// **'Send Reset Email'**
+  String get authSendResetEmail;
+
+  /// Title when reset email is sent
+  ///
+  /// In en, this message translates to:
+  /// **'Email Sent!'**
+  String get authEmailSentTitle;
+
+  /// Message when reset email is sent
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ve sent password reset instructions to your email address.'**
+  String get authEmailSentMessage;
+
+  /// Title for next steps section
+  ///
+  /// In en, this message translates to:
+  /// **'Next Steps:'**
+  String get authNextStepsTitle;
+
+  /// Step 1 in password reset process
+  ///
+  /// In en, this message translates to:
+  /// **'1. Check your email inbox'**
+  String get authStepCheckEmail;
+
+  /// Step 2 in password reset process
+  ///
+  /// In en, this message translates to:
+  /// **'2. Click the reset link in the email'**
+  String get authStepClickLink;
+
+  /// Step 3 in password reset process
+  ///
+  /// In en, this message translates to:
+  /// **'3. Create a new secure password'**
+  String get authStepCreatePassword;
+
+  /// Step 4 in password reset process
+  ///
+  /// In en, this message translates to:
+  /// **'4. Login with your new password'**
+  String get authStepLogin;
+
+  /// Button to resend reset email
+  ///
+  /// In en, this message translates to:
+  /// **'Resend Email'**
+  String get authResendEmail;
+
+  /// Success message when reset email is sent
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset instructions sent to your email'**
+  String get authPasswordResetSentMessage;
+
+  /// Rate limit error for resend attempts
+  ///
+  /// In en, this message translates to:
+  /// **'Too many resend attempts. Please wait before trying again.'**
+  String get authTooManyResendAttempts;
+
+  /// Success message when email is resent
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset email resent'**
+  String get authResendEmailSuccess;
+
+  /// Error message when resend fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to resend email. Please try again later.'**
+  String get authResendEmailFailed;
+
+  /// Secure message when email not found
+  ///
+  /// In en, this message translates to:
+  /// **'If this email exists in our system, you will receive reset instructions.'**
+  String get authEmailNotFoundSecure;
+
+  /// Generic error for request processing
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to process request. Please try again later.'**
+  String get authUnableToProcessRequest;
+
+  /// Title for reset password page
   ///
   /// In en, this message translates to:
   /// **'Reset Password'**
-  String get authForgotPasswordTitle;
+  String get authResetPassword;
 
-  /// Description on forgot password page
+  /// Title for password reset form
   ///
   /// In en, this message translates to:
-  /// **'We\'ll send you a link to reset your password.'**
-  String get authForgotPasswordDescription;
+  /// **'Create New Password'**
+  String get authCreateNewPassword;
 
-  /// Label for email input on forgot password page
+  /// Instructions on password reset page
   ///
   /// In en, this message translates to:
-  /// **'Email Address'**
-  String get authForgotPasswordEmailLabel;
+  /// **'Enter a strong new password for your account.'**
+  String get authResetPasswordSubtitle;
 
-  /// Validation error for empty email on forgot password
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter your email address'**
-  String get authForgotPasswordEmailRequired;
-
-  /// Success message after sending password reset email
-  ///
-  /// In en, this message translates to:
-  /// **'Email sent! Please check your inbox.'**
-  String get authForgotPasswordSuccess;
-
-  /// Button text for sending password reset link
-  ///
-  /// In en, this message translates to:
-  /// **'Send Link'**
-  String get authForgotPasswordSendButton;
-
-  /// Button text to go back to login after successful sending
-  ///
-  /// In en, this message translates to:
-  /// **'Back to Sign In'**
-  String get authForgotPasswordBackToLogin;
-
-  /// Button text to cancel password reset request
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get authForgotPasswordCancel;
-
-  /// Error message for invalid reset token
-  ///
-  /// In en, this message translates to:
-  /// **'The reset link is invalid or expired. Please request a new link.'**
-  String get authResetPasswordInvalidToken;
-
-  /// Title after successful password reset
-  ///
-  /// In en, this message translates to:
-  /// **'Password Changed Successfully!'**
-  String get authResetPasswordSuccessTitle;
-
-  /// Title on password reset page
-  ///
-  /// In en, this message translates to:
-  /// **'Set New Password'**
-  String get authResetPasswordTitle;
-
-  /// Message after successful password reset
-  ///
-  /// In en, this message translates to:
-  /// **'You will be automatically redirected to sign in...'**
-  String get authResetPasswordSuccessMessage;
-
-  /// Description on password reset page
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter your new password.'**
-  String get authResetPasswordDescription;
-
-  /// Label for new password input field
+  /// Label for new password field
   ///
   /// In en, this message translates to:
   /// **'New Password'**
-  String get authNewPasswordLabel;
+  String get authNewPassword;
 
-  /// Helper text under password input field
+  /// Title when reset link is invalid
   ///
   /// In en, this message translates to:
-  /// **'At least 6 characters'**
-  String get authPasswordHelperText;
+  /// **'Invalid Reset Link'**
+  String get authInvalidResetLink;
 
-  /// Validation error for empty new password
+  /// Button text for requesting new reset link
   ///
   /// In en, this message translates to:
-  /// **'Please enter a new password'**
-  String get authNewPasswordRequired;
+  /// **'Request New Reset Link'**
+  String get authRequestNewResetLink;
 
-  /// Validation error for spaces in password
+  /// Error when reset token is invalid
   ///
   /// In en, this message translates to:
-  /// **'Password cannot contain spaces'**
-  String get authPasswordNoSpaces;
+  /// **'This reset link is invalid or has expired'**
+  String get authResetLinkInvalidExpired;
 
-  /// Label for password confirmation input field
+  /// Success message after password reset
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset successfully! You can now login with your new password.'**
+  String get authResetPasswordSuccess;
+
+  /// Error message when password reset fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reset password. Please try again.'**
+  String get authResetPasswordFailed;
+
+  /// Error when reset link is invalid with action suggestion
+  ///
+  /// In en, this message translates to:
+  /// **'This reset link is invalid or has expired. Please request a new one.'**
+  String get authResetLinkInvalidRequest;
+
+  /// Error when reset link is expired with action suggestion
+  ///
+  /// In en, this message translates to:
+  /// **'This reset link has expired. Please request a new one.'**
+  String get authResetLinkExpiredRequest;
+
+  /// Generic error for password reset with action suggestions
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to reset password. Please try again or request a new reset link.'**
+  String get authUnableToResetPassword;
+
+  /// Title for security tips section
+  ///
+  /// In en, this message translates to:
+  /// **'Security Tips:'**
+  String get authSecurityTips;
+
+  /// Label for email input field
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get authEmailLabel;
+
+  /// Hint text for email input
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address'**
+  String get authEmailHint;
+
+  /// Validation error for missing email
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get authEmailRequired;
+
+  /// Label for password input field
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get authPasswordLabel;
+
+  /// Hint text for password input
+  ///
+  /// In en, this message translates to:
+  /// **'Create a strong password'**
+  String get authPasswordHint;
+
+  /// Validation error for missing password
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get authPasswordRequired;
+
+  /// Label for username input field
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get authUsernameLabel;
+
+  /// Hint text for username input
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a unique username'**
+  String get authUsernameHint;
+
+  /// Label for confirm password field
   ///
   /// In en, this message translates to:
   /// **'Confirm Password'**
-  String get authConfirmPasswordLabel;
+  String get authConfirmPassword;
 
-  /// Validation error for empty password confirmation
+  /// Hint text for confirm password input
   ///
   /// In en, this message translates to:
-  /// **'Please confirm your new password'**
-  String get authConfirmPasswordRequired;
+  /// **'Re-enter your password'**
+  String get authConfirmPasswordHint;
 
-  /// Validation error when passwords don't match
+  /// Link text back to login
   ///
   /// In en, this message translates to:
-  /// **'Passwords do not match'**
-  String get authPasswordsDoNotMatch;
+  /// **'Back to Login'**
+  String get authBackToLogin;
+
+  /// Network error message
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please check your connection and try again.'**
+  String get authNetworkError;
+
+  /// Label for password strength indicator
+  ///
+  /// In en, this message translates to:
+  /// **'Password Strength: '**
+  String get authPasswordStrengthLabel;
+
+  /// Password strength level
+  ///
+  /// In en, this message translates to:
+  /// **'Very Weak'**
+  String get authPasswordStrengthVeryWeak;
+
+  /// Password strength level
+  ///
+  /// In en, this message translates to:
+  /// **'Weak'**
+  String get authPasswordStrengthWeak;
+
+  /// Password strength level
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get authPasswordStrengthFair;
+
+  /// Password strength level
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get authPasswordStrengthGood;
+
+  /// Password strength level
+  ///
+  /// In en, this message translates to:
+  /// **'Strong'**
+  String get authPasswordStrengthStrong;
+
+  /// Terms agreement prefix text
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the '**
+  String get authIAgreeToThe;
+
+  /// Terms of Service link text
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get authTermsOfService;
+
+  /// Privacy Policy link text
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get authPrivacyPolicy;
 
   /// Title for password requirements section
   ///
@@ -421,1565 +535,209 @@ abstract class AppLocalizations {
   /// **'Password Requirements:'**
   String get authPasswordRequirementsTitle;
 
-  /// Password requirement: minimum length
+  /// Bullet point for lists
   ///
   /// In en, this message translates to:
-  /// **'At least 6 characters'**
-  String get authRequirementMinLength;
+  /// **'• '**
+  String get authListBullet;
 
-  /// Password requirement: no spaces
+  /// Error for too many reset attempts
   ///
   /// In en, this message translates to:
-  /// **'No spaces allowed'**
-  String get authRequirementNoSpaces;
+  /// **'Too many password reset attempts. Please try again later.'**
+  String get authTooManyResetAttempts;
 
-  /// Password requirement: passwords match validation
+  /// Error for a weak password
   ///
   /// In en, this message translates to:
-  /// **'Passwords match'**
-  String get authRequirementPasswordsMatch;
+  /// **'Password is too weak. Please choose a stronger password.'**
+  String get authPasswordTooWeak;
 
-  /// Button text for password reset
+  /// Error for too many registration attempts
   ///
   /// In en, this message translates to:
-  /// **'Reset Password'**
-  String get authResetPasswordButton;
+  /// **'Too many registration attempts. Please try again later.'**
+  String get authTooManyRegistrationAttempts;
 
-  /// Link text to go back to login
+  /// Validation error for missing username
   ///
   /// In en, this message translates to:
-  /// **'Back to Sign In'**
-  String get authBackToLogin;
+  /// **'Username is required'**
+  String get authUsernameRequired;
 
-  /// Navigation item for dashboard
+  /// Validation error for too short username
   ///
   /// In en, this message translates to:
-  /// **'Dashboard'**
-  String get navDashboard;
+  /// **'Username must be at least {minLength} characters long'**
+  String authUsernameMinLength(int minLength);
 
-  /// Navigation item for world list
+  /// Validation error for too long username
   ///
   /// In en, this message translates to:
-  /// **'Worlds'**
-  String get navWorldList;
+  /// **'Username must be at most {maxLength} characters long'**
+  String authUsernameMaxLength(int maxLength);
 
-  /// Navigation item for user profile
+  /// Validation error for invalid characters in username
   ///
   /// In en, this message translates to:
-  /// **'Profile'**
-  String get navProfile;
+  /// **'Username contains invalid characters'**
+  String get authUsernameInvalidChars;
 
-  /// Title for worlds section
+  /// Validation error for username starting with number
   ///
   /// In en, this message translates to:
-  /// **'Game Worlds'**
-  String get worldsTitle;
+  /// **'Username cannot start with a number'**
+  String get authUsernameInvalidStart;
 
-  /// Button text to leave a world
+  /// Validation error for reserved username
   ///
   /// In en, this message translates to:
-  /// **'Leave'**
-  String get worldLeaveButton;
+  /// **'This username is reserved'**
+  String get authUsernameReserved;
 
-  /// Button text to pre-register for a world
+  /// Validation error for too long email
   ///
   /// In en, this message translates to:
-  /// **'Pre-Register'**
-  String get worldPreRegisterButton;
+  /// **'Email address is too long'**
+  String get authEmailTooLong;
 
-  /// Button text to cancel pre-registration
+  /// Validation error for invalid email
   ///
   /// In en, this message translates to:
-  /// **'Cancel Pre-Registration'**
-  String get worldCancelPreRegisterButton;
+  /// **'Invalid email address'**
+  String get authEmailInvalid;
 
-  /// Status label for upcoming worlds
+  /// Validation error for invalid characters in email
+  ///
+  /// In en, this message translates to:
+  /// **'Email address contains invalid characters'**
+  String get authEmailInvalidChars;
+
+  /// Validation error for invalid email domain
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email domain'**
+  String get authEmailInvalidDomain;
+
+  /// Validation error for missing password confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Password confirmation is required'**
+  String get authConfirmPasswordRequired;
+
+  /// Validation error for non-matching passwords
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get authPasswordsDoNotMatch;
+
+  /// Validation error for too short password
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least {minLength} characters long'**
+  String authPasswordMinLength(int minLength);
+
+  /// Password requirement for uppercase letters
+  ///
+  /// In en, this message translates to:
+  /// **'At least one uppercase letter required'**
+  String get authPasswordUppercase;
+
+  /// Password requirement for lowercase letters
+  ///
+  /// In en, this message translates to:
+  /// **'At least one lowercase letter required'**
+  String get authPasswordLowercase;
+
+  /// Password requirement for numbers
+  ///
+  /// In en, this message translates to:
+  /// **'At least one number required'**
+  String get authPasswordNumber;
+
+  /// Password requirement for special characters
+  ///
+  /// In en, this message translates to:
+  /// **'At least one special character required'**
+  String get authPasswordSpecialChar;
+
+  /// Password requirement for complexity
+  ///
+  /// In en, this message translates to:
+  /// **'Password cannot be too simple'**
+  String get authPasswordNotCommon;
+
+  /// Password requirement against sequential characters
+  ///
+  /// In en, this message translates to:
+  /// **'No sequential characters'**
+  String get authPasswordNoSequential;
+
+  /// General validation error message for required fields
+  ///
+  /// In en, this message translates to:
+  /// **'{fieldName} is required'**
+  String authFieldRequired(String fieldName);
+
+  /// Generic field name for validation errors
+  ///
+  /// In en, this message translates to:
+  /// **'This field'**
+  String get authThisField;
+
+  /// Status for upcoming worlds
   ///
   /// In en, this message translates to:
   /// **'Upcoming'**
   String get worldStatusUpcoming;
 
-  /// Status label for open worlds
+  /// Status for open worlds
   ///
   /// In en, this message translates to:
   /// **'Open'**
   String get worldStatusOpen;
 
-  /// Status label for running worlds
+  /// Status for running worlds
   ///
   /// In en, this message translates to:
-  /// **'Active'**
+  /// **'Running'**
   String get worldStatusRunning;
 
-  /// Status label for closed worlds
+  /// Status for closed worlds
   ///
   /// In en, this message translates to:
   /// **'Closed'**
   String get worldStatusClosed;
 
-  /// General error message
-  ///
-  /// In en, this message translates to:
-  /// **'An error occurred. Please try again.'**
-  String get errorGeneral;
-
-  /// Network error message
-  ///
-  /// In en, this message translates to:
-  /// **'Network error. Please check your connection.'**
-  String get errorNetwork;
-
-  /// Unauthorized access error message
-  ///
-  /// In en, this message translates to:
-  /// **'You are not authorized to access this resource.'**
-  String get errorUnauthorized;
-
-  /// Email validation error message
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter a valid email address'**
-  String get errorValidationEmail;
-
-  /// Password validation error message
-  ///
-  /// In en, this message translates to:
-  /// **'Password must be at least 8 characters long'**
-  String get errorValidationPassword;
-
-  /// OK button text
-  ///
-  /// In en, this message translates to:
-  /// **'OK'**
-  String get buttonOk;
-
-  /// Or conjunction text
-  ///
-  /// In en, this message translates to:
-  /// **'or'**
-  String get commonOr;
-
-  /// Language selection label
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get commonLanguage;
-
-  /// Cancel button text
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get buttonCancel;
-
-  /// Confirm button text
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm'**
-  String get buttonConfirm;
-
-  /// Save button text
-  ///
-  /// In en, this message translates to:
-  /// **'Save'**
-  String get buttonSave;
-
-  /// Retry button text
-  ///
-  /// In en, this message translates to:
-  /// **'Try Again'**
-  String get buttonRetry;
-
-  /// Generic loading text
-  ///
-  /// In en, this message translates to:
-  /// **'Loading...'**
-  String get loadingText;
-
-  /// Subtitle on the landing page
-  ///
-  /// In en, this message translates to:
-  /// **'Your portal to infinite worlds'**
-  String get landingSubtitle;
-
-  /// Tagline on the landing page
-  ///
-  /// In en, this message translates to:
-  /// **'🎮 Play • 🌍 Explore • 🤝 Connect'**
-  String get landingTagline;
-
-  /// Main CTA button on landing page
-  ///
-  /// In en, this message translates to:
-  /// **'Start Free Now'**
-  String get landingStartButton;
-
-  /// No credit card disclaimer
-  ///
-  /// In en, this message translates to:
-  /// **'No credit card required'**
-  String get landingNoCreditCard;
-
-  /// Login prompt for existing users
-  ///
-  /// In en, this message translates to:
-  /// **'Already a member? Sign in'**
-  String get landingLoginPrompt;
-
-  /// Registration button text
-  ///
-  /// In en, this message translates to:
-  /// **'Register for Free →'**
-  String get landingRegisterButton;
-
-  /// Player count label in stats
-  ///
-  /// In en, this message translates to:
-  /// **'Players'**
-  String get landingStatsPlayers;
-
-  /// Online count label in stats
-  ///
-  /// In en, this message translates to:
-  /// **'Online'**
-  String get landingStatsOnline;
-
-  /// Discover more button text
-  ///
-  /// In en, this message translates to:
-  /// **'Discover More'**
-  String get landingDiscoverMore;
-
-  /// Features section title
-  ///
-  /// In en, this message translates to:
-  /// **'What makes Weltenwind special?'**
-  String get landingFeaturesTitle;
-
-  /// Features section subtitle
-  ///
-  /// In en, this message translates to:
-  /// **'Experience gaming on a new level'**
-  String get landingFeaturesSubtitle;
-
-  /// Worlds feature title
-  ///
-  /// In en, this message translates to:
-  /// **'Infinite Worlds'**
-  String get landingFeatureWorldsTitle;
-
-  /// Worlds feature description
-  ///
-  /// In en, this message translates to:
-  /// **'Explore hundreds of unique game worlds or create your own'**
-  String get landingFeatureWorldsDesc;
-
-  /// Community feature title
-  ///
-  /// In en, this message translates to:
-  /// **'Community'**
-  String get landingFeatureCommunityTitle;
-
-  /// Community feature description
-  ///
-  /// In en, this message translates to:
-  /// **'Connect with players from around the world'**
-  String get landingFeatureCommunityDesc;
-
-  /// Security feature title
-  ///
-  /// In en, this message translates to:
-  /// **'Safe & Fair'**
-  String get landingFeatureSecurityTitle;
-
-  /// Security feature description
-  ///
-  /// In en, this message translates to:
-  /// **'State-of-the-art security and fair rules for everyone'**
-  String get landingFeatureSecurityDesc;
-
-  /// Speed feature title
-  ///
-  /// In en, this message translates to:
-  /// **'Lightning Fast'**
-  String get landingFeatureSpeedTitle;
-
-  /// Speed feature description
-  ///
-  /// In en, this message translates to:
-  /// **'Optimized servers for minimal latency'**
-  String get landingFeatureSpeedDesc;
-
-  /// Mobile feature title
-  ///
-  /// In en, this message translates to:
-  /// **'Play Everywhere'**
-  String get landingFeatureMobileTitle;
-
-  /// Mobile feature description
-  ///
-  /// In en, this message translates to:
-  /// **'On PC, tablet or smartphone - always with you'**
-  String get landingFeatureMobileDesc;
-
-  /// Rewards feature title
-  ///
-  /// In en, this message translates to:
-  /// **'Rewards'**
-  String get landingFeatureRewardsTitle;
-
-  /// Rewards feature description
-  ///
-  /// In en, this message translates to:
-  /// **'Collect achievements and exclusive rewards'**
-  String get landingFeatureRewardsDesc;
-
-  /// Final CTA section title
-  ///
-  /// In en, this message translates to:
-  /// **'Ready for your adventure?'**
-  String get landingCtaTitle;
-
-  /// Final CTA section subtitle
-  ///
-  /// In en, this message translates to:
-  /// **'Join thousands of players and start today!'**
-  String get landingCtaSubtitle;
-
-  /// Copyright notice in footer
-  ///
-  /// In en, this message translates to:
-  /// **'© 2024 Weltenwind. All rights reserved.'**
-  String get footerCopyright;
-
-  /// Privacy link in footer
-  ///
-  /// In en, this message translates to:
-  /// **'Privacy'**
-  String get footerPrivacy;
-
-  /// Legal link in footer
-  ///
-  /// In en, this message translates to:
-  /// **'Legal'**
-  String get footerLegal;
-
-  /// Support link in footer
-  ///
-  /// In en, this message translates to:
-  /// **'Support'**
-  String get footerSupport;
-
-  /// Main title on world list page
-  ///
-  /// In en, this message translates to:
-  /// **'Choose Your World'**
-  String get worldListTitle;
-
-  /// Subtitle on world list page
-  ///
-  /// In en, this message translates to:
-  /// **'Select your world'**
-  String get worldListSubtitle;
-
-  /// Error message when loading worlds
-  ///
-  /// In en, this message translates to:
-  /// **'Error loading worlds: {error}'**
-  String worldListLoadingError(String error);
-
-  /// Title for world loading error
-  ///
-  /// In en, this message translates to:
-  /// **'Error Loading Worlds'**
-  String get worldListErrorTitle;
-
-  /// Unknown error when loading worlds
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown error'**
-  String get worldListErrorUnknown;
-
-  /// Title when no worlds available
-  ///
-  /// In en, this message translates to:
-  /// **'No Worlds Found'**
-  String get worldListEmptyTitle;
-
-  /// Message when no worlds found
-  ///
-  /// In en, this message translates to:
-  /// **'Try different filter settings.'**
-  String get worldListEmptyMessage;
-
-  /// Button to refresh world list
-  ///
-  /// In en, this message translates to:
-  /// **'Refresh'**
-  String get worldListRefreshButton;
-
-  /// Button to create new world
-  ///
-  /// In en, this message translates to:
-  /// **'New World'**
-  String get worldListCreateButton;
-
-  /// Loading text for world list
-  ///
-  /// In en, this message translates to:
-  /// **'Loading worlds...'**
-  String get worldListLoadingText;
-
-  /// Message when user is already member of world
-  ///
-  /// In en, this message translates to:
-  /// **'You are already a member of world \"{worldName}\"!'**
-  String worldAlreadyMember(String worldName);
-
-  /// Success message for pre-registration
-  ///
-  /// In en, this message translates to:
-  /// **'Successfully pre-registered for {worldName}!'**
-  String worldPreRegisterSuccessful(String worldName);
-
-  /// Message when pre-registration is cancelled
-  ///
-  /// In en, this message translates to:
-  /// **'Pre-registration for {worldName} cancelled.'**
-  String worldPreRegisterCancelled(String worldName);
-
-  /// Dialog title for leaving world
-  ///
-  /// In en, this message translates to:
-  /// **'Leave World?'**
-  String get worldLeaveDialogTitle;
-
-  /// Dialog message for leaving world
-  ///
-  /// In en, this message translates to:
-  /// **'Do you really want to leave world \"{worldName}\"?'**
-  String worldLeaveDialogMessage(String worldName);
-
-  /// Confirm button for leaving world
-  ///
-  /// In en, this message translates to:
-  /// **'Leave'**
-  String get worldLeaveConfirm;
-
-  /// Success message when leaving world
-  ///
-  /// In en, this message translates to:
-  /// **'You have left {worldName}.'**
-  String worldLeaveSuccessful(String worldName);
-
-  /// Button to start playing in world
-  ///
-  /// In en, this message translates to:
-  /// **'Play'**
-  String get worldPlayButton;
-
-  /// Error message when logout fails
-  ///
-  /// In en, this message translates to:
-  /// **'Error signing out'**
-  String get worldLogoutError;
-
-  /// Register now button text
-  ///
-  /// In en, this message translates to:
-  /// **'Register Now'**
-  String get worldRegisterNow;
-
-  /// Sign in prompt for registered users
-  ///
-  /// In en, this message translates to:
-  /// **'Already registered? Sign in'**
-  String get worldAlreadyRegistered;
-
-  /// Sign out and register again button
-  ///
-  /// In en, this message translates to:
-  /// **'Sign out & register again'**
-  String get worldLogoutAndRegister;
-
-  /// Back to home button text
-  ///
-  /// In en, this message translates to:
-  /// **'Back to Home'**
-  String get worldBackToHome;
-
-  /// Back to worlds button text
-  ///
-  /// In en, this message translates to:
-  /// **'Back to Worlds'**
-  String get worldBackToWorlds;
-
-  /// Sign in button text
-  ///
-  /// In en, this message translates to:
-  /// **'Sign In'**
-  String get worldLoginButton;
-
-  /// Register button text
-  ///
-  /// In en, this message translates to:
-  /// **'Register'**
-  String get worldRegisterButton;
-
-  /// Sign out button text
-  ///
-  /// In en, this message translates to:
-  /// **'Sign Out'**
-  String get worldLogoutButton;
-
-  /// Title when world not found
-  ///
-  /// In en, this message translates to:
-  /// **'World Not Found'**
-  String get worldNotFoundTitle;
-
-  /// Message when world not found
-  ///
-  /// In en, this message translates to:
-  /// **'The requested world does not exist or is not available.'**
-  String get worldNotFoundMessage;
-
-  /// Generic world loading error
-  ///
-  /// In en, this message translates to:
-  /// **'Error Loading'**
-  String get worldLoadingError;
-
-  /// World information section title
-  ///
-  /// In en, this message translates to:
-  /// **'Information'**
-  String get worldInformationTitle;
-
-  /// World start date label
-  ///
-  /// In en, this message translates to:
-  /// **'Start: {date}'**
-  String worldStartDate(String date);
-
-  /// World end date label
-  ///
-  /// In en, this message translates to:
-  /// **'End: {date}'**
-  String worldEndDate(String date);
-
-  /// Unknown date placeholder
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown'**
-  String get worldDateUnknown;
-
-  /// World about section title
-  ///
-  /// In en, this message translates to:
-  /// **'About This World'**
-  String get worldAboutTitle;
-
-  /// Default world description
-  ///
-  /// In en, this message translates to:
-  /// **'This is an exciting world full of adventures and challenges. Explore unknown territories, form alliances and become a legend!'**
-  String get worldAboutDescription;
-
-  /// World rules section title
-  ///
-  /// In en, this message translates to:
-  /// **'Rules'**
-  String get worldRulesTitle;
-
-  /// World statistics section title
-  ///
-  /// In en, this message translates to:
-  /// **'World Statistics'**
-  String get worldStatsTitle;
-
-  /// Active players count
-  ///
-  /// In en, this message translates to:
-  /// **'{count} players active'**
-  String worldPlayersActive(int count);
-
-  /// Default world description
-  ///
-  /// In en, this message translates to:
-  /// **'An exciting world full of adventures'**
-  String get worldDefaultDescription;
-
-  /// Classic world category
-  ///
-  /// In en, this message translates to:
-  /// **'Classic'**
-  String get worldCategoryClassic;
-
-  /// PvP world category
-  ///
-  /// In en, this message translates to:
-  /// **'Player vs Player'**
-  String get worldCategoryPvP;
-
-  /// Event world category
-  ///
-  /// In en, this message translates to:
-  /// **'Event'**
-  String get worldCategoryEvent;
-
-  /// Experimental world category
-  ///
-  /// In en, this message translates to:
-  /// **'Experimental'**
-  String get worldCategoryExperimental;
-
-  /// Status filter label
-  ///
-  /// In en, this message translates to:
-  /// **'Status:'**
-  String get worldFiltersStatus;
-
-  /// Category filter label
-  ///
-  /// In en, this message translates to:
-  /// **'Category:'**
-  String get worldFiltersCategory;
-
-  /// Sort by filter label
-  ///
-  /// In en, this message translates to:
-  /// **'Sort by:'**
-  String get worldFiltersSortBy;
-
-  /// Sort by start date option
-  ///
-  /// In en, this message translates to:
-  /// **'Start Date'**
-  String get worldFiltersSortStartDate;
-
-  /// Sort by name option
-  ///
-  /// In en, this message translates to:
-  /// **'Name'**
-  String get worldFiltersSortName;
-
-  /// Sort by status option
-  ///
-  /// In en, this message translates to:
-  /// **'Status'**
-  String get worldFiltersSortStatus;
-
-  /// Sort by player count option
-  ///
-  /// In en, this message translates to:
-  /// **'Player Count'**
-  String get worldFiltersSortPlayerCount;
-
-  /// Active filters label
-  ///
-  /// In en, this message translates to:
-  /// **'Active filters:'**
-  String get worldFiltersActiveFilters;
-
-  /// Reset all filters button
-  ///
-  /// In en, this message translates to:
-  /// **'Reset All'**
-  String get worldFiltersResetAll;
-
-  /// Archived world status
+  /// Status for archived worlds
   ///
   /// In en, this message translates to:
   /// **'Archived'**
   String get worldStatusArchived;
 
-  /// Click for details tooltip
+  /// Category for classic worlds
   ///
   /// In en, this message translates to:
-  /// **'Click for details'**
-  String get userInfoClickForDetails;
+  /// **'Classic'**
+  String get worldCategoryClassic;
 
-  /// User roles label
+  /// Category for PvP worlds
   ///
   /// In en, this message translates to:
-  /// **'Roles:'**
-  String get userInfoRoles;
+  /// **'PvP'**
+  String get worldCategoryPvP;
 
-  /// Message when user needs to join world for dashboard
+  /// Category for event worlds
   ///
   /// In en, this message translates to:
-  /// **'You must join the world first to see the dashboard'**
-  String get navigationJoinRequiredMessage;
+  /// **'Event'**
+  String get worldCategoryEvent;
 
-  /// Back navigation button
+  /// Category for experimental worlds
   ///
   /// In en, this message translates to:
-  /// **'Back'**
-  String get navigationBack;
-
-  /// World overview navigation item
-  ///
-  /// In en, this message translates to:
-  /// **'World Overview'**
-  String get navigationWorldOverview;
-
-  /// World details navigation item
-  ///
-  /// In en, this message translates to:
-  /// **'World Details'**
-  String get navigationWorldDetails;
-
-  /// Dashboard navigation item
-  ///
-  /// In en, this message translates to:
-  /// **'To Dashboard'**
-  String get navigationDashboard;
-
-  /// Dashboard navigation when join required
-  ///
-  /// In en, this message translates to:
-  /// **'Dashboard (Join required)'**
-  String get navigationDashboardRequiresJoin;
-
-  /// Navigation section title
-  ///
-  /// In en, this message translates to:
-  /// **'Navigation'**
-  String get navigationTitle;
-
-  /// Open menu button text
-  ///
-  /// In en, this message translates to:
-  /// **'Open Menu'**
-  String get navigationOpenMenu;
-
-  /// Tooltip when join required for dashboard
-  ///
-  /// In en, this message translates to:
-  /// **'You must join the world to see the dashboard'**
-  String get navigationTooltipJoinRequired;
-
-  /// Success message when joining world
-  ///
-  /// In en, this message translates to:
-  /// **'Successfully joined world \"{worldName}\"!'**
-  String worldJoinSuccess(String worldName);
-
-  /// Error message when joining world fails
-  ///
-  /// In en, this message translates to:
-  /// **'Join failed. Please try again.'**
-  String get worldJoinFailed;
-
-  /// Error message for pre-registration failure
-  ///
-  /// In en, this message translates to:
-  /// **'Error during pre-registration'**
-  String get worldJoinPreRegistrationError;
-
-  /// Error message when canceling pre-registration fails
-  ///
-  /// In en, this message translates to:
-  /// **'Error canceling pre-registration'**
-  String get worldJoinCancelPreRegistrationError;
-
-  /// Leave world dialog title
-  ///
-  /// In en, this message translates to:
-  /// **'Leave World?'**
-  String get worldJoinLeaveDialogTitle;
-
-  /// Leave world dialog content
-  ///
-  /// In en, this message translates to:
-  /// **'Do you really want to leave world \"{worldName}\"?'**
-  String worldJoinLeaveDialogContent(String worldName);
-
-  /// Unknown world placeholder
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown'**
-  String get worldJoinUnknownWorld;
-
-  /// Back to worlds button text
-  ///
-  /// In en, this message translates to:
-  /// **'Back to Worlds'**
-  String get worldJoinBackToWorldsButton;
-
-  /// Cancel pre-registration button text
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel Pre-registration'**
-  String get worldJoinCancelPreRegistrationButton;
-
-  /// Canceling pre-registration loading text
-  ///
-  /// In en, this message translates to:
-  /// **'Canceling...'**
-  String get worldJoinCancelPreRegistrationInProgress;
-
-  /// Generic error message with details
-  ///
-  /// In en, this message translates to:
-  /// **'An error occurred: {error}'**
-  String worldJoinGenericError(String error);
-
-  /// Unknown error message
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown error'**
-  String get worldJoinUnknownError;
-
-  /// Unknown world name placeholder
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown World'**
-  String get worldJoinUnknownWorldName;
-
-  /// Pre-register button text
-  ///
-  /// In en, this message translates to:
-  /// **'Pre-register'**
-  String get worldJoinPreRegisterButton;
-
-  /// Pre-registration loading text
-  ///
-  /// In en, this message translates to:
-  /// **'Registering...'**
-  String get worldJoinPreRegisterInProgress;
-
-  /// Leaving world loading text
-  ///
-  /// In en, this message translates to:
-  /// **'Leaving...'**
-  String get worldJoinLeaveInProgress;
-
-  /// Join now button text
-  ///
-  /// In en, this message translates to:
-  /// **'Join Now'**
-  String get worldJoinNowButton;
-
-  /// Joining world loading text
-  ///
-  /// In en, this message translates to:
-  /// **'Joining...'**
-  String get worldJoinInProgress;
-
-  /// Message when world is closed
-  ///
-  /// In en, this message translates to:
-  /// **'This world is currently closed'**
-  String get worldJoinWorldClosedStatus;
-
-  /// Message when world is archived
-  ///
-  /// In en, this message translates to:
-  /// **'This world is archived'**
-  String get worldJoinWorldArchivedStatus;
-
-  /// Error loading world data
-  ///
-  /// In en, this message translates to:
-  /// **'Error loading world data: {error}'**
-  String worldJoinErrorLoadingWorldData(String error);
-
-  /// Invite page title
-  ///
-  /// In en, this message translates to:
-  /// **'Invitation'**
-  String get invitePageTitle;
-
-  /// Invite welcome title
-  ///
-  /// In en, this message translates to:
-  /// **'You\'ve Been Invited!'**
-  String get inviteWelcomeTitle;
-
-  /// Invite welcome subtitle
-  ///
-  /// In en, this message translates to:
-  /// **'You\'ve been invited to world \"{worldName}\"'**
-  String inviteWelcomeSubtitle(String worldName);
-
-  /// Invited by user text
-  ///
-  /// In en, this message translates to:
-  /// **'Invited by {username}'**
-  String inviteFromUser(String username);
-
-  /// Personal invitation headline
-  ///
-  /// In en, this message translates to:
-  /// **'{inviterName} invites you to {worldName}!'**
-  String inviteWelcomePersonal(String inviterName, String worldName);
-
-  /// World preview section title
-  ///
-  /// In en, this message translates to:
-  /// **'Discover {worldName}'**
-  String inviteWorldPreviewTitle(String worldName);
-
-  /// World description label
-  ///
-  /// In en, this message translates to:
-  /// **'Description'**
-  String get inviteWorldDescription;
-
-  /// World theme label
-  ///
-  /// In en, this message translates to:
-  /// **'Theme'**
-  String get inviteWorldTheme;
-
-  /// World player count label
-  ///
-  /// In en, this message translates to:
-  /// **'Players'**
-  String get inviteWorldPlayerCount;
-
-  /// World last activity label
-  ///
-  /// In en, this message translates to:
-  /// **'Last active'**
-  String get inviteWorldActivity;
-
-  /// World creator label
-  ///
-  /// In en, this message translates to:
-  /// **'Created by'**
-  String get inviteWorldCreator;
-
-  /// Why join section title
-  ///
-  /// In en, this message translates to:
-  /// **'Why join?'**
-  String get inviteWhyJoin;
-
-  /// Call to action text
-  ///
-  /// In en, this message translates to:
-  /// **'Ready for a new adventure?'**
-  String get inviteCallToAction;
-
-  /// Fallback when no world description
-  ///
-  /// In en, this message translates to:
-  /// **'No description available'**
-  String get inviteNoDescription;
-
-  /// Invitation details section title
-  ///
-  /// In en, this message translates to:
-  /// **'Invitation Details'**
-  String get inviteDetailsTitle;
-
-  /// Email field label
-  ///
-  /// In en, this message translates to:
-  /// **'Email'**
-  String get inviteDetailsEmail;
-
-  /// World field label
-  ///
-  /// In en, this message translates to:
-  /// **'World'**
-  String get inviteDetailsWorld;
-
-  /// Status field label
-  ///
-  /// In en, this message translates to:
-  /// **'Status'**
-  String get inviteDetailsStatus;
-
-  /// Expiration field label
-  ///
-  /// In en, this message translates to:
-  /// **'Expires'**
-  String get inviteDetailsExpires;
-
-  /// Hint to register for joining world
-  ///
-  /// In en, this message translates to:
-  /// **'You need an account to join the world.'**
-  String get inviteActionRegisterHint;
-
-  /// Register and join button text
-  ///
-  /// In en, this message translates to:
-  /// **'Register & Join'**
-  String get inviteActionRegisterAndJoin;
-
-  /// Sign in prompt for existing users
-  ///
-  /// In en, this message translates to:
-  /// **'Already have an account? Sign in'**
-  String get inviteActionAlreadyHaveAccount;
-
-  /// Hint to login for joining world
-  ///
-  /// In en, this message translates to:
-  /// **'You already have an account. Sign in to join the world.'**
-  String get inviteActionLoginHint;
-
-  /// Sign in button text
-  ///
-  /// In en, this message translates to:
-  /// **'Sign In'**
-  String get inviteActionLogin;
-
-  /// Accept invitation hint
-  ///
-  /// In en, this message translates to:
-  /// **'Hello {username}! You can now accept or decline the invitation.'**
-  String inviteActionAcceptHint(String username);
-
-  /// Accept invitation button text
-  ///
-  /// In en, this message translates to:
-  /// **'Accept Invitation'**
-  String get inviteActionAccept;
-
-  /// Decline invitation button text
-  ///
-  /// In en, this message translates to:
-  /// **'Decline'**
-  String get inviteActionDecline;
-
-  /// Wrong email hint
-  ///
-  /// In en, this message translates to:
-  /// **'You are signed in as {currentEmail}, but the invitation is for {inviteEmail}. You need to sign out and register with the correct email.'**
-  String inviteActionWrongEmailHint(String currentEmail, String inviteEmail);
-
-  /// Sign out and register button text
-  ///
-  /// In en, this message translates to:
-  /// **'Sign Out & Register'**
-  String get inviteActionLogoutAndRegister;
-
-  /// Unknown status message
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown status. Please try again later.'**
-  String get inviteActionUnknownStatus;
-
-  /// No invitation data error
-  ///
-  /// In en, this message translates to:
-  /// **'No invitation data available.'**
-  String get inviteErrorNoData;
-
-  /// Invalid or expired invitation error
-  ///
-  /// In en, this message translates to:
-  /// **'Invitation invalid or expired'**
-  String get inviteErrorInvalidOrExpired;
-
-  /// Error loading invitation data
-  ///
-  /// In en, this message translates to:
-  /// **'Error loading invitation data: {error}'**
-  String inviteErrorLoadingData(String error);
-
-  /// Error accepting invitation
-  ///
-  /// In en, this message translates to:
-  /// **'Error accepting invitation'**
-  String get inviteErrorAcceptFailed;
-
-  /// Error accepting invitation with details
-  ///
-  /// In en, this message translates to:
-  /// **'Error accepting invitation: {error}'**
-  String inviteErrorAcceptException(String error);
-
-  /// Error declining invitation
-  ///
-  /// In en, this message translates to:
-  /// **'Error declining invitation'**
-  String get inviteErrorDeclineFailed;
-
-  /// Error declining invitation with details
-  ///
-  /// In en, this message translates to:
-  /// **'Error declining invitation: {error}'**
-  String inviteErrorDeclineException(String error);
-
-  /// Invitation declined success message
-  ///
-  /// In en, this message translates to:
-  /// **'Invitation declined'**
-  String get inviteDeclineSuccess;
-
-  /// Discover more worlds header in marketing
-  ///
-  /// In en, this message translates to:
-  /// **'Discover more exciting worlds'**
-  String get marketingDiscoverMoreWorlds;
-
-  /// Marketing call-to-action text
-  ///
-  /// In en, this message translates to:
-  /// **'Discover hundreds of worlds, create your own, or join existing communities!'**
-  String get marketingCallToAction;
-
-  /// Community feature title in marketing
-  ///
-  /// In en, this message translates to:
-  /// **'Community'**
-  String get marketingFeatureCommunityTitle;
-
-  /// Community feature description in marketing
-  ///
-  /// In en, this message translates to:
-  /// **'Play with friends'**
-  String get marketingFeatureCommunityDesc;
-
-  /// Create feature title in marketing
-  ///
-  /// In en, this message translates to:
-  /// **'Create'**
-  String get marketingFeatureCreateTitle;
-
-  /// Create feature description in marketing
-  ///
-  /// In en, this message translates to:
-  /// **'Build your world'**
-  String get marketingFeatureCreateDesc;
-
-  /// Explore feature title in marketing
-  ///
-  /// In en, this message translates to:
-  /// **'Explore'**
-  String get marketingFeatureExploreTitle;
-
-  /// Explore feature description in marketing
-  ///
-  /// In en, this message translates to:
-  /// **'New adventures'**
-  String get marketingFeatureExploreDesc;
-
-  /// Browse all worlds button text
-  ///
-  /// In en, this message translates to:
-  /// **'Browse All Worlds'**
-  String get marketingBrowseAllWorlds;
-
-  /// Invitation creation date label
-  ///
-  /// In en, this message translates to:
-  /// **'Created on'**
-  String get inviteDetailsCreated;
-
-  /// Invite widget title
-  ///
-  /// In en, this message translates to:
-  /// **'Send invitation for {worldName}'**
-  String inviteWidgetTitle(String worldName);
-
-  /// No description provided for @inviteWidgetEmailLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Email Address'**
-  String get inviteWidgetEmailLabel;
-
-  /// No description provided for @inviteWidgetEmailHint.
-  ///
-  /// In en, this message translates to:
-  /// **'friend@example.com'**
-  String get inviteWidgetEmailHint;
-
-  /// No description provided for @inviteWidgetEmailRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Email address is required'**
-  String get inviteWidgetEmailRequired;
-
-  /// No description provided for @inviteWidgetEmailInvalid.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid email address'**
-  String get inviteWidgetEmailInvalid;
-
-  /// No description provided for @inviteWidgetSendEmailOption.
-  ///
-  /// In en, this message translates to:
-  /// **'Send email automatically'**
-  String get inviteWidgetSendEmailOption;
-
-  /// No description provided for @inviteWidgetSendEmailHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Disable to create invitation link only'**
-  String get inviteWidgetSendEmailHint;
-
-  /// No description provided for @inviteWidgetSendButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Send Invitation'**
-  String get inviteWidgetSendButton;
-
-  /// No description provided for @inviteWidgetCreateLinkButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Create Link'**
-  String get inviteWidgetCreateLinkButton;
-
-  /// No description provided for @inviteWidgetSuccessWithEmail.
-  ///
-  /// In en, this message translates to:
-  /// **'Invitation successfully sent to {email}!'**
-  String inviteWidgetSuccessWithEmail(String email);
-
-  /// No description provided for @inviteWidgetSuccessLinkOnly.
-  ///
-  /// In en, this message translates to:
-  /// **'Invitation link successfully created!'**
-  String get inviteWidgetSuccessLinkOnly;
-
-  /// No description provided for @inviteWidgetCopyLink.
-  ///
-  /// In en, this message translates to:
-  /// **'Copy'**
-  String get inviteWidgetCopyLink;
-
-  /// No description provided for @inviteWidgetDialogTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Invite Player'**
-  String get inviteWidgetDialogTitle;
-
-  /// No description provided for @inviteWidgetCancel.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get inviteWidgetCancel;
-
-  /// No description provided for @inviteWidgetLinkTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Invitation Link:'**
-  String get inviteWidgetLinkTitle;
-
-  /// Message when user can accept or decline the invitation
-  ///
-  /// In en, this message translates to:
-  /// **'You can now accept or decline this invitation.'**
-  String get inviteActionReadyToAccept;
-
-  /// Message when invitation has already been accepted
-  ///
-  /// In en, this message translates to:
-  /// **'This invitation has already been accepted. You can now go to the world.'**
-  String get inviteStatusAlreadyAccepted;
-
-  /// No description provided for @worldInviteButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Invite'**
-  String get worldInviteButton;
-
-  /// No description provided for @authLoginSuccessButInviteFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Login successful, but invitation could not be accepted.'**
-  String get authLoginSuccessButInviteFailed;
-
-  /// No description provided for @authRegisterSuccessButInviteFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Registration successful, but invitation could not be accepted.'**
-  String get authRegisterSuccessButInviteFailed;
-
-  /// Generic navigation loading text
-  ///
-  /// In en, this message translates to:
-  /// **'Loading page...'**
-  String get navigationLoadingGeneric;
-
-  /// Navigation loading error text
-  ///
-  /// In en, this message translates to:
-  /// **'Error loading page'**
-  String get navigationLoadingError;
-
-  /// Navigation loading retry button
-  ///
-  /// In en, this message translates to:
-  /// **'Try again'**
-  String get navigationLoadingRetry;
-
-  /// Loading text for world list page
-  ///
-  /// In en, this message translates to:
-  /// **'Loading worlds...'**
-  String get navigationLoadingWorldList;
-
-  /// Loading text for dashboard page
-  ///
-  /// In en, this message translates to:
-  /// **'Preparing dashboard...'**
-  String get navigationLoadingDashboard;
-
-  /// Loading text for world join page
-  ///
-  /// In en, this message translates to:
-  /// **'Loading world...'**
-  String get navigationLoadingWorldJoin;
-
-  /// Error message when services are not available
-  ///
-  /// In en, this message translates to:
-  /// **'Service unavailable. App will restart...'**
-  String get navigationErrorServiceUnavailable;
-
-  /// Error message for network issues
-  ///
-  /// In en, this message translates to:
-  /// **'Network error. Check your internet connection.'**
-  String get navigationErrorNetwork;
-
-  /// Error message for loading timeout
-  ///
-  /// In en, this message translates to:
-  /// **'Loading takes too long. Please try again.'**
-  String get navigationErrorTimeout;
-
-  /// Error message for theme loading issues
-  ///
-  /// In en, this message translates to:
-  /// **'Theme loading issues. Page will show with default theme.'**
-  String get navigationErrorTheme;
-
-  /// Generic error message for navigation
-  ///
-  /// In en, this message translates to:
-  /// **'Unexpected error while loading page.'**
-  String get navigationErrorGeneric;
-
-  /// Loading message for world list
-  ///
-  /// In en, this message translates to:
-  /// **'Loading worlds...'**
-  String get worldListLoading;
-
-  /// Empty state message for world list
-  ///
-  /// In en, this message translates to:
-  /// **'No worlds available'**
-  String get worldListEmpty;
-
-  /// Empty state description for world list
-  ///
-  /// In en, this message translates to:
-  /// **'No worlds have been created yet. Create your first world!'**
-  String get worldListEmptyDescription;
-
-  /// Error message for world list
-  ///
-  /// In en, this message translates to:
-  /// **'Error loading worlds'**
-  String get worldListError;
-
-  /// Retry button text
-  ///
-  /// In en, this message translates to:
-  /// **'Retry'**
-  String get retry;
-
-  /// No results message for world list
-  ///
-  /// In en, this message translates to:
-  /// **'No results found'**
-  String get worldListNoResults;
-
-  /// Clear filters button text
-  ///
-  /// In en, this message translates to:
-  /// **'Clear filters'**
-  String get clearFilters;
-
-  /// Title for logout confirmation dialog
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm Logout'**
-  String get logoutConfirmTitle;
-
-  /// Message for logout confirmation dialog
-  ///
-  /// In en, this message translates to:
-  /// **'Do you really want to log out?'**
-  String get logoutConfirmMessage;
-
-  /// Logout button text
-  ///
-  /// In en, this message translates to:
-  /// **'Logout'**
-  String get buttonLogout;
-
-  /// Error message when invite dialog fails to open
-  ///
-  /// In en, this message translates to:
-  /// **'Error opening invite dialog: {error}'**
-  String errorInviteDialogOpen(String error);
-
-  /// Error message when logout fails
-  ///
-  /// In en, this message translates to:
-  /// **'Logout error: {error}'**
-  String errorLogout(String error);
-
-  /// Error message when copying invite link fails
-  ///
-  /// In en, this message translates to:
-  /// **'Error copying link'**
-  String get errorInviteLinkCopy;
-
-  /// Generic error message with error details
-  ///
-  /// In en, this message translates to:
-  /// **'Error: {error}'**
-  String errorGenericWithDetails(String error);
-
-  /// Skip button text
-  ///
-  /// In en, this message translates to:
-  /// **'Skip'**
-  String get buttonSkip;
-
-  /// Clear all button text
-  ///
-  /// In en, this message translates to:
-  /// **'Clear All'**
-  String get buttonClearAll;
-
-  /// Accept button text
-  ///
-  /// In en, this message translates to:
-  /// **'Accept'**
-  String get buttonAccept;
-
-  /// Decline button text
-  ///
-  /// In en, this message translates to:
-  /// **'Decline'**
-  String get buttonDecline;
-
-  /// Button text to navigate to worlds
-  ///
-  /// In en, this message translates to:
-  /// **'To Worlds'**
-  String get buttonToWorlds;
-
-  /// Tooltip for theme mode indicator
-  ///
-  /// In en, this message translates to:
-  /// **'Theme Mode: {mode}'**
-  String tooltipThemeMode(String mode);
-
-  /// Tooltip for theme settings button
-  ///
-  /// In en, this message translates to:
-  /// **'Theme Settings'**
-  String get tooltipThemeSettings;
-
-  /// Tooltip for close button
-  ///
-  /// In en, this message translates to:
-  /// **'Close'**
-  String get tooltipClose;
-
-  /// Tooltip for copy schema button
-  ///
-  /// In en, this message translates to:
-  /// **'Copy Schema'**
-  String get tooltipCopySchema;
-
-  /// Tooltip for refresh button
-  ///
-  /// In en, this message translates to:
-  /// **'Refresh'**
-  String get tooltipRefresh;
-
-  /// Tooltip for info button
-  ///
-  /// In en, this message translates to:
-  /// **'Info'**
-  String get tooltipInfo;
-
-  /// Hint text example for email input
-  ///
-  /// In en, this message translates to:
-  /// **'your@email.com'**
-  String get emailHintExample;
-
-  /// Label for filters section
-  ///
-  /// In en, this message translates to:
-  /// **'Filters'**
-  String get labelFilters;
-
-  /// Label for tags section
-  ///
-  /// In en, this message translates to:
-  /// **'Tags'**
-  String get labelTags;
-
-  /// Label for favorites only filter
-  ///
-  /// In en, this message translates to:
-  /// **'Favorites Only'**
-  String get labelFavoritesOnly;
-
-  /// Success message for pre-registration without parameters
-  ///
-  /// In en, this message translates to:
-  /// **'Pre-registration successful!'**
-  String get preRegistrationSuccess;
-
-  /// Success message when schema is copied to clipboard
-  ///
-  /// In en, this message translates to:
-  /// **'Schema data copied to clipboard'**
-  String get schemaCopiedToClipboard;
-
-  /// Sort option for name
-  ///
-  /// In en, this message translates to:
-  /// **'Name'**
-  String get sortOptionName;
-
-  /// Sort option for player count
-  ///
-  /// In en, this message translates to:
-  /// **'Players'**
-  String get sortOptionPlayers;
-
-  /// Sort option for status
-  ///
-  /// In en, this message translates to:
-  /// **'Status'**
-  String get sortOptionStatus;
-
-  /// Sort option for last played
-  ///
-  /// In en, this message translates to:
-  /// **'Last Played'**
-  String get sortOptionLastPlayed;
-
-  /// Sort option for created date
-  ///
-  /// In en, this message translates to:
-  /// **'Created'**
-  String get sortOptionCreated;
-
-  /// Sort option with descending indicator
-  ///
-  /// In en, this message translates to:
-  /// **'{option} (desc)'**
-  String sortOptionDescending(String option);
+  /// **'Experimental'**
+  String get worldCategoryExperimental;
 }
 
 class _AppLocalizationsDelegate
