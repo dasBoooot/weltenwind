@@ -156,6 +156,30 @@ app.use('/api/invites', inviteRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/arb', arbRoutes);
 app.use('/api/themes', themeRoutes);
+
+// 🖼️ Asset-Server mit Logging
+app.use('/api/assets', (req, res, next) => {
+  // Log Asset-Requests
+  loggers.system.info('🖼️ Asset request', {
+    method: req.method,
+    path: req.path,
+    url: req.url,
+    userAgent: req.get('User-Agent'),
+    referer: req.get('Referer'),
+    ip: req.ip
+  });
+  
+  // Debug: Pfad ausgeben
+  const assetPath = path.join(__dirname, '../../../assets', req.path);
+  loggers.system.info('🔍 Asset path resolution', {
+    requestedPath: req.path,
+    resolvedPath: assetPath,
+    exists: require('fs').existsSync(assetPath)
+  });
+  
+  next();
+}, express.static(path.join(__dirname, '../../../assets')));
+
 app.use('/api/metrics', metricsRoutes);  // 📊 Metriken-Dashboard
 app.use('/api/query-performance', queryPerformanceRoutes);  // 🔍 Query-Performance-Monitoring
 app.use('/api/backup', backupRoutes);  // 🗄️ Backup-Management

@@ -97,6 +97,14 @@
       "wider": "0.05em"
     }
   },
+  "backgrounds": {
+    "auth": "ui/backgrounds/default.png",
+    "login": "ui/backgrounds/default.png",
+    "register": "ui/backgrounds/default.png",
+    "forgotPassword": "ui/backgrounds/default.png",
+    "resetPassword": "ui/backgrounds/default.png",
+    "worlds": "ui/backgrounds/default.png"
+  },
   "spacing": {
     "xs": "0.25rem",
     "sm": "0.5rem",

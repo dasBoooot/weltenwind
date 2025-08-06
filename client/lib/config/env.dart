@@ -5,12 +5,15 @@ class Env {
   // Client/Frontend URL (für Invite-Links und Web-Routing)
   static const String clientUrl = 'https://192.168.2.168/game';
   
+  // ✅ Asset Server URL (separate für zukünftige Auslagerung)
+  static const String assetUrl = 'https://192.168.2.168';
+  
   // ✅ Static Assets (nginx-proxied, über HTTPS)
   static const String themeEditorUrl = '$apiUrl/theme-editor';
   static const String bundleConfigsUrl = '$themeEditorUrl/bundles/bundle-configs.json';
   
   // ✅ Asset Server Configuration für modulare Welten
-  static const String assetBaseUrl = '$apiUrl/assets';
+  static const String assetBaseUrl = '$assetUrl/assets';
   static const String assetWorldsPath = '/worlds';
   static const String assetManifestFile = 'manifest.json';
   

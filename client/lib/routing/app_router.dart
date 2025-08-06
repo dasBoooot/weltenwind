@@ -8,7 +8,7 @@ import '../features/world/world_list_page.dart';
 import '../config/logger.dart';
 import '../core/services/auth_service.dart';
 import '../main.dart';
-import '../shared/navigation/elegant_transitions.dart';
+import '../shared/navigation/transitions.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(

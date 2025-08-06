@@ -34,7 +34,8 @@
     "ui": {
       "headers": "ui/headers/",
       "buttons": "ui/buttons/",
-      "tooltips": "ui/tooltips/"
+      "tooltips": "ui/tooltips/",
+      "backgrounds": "ui/backgrounds/"
     }
   },
   "config": {

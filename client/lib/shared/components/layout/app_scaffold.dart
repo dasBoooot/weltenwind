@@ -2,6 +2,8 @@ library;
 import 'package:flutter/material.dart';
 import '../base/base_component.dart';
 import '../../../l10n/app_localizations.dart';
+import 'background_image.dart';
+import '../../../core/models/world.dart';
 
 class AppScaffold extends BaseComponent {
   const AppScaffold({
@@ -122,11 +124,20 @@ class AppScaffold extends BaseComponent {
 
 /// Specialized scaffold for authentication pages
 class AuthScaffold extends AppScaffold {
+  final World? world;
+  final String? pageType;
+  final BackgroundOverlayType overlayType;
+  final double overlayOpacity;
+
   AuthScaffold({
     super.key,
     required super.body,
     String? titleText,
     super.backgroundColor,
+    this.world,
+    this.pageType,
+    this.overlayType = BackgroundOverlayType.gradient,
+    this.overlayOpacity = 0.3,
   }) : super(
           title: titleText != null ? Text(titleText) : null,
           showBackButton: true,
@@ -138,23 +149,40 @@ class AuthScaffold extends AppScaffold {
     final colorScheme = getColorScheme(context);
     final l10n = AppLocalizations.of(context);
 
-    Widget scaffold = Scaffold(
-      backgroundColor: backgroundColor ?? colorScheme.surface,
+    // Create the main content
+    Widget mainContent = Scaffold(
+      backgroundColor: Colors.transparent, // Make scaffold transparent
       appBar: _buildAppBar(context, colorScheme, l10n),
-      body: body, // Don't wrap in _buildBody for auth pages
-      extendBodyBehindAppBar: extendBodyBehindAppBar,
+      body: Padding(
+        padding: const EdgeInsets.only(top: 50.0), // Add spacing from app bar
+        child: body,
+      ),
+      extendBodyBehindAppBar: true, // Extend body behind app bar
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
     );
 
     // Add WillPopScope if onWillPop is provided
     if (onWillPop != null) {
-      scaffold = WillPopScope(
+      mainContent = WillPopScope(
         onWillPop: onWillPop,
-        child: scaffold,
+        child: mainContent,
       );
     }
 
-    return scaffold;
+    // Wrap with background image if world is provided (outermost wrapper)
+    if (world != null) {
+      mainContent = SizedBox.expand(
+        child: BackgroundImage(
+          world: world!,
+          pageType: pageType,
+          overlayType: overlayType,
+          overlayOpacity: overlayOpacity,
+          child: mainContent,
+        ),
+      );
+    }
+
+    return mainContent;
   }
 }
 

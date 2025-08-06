@@ -1,312 +1,283 @@
-# Theme System Documentation
+# 🎨 Named Entrypoints Theme System
 
-## Overview
+**Das Weltenwind Theme System** ist eine modulare, context-aware Architektur für dynamische Themes und Assets.
 
-The Weltenwind theme system is built around the concept of **Named Entrypoints** - a modular, context-aware theming solution that allows different visual styles for different parts of the application (pre-game, game, loading, etc.) while maintaining consistency within each context.
+---
 
-## Architecture
+## 📋 **Inhaltsverzeichnis**
 
-### Core Concepts
+1. [🏗️ System-Architektur](#️-system-architektur)
+2. [🎯 Named Entrypoints](#-named-entrypoints)
+3. [🖼️ Asset Management](#️-asset-management)
+4. [🔧 Implementation](#-implementation)
+5. [📱 Flutter Integration](#-flutter-integration)
+6. [⚡ Performance & Caching](#-performance--caching)
+7. [🚀 Deployment & Production](#-deployment--production)
 
-1. **Named Entrypoints**: Each world can have multiple theme contexts (e.g., `pre-game`, `game`, `loading`)
-2. **Modular Assets**: Theme assets are organized in a modular structure under `assets/worlds/{worldId}/themes/{context}/`
-3. **Context-Specific Themes**: Different visual styles for different application contexts
-4. **Bundle System**: Themes are bundled with their assets for efficient delivery
+---
 
-### File Structure
+## 🏗️ **System-Architektur**
 
+### **Modulare Theme-Struktur**
 ```
 assets/
 ├── worlds/
 │   ├── default/
-│   │   ├── manifest.json          # World configuration
-│   │   └── themes/
-│   │       ├── pre-game/
-│   │       │   ├── theme.json     # Theme configuration
-│   │       │   ├── icons/         # Context-specific icons
-│   │       │   ├── sounds/        # Context-specific sounds
-│   │       │   └── materials/     # Context-specific materials
-│   │       ├── game/
-│   │       │   └── ...
-│   │       └── loading/
-│   │           └── ...
-│   └── medieval/
-│       └── ...
+│   │   ├── manifest.json          # 🌍 World-Metadaten & Entrypoints
+│   │   ├── themes/
+│   │   │   ├── pre-game/
+│   │   │   │   └── theme.json     # 🎨 Pre-Game Theme
+│   │   │   ├── game/
+│   │   │   │   └── theme.ts       # 🎮 Game Theme
+│   │   │   └── loading/
+│   │   │       └── theme.ts       # ⏳ Loading Theme
+│   │   └── ui/
+│   │       └── backgrounds/
+│   │           ├── default.png    # 🖼️ Standard-Hintergrund
+│   │           ├── login.png      # 🔐 Login-Hintergrund
+│   │           └── game.png       # 🎮 Game-Hintergrund
+│   └── custom-world/
+│       └── ...                    # 🌍 Benutzerdefinierte Welten
 ```
 
-## Data Flow: From External Files to Game
+### **Context-Aware Theme Resolution**
+- **Pre-Game**: Login, Register, Setup, Invite-Landing
+- **Game**: Aktives Spiel, Game-UI, HUD
+- **Loading**: Ladebildschirme, Transitions
 
-### 1. Backend API Layer
+---
 
-**File**: `backend/src/routes/themes.ts`
+## 🎯 **Named Entrypoints**
 
-The backend serves theme data through two main endpoints:
-
-- `GET /api/themes/named-entrypoints` - Lists all available worlds and their entrypoints
-- `GET /api/themes/named-entrypoints/{worldId}/{context}` - Returns theme data for a specific world and context
-
-**Responsibilities**:
-- Reads world manifests from `assets/worlds/{worldId}/manifest.json`
-- Serves context-specific theme files from `assets/worlds/{worldId}/themes/{context}/theme.json`
-- Combines world info with theme data in the response
-
-### 2. Client-Side Service Layer
-
-**File**: `client/lib/core/services/named_entrypoints_service.dart`
-
-**Responsibilities**:
-- Makes HTTP requests to the backend theme API
-- Handles network communication and error handling
-- Returns raw JSON theme data to the resolver
-
-### 3. Theme Resolution Layer
-
-**File**: `client/lib/shared/theme/theme_resolver.dart`
-
-**Responsibilities**:
-- Converts raw JSON theme data into Flutter `ThemeData` objects
-- Parses all theme properties (colors, typography, spacing, effects)
-- Creates comprehensive Material 3 theme configurations
-- Handles both light and dark mode variants
-
-**Key Methods**:
-- `_createThemeDataFromJson()` - Main conversion method
-- `_parseSpacing()`, `_parseLineHeight()`, etc. - Helper parsers
-- `resolveTheme()` - Public API for theme resolution
-
-### 4. Theme Management Layer
-
-**File**: `client/lib/shared/theme/theme_manager.dart`
-
-**Responsibilities**:
-- Manages current theme state
-- Orchestrates theme resolution and caching
-- Handles theme switching between contexts
-- Integrates with `ThemeResolver` and `ThemeCache`
-
-**Key Methods**:
-- `setWorldTheme()` - Sets theme for a specific world and context
-- `getCurrentTheme()` - Returns current theme data
-- `switchContext()` - Switches between theme contexts
-
-### 5. Caching Layer
-
-**File**: `client/lib/shared/theme/theme_cache.dart`
-
-**Responsibilities**:
-- Caches resolved `ThemeData` objects for performance
-- Prevents redundant theme resolution
-- Manages cache invalidation
-
-### 6. Provider Layer
-
-**File**: `client/lib/shared/theme/theme_provider.dart`
-
-**Responsibilities**:
-- Flutter `ChangeNotifier` for theme state
-- Exposes theme data to the UI via `Provider`
-- Handles theme mode changes (light/dark)
-
-### 7. UI Integration Layer
-
-**File**: `client/lib/app.dart`
-
-**Responsibilities**:
-- Root widget that integrates the theme system
-- Uses `MultiProvider` to make `ThemeProvider` available
-- Applies resolved themes to `MaterialApp.router`
-
-## Theme Data Structure
-
-### Theme JSON Schema
-
-The `theme.json` file contains comprehensive theme configuration:
-
+### **Manifest.json Structure**
 ```json
 {
-  "colors": {
-    "primary": { "main": "#3B82F6", "light": "#60A5FA", "dark": "#2563EB", "contrast": "#FFFFFF" },
-    "secondary": { ... },
-    "background": { ... },
-    "text": { ... },
-    "status": { "success": "#10B981", "warning": "#F59E0B", "error": "#EF4444" },
-    "border": { "default": "#E5E7EB", "muted": "#F3F4F6" },
-    "interactive": { "hover": "#F8FAFC", "active": "#F1F5F9", "focus": "#DBEAFE" }
-  },
-  "fonts": {
-    "primary": {
-      "family": "Inter",
-      "fallback": ["system-ui", "sans-serif"],
-      "weights": { "light": 300, "normal": 400, "medium": 500, "semibold": 600, "bold": 700 }
-    }
-  },
-  "typography": {
-    "headings": { "h1": "2.25rem", "h2": "1.875rem", ... },
-    "body": { "xs": "0.75rem", "sm": "0.875rem", "base": "1rem", ... },
-    "lineHeights": { "tight": "1.25", "normal": "1.5", "relaxed": "1.75" },
-    "fontWeights": { "light": 300, "normal": 400, ... },
-    "letterSpacing": { "tight": "-0.025em", "normal": "0em", "wide": "0.025em" }
-  },
-  "spacing": {
-    "xs": "0.25rem", "sm": "0.5rem", "md": "1rem", "lg": "1.5rem",
-    "xl": "2rem", "xxl": "3rem", "xxxl": "4rem", "section": "6rem"
-  },
-  "radius": {
-    "none": "0", "sm": "0.125rem", "md": "0.375rem",
-    "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"
-  },
-  "effects": {
-    "animations": {
-      "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
-      "duration": { "fast": "150ms", "normal": "300ms", "slow": "500ms" },
-      "scale": { "hover": "1.05", "active": "0.95" }
-    },
-    "shadows": {
-      "softGlow": "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-      "focusRing": "0 0 0 3px rgba(59, 130, 246, 0.5)"
+  "manifest": {
+    "id": "default",
+    "name": "Weltenwind Default",
+    "version": "1.3.0",
+    "entrypoints": {
+      "themes": {
+        "pre-game": {
+          "file": "themes/pre-game/theme.json"
+        },
+        "game": {
+          "file": "themes/game/theme.ts",
+          "export": "defaultGameTheme"
+        },
+        "loading": {
+          "file": "themes/loading/theme.ts",
+          "export": "defaultLoadingTheme"
+        }
+      }
     }
   }
 }
 ```
 
-### Flutter ThemeData Conversion
+### **API Endpoints**
+- `GET /api/themes/manifest/{worldId}` - Manifest abrufen
+- `GET /api/themes/named-entrypoints/{worldId}/{context}` - Theme für Context
 
-The `ThemeResolver` converts this JSON into a complete Flutter `ThemeData` object including:
+---
 
-- **ColorScheme**: All color variants and semantic colors
-- **TextTheme**: Typography configuration for all text styles
-- **Component Themes**: Button, input, card, app bar, navigation themes
-- **Material 3**: Full Material 3 design system integration
+## 🖼️ **Asset Management**
 
-## Usage Examples
+### **Nginx-basierte Asset-Serving**
+Das Asset-System verwendet **nginx `alias`** für optimale Performance:
 
-### Setting a Theme in UI Components
+```nginx
+location /api/assets/ {
+    alias /srv/weltenwind/assets/;
 
-```dart
-class LoginPage extends StatefulWidget {
-  @override
-  State<LoginPage> createState() => _LoginPageState();
+    # CORS für Web-Nutzung (z. B. von Flutter Web)
+    add_header Access-Control-Allow-Origin "*" always;
+    add_header Access-Control-Allow-Methods "GET, OPTIONS" always;
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range" always;
+
+    # Browser-Caching
+    expires 1h;
+    add_header Cache-Control "public, immutable";
 }
+```
 
-class _LoginPageState extends State<LoginPage> {
-  late ThemeManager _themeManager;
+### **Asset-URL-Struktur**
+```
+https://192.168.2.168/api/assets/worlds/{worldId}/ui/backgrounds/{pageType}.png
+```
 
-  @override
-  void initState() {
-    super.initState();
-    _themeManager = ThemeManager();
-    _loadDefaultTheme();
-  }
+**Beispiele:**
+- `https://192.168.2.168/api/assets/worlds/default/ui/backgrounds/default.png`
+- `https://192.168.2.168/api/assets/worlds/default/ui/backgrounds/login.png`
+- `https://192.168.2.168/api/assets/worlds/custom/ui/backgrounds/game.png`
 
-  Future<void> _loadDefaultTheme() async {
-    try {
-      final defaultWorld = World(
-        id: 0,
-        name: 'Default',
-        status: WorldStatus.open,
-        createdAt: DateTime.now(),
-        startsAt: DateTime.now(),
-        description: 'Default world for authentication',
-        themeBundle: 'default',
-        themeVariant: 'pre-game',
-        parentTheme: null,
-        themeOverrides: null,
-      );
+### **Vorteile der nginx-Lösung**
+- ✅ **Direkte Asset-Serving** - Kein Backend-Overhead
+- ✅ **Optimale Performance** - Statische Dateien von nginx
+- ✅ **CORS-Support** - Korrekte Headers für Web-Nutzung
+- ✅ **Caching** - Browser-Caching für bessere Performance
+- ✅ **Skalierbar** - Einfache Auslagerung auf CDN möglich
 
-      await _themeManager.setWorldTheme(defaultWorld, context: 'pre-game');
-    } catch (e) {
-      AppLogger.app.w('⚠️ Failed to load default theme: $e');
+### **Asset-Discovery**
+Das System unterstützt **dynamische Asset-Erkennung**:
+
+1. **Theme-basierte Pfade** - Aus `theme.json` Backgrounds
+2. **Fallback-Pfade** - Standard-Namenskonventionen
+3. **World-spezifische Assets** - Pro Welt eigene Assets
+
+---
+
+## 🔧 **Implementation**
+
+### **Backend: Theme Resolution**
+```typescript
+// routes/themes.ts
+router.get('/named-entrypoints/:worldId/:context', async (req, res) => {
+  const { worldId, context } = req.params;
+  
+  // 1. Manifest laden
+  const manifest = await loadManifest(worldId);
+  
+  // 2. Theme für Context auflösen
+  const theme = await resolveTheme(worldId, context);
+  
+  // 3. Assets mit korrekten URLs zurückgeben
+  res.json({
+    manifest,
+    theme: {
+      context,
+      data: theme,
+      assets: {
+        backgrounds: {
+          auth: `ui/backgrounds/default.png`,
+          login: `ui/backgrounds/default.png`,
+          // ...
+        }
+      }
     }
-  }
+  });
+});
+```
 
+### **Client: Asset Loading**
+```dart
+// shared/services/dynamic_asset_service.dart
+class DynamicAssetService {
+  static const String assetBaseUrl = 'https://192.168.2.168/api/assets';
+  
+  Future<String?> findExistingAsset(List<String> possiblePaths) async {
+    for (String path in possiblePaths) {
+      if (path.contains('{{ASSET_IP}}')) {
+        path = path.replaceAll('{{ASSET_IP}}', assetBaseUrl);
+      }
+      
+      // Asset-Check über HTTP HEAD Request
+      if (await _checkAssetExists(path)) {
+        return path;
+      }
+    }
+    return null;
+  }
+}
+```
+
+---
+
+## 📱 **Flutter Integration**
+
+### **BackgroundImage Widget**
+```dart
+class BackgroundImage extends StatelessWidget {
+  final World world;
+  final String? pageType;
+  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // Theme is automatically applied via ThemeProvider
-      body: Column(
-        children: [
-          // All widgets automatically use the resolved theme
-          Text('Login', style: Theme.of(context).textTheme.headlineMedium),
-          ElevatedButton(
-            onPressed: () {},
-            child: Text('Sign In'),
-          ),
-        ],
-      ),
+    return FutureBuilder<String?>(
+      future: ThemeResolver().resolveBackgroundImage(world, pageType: pageType),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Image.network(
+            snapshot.data!,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return _buildFallbackBackground(context);
+            },
+          );
+        }
+        return _buildFallbackBackground(context);
+      },
     );
   }
 }
 ```
 
-### Switching Between Contexts
-
+### **ThemeResolver Service**
 ```dart
-// Switch from pre-game to game context
-await _themeManager.setWorldTheme(currentWorld, context: 'game');
-
-// Switch to loading context
-await _themeManager.setWorldTheme(currentWorld, context: 'loading');
+class ThemeResolver {
+  Future<String?> resolveBackgroundImage(World world, {String? pageType}) async {
+    // 1. Named Entrypoint Theme laden
+    final theme = await NamedEntrypointsService().getTheme(world.themeBundle, 'pre-game');
+    
+    // 2. Background-Pfad aus Theme extrahieren
+    final backgroundPath = theme['backgrounds'][pageType ?? 'auth'];
+    
+    // 3. Asset-URL mit nginx-Pfad konstruieren
+    return 'https://192.168.2.168/api/assets/worlds/${world.themeBundle}/$backgroundPath';
+  }
+}
 ```
 
-## Error Handling
+---
 
-The theme system includes comprehensive error handling:
+## ⚡ **Performance & Caching**
 
-- **Network Errors**: Graceful fallback to default themes
-- **Invalid JSON**: Validation and error logging
-- **Missing Files**: Fallback to system defaults
-- **Cache Errors**: Automatic cache invalidation and retry
+### **Multi-Level Caching**
+1. **Browser-Cache** - nginx `expires 1h`
+2. **Flutter-Cache** - `Image.network` mit `gaplessPlayback`
+3. **Theme-Cache** - In-Memory Theme-Caching
+4. **Asset-Cache** - Dynamische Asset-Discovery-Cache
 
-## Performance Considerations
+### **Lazy Loading**
+- **Theme-Daten** werden nur bei Bedarf geladen
+- **Assets** werden erst bei Widget-Build angefordert
+- **Fallback-System** für fehlende Assets
 
-- **Caching**: Resolved themes are cached to avoid redundant processing
-- **Lazy Loading**: Themes are loaded only when needed
-- **Tree Shaking**: Unused theme properties are optimized out
-- **Asset Optimization**: Theme assets are bundled efficiently
+---
 
-## Development Guidelines
+## 🚀 **Deployment & Production**
 
-### Adding New Theme Contexts
+### **Production Setup**
+1. **Assets** in `/srv/weltenwind/assets/` deployen
+2. **Nginx-Konfiguration** mit Asset-Alias aktivieren
+3. **CORS-Headers** für Web-Nutzung konfigurieren
+4. **Caching-Strategien** für Performance optimieren
 
-1. Create the context directory: `assets/worlds/{worldId}/themes/{newContext}/`
-2. Add `theme.json` with complete theme configuration
-3. Update world `manifest.json` to include the new context
-4. Test the context in the UI
-
-### Creating New Worlds
-
-1. Create world directory: `assets/worlds/{newWorldId}/`
-2. Add `manifest.json` with world configuration
-3. Create theme contexts as needed
-4. Test the world in the application
-
-### Extending Theme Properties
-
-1. Add new properties to `theme.json`
-2. Update `ThemeResolver._createThemeDataFromJson()` to parse new properties
-3. Update OpenAPI specification in `docs/openapi/specs/themes.yaml`
-4. Test the new properties in the UI
-
-## API Documentation
-
-For complete API documentation, see:
-- OpenAPI Specification: `docs/openapi/specs/themes.yaml`
-- Generated Documentation: `docs/openapi/generated/`
-
-## Testing
-
-The theme system can be tested at multiple levels:
-
-1. **API Testing**: Test backend endpoints with curl or Postman
-2. **Unit Testing**: Test individual components (resolver, manager, cache)
-3. **Integration Testing**: Test complete theme flow
-4. **UI Testing**: Test theme application in the Flutter app
-
-Example API test:
-```bash
-# List all worlds and entrypoints
-curl http://localhost:3000/api/themes/named-entrypoints
-
-# Get theme data for default world, pre-game context
-curl http://localhost:3000/api/themes/named-entrypoints/default/pre-game
+### **CDN Integration (Future)**
+```nginx
+# Zukünftige CDN-Integration
+location /api/assets/ {
+    proxy_pass https://cdn.weltenwind.com/assets/;
+    # ... CORS & Caching Headers
+}
 ```
+
+### **Monitoring**
+- **Asset-Requests** über nginx-Logs
+- **Theme-Loading** über Backend-Logs
+- **Performance-Metriken** über Flutter Analytics
+
+---
+
+## 📚 **Verwandte Dokumentation**
+
+- **[Backend Theme API](api/themes.md)** - Vollständige API-Dokumentation
+- **[Frontend Architecture](README.md)** - Flutter Client-Architektur
+- **[Deployment Guide](guides/deployment-guide.md)** - Production Setup
+- **[Security Guide](backend/security/)** - Asset-Security & CORS
+
+---
+
+**Status**: ✅ Production Ready  
+**Version**: 1.3.0  
+**Letzte Aktualisierung**: Januar 2025

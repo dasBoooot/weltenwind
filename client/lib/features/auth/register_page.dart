@@ -13,6 +13,7 @@ import '../../core/utils/validators.dart';
 import '../../core/utils/security_utils.dart';
 import '../../shared/theme/theme_manager.dart';
 import '../../core/models/world.dart';
+import '../../shared/components/layout/background_image.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -32,6 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _acceptPrivacy = false;
   bool _showPasswordRequirements = false;
   late ThemeManager _themeManager;
+  late World _defaultWorld;
   final _securityUtils = SecurityUtils();
 
   @override
@@ -54,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _loadDefaultTheme() async {
     try {
       // Create a default world for the register page
-      final defaultWorld = World(
+      _defaultWorld = World(
         id: 0,
         name: 'Default',
         status: WorldStatus.open,
@@ -68,7 +70,7 @@ class _RegisterPageState extends State<RegisterPage> {
       );
 
       // Set the theme for pre-game context
-      await _themeManager.setWorldTheme(defaultWorld, context: 'pre-game');
+      await _themeManager.setWorldTheme(_defaultWorld, context: 'pre-game');
     } catch (e) {
       AppLogger.app.w('⚠️ Failed to load default theme: $e');
       // Continue with fallback theme
@@ -202,6 +204,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
     return AuthScaffold(
       titleText: l10n.authRegisterTitle,
+      world: _defaultWorld,
+      pageType: 'register',
+      overlayType: BackgroundOverlayType.gradient,
+      overlayOpacity: 0.4,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: AppContent(

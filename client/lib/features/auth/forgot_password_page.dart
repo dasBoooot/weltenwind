@@ -13,6 +13,7 @@ import '../../core/utils/security_utils.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/theme/theme_manager.dart';
 import '../../core/models/world.dart';
+import '../../shared/components/layout/background_image.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -30,6 +31,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   int _resendCooldown = 0;
   
   late ThemeManager _themeManager;
+  late World _defaultWorld;
   final _securityUtils = SecurityUtils();
 
   @override
@@ -43,7 +45,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Future<void> _loadDefaultTheme() async {
     try {
       // Create a default world for the forgot password page
-      final defaultWorld = World(
+      _defaultWorld = World(
         id: 0,
         name: 'Default',
         status: WorldStatus.open,
@@ -57,7 +59,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       );
 
       // Set the theme for pre-game context
-      await _themeManager.setWorldTheme(defaultWorld, context: 'pre-game');
+      await _themeManager.setWorldTheme(_defaultWorld, context: 'pre-game');
     } catch (e) {
       AppLogger.app.w('⚠️ Failed to load default theme: $e');
       // Continue with fallback theme
@@ -211,6 +213,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
     return AuthScaffold(
       titleText: l10n.authForgotPassword,
+      world: _defaultWorld,
+      pageType: 'forgotPassword',
+      overlayType: BackgroundOverlayType.gradient,
+      overlayOpacity: 0.4,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: AppContent(

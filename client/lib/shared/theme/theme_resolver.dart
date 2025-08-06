@@ -6,6 +6,7 @@ import '../../config/logger.dart';
 import '../../config/env.dart';
 import '../../core/models/world.dart';
 import '../../core/services/named_entrypoints_service.dart';
+import '../services/dynamic_asset_service.dart';
 import 'models/world_theme.dart';
 import 'models/theme_bundle.dart';
 import 'models/named_entrypoints.dart';
@@ -19,6 +20,7 @@ class ThemeResolver {
   final Map<String, WorldTheme> _themeCache = {};
   final Map<String, Map<String, dynamic>> _themeJsonCache = {};
   final Map<String, NamedEntrypointResponse> _namedEntrypointCache = {};
+  final Map<String, String?> _backgroundCache = {};
   
   // Named Entrypoints Service
   final NamedEntrypointsService _namedEntrypointsService = NamedEntrypointsService();
@@ -34,7 +36,7 @@ class ThemeResolver {
       AppLogger.app.d('🎯 Resolving theme for world: ${world.name} (${world.id}) in context: $context');
 
       // 1. Try to get world-specific theme from Named Entrypoints
-      final namedEntrypointTheme = await _getNamedEntrypointTheme(world.id.toString(), context, isDarkMode);
+      final namedEntrypointTheme = await _getNamedEntrypointTheme(world.themeBundle ?? 'default', context, isDarkMode);
       if (namedEntrypointTheme != null) {
         AppLogger.app.d('✅ Found Named Entrypoint theme for context: $context');
         return namedEntrypointTheme;
@@ -1054,5 +1056,88 @@ class ThemeResolver {
       colorScheme: _getFallbackColorScheme(isDarkMode),
       textTheme: _getFallbackTextTheme(),
     );
+  }
+
+  /// Get Named Entrypoint theme JSON
+  Future<Map<String, dynamic>?> _getNamedEntrypointThemeJson(String worldId, String context) async {
+    try {
+      final cacheKey = 'named_entrypoint_json_${worldId}_$context';
+      
+      // Check cache first
+      if (_themeJsonCache.containsKey(cacheKey)) {
+        return _themeJsonCache[cacheKey];
+      }
+
+      final response = await _namedEntrypointsService.getNamedEntrypointTheme(worldId, context);
+      if (response != null && response.theme != null) {
+        final themeJson = response.theme!.toJson();
+        _themeJsonCache[cacheKey] = themeJson;
+        return themeJson;
+      }
+      
+      return null;
+    } catch (e) {
+      AppLogger.app.e('❌ Failed to get Named Entrypoint theme JSON for world $worldId, context $context: $e');
+      return null;
+    }
+  }
+
+  /// Resolve background image for a specific world and context
+  Future<String?> resolveBackgroundImage(
+    World world, {
+    String context = 'pre-game',
+    String? pageType,
+  }) async {
+    try {
+      final cacheKey = 'background_${world.themeBundle ?? 'default'}_${context}_${pageType ?? 'default'}';
+      
+      // Check cache first
+      if (_backgroundCache.containsKey(cacheKey)) {
+        return _backgroundCache[cacheKey];
+      }
+
+      final worldId = world.themeBundle ?? 'default';
+      final dynamicAssetService = DynamicAssetService(); // Use singleton
+
+      // Try to get from Named Entrypoints first
+      final namedEntrypointTheme = await _getNamedEntrypointThemeJson(worldId, context);
+      if (namedEntrypointTheme != null && namedEntrypointTheme['backgrounds'] != null) {
+        final backgrounds = namedEntrypointTheme['backgrounds'] as Map<String, dynamic>;
+        AppLogger.app.d('🔍 Theme backgrounds: $backgrounds');
+        AppLogger.app.d('🔍 Looking for pageType: ${pageType ?? 'auth'}');
+        
+        final backgroundPath = backgrounds[pageType ?? 'auth'] as String?;
+        AppLogger.app.d('🔍 Found background path: $backgroundPath');
+        
+        if (backgroundPath != null) {
+          // Try the specific path from theme
+          final specificPath = 'worlds/$worldId/$backgroundPath';
+          AppLogger.app.d('🔍 Trying specific path: $specificPath');
+          final existingAsset = await dynamicAssetService.findExistingAsset([specificPath]);
+          if (existingAsset != null) {
+            _backgroundCache[cacheKey] = existingAsset;
+            return existingAsset;
+          }
+        }
+      }
+
+      // Fallback: Try multiple possible paths dynamically
+      final possiblePaths = dynamicAssetService.generateBackgroundPaths(worldId, pageType ?? 'auth');
+      AppLogger.app.d('🔍 Generated paths for world $worldId, pageType ${pageType ?? 'auth'}: $possiblePaths');
+      final existingAsset = await dynamicAssetService.findExistingAsset(possiblePaths);
+      
+      if (existingAsset != null) {
+        _backgroundCache[cacheKey] = existingAsset;
+        return existingAsset;
+      }
+
+      // Ultimate fallback
+      AppLogger.app.w('⚠️ No background asset found for world $worldId, pageType ${pageType ?? 'auth'}');
+      return null;
+
+    } catch (e) {
+      AppLogger.app.e('❌ Background resolution failed for world ${world.themeBundle ?? 'default'}: $e');
+      return null;
+    }
   }
 }

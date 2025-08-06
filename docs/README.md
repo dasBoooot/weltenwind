@@ -106,6 +106,13 @@ docs/
 - **Performance Optimiert**: Caching & Lazy Loading
 - **Dokumentation**: [Theme System Guide](frontend/THEME_SYSTEM.md)
 
+### **🖼️ Asset Management System**
+- **Nginx-basierte Asset-Serving**: Direkte Asset-Auslieferung für optimale Performance
+- **IP-basierte URLs**: Robuste, skalierbare Asset-URLs (`https://192.168.2.168/api/assets/`)
+- **CORS-Support**: Vollständige Web-Kompatibilität für Flutter Web
+- **Browser-Caching**: Optimierte Performance durch nginx-Caching
+- **Modulare Struktur**: World-spezifische Assets mit Fallback-System
+
 ### **🎨 Theme System Enhancement**
 - **World-spezifische Themes**: Visuelle Identität pro Welt
 - **Race-Condition-Safe**: Sauberes Theme-Loading
@@ -159,7 +166,7 @@ npm run dev
 | **🔐 Authentication System** | ✅ Production Ready | [auth.md](api/auth.md) |
 | **🌍 Multi-World Management** | ✅ Production Ready | [worlds.md](api/worlds.md) |
 | **📨 Invite System** | ✅ Neu überarbeitet | [invites.md](api/invites.md) |
-| **🎨 Dynamic Theme System** | ✅ Production Ready | [theming-system.md](frontend/theming-system.md) |
+| **🎨 Dynamic Theme System** | ✅ Production Ready | [THEME_SYSTEM.md](frontend/THEME_SYSTEM.md) |
 | **📱 Cross-Platform Client** | ✅ Web/iOS/Android | [frontend/README.md](frontend/README.md) |
 | **🌐 Internationalization** | ✅ DE/EN Support | [i18n.md](frontend/internationalization.md) |
 | **⚡ Enterprise Security** | ✅ Production Ready | [security/](backend/security/) |
