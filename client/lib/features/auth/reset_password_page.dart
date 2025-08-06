@@ -225,17 +225,20 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
     return AuthScaffold(
       titleText: l10n.authResetPassword,
-      body: AppContent(
-        maxWidth: 450,
-        child: _isLoading 
-            ? Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Theme.of(context).colorScheme.primary,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: AppContent(
+          maxWidth: 500,
+          child: _isLoading 
+              ? Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).colorScheme.primary,
+                    ),
                   ),
-                ),
-              )
-            : _tokenValid ? _buildResetForm(l10n) : _buildInvalidTokenView(l10n),
+                )
+              : _tokenValid ? _buildResetForm(l10n) : _buildInvalidTokenView(l10n),
+        ),
       ),
     );
   }

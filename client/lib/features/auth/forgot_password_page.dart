@@ -211,9 +211,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
     return AuthScaffold(
       titleText: l10n.authForgotPassword,
-      body: AppContent(
-        maxWidth: 400,
-        child: _emailSent ? _buildEmailSentView(l10n) : _buildEmailInputView(l10n),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: AppContent(
+          maxWidth: 450,
+          child: _emailSent ? _buildEmailSentView(l10n) : _buildEmailInputView(l10n),
+        ),
       ),
     );
   }

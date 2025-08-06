@@ -1,8 +1,4 @@
-/// 🎯 App Scaffold Component
-/// 
-/// Professional scaffold component with theme integration
 library;
-
 import 'package:flutter/material.dart';
 import '../base/base_component.dart';
 import '../../../l10n/app_localizations.dart';
@@ -136,6 +132,30 @@ class AuthScaffold extends AppScaffold {
           showBackButton: true,
           centerTitle: true,
         );
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = getColorScheme(context);
+    final l10n = AppLocalizations.of(context);
+
+    Widget scaffold = Scaffold(
+      backgroundColor: backgroundColor ?? colorScheme.surface,
+      appBar: _buildAppBar(context, colorScheme, l10n),
+      body: body, // Don't wrap in _buildBody for auth pages
+      extendBodyBehindAppBar: extendBodyBehindAppBar,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+    );
+
+    // Add WillPopScope if onWillPop is provided
+    if (onWillPop != null) {
+      scaffold = WillPopScope(
+        onWillPop: onWillPop,
+        child: scaffold,
+      );
+    }
+
+    return scaffold;
+  }
 }
 
 /// Specialized scaffold for world pages

@@ -125,20 +125,22 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  @override
+    @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     return AuthScaffold(
       titleText: l10n.authLoginTitle,
-      body: AppContent(
-        maxWidth: 400,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: AppContent(
+          maxWidth: 450,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
               // Welcome Card
               AppCard(
                 type: AppCardType.outlined,
@@ -181,68 +183,69 @@ class _LoginPageState extends State<LoginPage> {
                        isRequired: true,
                        validator: (value) => Validators.requiredText(value, l10n, fieldName: l10n.authUsernameLabel),
                      ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    AppTextField(
-                      label: l10n.authPasswordLabel,
-                      controller: _passwordController,
-                      type: AppTextFieldType.password,
-                      hint: l10n.authPasswordHint,
-                      prefixIcon: Icons.lock_outline,
-                      isRequired: true,
-                      validator: (value) => Validators.requiredText(value, l10n, fieldName: l10n.authPasswordLabel),
-                    ),
-                    
-                    const SizedBox(height: 32),
-                    
-                    AppButton(
-                      onPressed: _isLoading ? null : _login,
-                      type: AppButtonType.primary,
-                      size: AppButtonSize.large,
-                      fullWidth: true,
-                      isLoading: _isLoading,
-                      icon: Icons.login,
-                      child: Flexible(
-                        child: Text(
-                          l10n.authLoginButton,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Register and Forgot Password Links
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8.0,
-                      runSpacing: 4.0,
-                      children: [
-                        TextButton(
-                          onPressed: () => context.go('/forgot-password'),
-                          child: Text(l10n.authForgotPassword),
-                        ),
-                        Text(
-                          '|',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => context.go('/register'),
-                          child: Text(l10n.authRegisterButton),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+                     
+                     const SizedBox(height: 24),
+                     
+                     AppTextField(
+                       label: l10n.authPasswordLabel,
+                       controller: _passwordController,
+                       type: AppTextFieldType.password,
+                       hint: l10n.authPasswordHint,
+                       prefixIcon: Icons.lock_outline,
+                       isRequired: true,
+                       validator: (value) => Validators.requiredText(value, l10n, fieldName: l10n.authPasswordLabel),
+                     ),
+                     
+                     const SizedBox(height: 32),
+                     
+                     AppButton(
+                       onPressed: _isLoading ? null : _login,
+                       type: AppButtonType.primary,
+                       size: AppButtonSize.large,
+                       fullWidth: true,
+                       isLoading: _isLoading,
+                       icon: Icons.login,
+                       child: Flexible(
+                         child: Text(
+                           l10n.authLoginButton,
+                           overflow: TextOverflow.ellipsis,
+                           textAlign: TextAlign.center,
+                         ),
+                       ),
+                     ),
+                     
+                     const SizedBox(height: 24),
+                     
+                     // Register and Forgot Password Links
+                     Wrap(
+                       alignment: WrapAlignment.center,
+                       spacing: 8.0,
+                       runSpacing: 4.0,
+                       children: [
+                         TextButton(
+                           onPressed: () => context.go('/forgot-password'),
+                           child: Text(l10n.authForgotPassword),
+                         ),
+                         Text(
+                           '|',
+                           style: theme.textTheme.bodySmall?.copyWith(
+                             color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                           ),
+                         ),
+                         TextButton(
+                           onPressed: () => context.go('/register'),
+                           child: Text(l10n.authRegisterButton),
+                         ),
+                       ],
+                     ),
+                   ],
+                 ),
+               ),
+             ],
+           ),
+         ),
+       ),
+     ),
     );
-  }
+   }
 }

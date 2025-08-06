@@ -8,6 +8,7 @@ import '../features/world/world_list_page.dart';
 import '../config/logger.dart';
 import '../core/services/auth_service.dart';
 import '../main.dart';
+import '../shared/navigation/elegant_transitions.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -17,35 +18,95 @@ class AppRouter {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginPage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const LoginPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return ElegantTransitions.elegantSlideWithOverlay(
+              context,
+              animation,
+              secondaryAnimation,
+              child,
+              direction: SlideDirection.fromBottom,
+            );
+          },
+        ),
       ),
       GoRoute(
         path: '/register',
         name: 'register',
-        builder: (context, state) => const RegisterPage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const RegisterPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return ElegantTransitions.elegantSlideWithOverlay(
+              context,
+              animation,
+              secondaryAnimation,
+              child,
+              direction: SlideDirection.fromBottom,
+            );
+          },
+        ),
       ),
       GoRoute(
         path: '/forgot-password',
         name: 'forgot-password',
-        builder: (context, state) => const ForgotPasswordPage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const ForgotPasswordPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return ElegantTransitions.elegantSlideWithOverlay(
+              context,
+              animation,
+              secondaryAnimation,
+              child,
+              direction: SlideDirection.fromBottom,
+            );
+          },
+        ),
       ),
       GoRoute(
         path: '/reset-password',
         name: 'reset-password',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final token = state.uri.queryParameters['token'] ?? '';
           final email = state.uri.queryParameters['email'];
           
-          return ResetPasswordPage(
-            token: token,
-            email: email,
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: ResetPasswordPage(
+              token: token,
+              email: email,
+            ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return ElegantTransitions.elegantSlideWithOverlay(
+                context,
+                animation,
+                secondaryAnimation,
+                child,
+                direction: SlideDirection.fromBottom,
+              );
+            },
           );
         },
       ),
       GoRoute(
         path: '/worlds',
         name: 'worlds',
-        builder: (context, state) => const WorldListPage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const WorldListPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return ElegantTransitions.elegantSlideWithOverlay(
+              context,
+              animation,
+              secondaryAnimation,
+              child,
+              direction: SlideDirection.fromRight,
+            );
+          },
+        ),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

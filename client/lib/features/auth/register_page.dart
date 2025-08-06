@@ -202,9 +202,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
     return AuthScaffold(
       titleText: l10n.authRegisterTitle,
-      body: AppContent(
-        maxWidth: 450,
-        child: Form(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: AppContent(
+          maxWidth: 500,
+          child: Form(
           key: _formKey,
           child: Column(
             children: [
@@ -330,6 +332,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ),
+    )
     );
   }
 
