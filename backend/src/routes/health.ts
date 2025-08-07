@@ -221,6 +221,71 @@ router.get('/health/detailed', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/health/client-config:
+ *   get:
+ *     summary: Client Configuration Endpoint
+ *     description: Returns public URLs for client configuration (no auth required)
+ *     tags:
+ *       - System
+ *     responses:
+ *       200:
+ *         description: Client configuration URLs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 apiUrl:
+ *                   type: string
+ *                   example: "https://192.168.2.168/api"
+ *                 clientUrl:
+ *                   type: string
+ *                   example: "https://192.168.2.168"
+ *                 assetUrl:
+ *                   type: string
+ *                   example: "https://192.168.2.168"
+ *                 environment:
+ *                   type: string
+ *                   example: "production"
+ *                 timestamp:
+ *                   type: number
+ *                   example: 1640995200000
+ */
+router.get('/client-config', async (req: Request, res: Response) => {
+  try {
+    const clientConfig = {
+      apiUrl: process.env.PUBLIC_API_URL || 'https://192.168.2.168/api',
+      clientUrl: process.env.PUBLIC_CLIENT_URL || 'https://192.168.2.168',
+      assetUrl: process.env.PUBLIC_ASSETS_URL || 'https://192.168.2.168',
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: Date.now(),
+      version: '1.0.0'
+    };
+
+    loggers.system.info('Client configuration requested', {
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      config: {
+        environment: clientConfig.environment,
+        apiUrl: clientConfig.apiUrl,
+        clientUrl: clientConfig.clientUrl,
+        assetUrl: clientConfig.assetUrl
+      }
+    });
+
+    res.json(clientConfig);
+
+  } catch (error: any) {
+    loggers.system.error('Failed to provide client configuration', error);
+    res.status(500).json({
+      error: 'Client configuration failed',
+      details: error?.message || 'Unknown error'
+    });
+  }
+});
+
 // Helper-Funktion für Uptime-Formatierung
 function formatUptime(seconds: number): string {
   const days = Math.floor(seconds / 86400);

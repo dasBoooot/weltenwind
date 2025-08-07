@@ -74,6 +74,8 @@
 - **Session-Management**: Sichere, skalierbare User-Sessions
 - **Input-Validation**: Comprehensive API + Client-side Validation
 - **Error-Handling**: Graceful Error Recovery + User Feedback
+- **Dynamic Configuration**: Runtime URL-Konfiguration für Skalierung
+- **Asset Optimization**: nginx-basiertes Asset-Serving mit Caching
 
 ---
 
@@ -88,6 +90,9 @@
 - ✅ Theme-System mit World-spezifischen Designs
 - ✅ Multi-Language Support (DE/EN)
 - ✅ OpenAPI/Swagger Dokumentation
+- ✅ **Dynamic Configuration System** (Skalierbare URL-Konfiguration)
+- ✅ **Remote Asset Management** (nginx-basiertes Asset-Serving)
+- ✅ **Gradle 8.14.3** (Java 24 Support)
 
 ### **🔄 In Entwicklung**
 - 🔄 Gaming-Features & Real-time Updates

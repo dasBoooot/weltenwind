@@ -36,6 +36,7 @@ docs/
 ├── 📁 frontend/                 # 📱 Flutter Client Dokumentation
 │   ├── README.md                # Frontend-Architektur & Übersicht
 │   ├── THEME_SYSTEM.md          # 🎨 Named Entrypoints Theme System
+│   ├── DYNAMIC_CONFIGURATION.md # 🔧 Dynamic Configuration System
 │   ├── navigation.md            # Smart Navigation System
 │   ├── internationalization.md  # i18n & Localization
 │   └── deployment.md            # Build & Deployment
@@ -92,6 +93,24 @@ docs/
 ---
 
 ## 🌟 **Was ist neu? (Januar 2025)**
+
+### **✨ Dynamic Configuration System**
+- **Skalierbare URL-Konfiguration**: Runtime-Konfiguration für Multi-Server-Setups
+- **Backend-basierte Konfiguration**: Environment Variables für flexible Deployment
+- **Client-Side Caching**: 5-Minuten-Cache für optimale Performance
+- **Graceful Fallback**: Offline-Betrieb mit Default-Konfiguration
+- **Vollständige Dokumentation**: [Dynamic Configuration Guide](frontend/DYNAMIC_CONFIGURATION.md)
+
+### **✨ Remote Asset Management**
+- **nginx-basiertes Asset-Serving**: Optimale Performance für statische Assets
+- **CORS-Support**: Korrekte Headers für Web-Nutzung
+- **Dynamic Asset Discovery**: Automatische Asset-Erkennung
+- **Theme-Integration**: Nahtlose Integration mit Theme-System
+
+### **✨ Gradle 8.14.3 Update**
+- **Java 24 Support**: Vollständige Kompatibilität mit Java 24
+- **Performance-Verbesserungen**: Schnellere Builds und bessere Stabilität
+- **Security-Updates**: Aktuelle Sicherheits-Patches
 
 ### **✨ Invite System Überarbeitung**
 - **Neue Landing Page UX**: Emotionale, informative Einladungs-Erfahrung

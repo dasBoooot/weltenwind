@@ -156,10 +156,23 @@ class BackgroundImage extends StatelessWidget {
         resolvedPath,
         fit: BoxFit.cover,
         gaplessPlayback: true, // Prevent flickering
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return _buildFallbackBackground(context);
+        },
         errorBuilder: (context, error, stackTrace) {
           AppLogger.app.e('❌ Background image network error: $error');
           AppLogger.app.e('❌ Image path: $resolvedPath');
           return _buildFallbackBackground(context);
+        },
+        // Timeout configuration
+        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+          if (wasSynchronouslyLoaded) return child;
+          return AnimatedOpacity(
+            opacity: frame == null ? 0 : 1,
+            duration: const Duration(milliseconds: 300),
+            child: child,
+          );
         },
       );
     } else {
@@ -189,7 +202,7 @@ class BackgroundImage extends StatelessWidget {
             end: Alignment.bottomRight,
             colors: [
               theme.colorScheme.surface,
-              theme.colorScheme.surfaceVariant,
+              theme.colorScheme.surfaceContainerHighest,
             ],
           ),
         ),

@@ -3,7 +3,6 @@
 /// Comprehensive validation for user inputs with security focus
 library;
 
-import 'package:flutter/foundation.dart';
 import '../../l10n/app_localizations.dart';
 
 class Validators {

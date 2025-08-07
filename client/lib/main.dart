@@ -8,6 +8,7 @@ import 'core/services/auth_service.dart';
 import 'core/services/api_service.dart';
 import 'core/services/world_service.dart';
 import 'core/services/invite_service.dart';
+import 'core/services/client_config_service.dart';
 import 'core/infrastructure/error_handler.dart';
 import 'core/infrastructure/performance_monitor.dart';
 import 'shared/theme/theme_manager.dart';
@@ -80,12 +81,16 @@ void main() async {
 
   // 🔧 SERVICES INITIALISIEREN VOR APP-START
   try {
+    // 1. Client-Konfiguration laden (muss vor anderen Services passieren)
+    await _initializeClientConfiguration();
+    
+    // 2. Alle anderen Services initialisieren
     await _initializeServices();
     
-    // ThemeManager initialisieren
+    // 3. ThemeManager initialisieren
     await ThemeManager.initialize();
     
-    // ThemeProvider initialisieren (mit ThemeManager Integration)
+    // 4. ThemeProvider initialisieren (mit ThemeManager Integration)
     await ThemeProvider.initialize();
     
     AppLogger.app.i('✅ All services initialized - App ready');
@@ -95,6 +100,22 @@ void main() async {
   }
 
   runApp(const WeltenwindApp());
+}
+
+/// Initialize client configuration from backend
+Future<void> _initializeClientConfiguration() async {
+  try {
+    final clientConfigService = ClientConfigService();
+    final success = await clientConfigService.initialize();
+    
+    if (success) {
+      AppLogger.app.i('✅ Client configuration loaded from backend');
+    } else {
+      AppLogger.app.w('⚠️ Using default configuration (backend unavailable)');
+    }
+  } catch (e) {
+    AppLogger.app.w('⚠️ Client configuration initialization failed - using defaults', error: e);
+  }
 }
 
 /// Initialize theme management system

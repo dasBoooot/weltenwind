@@ -1,19 +1,40 @@
 class Env {
-  static const String apiUrl = 'https://192.168.2.168';
+  // Runtime Configuration (can be overridden)
+  static String? _apiUrl;
+  static String? _clientUrl;
+  static String? _assetUrl;
+  
+  // Default values (fallback)
+  static const String _defaultApiUrl = 'https://192.168.2.168';
+  static const String _defaultClientUrl = 'https://192.168.2.168/game';
+  static const String _defaultAssetUrl = 'https://192.168.2.168';
+  
+  // Getters with fallback
+  static String get apiUrl => _apiUrl ?? _defaultApiUrl;
+  static String get clientUrl => _clientUrl ?? _defaultClientUrl;
+  static String get assetUrl => _assetUrl ?? _defaultAssetUrl;
+  
+  // Setters for runtime configuration
+  static void setApiUrl(String url) => _apiUrl = url;
+  static void setClientUrl(String url) => _clientUrl = url;
+  static void setAssetUrl(String url) => _assetUrl = url;
+  
+  // Configuration loading
+  static Future<void> loadFromEnvironment() async {
+    // TODO: Load from environment variables or config files
+    // For now, keep defaults
+    print('🔧 Environment configuration loaded: apiUrl=$apiUrl, clientUrl=$clientUrl, assetUrl=$assetUrl');
+  }
+  
+  // API Base Path
   static const String apiBasePath = '/api';
   
-  // Client/Frontend URL (für Invite-Links und Web-Routing)
-  static const String clientUrl = 'https://192.168.2.168/game';
-  
-  // ✅ Asset Server URL (separate für zukünftige Auslagerung)
-  static const String assetUrl = 'https://192.168.2.168';
-  
   // ✅ Static Assets (nginx-proxied, über HTTPS)
-  static const String themeEditorUrl = '$apiUrl/theme-editor';
-  static const String bundleConfigsUrl = '$themeEditorUrl/bundles/bundle-configs.json';
+  static String get themeEditorUrl => '$apiUrl/theme-editor';
+  static String get bundleConfigsUrl => '$themeEditorUrl/bundles/bundle-configs.json';
   
   // ✅ Asset Server Configuration für modulare Welten
-  static const String assetBaseUrl = '$assetUrl/assets';
+  static String get assetBaseUrl => '$assetUrl/assets';
   static const String assetWorldsPath = '/worlds';
   static const String assetManifestFile = 'manifest.json';
   
@@ -35,9 +56,9 @@ class Env {
     '$themeEditorUrl/schemas/$themeName.json';
   
   // API Endpoints
-  static const String authEndpoint = '$apiBasePath/auth';
-  static const String worldsEndpoint = '$apiBasePath/worlds';
-  static const String themesEndpoint = '$apiBasePath/themes';
+  static String get authEndpoint => '$apiBasePath/auth';
+  static String get worldsEndpoint => '$apiBasePath/worlds';
+  static String get themesEndpoint => '$apiBasePath/themes';
   
   // App Configuration
   static const String appName = 'Weltenwind';

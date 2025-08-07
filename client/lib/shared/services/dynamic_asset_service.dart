@@ -93,14 +93,17 @@ class DynamicAssetService {
   /// Check if an asset exists on the asset server
   Future<bool> _checkAssetServerAsset(String assetUrl) async {
     try {
-      // In Flutter Web, we can't make direct HTTP requests due to CORS
-      // Instead, we'll assume the asset exists if it's a valid URL
-      // The actual loading will be handled by Image.network() in BackgroundImage
-      AppLogger.app.d('🔍 Asset server check: $assetUrl -> ✅ (assuming exists for web)');
-      return true;
+      // For Flutter Web, we can't make direct HTTP requests due to CORS
+      // However, we can try a HEAD request for basic validation
+      final response = await http.head(Uri.parse(assetUrl));
+      
+      final exists = response.statusCode == 200;
+      AppLogger.app.d('🔍 Asset server check: $assetUrl -> ${exists ? '✅' : '❌'} (${response.statusCode})');
+      return exists;
     } catch (e) {
-      AppLogger.app.e('❌ Error checking asset server: $assetUrl - $e');
-      return false;
+      AppLogger.app.w('⚠️ Asset server check failed: $assetUrl - $e');
+      // Fallback: assume it exists and let Image.network() handle the actual loading
+      return true;
     }
   }
 

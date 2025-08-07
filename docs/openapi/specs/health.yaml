@@ -41,6 +41,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthStatusError'
 
+  /health/client-config:
+    get:
+      summary: Client Configuration Endpoint
+      description: Returns public URLs for client configuration (no auth required)
+      tags:
+        - System
+      operationId: getClientConfiguration
+      responses:
+        '200':
+          description: Client configuration URLs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientConfiguration'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     HealthStatus:
@@ -230,3 +251,51 @@ components:
           format: float
           description: Health check response time in milliseconds
           example: 123.45
+
+    ClientConfiguration:
+      type: object
+      properties:
+        apiUrl:
+          type: string
+          description: Public API URL for client configuration
+          example: "https://api.weltenwind.com/api"
+        clientUrl:
+          type: string
+          description: Public client/game URL
+          example: "https://game.weltenwind.com"
+        assetUrl:
+          type: string
+          description: Public assets URL for static resources
+          example: "https://assets.weltenwind.com"
+        environment:
+          type: string
+          description: Current environment (development, production, etc.)
+          example: "production"
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp when configuration was generated
+          example: 1640995200000
+        version:
+          type: string
+          description: API version
+          example: "1.0.0"
+      required:
+        - apiUrl
+        - clientUrl
+        - assetUrl
+        - environment
+        - timestamp
+        - version
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Client configuration failed"
+        details:
+          type: string
+          description: Detailed error information
+          example: "Failed to load environment variables"

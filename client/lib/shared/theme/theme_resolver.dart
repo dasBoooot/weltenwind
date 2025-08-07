@@ -317,7 +317,7 @@ class ThemeResolver {
       onErrorContainer: error,
       surface: surface,
       onSurface: onSurface,
-      surfaceVariant: surfaceVariant,
+      surfaceContainerHighest: surfaceVariant,
       onSurfaceVariant: onSurfaceVariant,
       outline: outline,
       outlineVariant: outlineVariant,
@@ -353,11 +353,11 @@ class ThemeResolver {
     final letterSpacing = typography['letterSpacing'] as Map<String, dynamic>? ?? {};
     
     // Parse font weights
-    final lightWeight = FontWeight.w300;
-    final normalWeight = FontWeight.w400;
-    final mediumWeight = FontWeight.w500;
-    final semiboldWeight = FontWeight.w600;
-    final boldWeight = FontWeight.w700;
+    const lightWeight = FontWeight.w300;
+    const normalWeight = FontWeight.w400;
+    const mediumWeight = FontWeight.w500;
+    const semiboldWeight = FontWeight.w600;
+    const boldWeight = FontWeight.w700;
     
     // Parse line heights
     final tightHeight = _parseLineHeight(lineHeights['tight'] ?? '1.25');
@@ -701,23 +701,23 @@ class ThemeResolver {
       
       // Switch theme
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) return primary;
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return primary;
           return onSurfaceMuted;
         }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) return primary.withValues(alpha: 0.5);
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return primary.withValues(alpha: 0.5);
           return surfaceVariant;
         }),
       ),
       
       // Checkbox theme
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) return primary;
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return primary;
           return Colors.transparent;
         }),
-        checkColor: MaterialStateProperty.all(onPrimary),
+        checkColor: WidgetStateProperty.all(onPrimary),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusSmall),
         ),
@@ -725,8 +725,8 @@ class ThemeResolver {
       
       // Radio theme
       radioTheme: RadioThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) return primary;
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return primary;
           return onSurfaceMuted;
         }),
       ),
@@ -785,11 +785,11 @@ class ThemeResolver {
       
       // Search bar theme
       searchBarTheme: SearchBarThemeData(
-        backgroundColor: MaterialStateProperty.all(surface),
-        elevation: MaterialStateProperty.all(2),
-        textStyle: MaterialStateProperty.all(textTheme.bodyMedium),
-        hintStyle: MaterialStateProperty.all(textTheme.bodyMedium?.copyWith(color: onSurfaceMuted)),
-        shape: MaterialStateProperty.all(
+        backgroundColor: WidgetStateProperty.all(surface),
+        elevation: WidgetStateProperty.all(2),
+        textStyle: WidgetStateProperty.all(textTheme.bodyMedium),
+        hintStyle: WidgetStateProperty.all(textTheme.bodyMedium?.copyWith(color: onSurfaceMuted)),
+        shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
           ),
@@ -1037,6 +1037,28 @@ class ThemeResolver {
     _themeCache.clear();
     _themeJsonCache.clear();
     _namedEntrypointCache.clear();
+    _backgroundCache.clear();
+    AppLogger.app.i('🗑️ Theme cache cleared');
+  }
+  
+  /// Clear specific cache entries
+  void clearThemeCache(String themeName) {
+    _bundleCache.remove(themeName);
+    _themeJsonCache.remove(themeName);
+    AppLogger.app.d('🗑️ Theme cache cleared for: $themeName');
+  }
+  
+  /// Clear background cache for specific world
+  void clearBackgroundCache(String worldId) {
+    final keysToRemove = _backgroundCache.keys
+        .where((key) => key.startsWith('background_${worldId}_'))
+        .toList();
+    
+    for (final key in keysToRemove) {
+      _backgroundCache.remove(key);
+    }
+    
+    AppLogger.app.d('🗑️ Background cache cleared for world: $worldId (${keysToRemove.length} entries)');
   }
 
   /// Get fallback ColorScheme
@@ -1069,8 +1091,8 @@ class ThemeResolver {
       }
 
       final response = await _namedEntrypointsService.getNamedEntrypointTheme(worldId, context);
-      if (response != null && response.theme != null) {
-        final themeJson = response.theme!.toJson();
+      if (response != null) {
+        final themeJson = response.theme.toJson();
         _themeJsonCache[cacheKey] = themeJson;
         return themeJson;
       }
