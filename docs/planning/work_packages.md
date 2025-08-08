@@ -11,8 +11,10 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - DoD: Alle Endpoints über `/api/v1` erreichbar; 304 bei ETag; Fehler sind RFC7807
 
 - DoD+: OpenAPI/Schema linted (CI prüft Breaking Changes); Problem+JSON enthält `type`, `instance`, `correlationId`.
-- Add: ETag-Policy (weak vs strong) dokumentiert; 429-Response standardisiert (inkl. `Retry-After`).
+- Add: ETag-Policy (weak vs strong) dokumentiert; 429-Response standardisiert (inkl. `Retry-After` in Sekunden); `X-Request-Id` immer setzen (auch 304/4xx); OpenAPI Diff in CI (z. B. `oasdiff`).
 - Tools: Express (beibehalten), Winston (beibehalten), Prometheus `prom-client` (Basis-Metriken vorbereiten)
+ - Express-Setup: `helmet`, `cors` (Whitelist), `compression`, zentrale Schema-Validation (z. B. `zod`) vor Controllern
+ - Config: `.env` hierarchisch (default/prod/local) + Schema-Validation beim Boot (z. B. `zod`)
 
 ### WP2: Routing & Slugs
 - Ziel: Saubere Navigation inkl. Deep-Links
@@ -23,7 +25,7 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - DoD: Navigationsfluss inkl. Guards und Redirects funktioniert
 
 - DoD+: Slug-Uniqueness + `world_slug_history` → canonical resolver getestet.
-- Add: Guard-Contract: `AccessControlService.hasPermission(user, perm, scopeCtx)` als Middleware für Pages & WS‑Join.
+- Add: Guard-Contract: `AccessControlService.hasPermission(user, perm, scopeCtx)` als Middleware für Pages & WS‑Join; `world_slug_history` mit `UNIQUE(oldSlug)` und „last wins“ Canonical-Regel; `/me` Alias später erweitern (`/users/me/sessions`, `/users/me/devices`).
 
 ### WP3: Realtime Foundation
 - Ziel: Stabiler WS‑Layer als Basis für Chat/Notifications
@@ -34,7 +36,7 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - DoD: Connect/Join/Presence/Heartbeat laufen stabil; Metriken sichtbar
 
 - DoD+: Replay‑Contract (`sinceId`/cursor) + Max‑Backlog‑Window (z. B. 10k msgs/Kanal).
-- Add: JWT‑Claims enthalten `scope={global|world:<id>}`; Rate‑Limit pro Room; Backpressure‑Metrik.
+- Add: JWT‑Claims enthalten `scope={global|world:<id>}`; Rate‑Limit pro Room; Backpressure‑Metrik; `messageId`-Format definieren (64‑bit Snowflake/BigInt), max. WS‑Payload begrenzen.
 - Tools: Socket.IO, Redis (apt), Prometheus (WS-Kennzahlen), Nginx WS‑Upgrade korrekt
 
 ### WP4: ChatWorld v1
@@ -46,7 +48,7 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - DoD: Chat nutzbar; History performant; Limits greifen
 
 - DoD+: Tombstone‑Felder (`deletedBy`, `reason`, `deletedAt`) + GDPR‑Purge‑Job.
-- Add: Report‑API (Stub) + Moderation‑Audit‑Log (Korrelation mit Session/Device).
+- Add: Report‑API (Stub) + Moderation‑Audit‑Log (Korrelation mit Session/Device); Hard‑Limit Nachrichtengröße 1–2 KB; einfacher Profanity‑Filter‑Hook; Tombstone‑Typen unterscheiden (`USER_DELETED` vs `MOD_HIDDEN`).
 - Tools: Postgres (Speicher), Redis Pub/Sub via Adapter, Prometheus Metriken
 
 ### WP5: Announcements/Notifications v1
@@ -57,8 +59,8 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - Security/Ops: Retention; RBAC; Rate‑Limits für Broadcasts; BullMQ Outbox‑Worker als eigener systemd‑Dienst
 - DoD: Feed performant; 304/ETag funktioniert; Dedupe ok
 
-- DoD+: Outbox‑Worker (Retry, DLQ), `dedupeKey` auf `user_notifications`.
-- Add: `audience` (global/world/role/group), Index auf `readAt`; WS‑Toast nur bei Foreground.
+- DoD+: Outbox‑Worker (Retry, DLQ Tabelle), Backoff‑Strategie; `dedupeKey` auf `user_notifications`.
+- Add: `audience` (global/world/role/group) mit RBAC‑Abfrage; Index auf `readAt`; WS‑Toast nur im Foreground.
 - Tools: BullMQ (Redis), systemd `weltenwind-worker.service` (Jobs)
 
 ### WP6: World Ranking v1
@@ -69,7 +71,7 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - Security/Ops: Cache‑Headers; ETag; Monitoring Abfragezeit
 - DoD: Rankings <200ms, 304/ETag, UI ok
 
-- DoD+: Feste Metrik‑Definitionen (z. B. `activity_score`, `wins_day`, `progress_delta`), MV‑Refresh SLO definiert.
+- DoD+: Feste Metrik‑Definitionen (z. B. `activity_score`, `wins_day`, `progress_delta`), MV‑Refresh SLO (z. B. p95 < 2 s) definiert und überwacht.
 - Add: Index‑Plan `(worldId, period, metric, rank)` + ETag by `(metric, period, updatedAt)`.
 
 ### WP7: World Invite UI komplett
@@ -81,7 +83,7 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - DoD: End‑to‑end inkl. Errors robust
 
 - DoD+: Idempotency‑Store + Nonce; Abuse‑Signals (fail2ban‑ähnlich) an Behavior‑Engine.
-- Add: Bulk‑Audit (wer/wie viele/wann), Rate‑Limit pro Issuer/Tag.
+- Add: Bulk‑Audit (wer/wie viele/wann), Rate‑Limit/Quota pro Issuer/Tag (pro Tag), Bounce‑Tracking.
 - Tools: Mailpit (Dev), externer Mail‑Dienst (Prod), Redis für Abuse‑Limits
 
 ### WP8: Account/Settings v1
@@ -93,7 +95,7 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - DoD: /me liefert; UI persistiert Einstellungen
 
 - DoD+: Session‑Rotation nach Security‑Änderungen, Device‑Revoke schließt Sessions/WS.
-- Add: `user_devices(fingerprint, lastSeen, ipHash)` – integriert mit DeviceFingerprintService.
+- Add: `user_devices(fingerprint, lastSeen, ipHash)` – integriert mit DeviceFingerprintService; Security‑Änderungen triggern WS‑Disconnect.
 - Tools: FingerprintJS OSS (Client), Server‑Side DeviceFingerprintService, Postgres‑Speicherung
 
 ### WP9: Telemetry Ingest v1
@@ -105,7 +107,7 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - DoD: Events landen; einfache Auswertung möglich
 
 - DoD+: `schemaVersion`, PII‑Policy (drop/hash), Sampling‑Config serverseitig.
-- Add: `tenant/worldId` im Event‑Key; Backfill‑Pipeline (optional).
+- Add: Pflichtfelder `tenant/worldId`; Sampling togglebar via Feature‑Flag; Backfill‑Pipeline (optional).
 - Tools: Prometheus, Grafana (Dashboards), Winston (bestehend)
 
 ### WP10: Feature Flags v1
@@ -117,7 +119,7 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - DoD: Flag steuert Feature sichtbar
 
 - DoD+: Sticky Bucketing (userId), Server‑Side Eval; Kill‑Switch.
-- Add: Exposure‑Log (Auswertung), Cache‑TTL & ETag.
+- Add: Exposure‑Log (Auswertung), Cache‑TTL & ETag; ETag explizit auf `/flags/effective`.
 
 ### WP11: Groups/Clans v1
 - Ziel: Welt‑Communities
@@ -139,7 +141,7 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - Security/Ops: Strikte RBAC; Logging in `logs/security`; Fail2ban (nginx jail); WAF/ModSecurity optional später (WS‑Pfade ausnehmen); Dashboards in Grafana
 - DoD: Moderationsaktionen auditierbar, wirksam
 
-- DoD+: RBAC/SCOPE strikt (global vs world), Audit‑Trail vollständig, Mask vs Purge unterscheidbar.
+- DoD+: RBAC/SCOPE strikt (global vs world), Audit‑Trail vollständig, Mask vs Purge unterscheidbar; Ban‑Scope `global` | `world:<id>`; Audit‑Korrelation mit Session/Device.
 - Add: Evidence‑Retention (30–90 Tage) & Export für Abuse‑Review.
 
 ### Cross‑Cutting Guardrails
@@ -147,11 +149,27 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
 - Rate‑Limits getrennt für auth/invite/chat/notifications; 429 mit `Retry-After`.
 - Observability: WS connect p95, publish→deliver p95, drop‑rate, backlog depth, MV‑Refresh‑Zeiten; Prometheus + Grafana.
 - Threat‑Mitigation: Captcha/Behavior‑Engine/Device‑FP für Login, Invites, Chat‑Flood.
+ - RBAC/Scopes zentral: API & WS‑Join nutzen denselben `AccessControlService.hasPermission` (global/world)
+ - Healthchecks: `/healthz` (DB/Redis/PubSub), `/readyz` (Worker/Outbox aktiv)
+ - Backups/Recovery: Postgres PITR (WAL), Redis RDB+AOF (everysec); Restore‑Playbook + Smoke‑Test
 
 ### Operative Basis (Tooling)
 - Postgres 16 (apt), Redis (AOF `everysec`), Nginx (TLS/Redirects)
 - Systemd Dienste: `weltenwind-backend.service`, `weltenwind-backend-dev.service`, `weltenwind-worker.service` (BullMQ)
 - Optional später: Meilisearch, Unleash OSS, Loki/promtail, Jaeger (Single‑Binary/systemd)
+ - Nginx: WS‑Upgrade (Upgrade/Connection Header), HTTP/2, TLS korrekt; Fail2ban nginx‑jail
+ - systemd: `Restart=always`, `EnvironmentFile=`, `LimitNOFILE=`, separate Worker/Scheduler Units
+
+### Migrationsplan (Reihenfolge)
+- WP2: `world.slug`, `world_slug_history`
+- WP4: `chat_channels`, `chat_messages` (+ Indexe, Tombstones)
+- WP5: `announcements`, `user_notifications`, `outbox`
+- WP6: `world_rankings` (+ MVs/Tables)
+- WP7: `invites`, `idempotency`
+- WP8: `user_preferences`, `user_devices`
+- WP10: `feature_flags`, `flag_assignments`
+- WP11: `groups`, `group_members`, `group_applications`
+- WP12: `reports`, `bans`, `audits`
 
 ### Abhängigkeiten (kritisch)
 - WP3 ← WP1 (Trace/Log Contracts)
