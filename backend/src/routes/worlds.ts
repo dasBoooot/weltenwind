@@ -1,6 +1,6 @@
 import express from 'express';
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient, WorldStatus } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { authenticate, AuthenticatedRequest } from '../middleware/authenticate';
 import { hasPermission } from '../services/access-control.service';
 import { jwtConfig } from '../config/jwt.config';
@@ -255,7 +255,8 @@ router.post('/:id/edit',
   if (!status || typeof status !== 'string') {
     return res.status(400).json({ error: 'Neuer Status erforderlich' });
   }
-  if (!Object.values(WorldStatus).includes(status as WorldStatus)) {
+  const allowedStatuses = ['upcoming','open','running','active','closed','archived'] as const;
+  if (!allowedStatuses.includes(status as any)) {
     return res.status(400).json({ error: 'Ungültiger Status-Wert' });
   }
 
@@ -278,7 +279,7 @@ router.post('/:id/edit',
 
   const updated = await prisma.world.update({
     where: { id: worldId },
-    data: { status: status as WorldStatus }
+    data: { status: status as any }
   });
 
   res.json({ success: true, world: updated });

@@ -9,9 +9,9 @@ Type=simple
 User=weltenwind
 Group=weltenwind
 WorkingDirectory=/srv/weltenwind/backend
-Environment="NODE_ENV=production"
+Environment="NODE_ENV=development"
 Environment="PORT=3000"
-Environment="LOG_LEVEL=info"
+Environment="LOG_LEVEL=debug"
 EnvironmentFile=/srv/weltenwind/backend/.env
 ExecStart=/usr/bin/npm run dev
 # Health Check - API muss erreichbar sein
@@ -29,9 +29,6 @@ WatchdogSec=30
 # systemd Standard-Logs (stdout/stderr)
 StandardOutput=append:/var/log/weltenwind/backend.log
 StandardError=append:/var/log/weltenwind/backend.error.log
-
-# Winston structured logs gehen nach /var/log/weltenwind/
-# (app.log, auth.log, security.log, api.log, error.log)
 
 # Security Settings
 NoNewPrivileges=true

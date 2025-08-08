@@ -34,14 +34,14 @@ async function updateExistingUsers() {
       console.log(`Prüfe User: ${user.username} (ID: ${user.id})`);
       
       // Prüfe ob global scope existiert
-      const hasGlobalScope = user.roles.some(r => 
+      const hasGlobalScope = user.roles.some((r: any) => 
         r.roleId === userRole.id && 
         r.scopeType === 'global' && 
         r.scopeObjectId === 'global'
       );
       
       // Prüfe ob world scope existiert  
-      const hasWorldScope = user.roles.some(r => 
+      const hasWorldScope = user.roles.some((r: any) => 
         r.roleId === userRole.id && 
         r.scopeType === 'world' && 
         r.scopeObjectId === '*'

@@ -1,4 +1,4 @@
-import { Session } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { createHash } from 'crypto';
 import prisma from '../libs/prisma';
 import { loggers } from '../config/logger.config';
@@ -32,6 +32,11 @@ function hashIp(ip: string) {
   return createHash('sha256').update(ip).digest('hex');
 }
 
+// Robust: Typen direkt vom Prisma-Delegate ableiten (schema-änderungssicher)
+type CreatedSession = Awaited<ReturnType<typeof prisma.session.create>>;
+type FoundSession = Awaited<ReturnType<typeof prisma.session.findFirst>>;
+type SessionList = Awaited<ReturnType<typeof prisma.session.findMany>>;
+
 export async function createSession(
   userId: number, 
   refreshToken: string, 
@@ -39,7 +44,7 @@ export async function createSession(
   fingerprint: string,
   timezone?: string,
   clientTime?: number
-): Promise<Session> {
+): Promise<CreatedSession> {
   // Immer Server-Zeit verwenden für Session-Berechnungen
   const now = new Date();
   const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 Tage
@@ -58,7 +63,7 @@ export async function createSession(
   );
 }
 
-export async function getValidSession(userId: number, refreshToken: string, fingerprint?: string): Promise<Session | null> {
+export async function getValidSession(userId: number, refreshToken: string, fingerprint?: string): Promise<FoundSession> {
   // Erst versuchen ohne Device-Fingerprint (für Swagger UI, etc.)
   const session = await trackSessionQuery('findFirst_validate', () =>
     prisma.session.findFirst({
@@ -139,7 +144,7 @@ export async function createSessionWithCleanup(
     keepExistingSessions?: boolean;  // Multi-Device-Login erlauben
     maxSessionsPerUser?: number;      // Max. Anzahl Sessions pro User
   }
-): Promise<Session> {
+): Promise<CreatedSession> {
   // Standard: Alle alten Sessions löschen (Single-Device-Login)
   if (!options?.keepExistingSessions) {
     await invalidateAllUserSessions(userId);
@@ -149,7 +154,7 @@ export async function createSessionWithCleanup(
     if (existingSessions.length >= options.maxSessionsPerUser) {
       // Sortiere nach lastAccessedAt und lösche die ältesten
       const sessionsToDelete = existingSessions
-        .sort((a, b) => (a.lastAccessedAt || a.createdAt).getTime() - (b.lastAccessedAt || b.createdAt).getTime())
+        .sort((a: NonNullable<FoundSession>, b: NonNullable<FoundSession>) => (a.lastAccessedAt || a.createdAt).getTime() - (b.lastAccessedAt || b.createdAt).getTime())
         .slice(0, existingSessions.length - options.maxSessionsPerUser + 1);
       
       for (const session of sessionsToDelete) {
@@ -162,7 +167,7 @@ export async function createSessionWithCleanup(
   return createSession(userId, refreshToken, ip, fingerprint, timezone, clientTime);
 }
 
-export async function getUserSessions(userId: number): Promise<Session[]> {
+export async function getUserSessions(userId: number): Promise<SessionList> {
   return prisma.session.findMany({
     where: {
       userId,
@@ -194,7 +199,7 @@ export async function validateSession(
   refreshToken: string, 
   ip?: string, 
   fingerprint?: string
-): Promise<{ valid: boolean; session?: Session; reason?: string }> {
+): Promise<{ valid: boolean; session?: NonNullable<FoundSession>; reason?: string }> {
   const session = await getValidSession(userId, refreshToken, fingerprint);
   
   if (!session) {
@@ -242,7 +247,7 @@ export async function performSecurityCheck(
 
   // ⚠️ Check 2: Verdächtige IP-Wechsel
   const recentSessions = userSessions.slice(0, 3);
-  const ipHashes = recentSessions.map(s => s.ipHash).filter(Boolean);
+  const ipHashes = recentSessions.map((s: NonNullable<FoundSession>) => s.ipHash as string | null).filter(Boolean) as string[];
   const uniqueIPs = new Set(ipHashes);
   
   if (uniqueIPs.size > SUSPICIOUS_ACTIVITY_THRESHOLD) {
@@ -254,7 +259,7 @@ export async function performSecurityCheck(
   const inactiveThreshold = new Date();
   inactiveThreshold.setHours(inactiveThreshold.getHours() - SESSION_INACTIVITY_TIMEOUT_HOURS);
   
-  const inactiveSessions = userSessions.filter(s => 
+  const inactiveSessions = userSessions.filter((s: NonNullable<FoundSession>) => 
     (s.lastAccessedAt || s.createdAt) < inactiveThreshold
   );
   
@@ -437,11 +442,11 @@ export async function cleanupInactiveSessions(userId: number, inactiveHours: num
   
   // Filter Sessions die wirklich inaktiv sind
   const inactiveSessionIds = sessionsToDelete
-    .filter(session => {
+    .filter((session: { lastAccessedAt: Date | null; createdAt: Date; id: number }) => {
       const lastActivity = session.lastAccessedAt || session.createdAt;
       return lastActivity < inactiveThreshold;
     })
-    .map(session => session.id);
+    .map((session: { id: number }) => session.id);
   
   if (inactiveSessionIds.length === 0) {
     return 0;

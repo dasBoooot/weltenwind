@@ -147,10 +147,7 @@ class Validators {
         l10n.authPasswordNotCommon,
         !_isCommonPassword(password.toLowerCase()),
       ),
-      PasswordRequirement(
-        l10n.authPasswordNoSequential,
-        !_hasSequentialChars(password),
-      ),
+      // Removed consecutive characters check as requested by user
     ];
   }
 
@@ -206,42 +203,7 @@ class Validators {
     return commonPasswords.contains(password);
   }
 
-  /// Security: Check for sequential characters
-  static bool _hasSequentialChars(String password) {
-    // Check for 3+ sequential numbers
-    for (int i = 0; i <= password.length - 3; i++) {
-      final substring = password.substring(i, i + 3);
-      if (RegExp(r'^\d{3}$').hasMatch(substring)) {
-        final first = int.tryParse(substring[0]);
-        final second = int.tryParse(substring[1]);
-        final third = int.tryParse(substring[2]);
-        
-        if (first != null && second != null && third != null) {
-          if ((second == first + 1 && third == second + 1) ||
-              (second == first - 1 && third == second - 1)) {
-            return true;
-          }
-        }
-      }
-    }
-
-    // Check for 3+ sequential letters
-    for (int i = 0; i <= password.length - 3; i++) {
-      final substring = password.substring(i, i + 3).toLowerCase();
-      if (RegExp(r'^[a-z]{3}$').hasMatch(substring)) {
-        final first = substring.codeUnitAt(0);
-        final second = substring.codeUnitAt(1);
-        final third = substring.codeUnitAt(2);
-        
-        if ((second == first + 1 && third == second + 1) ||
-            (second == first - 1 && third == second - 1)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
+  // Removed _hasSequentialChars function as consecutive character check was removed
 }
 
 /// Password requirement data class

@@ -44,6 +44,13 @@ sudo touch /var/log/weltenwind/security.log
 sudo touch /var/log/weltenwind/api.log
 sudo touch /var/log/weltenwind/error.log
 
+# Neue erweiterte Log-Kategorien
+sudo touch /var/log/weltenwind/tokens.log
+sudo touch /var/log/weltenwind/database.log
+sudo touch /var/log/weltenwind/client-config.log
+sudo touch /var/log/weltenwind/password-reset.log
+sudo touch /var/log/weltenwind/registration.log
+
 sudo chown weltenwind:weltenwind /var/log/weltenwind/*.log
 sudo chmod 644 /var/log/weltenwind/*.log
 
@@ -77,6 +84,13 @@ echo "   • Auth Events:          /var/log/weltenwind/auth.log"
 echo "   • Security Events:      /var/log/weltenwind/security.log"
 echo "   • API Requests:         /var/log/weltenwind/api.log"
 echo "   • Errors Only:          /var/log/weltenwind/error.log"
+echo ""
+echo -e "${YELLOW}🆕 Neue erweiterte Log-Kategorien:${NC}"
+echo "   • Token Management:     /var/log/weltenwind/tokens.log"
+echo "   • Database Operations:  /var/log/weltenwind/database.log"
+echo "   • Client Configuration: /var/log/weltenwind/client-config.log"
+echo "   • Password Reset Flow:  /var/log/weltenwind/password-reset.log"
+echo "   • Registration Flow:    /var/log/weltenwind/registration.log"
 echo ""
 echo -e "${YELLOW}🔍 Nützliche Befehle:${NC}"
 echo "   # Live-Logs verfolgen:"

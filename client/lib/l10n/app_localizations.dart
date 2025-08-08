@@ -430,7 +430,7 @@ abstract class AppLocalizations {
   /// Hint text for password input
   ///
   /// In en, this message translates to:
-  /// **'Create a strong password'**
+  /// **'Enter your password'**
   String get authPasswordHint;
 
   /// Validation error for missing password
@@ -448,7 +448,7 @@ abstract class AppLocalizations {
   /// Hint text for username input
   ///
   /// In en, this message translates to:
-  /// **'Choose a unique username'**
+  /// **'Enter your username'**
   String get authUsernameHint;
 
   /// Label for confirm password field
@@ -462,6 +462,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Re-enter your password'**
   String get authConfirmPasswordHint;
+
+  /// Hint text for username input during registration
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a unique username'**
+  String get authRegisterUsernameHint;
+
+  /// Hint text for password input during registration
+  ///
+  /// In en, this message translates to:
+  /// **'Create a strong password'**
+  String get authRegisterPasswordHint;
 
   /// Link text back to login
   ///
@@ -666,12 +678,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password cannot be too simple'**
   String get authPasswordNotCommon;
-
-  /// Password requirement against sequential characters
-  ///
-  /// In en, this message translates to:
-  /// **'No sequential characters'**
-  String get authPasswordNoSequential;
 
   /// General validation error message for required fields
   ///

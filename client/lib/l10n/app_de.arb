@@ -277,7 +277,7 @@
     "description": "Label für Passwort-Eingabefeld",
     "context": "auth_fields"
   },
-  "authPasswordHint": "Erstelle ein starkes Passwort",
+  "authPasswordHint": "Gib dein Passwort ein",
   "@authPasswordHint": {
     "description": "Hinweistext für Passwort-Eingabe",
     "context": "auth_fields"
@@ -292,7 +292,7 @@
     "description": "Label für Benutzername-Eingabefeld",
     "context": "auth_fields"
   },
-  "authUsernameHint": "Wähle einen eindeutigen Benutzernamen",
+  "authUsernameHint": "Gib deinen Benutzernamen ein",
   "@authUsernameHint": {
     "description": "Hinweistext für Benutzername-Eingabe",
     "context": "auth_fields"
@@ -306,6 +306,16 @@
   "@authConfirmPasswordHint": {
     "description": "Hinweistext für Passwort-Bestätigung",
     "context": "auth_fields"
+  },
+  "authRegisterUsernameHint": "Wähle einen eindeutigen Benutzernamen",
+  "@authRegisterUsernameHint": {
+    "description": "Hinweistext für Benutzername-Eingabe bei Registrierung",
+    "context": "auth_register"
+  },
+  "authRegisterPasswordHint": "Erstelle ein starkes Passwort",
+  "@authRegisterPasswordHint": {
+    "description": "Hinweistext für Passwort-Eingabe bei Registrierung",
+    "context": "auth_register"
   },
   "authBackToLogin": "Zurück zur Anmeldung",
   "@authBackToLogin": {
@@ -490,11 +500,6 @@
   "authPasswordNotCommon": "Passwort darf nicht zu einfach sein",
   "@authPasswordNotCommon": {
     "description": "Passwort-Anforderung für Komplexität",
-    "context": "auth_fields"
-  },
-  "authPasswordNoSequential": "Keine aufeinanderfolgenden Zeichen",
-  "@authPasswordNoSequential": {
-    "description": "Passwort-Anforderung gegen sequentielle Zeichen",
     "context": "auth_fields"
   },
   "authFieldRequired": "{fieldName} ist erforderlich",

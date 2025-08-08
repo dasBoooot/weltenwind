@@ -198,7 +198,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authPasswordLabel => 'Password';
 
   @override
-  String get authPasswordHint => 'Create a strong password';
+  String get authPasswordHint => 'Enter your password';
 
   @override
   String get authPasswordRequired => 'Password is required';
@@ -207,13 +207,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authUsernameLabel => 'Username';
 
   @override
-  String get authUsernameHint => 'Choose a unique username';
+  String get authUsernameHint => 'Enter your username';
 
   @override
   String get authConfirmPassword => 'Confirm Password';
 
   @override
   String get authConfirmPasswordHint => 'Re-enter your password';
+
+  @override
+  String get authRegisterUsernameHint => 'Choose a unique username';
+
+  @override
+  String get authRegisterPasswordHint => 'Create a strong password';
 
   @override
   String get authBackToLogin => 'Back to Login';
@@ -328,9 +334,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authPasswordNotCommon => 'Password cannot be too simple';
-
-  @override
-  String get authPasswordNoSequential => 'No sequential characters';
 
   @override
   String authFieldRequired(String fieldName) {

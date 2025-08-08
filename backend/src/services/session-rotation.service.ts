@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+type User = { id: number };
 import jwt from 'jsonwebtoken';
 import { jwtConfig } from '../config/jwt.config';
 import { invalidateAllUserSessions, createSession } from './session.service';

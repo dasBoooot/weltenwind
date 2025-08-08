@@ -81,7 +81,7 @@ class MailService {
       });
 
     } catch (error) {
-      loggers.system.error('❌ Mail-Service Konfigurationsfehler', { error });
+      loggers.system.error('❌ Mail-Service Konfigurationsfehler', error as any);
       this.transporter = null;
       this.isConfigured = false;
     }
@@ -120,10 +120,9 @@ class MailService {
 
       return true;
     } catch (error) {
-      loggers.system.error('❌ E-Mail Versand fehlgeschlagen', {
+      loggers.system.error('❌ E-Mail Versand fehlgeschlagen', error as any, {
         to: options.to,
-        subject: options.subject,
-        error
+        subject: options.subject
       });
       return false;
     }

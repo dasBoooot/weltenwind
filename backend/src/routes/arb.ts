@@ -8,7 +8,7 @@ import fs from 'fs';
 import path from 'path';
 
 const router = express.Router();
-const arbLogger = loggers.arb;
+const arbLogger = loggers.system;
 
 // Security-Middleware für alle ARB API-Routen
 router.use((req, res, next) => {

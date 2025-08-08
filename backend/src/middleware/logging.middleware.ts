@@ -19,32 +19,59 @@ export function requestLoggingMiddleware(req: RequestWithStartTime, res: Respons
   
   // Username falls authentifiziert
   const username = (req as AuthenticatedRequest).user?.username;
+  const traceEnabled = process.env.LOG_TRACE_REQUESTS === 'true';
+  if (traceEnabled) {
+    try {
+      loggers.system.info('TRACE request start', {
+        method: req.method,
+        url: req.originalUrl,
+        ip,
+        userAgent: req.headers['user-agent']
+      });
+    } catch {}
+  }
   
-  // Response Ende abfangen für Logging
-  const originalSend = res.send;
-  res.send = function(body) {
+  
+  // Logging am Ende der Response (robust für alle Antworttypen)
+  res.on('finish', () => {
     const duration = req.startTime ? Date.now() - req.startTime : 0;
-    
-    // Log des API-Requests
-    loggers.api.request(
-      req.method,
-      req.originalUrl,
-      ip,
-      username,
-      res.statusCode,
-      duration,
-      {
-        userAgent: req.headers['user-agent'],
-        contentLength: res.get('content-length'),
-        ...(req.body && Object.keys(req.body).length > 0 && {
-          bodyKeys: Object.keys(req.body)
-        })
-      }
-    );
-    
-    // Original send aufrufen
-    return originalSend.call(this, body);
-  };
+    try {
+      loggers.api.request(
+        req.method,
+        req.originalUrl,
+        res.statusCode,
+        ip,
+        req.headers['user-agent'],
+        duration,
+        {
+          username,
+          statusCode: res.statusCode,
+          contentLength: res.get('content-length'),
+          ...(req.body && Object.keys(req.body).length > 0 && {
+            bodyKeys: Object.keys(req.body)
+          })
+        }
+      );
+    } catch (e) {
+      try {
+        loggers.system.error('API logging failed', e as any, {
+          method: req.method,
+          url: req.originalUrl,
+          statusCode: res.statusCode
+        });
+      } catch {}
+    }
+    if (traceEnabled) {
+      try {
+        loggers.system.info('TRACE request finish', {
+          method: req.method,
+          url: req.originalUrl,
+          statusCode: res.statusCode,
+          duration
+        });
+      } catch {}
+    }
+  });
   
   next();
 }
@@ -58,17 +85,16 @@ export function errorLoggingMiddleware(error: any, req: Request, res: Response, 
   const username = (req as AuthenticatedRequest).user?.username;
   
   // Fehler loggen
-  loggers.api.error(
-    req.method,
-    req.originalUrl,
+  loggers.api.error(`API Error: ${req.method} ${req.originalUrl}`, {
+    method: req.method,
+    url: req.originalUrl,
     ip,
-    error,
     username,
-    {
-      userAgent: req.headers['user-agent'],
-      body: req.body
-    }
-  );
+    error: error.message,
+    stack: error.stack,
+    userAgent: req.headers['user-agent'],
+    body: req.body
+  });
   
   next(error);
 }

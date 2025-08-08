@@ -277,7 +277,7 @@
     "description": "Label for password input field",
     "context": "auth_fields"
   },
-  "authPasswordHint": "Create a strong password",
+  "authPasswordHint": "Enter your password",
   "@authPasswordHint": {
     "description": "Hint text for password input",
     "context": "auth_fields"
@@ -292,7 +292,7 @@
     "description": "Label for username input field",
     "context": "auth_fields"
   },
-  "authUsernameHint": "Choose a unique username",
+  "authUsernameHint": "Enter your username",
   "@authUsernameHint": {
     "description": "Hint text for username input",
     "context": "auth_fields"
@@ -306,6 +306,16 @@
   "@authConfirmPasswordHint": {
     "description": "Hint text for confirm password input",
     "context": "auth_fields"
+  },
+  "authRegisterUsernameHint": "Choose a unique username",
+  "@authRegisterUsernameHint": {
+    "description": "Hint text for username input during registration",
+    "context": "auth_register"
+  },
+  "authRegisterPasswordHint": "Create a strong password",
+  "@authRegisterPasswordHint": {
+    "description": "Hint text for password input during registration",
+    "context": "auth_register"
   },
   "authBackToLogin": "Back to Login",
   "@authBackToLogin": {
@@ -490,11 +500,6 @@
   "authPasswordNotCommon": "Password cannot be too simple",
   "@authPasswordNotCommon": {
     "description": "Password requirement for complexity",
-    "context": "auth_fields"
-  },
-  "authPasswordNoSequential": "No sequential characters",
-  "@authPasswordNoSequential": {
-    "description": "Password requirement against sequential characters",
     "context": "auth_fields"
   },
   "authFieldRequired": "{fieldName} is required",

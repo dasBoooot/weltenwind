@@ -1,4 +1,4 @@
-import { PrismaClient, WorldStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const WORLD_THEMES = [
   {
     name: 'Mittelerde Abenteuer',
-    status: 'open' as WorldStatus,
+    status: 'open' as any,
     themeBundle: 'fantasy_world_bundle',
     themeVariant: 'tolkien',
     parentTheme: 'default_world_bundle',
@@ -18,7 +18,7 @@ const WORLD_THEMES = [
   },
   {
     name: 'Cyberpunk 2177',
-    status: 'running' as WorldStatus,
+    status: 'running' as any,
     themeBundle: 'sci_fi_world_bundle',
     themeVariant: 'cyberpunk',
     parentTheme: 'default_world_bundle',
@@ -30,7 +30,7 @@ const WORLD_THEMES = [
   },
   {
     name: 'Antikes Rom',
-    status: 'open' as WorldStatus,
+    status: 'open' as any,
     themeBundle: 'ancient_world_bundle',
     themeVariant: 'roman',
     parentTheme: 'default_world_bundle',
@@ -42,7 +42,7 @@ const WORLD_THEMES = [
   },
   {
     name: 'Mystische Wälder',
-    status: 'upcoming' as WorldStatus,
+    status: 'upcoming' as any,
     themeBundle: 'fantasy_world_bundle',
     themeVariant: 'nature',
     parentTheme: 'fantasy_world_bundle',
@@ -54,7 +54,7 @@ const WORLD_THEMES = [
   },
   {
     name: 'Weltraum Station Alpha',
-    status: 'running' as WorldStatus,
+    status: 'running' as any,
     themeBundle: 'sci_fi_world_bundle',
     themeVariant: 'space',
     parentTheme: 'sci_fi_world_bundle',
@@ -92,7 +92,8 @@ export async function seedWorlds() {
   }
 
   // 🔄 LEGACY: Basis-Welten für jeden Status beibehalten
-  for (const status of Object.values(WorldStatus)) {
+  const statuses = ['upcoming','open','running','active','closed','archived'];
+  for (const status of statuses) {
     await prisma.world.upsert({
       where: { name: `Basis_${status}` },
       update: {},

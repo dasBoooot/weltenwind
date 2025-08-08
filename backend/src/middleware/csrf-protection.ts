@@ -80,18 +80,15 @@ export function csrfProtection(req: CsrfRequest, res: Response, next: NextFuncti
   const token = req.headers['x-csrf-token'] as string || req.body?._csrf;
   
   if (!token) {
-    loggers.security.csrfTokenInvalid(
-      req.user.username || 'unknown',
-      ip,
-      req.originalUrl,
-      {
-        reason: 'token_missing',
-        method: req.method,
-        userAgent: req.headers['user-agent'],
-        userId: req.user.id,
-        isDevelopment: isDevelopment
-      }
-    );
+    loggers.security.csrfTokenInvalid(ip, {
+      reason: 'token_missing',
+      method: req.method,
+      url: req.originalUrl,
+      username: req.user.username || 'unknown',
+      userAgent: req.headers['user-agent'],
+      userId: req.user.id,
+      isDevelopment: isDevelopment
+    });
     
     // ✅ SSL-MIGRATION FIX: In Development automatisch Token generieren wenn fehlend  
     if (isDevelopment) {
@@ -114,19 +111,16 @@ export function csrfProtection(req: CsrfRequest, res: Response, next: NextFuncti
   }
   
   if (!validateCsrfToken(req.user.id.toString(), token)) {
-    loggers.security.csrfTokenInvalid(
-      req.user.username || 'unknown',
-      ip,
-      req.originalUrl,
-      {
-        reason: 'token_invalid_or_expired',
-        method: req.method,
-        userAgent: req.headers['user-agent'],
-        userId: req.user.id,
-        tokenPresent: true,
-        isDevelopment: isDevelopment
-      }
-    );
+    loggers.security.csrfTokenInvalid(ip, {
+      reason: 'token_invalid_or_expired',
+      method: req.method,
+      url: req.originalUrl,
+      username: req.user.username || 'unknown',
+      userAgent: req.headers['user-agent'],
+      userId: req.user.id,
+      tokenPresent: true,
+      isDevelopment: isDevelopment
+    });
     
     // ✅ SSL-MIGRATION FIX: In Development automatisch neuen Token generieren statt Error
     if (isDevelopment) {
@@ -155,18 +149,15 @@ export function csrfProtection(req: CsrfRequest, res: Response, next: NextFuncti
   
   // Erfolgreiche CSRF-Validierung loggen (nur bei wichtigen Endpoints)
   if (req.originalUrl.includes('/change-password') || req.originalUrl.includes('/logout')) {
-    loggers.security.csrfTokenInvalid(
-      req.user.username || 'unknown',
-      ip,
-      req.originalUrl,
-      {
-        reason: 'token_valid',
-        method: req.method,
-        userAgent: req.headers['user-agent'],
-        userId: req.user.id,
-        tokenRotated: true
-      }
-    );
+    loggers.security.csrfTokenInvalid(ip, {
+      reason: 'token_valid',
+      method: req.method,
+      url: req.originalUrl,
+      username: req.user.username || 'unknown',
+      userAgent: req.headers['user-agent'],
+      userId: req.user.id,
+      tokenRotated: true
+    });
   }
   
   next();

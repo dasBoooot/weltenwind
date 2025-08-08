@@ -11,8 +11,9 @@ Ein Passwort muss:
 - **Mindestens Score 2** (Fair) auf der zxcvbn-Skala erreichen
 - **Keine häufigen Passwörter** verwenden
 - **Keinen Benutzernamen oder E-Mail** enthalten
-- **Keine Tastaturmuster** (qwerty, 123456) enthalten
+- **Keine sehr offensichtlichen Tastaturmuster** (qwerty, 123456) enthalten
 - **Keine übermäßigen Zeichenwiederholungen** (aaa, 111) haben
+- **Keine aufeinanderfolgenden Zeichen** (abc, 123) - **ENTFERNT** (auf Benutzerwunsch)
 
 ## Passwort-Stärke-Skala
 
@@ -32,9 +33,9 @@ Die Passwort-Validierung erkennt:
 - Top 10.000 häufigste Passwörter
 - Wörterbuch-Wörter
 - Namen und Nachnamen
-- Tastaturmuster (qwerty, asdfgh)
+- Sehr offensichtliche Tastaturmuster (qwerty, 123456)
 - Wiederholungen (aaa, abcabc)
-- Sequenzen (123, abc)
+- Sequenzen (123, abc) - **ENTFERNT** (auf Benutzerwunsch)
 - Jahreszahlen und Daten
 
 ### 🎯 Projekt-spezifische Wörter

@@ -10,6 +10,7 @@ import 'core/services/world_service.dart';
 import 'core/services/invite_service.dart';
 import 'core/services/client_config_service.dart';
 import 'core/infrastructure/error_handler.dart';
+import 'config/env.dart';
 import 'core/infrastructure/performance_monitor.dart';
 import 'shared/theme/theme_manager.dart';
 import 'core/providers/theme_provider.dart';
@@ -105,6 +106,7 @@ void main() async {
 /// Initialize client configuration from backend
 Future<void> _initializeClientConfiguration() async {
   try {
+    // Versuche Backend-Konfiguration zu laden
     final clientConfigService = ClientConfigService();
     final success = await clientConfigService.initialize();
     

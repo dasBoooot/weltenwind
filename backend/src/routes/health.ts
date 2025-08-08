@@ -101,7 +101,7 @@ router.get('/health', async (req: Request, res: Response) => {
         responseTime: dbResponseTime
       };
     } catch (dbError) {
-      loggers.system.error('Database health check failed', { error: dbError });
+      loggers.system.error('Database health check failed', dbError as any);
       
       healthCheck.status = 'DEGRADED';
       healthCheck.database = {
@@ -136,10 +136,7 @@ router.get('/health', async (req: Request, res: Response) => {
 
   } catch (error) {
     // Kritischer Fehler beim Health Check
-    loggers.system.error('Health check endpoint failed', { 
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
-    });
+    loggers.system.error('Health check endpoint failed', error as any);
 
     const errorResponse = {
       status: 'ERROR',
@@ -212,7 +209,7 @@ router.get('/health/detailed', async (req: Request, res: Response) => {
     res.json(healthCheck);
 
   } catch (error) {
-    loggers.system.error('Detailed health check failed', { error });
+    loggers.system.error('Detailed health check failed', error as any);
     res.status(503).json({
       status: 'ERROR',
       error: error instanceof Error ? error.message : 'Detailed health check failed',
@@ -264,6 +261,10 @@ router.get('/client-config', async (req: Request, res: Response) => {
       version: '1.0.0'
     };
 
+    // Log with new client config logger
+    loggers.clientConfig.requested(req.ip || 'unknown', req.get('User-Agent'));
+    loggers.clientConfig.served(req.ip || 'unknown', clientConfig);
+    
     loggers.system.info('Client configuration requested', {
       ip: req.ip,
       userAgent: req.get('User-Agent'),

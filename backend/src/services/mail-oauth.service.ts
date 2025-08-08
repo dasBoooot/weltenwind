@@ -65,7 +65,7 @@ class OAuth2MailService {
       });
 
     } catch (error) {
-      loggers.system.error('❌ OAuth2 Mail-Service Konfigurationsfehler', { error });
+      loggers.system.error('❌ OAuth2 Mail-Service Konfigurationsfehler', error as any);
       this.transporter = null;
       this.isConfigured = false;
     }
@@ -95,10 +95,9 @@ class OAuth2MailService {
 
       return true;
     } catch (error) {
-      loggers.system.error('❌ OAuth2 E-Mail Versand fehlgeschlagen', {
+      loggers.system.error('❌ OAuth2 E-Mail Versand fehlgeschlagen', error as any, {
         to,
-        subject,
-        error
+        subject
       });
       return false;
     }

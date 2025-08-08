@@ -198,14 +198,40 @@ class AuthService {
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
         
+        // Debug: Log die komplette Response (auch für Browser-Konsole)
+        final debugInfo = {
+          'statusCode': response.statusCode,
+          'hasAccessToken': data['accessToken'] != null,
+          'hasRefreshToken': data['refreshToken'] != null,
+          'hasUser': data['user'] != null,
+          'responseKeys': data.keys.toList(),
+          'accessTokenPreview': data['accessToken']?.toString().substring(0, 20) ?? 'NULL',
+          'refreshTokenPreview': data['refreshToken']?.toString().substring(0, 20) ?? 'NULL',
+        };
+        
+        AppLogger.auth.d('📝 Register Response Debug', error: debugInfo);
+        print('🔍 REGISTER DEBUG: $debugInfo');
+        
         // Token aus der Response extrahieren
         final accessToken = data['accessToken'];
         final refreshToken = data['refreshToken'];
         
-        if (accessToken != null && refreshToken != null) {
-          // Tokens speichern und API-Service aktualisieren
-          await _saveTokensAndUpdateService(accessToken, refreshToken);
+        if (accessToken == null || refreshToken == null) {
+          final errorInfo = {
+            'accessToken': accessToken?.toString().substring(0, 10) ?? 'NULL',
+            'refreshToken': refreshToken?.toString().substring(0, 10) ?? 'NULL',
+            'fullResponse': data,
+          };
+          
+          AppLogger.auth.e('❌ Token fehlen in Register-Response', error: errorInfo);
+          print('🚨 REGISTER ERROR - Token fehlen: $errorInfo');
+          throw Exception('Token nicht erhalten - Backend-Fehler');
         }
+        
+        // Tokens speichern und API-Service aktualisieren
+        print('✅ REGISTER SUCCESS - Speichere Token...');
+        await _saveTokensAndUpdateService(accessToken, refreshToken);
+        print('✅ REGISTER SUCCESS - Token gespeichert!');
         
         final userData = data['user'];
         
@@ -453,13 +479,19 @@ class AuthService {
 
       if (response.statusCode == 200) {
         AppLogger.auth.i('✅ Password erfolgreich zurückgesetzt');
+        print('✅ PASSWORD RESET SUCCESS!');
         return true;
       } else {
         final errorData = jsonDecode(response.body);
-        AppLogger.auth.w('❌ Password-Reset API-Fehler', error: {
+        final errorInfo = {
           'statusCode': response.statusCode,
-          'response': errorData
-        });
+          'response': errorData,
+          'responseBody': response.body,
+          'tokenPreview': '${token.substring(0, 8)}...'
+        };
+        
+        AppLogger.auth.e('❌ Password-Reset API-Fehler', error: errorInfo);
+        print('🚨 PASSWORD RESET ERROR: $errorInfo');
         throw Exception(errorData['error'] ?? errorData['message'] ?? 'Passwort-Zurücksetzung fehlgeschlagen');
       }
     } catch (e) {

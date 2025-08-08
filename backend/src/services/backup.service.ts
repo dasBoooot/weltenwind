@@ -418,9 +418,8 @@ class IntelligentBackupService {
       job.endTime = new Date();
       job.error = error.message;
 
-      loggers.system.error('Backup job failed', {
+      loggers.system.error('Backup job failed', error, {
         jobId,
-        error: error.message,
         duration: job.endTime.getTime() - job.startTime.getTime()
       });
 

@@ -95,12 +95,14 @@ class ApiService {
             // Log Token-Refresh
             AppLogger.api.i('🔄 Token läuft ab in ${exp - now}s - erneuere proaktiv');
             
-            final refreshed = await _authService!.refreshTokenIfNeeded();
-            if (refreshed) {
-              final newToken = await _authService!.getCurrentAccessToken();
-              if (newToken != null) {
-                setToken(newToken);
-                AppLogger.api.i('✅ Token erfolgreich erneuert');
+            if (_authService != null) {
+              final refreshed = await _authService!.refreshTokenIfNeeded();
+              if (refreshed) {
+                final newToken = await _authService!.getCurrentAccessToken();
+                if (newToken != null) {
+                  setToken(newToken);
+                  AppLogger.api.i('✅ Token erfolgreich erneuert');
+                }
               }
             }
           }
@@ -108,7 +110,9 @@ class ApiService {
       } catch (e) {
         // Token validation error
         AppLogger.api.w('⚠️ Token-Validierung fehlgeschlagen', error: e);
-                  await _authService!.refreshTokenIfNeeded();
+        if (_authService != null) {
+          await _authService!.refreshTokenIfNeeded();
+        }
       } finally {
         _isValidatingToken = false;
       }
@@ -124,14 +128,16 @@ class ApiService {
         try {
           AppLogger.api.i('🔄 Proaktive Token-Erneuerung - läuft ab in ${expiresIn}s');
           
-                      final refreshed = await _authService!.refreshTokenIfNeeded();
+          if (_authService != null) {
+            final refreshed = await _authService!.refreshTokenIfNeeded();
             if (refreshed) {
               final newToken = await _authService!.getCurrentAccessToken();
-            if (newToken != null) {
-              setToken(newToken);
-              
-                          // Request mit neuem Token wiederholen
-            return await _retryRequest(endpoint, response.request!.method);
+              if (newToken != null) {
+                setToken(newToken);
+                
+                // Request mit neuem Token wiederholen
+                return await _retryRequest(endpoint, response.request!.method);
+              }
             }
           }
         } catch (e) {
@@ -145,20 +151,24 @@ class ApiService {
       try {
         AppLogger.api.i('🔄 Reactive Token-Refresh wegen 401');
         
-                    final refreshed = await _authService!.refreshTokenIfNeeded();
-            if (refreshed) {
-              final newToken = await _authService!.getCurrentAccessToken();
-          if (newToken != null) {
-            setToken(newToken);
-            
-            // Request mit neuem Token wiederholen
-            return await _retryRequest(endpoint, response.request!.method);
+        if (_authService != null) {
+          final refreshed = await _authService!.refreshTokenIfNeeded();
+          if (refreshed) {
+            final newToken = await _authService!.getCurrentAccessToken();
+            if (newToken != null) {
+              setToken(newToken);
+              
+              // Request mit neuem Token wiederholen
+              return await _retryRequest(endpoint, response.request!.method);
+            }
           }
         }
       } catch (e) {
         AppLogger.api.e('❌ Token-Refresh fehlgeschlagen', error: e);
         // Bei Token-Refresh-Fehlern automatisch ausloggen
-                  await _authService!.logout();
+        if (_authService != null) {
+          await _authService!.logout();
+        }
         // Cache invalidieren nach Logout
         // Auth cache invalidated - handled by auth service
       }
@@ -311,11 +321,16 @@ class ApiService {
     }
     
     try {
+      final fullUrl = '${Env.apiUrl}${Env.apiBasePath}$endpoint';
+      print('🌐 API POST: $fullUrl');
+      
       final response = await http.post(
-        Uri.parse('${Env.apiUrl}${Env.apiBasePath}$endpoint'),
+        Uri.parse(fullUrl),
         headers: _headers,
         body: jsonEncode(data),
       );
+      
+      print('📡 API RESPONSE: ${response.statusCode} for $endpoint');
       
       // Log API Response (ohne sensitive Response-Daten)
       final logResponseBody = endpoint.startsWith('/auth/') ? _sanitizeAuthResponse(response.body) : response.body;

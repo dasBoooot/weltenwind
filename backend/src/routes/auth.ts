@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { Prisma } from '@prisma/client';
 import { createSession, invalidateSession, refreshSession, getValidSession, createSessionWithCleanup } from '../services/session.service';
 import { authenticate, AuthenticatedRequest } from '../middleware/authenticate';
 import { hasPermission } from '../services/access-control.service';
@@ -107,10 +108,7 @@ router.post('/login',
   const loginIdentifier = identifier || username;
 
   if (!loginIdentifier || !password) {
-    loggers.auth.login(loginIdentifier || 'unknown', ip, false, { 
-      reason: 'missing_credentials',
-      userAgent: req.headers['user-agent']
-    });
+    loggers.auth.login(loginIdentifier || 'unknown', ip, false, 'missing_credentials');
     return res.status(400).json({ error: 'Benutzername und Passwort erforderlich' });
   }
 
@@ -126,10 +124,7 @@ router.post('/login',
   });
 
   if (!user) {
-    loggers.auth.login(loginIdentifier, ip, false, { 
-      reason: 'user_not_found',
-      userAgent: req.headers['user-agent']
-    });
+    loggers.auth.login(loginIdentifier, ip, false, 'user_not_found');
     return res.status(401).json({ error: 'Ungültige Zugangsdaten' });
   }
 
@@ -192,6 +187,10 @@ router.post('/login',
   // Zwei-Token-System: Access-Token + Refresh-Token
   const accessToken = generateAccessToken(user.id, user.username, timezone);
   const refreshToken = generateRefreshToken(user.id);
+  
+  // Log token generation
+  loggers.auth.info('Access token generated', 'TOKEN_GENERATED', { type: 'access', userId: user.id, ip, username: user.username, timezone });
+  loggers.auth.info('Refresh token generated', 'TOKEN_GENERATED', { type: 'refresh', userId: user.id, ip, username: user.username });
 
   // Session mit Refresh-Token speichern
   try {
@@ -293,6 +292,15 @@ router.post('/register',
   const { username, email, password } = req.body;
   const { ip, fingerprint } = extractClientInfo(req);
 
+  // Log registration start with new logger
+  loggers.system.info(`Registration started: ${username || 'unknown'}`, {
+    username: username || 'unknown',
+    email: email || 'unknown',
+    ip,
+    fingerprint: fingerprint.substring(0, 50),
+    userAgent: req.headers['user-agent']
+  });
+
   const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
   if (!username || !email || !password) {
     loggers.auth.register(username || 'unknown', email || 'unknown', ip, {
@@ -350,7 +358,7 @@ router.post('/register',
     const passwordHash = await bcrypt.hash(password, 10);
 
     // User anlegen mit Standard-User-Rolle in einer Transaktion
-    const result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // User erstellen
       const user = await tx.user.create({
         data: {
@@ -377,9 +385,9 @@ router.post('/register',
       });
 
       if (!userRole) {
-        const allRoles = await tx.role.findMany({ select: { name: true } });
+        const allRoles: { name: string }[] = await tx.role.findMany({ select: { name: true } });
         loggers.system.error('Standard user role not found', new Error('User role missing'), {
-          availableRoles: allRoles.map(r => r.name),
+          availableRoles: allRoles.map((r: { name: string }) => r.name),
           expectedRole: 'user',
           expectedAction: 'npm run seed'
         });
@@ -444,7 +452,7 @@ router.post('/register',
     // Debug-Info für den Client
     const debugInfo = {
       rolesCount: userWithRoles?.roles.length || 0,
-      roleDetails: userWithRoles?.roles.map(r => ({
+      roleDetails: userWithRoles?.roles.map((r: any) => ({
         roleId: r.roleId,
         roleName: r.role.name,
         scopeType: r.scopeType,
@@ -457,6 +465,10 @@ router.post('/register',
     
     const accessToken = generateAccessToken(result.id, result.username, timezone);
     const refreshToken = generateRefreshToken(result.id);
+    
+    // Log token generation
+    loggers.auth.info('Access token generated', 'TOKEN_GENERATED', { type: 'access', userId: result.id, ip, username: result.username, timezone });
+    loggers.auth.info('Refresh token generated', 'TOKEN_GENERATED', { type: 'refresh', userId: result.id, ip, username: result.username });
     
     // Session erstellen
     try {
@@ -483,6 +495,13 @@ router.post('/register',
     }
 
     // Erfolgreiche Registrierung loggen
+    loggers.auth.info('Registration completed successfully', 'REGISTER', {
+      username, email, userId: result.id, ip,
+      rolesAssigned: userWithRoles?.roles.length || 0,
+      timezone,
+      userAgent: req.headers['user-agent']
+    });
+    
     loggers.auth.register(username, email, ip, {
       success: true,
       userId: result.id,
@@ -548,6 +567,14 @@ router.post('/request-reset',
   passwordResetLimiter,  // Sehr striktes Limit
   async (req, res) => {
   const { email } = req.body;
+  const { ip } = extractClientInfo(req);
+  
+  // Log password reset request
+  loggers.auth.info('Password reset requested', 'PASSWORD_RESET', {
+    email, ip,
+    userAgent: req.headers['user-agent']
+  });
+  
   if (!email) {
     return res.status(400).json({ error: 'E-Mail erforderlich' });
   }
@@ -559,12 +586,18 @@ router.post('/request-reset',
   // Token generieren
   const token = crypto.randomBytes(32).toString('hex');
   const expiresAt = new Date(Date.now() + 1000 * 60 * 60); // 1h gültig
-  await prisma.passwordReset.create({
+  const resetRecord = await prisma.passwordReset.create({
     data: {
       userId: user.id,
       token,
       expiresAt
     }
+  });
+  
+  // Log token generation
+  loggers.auth.info('Password reset token generated', 'PASSWORD_RESET', {
+    email, ip, tokenId: resetRecord.id.toString(),
+    expiresAt: expiresAt.toISOString()
   });
   // Mail-Versand mit Token (wenn konfiguriert)
   if (mailService.isEnabled()) {
@@ -668,6 +701,67 @@ router.post('/reset-password', async (req, res) => {
     return res.status(200).json({ message: 'Passwort erfolgreich geändert' });
   } catch (error) {
     loggers.system.error('❌ Password-Reset Fehler', error, {
+      tokenPreview: token ? token.substring(0, 8) + '...' : 'missing'
+    });
+    
+    return res.status(500).json({ error: 'Interner Serverfehler' });
+  }
+});
+
+// GET /api/auth/validate-reset-token/:token
+router.get('/validate-reset-token/:token', async (req, res) => {
+  const { token } = req.params;
+  
+  loggers.system.info('🛡️ Reset-Token Validierung', {
+    tokenPreview: token ? token.substring(0, 8) + '...' : 'missing',
+    endpoint: '/auth/validate-reset-token'
+  });
+
+  if (!token) {
+    return res.status(400).json({ error: 'Token erforderlich' });
+  }
+
+  try {
+    const reset = await prisma.passwordReset.findUnique({ where: { token } });
+    
+    if (!reset) {
+      loggers.system.warn('❌ Reset-Token Validierung: Token nicht gefunden', {
+        tokenPreview: token.substring(0, 8) + '...'
+      });
+      return res.status(400).json({ error: 'Ungültiger oder abgelaufener Token' });
+    }
+
+    if (reset.usedAt) {
+      loggers.system.warn('❌ Reset-Token Validierung: Token bereits verwendet', {
+        tokenPreview: token.substring(0, 8) + '...',
+        usedAt: reset.usedAt,
+        userId: reset.userId
+      });
+      return res.status(400).json({ error: 'Ungültiger oder abgelaufener Token' });
+    }
+
+    if (reset.expiresAt < new Date()) {
+      loggers.system.warn('❌ Reset-Token Validierung: Token abgelaufen', {
+        tokenPreview: token.substring(0, 8) + '...',
+        expiresAt: reset.expiresAt,
+        userId: reset.userId
+      });
+      return res.status(400).json({ error: 'Ungültiger oder abgelaufener Token' });
+    }
+
+    // Token ist gültig
+    loggers.system.info('✅ Reset-Token Validierung erfolgreich', {
+      tokenPreview: token.substring(0, 8) + '...',
+      userId: reset.userId,
+      expiresAt: reset.expiresAt
+    });
+
+    return res.status(200).json({ 
+      valid: true,
+      message: 'Token ist gültig'
+    });
+  } catch (error) {
+    loggers.system.error('❌ Reset-Token Validierung Fehler', error, {
       tokenPreview: token ? token.substring(0, 8) + '...' : 'missing'
     });
     
@@ -779,7 +873,7 @@ router.get('/roles-check', async (req, res) => {
     res.json({
       status: 'ok',
       roleCount: roles.length,
-      roles: roles.map(r => ({
+      roles: roles.map((r: any) => ({
         id: r.id,
         name: r.name,
         permissionCount: r.permissions.length

@@ -26,20 +26,22 @@
 
     <!-- Log Viewer (hidden initially) -->
     <div id="logViewer" class="hidden">
-        <h1>🔍 Weltenwind Log Viewer</h1>
-        <div style="float: right;">
-            <span id="userInfo"></span>
-            <button onclick="logout()">🚪 Abmelden</button>
+        <!-- Header -->
+        <div class="header">
+            <h1>🔍 Weltenwind Log Viewer</h1>
+            <div class="user-section">
+                <span id="userInfo"></span>
+                <button onclick="logout()">🚪 Abmelden</button>
+            </div>
+        </div>
+        
+        <!-- Log-Info-Panel -->
+        <div id="logInfo" class="log-info-panel">
+            <div id="logInfoContent">Lade Log-Informationen...</div>
+            <button onclick="toggleLogInfo()" id="logInfoToggle">ℹ️ Info</button>
         </div>
 
         <div class="controls">
-            <label>Log-Kategorie:</label>
-            <select id="logCategory" onchange="updateLogFiles()">
-                <option value="winston">🔧 Winston (Strukturiert)</option>
-                <option value="services">⚙️ Services (systemd)</option>
-                <option value="system">🖥️ System (Linux)</option>
-            </select>
-
             <label>Log-Datei:</label>
             <select id="logFile" onchange="loadLogs()">
                 <option value="app.log">Lade Kategorien...</option>
@@ -50,14 +52,19 @@
 
             <label>Zeilen:</label>
             <select id="lines" onchange="loadLogs()">
-                <option value="100">100</option>
+                <option value="50">50</option>
+                <option value="100" selected>100</option>
+                <option value="200">200</option>
                 <option value="500">500</option>
                 <option value="1000">1000</option>
             </select>
 
             <button onclick="loadLogs()">🔄 Aktualisieren</button>
             <button onclick="autoRefresh()">⏰ Auto-Refresh</button>
-            <button onclick="loadCategories()">📂 Kategorien laden</button>
+            <button onclick="loadLatestLogs()">🆕 Neueste Logs</button>
+            <button onclick="clearLogs()">🗑️ Leeren</button>
+            <button onclick="scrollToBottom()">⬇️ Nach unten</button>
+            <button onclick="scrollToTop()">⬆️ Nach oben</button>
         </div>
 
         <div id="logContainer" class="log-container">

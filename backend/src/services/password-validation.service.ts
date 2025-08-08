@@ -76,10 +76,10 @@ export function validatePassword(
     suggestions.push('Vermeide Zeichen-Wiederholungen wie "aaa" oder "111"');
   }
 
-  // Keyboard-Pattern Check
+  // Keyboard-Pattern Check (less strict - only check for very obvious patterns)
   const keyboardPatterns = [
     'qwertz', 'qwerty', 'asdfgh', 'zxcvbn',
-    '123456', '654321', 'abcdef', 'fedcba'
+    '123456', '654321' // Removed 'abcdef', 'fedcba' to be less strict
   ];
   
   const lowerPassword = password.toLowerCase();

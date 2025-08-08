@@ -37,7 +37,9 @@ class ClientConfigService {
       AppLogger.app.i('🔧 Loading client configuration from backend...');
       
       // Verwende die aktuellen URLs (können noch die Defaults sein)
-      final configUrl = '${Env.apiUrl}/api/health/client-config';
+      final configUrl = '${Env.apiUrl}/api/client-config';
+      
+      AppLogger.app.d('🔧 Attempting to load client config from: $configUrl');
       
       final response = await http.get(
         Uri.parse(configUrl),
@@ -45,7 +47,7 @@ class ClientConfigService {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-      ).timeout(const Duration(seconds: 10));
+      ).timeout(const Duration(seconds: 5)); // Kürzeres Timeout
 
       if (response.statusCode == 200) {
         final configData = json.decode(response.body) as Map<String, dynamic>;
@@ -85,7 +87,8 @@ class ClientConfigService {
       }
       
     } catch (e) {
-      AppLogger.app.e('❌ Error loading client configuration: $e');
+      AppLogger.app.w('⚠️ Error loading client configuration: $e');
+      // Nicht als Fehler loggen, da es normal ist, wenn Backend nicht verfügbar ist
       return false;
     } finally {
       _isLoading = false;
@@ -118,11 +121,13 @@ class ClientConfigService {
       AppLogger.app.i('✅ Client configuration initialized successfully');
     } else {
       AppLogger.app.w('⚠️ Using default configuration (backend unavailable)');
-      // Verwende Default-Konfiguration
+      // Verwende Default-Konfiguration - App soll trotzdem funktionieren
       _isInitialized = true;
+      _lastLoadTime = DateTime.now();
     }
     
-    return success;
+    // Immer true zurückgeben, damit die App startet
+    return true;
   }
 
   /// Debug-Informationen über die aktuelle Konfiguration
