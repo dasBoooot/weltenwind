@@ -169,7 +169,6 @@ app.use(requestLoggingMiddleware);
 
 // === API-Routen ===
 app.use('/api', healthRoutes);  // Health-Check ohne Authentifizierung
-app.use('/api/v1', healthRoutes); // explicit v1 mount for health (client-config etc.)
 app.use('/api/auth', authRoutes);
 app.use('/api', meAlias);
 app.use('/api/worlds', worldRoutes);

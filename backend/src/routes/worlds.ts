@@ -173,20 +173,31 @@ router.post('/:id/join',
     });
   }
 
-  // Player-Eintrag anlegen
-  const player = await prisma.player.create({
-    data: {
-      userId: req.user.id,
-      worldId: worldId,
-      joinedAt: new Date()
+  try {
+    const player = await prisma.player.create({
+      data: {
+        userId: req.user.id,
+        worldId: worldId,
+        joinedAt: new Date()
+      }
+    });
+    return res.status(200).json({
+      success: true,
+      code: 'success',
+      message: 'Beitritt erfolgreich',
+      data: { playerId: player.id }
+    });
+  } catch (e: any) {
+    // Idempotent: Unique violation -> already joined
+    if (e && (e.code === 'P2002' || /unique/i.test(String(e.message || '')))) {
+      return res.status(200).json({
+        success: true,
+        code: 'already_joined',
+        message: 'Bereits beigetreten'
+      });
     }
-  });
-  res.status(200).json({
-    success: true,
-    code: 'success',
-    message: 'Beitritt erfolgreich',
-    data: { playerId: player.id }
-  });
+    return res.status(500).json({ error: 'Join fehlgeschlagen' });
+  }
 });
 
 /**

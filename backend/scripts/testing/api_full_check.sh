@@ -75,7 +75,7 @@ if [ -n "$CSRF" ] && [ "$CSRF" != "null" ]; then ok "CSRF erhalten"; record auth
 
 # ---------- Health ----------
 header "Health"
-for p in "/health" "/health/detailed" "/health/client-config"; do
+for p in "/health" "/health/detailed" "/client-config"; do
   code=$(req_status GET "$p")
   if [[ "$code" =~ ^2[0-9][0-9]$ ]]; then ok "$p -> $code"; record "health_$p" ok; else fail "$p -> $code"; record "health_$p" fail; fi
 done

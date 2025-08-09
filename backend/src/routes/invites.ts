@@ -607,23 +607,27 @@ router.post('/public',
     const invites: any[] = [];
     for (const mail of emailSet) {
       const token = crypto.randomBytes(32).toString('hex');
-      const invite = await prisma.invite.create({
-        data: {
-          worldId: parseInt(worldId),
-          email: mail,
-          token,
-          invitedById: null, // Kein authentifizierter Benutzer
-          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * INVITE_EXPIRY_DAYS) // Aus .env
+      try {
+        const invite = await prisma.invite.create({
+          data: {
+            worldId: parseInt(worldId),
+            email: mail,
+            token,
+            invitedById: null, // Kein authentifizierter Benutzer
+            expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * INVITE_EXPIRY_DAYS) // Aus .env
+          }
+        });
+        invites.push(invite);
+        loggers.system.info('✅ Öffentlicher Invite erstellt', { inviteId: invite.id, worldId: parseInt(worldId), email: mail });
+      } catch (e: any) {
+        // Unique-Kollision (bereits eingeladen) -> überspringen, weiter sammeln
+        const msg = String(e?.message || '');
+        if (e?.code === 'P2002' || /unique|duplicate|constraint/i.test(msg)) {
+          loggers.system.info('ℹ️ Öffentlicher Invite existiert bereits (dedupe)', { worldId: parseInt(worldId), email: mail });
+          continue;
         }
-      });
-      
-      invites.push(invite);
-      
-      loggers.system.info('✅ Öffentlicher Invite erstellt', {
-        inviteId: invite.id,
-        worldId: parseInt(worldId),
-        email: mail
-      });
+        throw e;
+      }
     }
     
     res.status(200).json({

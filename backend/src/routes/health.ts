@@ -155,31 +155,6 @@ router.get('/health/detailed', async (req: Request, res: Response) => {
   }
 });
 
-
-// Legacy path expected by tools: /api/health/client-config
-router.get('/health/client-config', async (req: Request, res: Response) => {
-  try {
-    const clientConfig = {
-      apiUrl: process.env.PUBLIC_API_URL || 'https://192.168.2.168/api',
-      clientUrl: process.env.PUBLIC_CLIENT_URL || 'https://192.168.2.168',
-      assetUrl: process.env.PUBLIC_ASSETS_URL || 'https://192.168.2.168',
-      environment: process.env.NODE_ENV || 'development',
-      timestamp: Date.now(),
-      version: '1.0.0'
-    };
-
-    loggers.clientConfig.requested(req.ip || 'unknown', req.get('User-Agent'));
-    loggers.clientConfig.served(req.ip || 'unknown', clientConfig);
-    res.json(clientConfig);
-  } catch (error: any) {
-    loggers.system.error('Failed to provide client configuration (legacy path)', error);
-    res.status(500).json({
-      error: 'Client configuration failed',
-      details: error?.message || 'Unknown error'
-    });
-  }
-});
-
 // Canonical path: /api/client-config
 router.get('/client-config', async (req: Request, res: Response) => {
   try {
