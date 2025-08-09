@@ -209,46 +209,48 @@ function formatUptime(seconds: number): string {
   return parts.join(' ');
 }
 
-// 📊 Session-Monitoring-Endpoint für Admins
-router.get('/sessions', 
-  authenticate,
-  adminEndpointLimiter,
-  async (req: AuthenticatedRequest, res) => {
-    // Permission-Check: Nur Admins dürfen Session-Metriken einsehen
-    const hasAdminPerm = await hasPermission(req.user!.id, 'system.logs', { type: 'global', objectId: '*' });
-    if (!hasAdminPerm) {
-      return res.status(403).json({ error: 'Keine Berechtigung für Session-Monitoring' });
-    }
-
-    try {
-      const [metrics, healthCheck] = await Promise.all([
-        getSessionMetrics(),
-        performSessionHealthCheck()
-      ]);
-
-      res.json({
-        status: healthCheck.healthy ? 'healthy' : 'warning',
-        timestamp: new Date().toISOString(),
-        sessionMetrics: metrics,
-        healthCheck: {
-          healthy: healthCheck.healthy,
-          issues: healthCheck.issues
-        },
-        recommendations: healthCheck.issues.length > 0 ? [
-          'Erwäge Session-Cleanup-Script auszuführen',
-          'Prüfe auf verdächtige User-Aktivitäten',
-          'Monitoring-Alerts für Session-Anomalien konfigurieren'
-        ] : []
-      });
-    } catch (error: any) {
-      loggers.system.error('Fehler beim Abrufen der Session-Metriken', error);
-      res.status(500).json({
-        error: 'Session-Monitoring-Fehler',
-        details: error?.message || 'Unknown error'
-      });
-    }
+// 📊 Session-Monitoring-Handler (geteilt von /health/sessions und /sessions)
+async function handleSessionsHealth(req: AuthenticatedRequest, res: Response) {
+  // Permission-Check: Nur Admins dürfen Session-Metriken einsehen
+  const hasAdminPerm = await hasPermission(req.user!.id, 'system.metrics', { type: 'global', objectId: '*' });
+  if (!hasAdminPerm) {
+    return res.status(403).json({ error: 'Keine Berechtigung für Session-Monitoring' });
   }
-);
+
+  try {
+    const [metrics, healthCheck] = await Promise.all([
+      getSessionMetrics(),
+      performSessionHealthCheck()
+    ]);
+
+    res.json({
+      status: healthCheck.healthy ? 'healthy' : 'warning',
+      timestamp: new Date().toISOString(),
+      sessionMetrics: metrics,
+      healthCheck: {
+        healthy: healthCheck.healthy,
+        issues: healthCheck.issues
+      },
+      recommendations: healthCheck.issues.length > 0 ? [
+        'Erwäge Session-Cleanup-Script auszuführen',
+        'Prüfe auf verdächtige User-Aktivitäten',
+        'Monitoring-Alerts für Session-Anomalien konfigurieren'
+      ] : []
+    });
+  } catch (error: any) {
+    loggers.system.error('Fehler beim Abrufen der Session-Metriken', error);
+    res.status(500).json({
+      error: 'Session-Monitoring-Fehler',
+      details: error?.message || 'Unknown error'
+    });
+  }
+}
+
+// 📊 Session-Monitoring-Endpoint (kanonisch)
+router.get('/health/sessions', authenticate, adminEndpointLimiter, handleSessionsHealth);
+
+// 📎 Alias für Kompatibilität (optional)
+router.get('/sessions', authenticate, adminEndpointLimiter, handleSessionsHealth);
 
 // 🔐 CSRF-Monitoring-Endpoint für Admins
 router.get('/csrf', 

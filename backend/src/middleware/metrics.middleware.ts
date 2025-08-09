@@ -2,98 +2,60 @@ import { Request, Response, NextFunction } from 'express';
 import { recordAPIRequest, recordPerformance, recordError } from '../services/metrics.service';
 import { AuthenticatedRequest } from './authenticate';
 
-// 📊 Request-Metriken automatisch sammeln
+// 📊 Request-Metriken automatisch sammeln (robust, auch bei 304/HEAD)
 export function metricsMiddleware(req: Request, res: Response, next: NextFunction) {
   const startTime = Date.now();
-  const originalSend = res.send;
-  const originalJson = res.json;
-  
+
   // IP-Adresse extrahieren
-  const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || 
+  const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
              req.socket.remoteAddress || 'unknown';
-  
+
   // User-ID extrahieren (falls authentifiziert)
   const userId = (req as AuthenticatedRequest).user?.id;
-  
-  // Response abfangen um Metriken zu sammeln
-  const captureResponse = function(this: Response, body: any) {
-    const responseTime = Date.now() - startTime;
-    const endpoint = req.route?.path || req.path || 'unknown';
-    
-    // API-Request-Metriken sammeln
-    recordAPIRequest(
-      req.method,
-      endpoint,
-      this.statusCode,
-      responseTime,
-      ip,
-      userId
-    );
-    
-    // Performance-Metriken sammeln (für langsame Requests)
-    if (responseTime > 100) { // Nur Requests > 100ms tracken
-      recordPerformance(`api_${req.method.toLowerCase()}_${endpoint}`, responseTime, {
-        statusCode: this.statusCode,
-        userId,
-        userAgent: req.headers['user-agent']
-      });
-    }
-    
-    // Fehler-Metriken sammeln (für 4xx und 5xx Responses)
-    if (this.statusCode >= 400) {
-      const errorType = this.statusCode >= 500 ? 'server_error' : 'client_error';
-      recordError(
-        errorType,
-        `HTTP ${this.statusCode} on ${endpoint}`,
-        undefined,
+
+  res.on('finish', () => {
+    try {
+      const responseTime = Date.now() - startTime;
+      // Bevorzugt baseUrl + route.path, dann path, dann originalUrl
+      const routePath = (req as any).route?.path || '';
+      const endpointRaw = (req.baseUrl || '') + (routePath || req.path || req.originalUrl || 'unknown');
+      const endpoint = endpointRaw || 'unknown';
+
+      // API-Request-Metriken sammeln
+      recordAPIRequest(
+        req.method,
         endpoint,
+        res.statusCode,
+        responseTime,
+        ip,
         userId
       );
+
+      // Performance-Metriken sammeln (nur >100ms)
+      if (responseTime > 100) {
+        recordPerformance(`api_${req.method.toLowerCase()}_${endpoint}`, responseTime, {
+          statusCode: res.statusCode,
+          userId,
+          userAgent: req.headers['user-agent']
+        });
+      }
+
+      // Fehler-Metriken sammeln
+      if (res.statusCode >= 400) {
+        const errorType = res.statusCode >= 500 ? 'server_error' : 'client_error';
+        recordError(
+          errorType,
+          `HTTP ${res.statusCode} on ${endpoint}`,
+          undefined,
+          endpoint,
+          userId
+        );
+      }
+    } catch (e) {
+      // Best-effort; Metriken dürfen den Request nie brechen
     }
-    
-    return originalSend.call(this, body);
-  };
-  
-  // res.send und res.json überschreiben
-  res.send = captureResponse;
-  res.json = function(this: Response, obj: any) {
-    const responseTime = Date.now() - startTime;
-    const endpoint = req.route?.path || req.path || 'unknown';
-    
-    // API-Request-Metriken sammeln
-    recordAPIRequest(
-      req.method,
-      endpoint,
-      this.statusCode,
-      responseTime,
-      ip,
-      userId
-    );
-    
-    // Performance-Metriken sammeln
-    if (responseTime > 100) {
-      recordPerformance(`api_${req.method.toLowerCase()}_${endpoint}`, responseTime, {
-        statusCode: this.statusCode,
-        userId,
-        userAgent: req.headers['user-agent']
-      });
-    }
-    
-    // Fehler-Metriken sammeln
-    if (this.statusCode >= 400) {
-      const errorType = this.statusCode >= 500 ? 'server_error' : 'client_error';
-      recordError(
-        errorType,
-        `HTTP ${this.statusCode} on ${endpoint}`,
-        undefined,
-        endpoint,
-        userId
-      );
-    }
-    
-    return originalJson.call(this, obj);
-  };
-  
+  });
+
   next();
 }
 

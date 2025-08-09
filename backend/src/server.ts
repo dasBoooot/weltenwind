@@ -158,11 +158,11 @@ app.use(standardResponseHeaders);
 app.use(etagMiddleware);
 app.use(idempotencyMiddleware);
 
-// Optional dynamic page permission guard (after basics, before routes)
-app.use('/api', pagePermissionsMiddleware);
-
-// 📊 Metriken-Collection Middleware (vor Routen)
+// 📊 Metriken-Collection Middleware (vor allen API-Routen, vor Guards)
 app.use('/api', metricsMiddleware);
+
+// Optional dynamic page permission guard (nach Metrics, vor Routen)
+app.use('/api', pagePermissionsMiddleware);
 
 // Request-Logging Middleware (nach JSON-Parsing)
 app.use(requestLoggingMiddleware);
@@ -265,6 +265,8 @@ app.use('/arb-manager', (req, res, next) => {
   next();
 });
 
+// 📊 Metrics auch für Tool-Requests erfassen (vor Static)
+app.use(['/arb-manager'], metricsMiddleware);
 app.use('/arb-manager', express.static(publicPath));
 
 // === Theme Editor unter /theme-editor ===
@@ -297,6 +299,8 @@ app.use('/theme-editor', (req, res, next) => {
   next();
 });
 
+// 📊 Metrics auch für Theme-Editor-Requests erfassen (vor Static)
+app.use(['/theme-editor'], metricsMiddleware);
 app.use('/theme-editor', express.static(themeEditorPath));
 
 // === Log Viewer unter /log-viewer ===
@@ -332,6 +336,8 @@ app.use('/log-viewer', (req, res, next) => {
   next();
 });
 
+// 📊 Metrics auch für Log-Viewer-Requests erfassen (vor Static)
+app.use(['/log-viewer'], metricsMiddleware);
 app.use('/log-viewer', express.static(logViewerPath));
 
 // === Metrics-Viewer unter /metrics-viewer ===
@@ -367,6 +373,8 @@ app.use('/metrics-viewer', (req, res, next) => {
   next();
 });
 
+// 📊 Metrics auch für Metrics-Viewer-Requests erfassen (vor Static)
+app.use(['/metrics-viewer'], metricsMiddleware);
 app.use('/metrics-viewer', express.static(metricsViewerPath));
 
 // === Backup-Manager unter /backup-manager ===
@@ -402,6 +410,8 @@ app.use('/backup-manager', (req, res, next) => {
   next();
 });
 
+// 📊 Metrics auch für Backup-Manager-Requests erfassen (vor Static)
+app.use(['/backup-manager'], metricsMiddleware);
 app.use('/backup-manager', express.static(backupManagerPath));
 
 // === Flutter-Web-App unter /game ===

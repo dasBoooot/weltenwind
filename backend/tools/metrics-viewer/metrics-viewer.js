@@ -181,23 +181,46 @@ async function refreshAllMetrics() {
 
 // === API CALLS ===
 async function apiCall(endpoint) {
-    const response = await fetch(endpoint, {
+    // Cache-Busting vermeiden 304 und stale bodies
+    const url = endpoint.includes('?') ? `${endpoint}&ts=${Date.now()}` : `${endpoint}?ts=${Date.now()}`;
+    const response = await fetch(url, {
+        cache: 'no-store',
         headers: {
             'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
         }
     });
-    
+
+    if (response.status === 304) {
+        // Kein Body; gib neutrale Struktur zurück
+        return {};
+    }
+
     if (!response.ok) {
         if (response.status === 401) {
             logout();
             throw new Error('Session expired. Please login again.');
         }
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
+        let errorText = `HTTP ${response.status}`;
+        try {
+            const errorData = await response.json();
+            errorText = errorData.error || errorText;
+        } catch {}
+        throw new Error(errorText);
     }
-    
-    return response.json();
+
+    let data = {};
+    try {
+        data = await response.json();
+    } catch {
+        return {};
+    }
+    // Unwrap { status: 'success', data: {...} }
+    if (data && data.status === 'success' && data.data) {
+        return data.data;
+    }
+    return data;
 }
 
 // === LOAD METRICS DATA ===
@@ -210,7 +233,7 @@ async function loadOverviewMetrics() {
             apiCall('/api/query-performance/health')
         ]);
         
-        metricsData.overall = overallMetrics;
+        metricsData.overall = overallMetrics || {};
         metricsData.health = healthData;
         metricsData.queryHealth = systemHealth;
         
@@ -226,7 +249,7 @@ async function loadOverviewMetrics() {
 async function loadApiMetrics() {
     try {
         const apiMetrics = await apiCall('/api/metrics/api');
-        metricsData.api = apiMetrics;
+        metricsData.api = apiMetrics || {};
         updateApiTable();
         updateEndpointsChart();
     } catch (error) {
@@ -239,7 +262,7 @@ async function loadApiMetrics() {
 async function loadUserMetrics() {
     try {
         const userMetrics = await apiCall('/api/metrics/users');
-        metricsData.users = userMetrics;
+        metricsData.users = userMetrics || {};
         updateUserTable();
         updateUserGrowthChart();
     } catch (error) {
@@ -251,8 +274,42 @@ async function loadUserMetrics() {
 
 async function loadSystemMetrics() {
     try {
-        const systemMetrics = await apiCall('/api/metrics/system');
-        metricsData.system = systemMetrics;
+        // 1) System metrics (mit Fallback auf Overview)
+        try {
+            const systemMetrics = await apiCall('/api/metrics/system');
+            metricsData.system = systemMetrics || {};
+        } catch (e) {
+            if (metricsData.overall && metricsData.overall.system) {
+                metricsData.system = metricsData.overall.system;
+            } else {
+                throw e;
+            }
+        }
+
+        // 2) Detailed Health (DB-Stats, Counts) – optional
+        try {
+            const detailed = await apiCall('/api/health/detailed');
+            metricsData.healthDetailed = detailed || {};
+            if (detailed && detailed.database && detailed.database.responseTime != null) {
+                // Ergänze Overview-DB-ResponseTime live
+                const el = document.getElementById('dbResponseTime');
+                if (el) {
+                    el.textContent = formatNumber(detailed.database.responseTime) + 'ms';
+                }
+            }
+        } catch (_) {
+            // optional; keine Störung bei Fehler
+        }
+
+        // 3) Sessions Health (admin)
+        try {
+            const sessionsHealth = await apiCall('/api/health/sessions');
+            renderSessionHealth(sessionsHealth);
+        } catch (e) {
+            renderSessionHealth({ error: e?.message || 'Failed to fetch' });
+        }
+
+        // Update System-Tab UI
         updateSystemTable();
         updateSystemCharts();
     } catch (error) {
@@ -270,9 +327,9 @@ async function loadQueryMetrics() {
             apiCall('/api/query-performance/recommendations')
         ]);
         
-        metricsData.queries = queryStats;
-        metricsData.slowQueries = slowQueries;
-        metricsData.recommendations = recommendations;
+        metricsData.queries = queryStats || {};
+        metricsData.slowQueries = slowQueries || {};
+        metricsData.recommendations = recommendations || {};
         
         updateQueryTable();
         updateSlowQueriesTable();
@@ -366,35 +423,49 @@ function updateOverviewCards() {
 
 function updateApiTable() {
     const tableContainer = document.getElementById('apiMetricsTable');
-    const apiData = metricsData.api;
+    const apiEnvelope = metricsData.api || {};
+    const apiData = apiEnvelope.api || apiEnvelope; // entpacke ggf.
     
-    if (!apiData || !apiData.endpoints) {
+    if (!apiData || (!apiData.requestsByEndpoint && !apiData.slowestEndpoints)) {
         tableContainer.innerHTML = '<div class="loading">No API data available</div>';
         return;
     }
-    
+
+    // Baue eine Tabelle aus requestsByEndpoint und slowestEndpoints
+    const rows = [];
+    const requests = apiData.requestsByEndpoint || {};
+    const slow = apiData.slowestEndpoints || [];
+
+    const slowMap = {};
+    slow.forEach(e => { slowMap[e.endpoint] = e; });
+
+    Object.entries(requests)
+        .sort((a,b) => b[1]-a[1])
+        .slice(0, 15)
+        .forEach(([path, count]) => {
+            const e = slowMap[path] || { avgTime: 0, count };
+            rows.push({ path, requestCount: count, avgResponseTime: e.avgTime || 0 });
+        });
+
     let html = '<div class="table-header">API Endpoint Performance</div>';
-    
-    apiData.endpoints.forEach(endpoint => {
-        const errorClass = endpoint.errorRate > 5 ? 'error' : endpoint.errorRate > 1 ? 'warning' : '';
+    rows.forEach(endpoint => {
         const responseClass = endpoint.avgResponseTime > 1000 ? 'error' : endpoint.avgResponseTime > 500 ? 'warning' : '';
-        
         html += `
             <div class="table-row">
                 <div class="table-cell">${endpoint.path}</div>
                 <div class="table-cell metric">${formatNumber(endpoint.requestCount)}</div>
                 <div class="table-cell ${responseClass}">${formatNumber(endpoint.avgResponseTime, 1)}ms</div>
-                <div class="table-cell ${errorClass}">${formatNumber(endpoint.errorRate, 2)}%</div>
+                <div class="table-cell"></div>
             </div>
         `;
     });
-    
     tableContainer.innerHTML = html;
 }
 
 function updateUserTable() {
     const tableContainer = document.getElementById('userMetricsTable');
-    const userData = metricsData.users;
+    const usersEnvelope = metricsData.users || {};
+    const userData = usersEnvelope.users || usersEnvelope;
     
     if (!userData) {
         tableContainer.innerHTML = '<div class="loading">No user data available</div>';
@@ -416,8 +487,8 @@ function updateUserTable() {
             <div class="table-cell"></div>
         </div>
         <div class="table-row">
-            <div class="table-cell">Recent Logins</div>
-            <div class="table-cell metric">${formatNumber(userData.recentLogins)}</div>
+            <div class="table-cell">Login Attempts (24h)</div>
+            <div class="table-cell metric">${formatNumber(userData.loginAttempts)}</div>
             <div class="table-cell"></div>
             <div class="table-cell"></div>
         </div>
@@ -434,41 +505,56 @@ function updateUserTable() {
 
 function updateSystemTable() {
     const tableContainer = document.getElementById('systemMetricsTable');
-    const systemData = metricsData.system;
-    
-    if (!systemData) {
+    const systemEnvelope = metricsData.system || {};
+    const systemData = systemEnvelope.system || systemEnvelope; // entpacke ggf.
+
+    if (!systemData || typeof systemData !== 'object') {
         tableContainer.innerHTML = '<div class="loading">No system data available</div>';
         return;
     }
-    
+
+    const uptime = systemData.uptime || 0;
+    const mu = systemData.memoryUsage || {};
+    const db = systemData.databaseHealth || {};
+    const sm = systemData.sessionMetrics || {};
+
+    const usedMB = (mu.used != null) ? formatNumber(mu.used) : '-';
+    const totalMB = (mu.total != null) ? formatNumber(mu.total) : '-';
+    const percent = (mu.percentage != null) ? formatNumber(mu.percentage) + '%' : '-';
+    const dbResp = (db.responseTime != null) ? formatNumber(db.responseTime) + 'ms' : '-';
+    const dbClass = (db.responseTime != null && db.responseTime > 100) ? 'warning' : 'metric';
+    const dbStatus = db.status || '-';
+    const activeSess = (sm.active != null) ? formatNumber(sm.active) : '-';
+    const totalSess = (sm.total != null) ? formatNumber(sm.total) : '-';
+
     let html = '<div class="table-header">System Performance Metrics</div>';
     html += `
         <div class="table-row">
             <div class="table-cell">Uptime</div>
-            <div class="table-cell metric">${formatUptime(systemData.uptime)}</div>
+            <div class="table-cell metric">${formatUptime(uptime)}</div>
             <div class="table-cell"></div>
             <div class="table-cell"></div>
         </div>
         <div class="table-row">
             <div class="table-cell">Memory Usage</div>
-            <div class="table-cell metric">${formatNumber(systemData.memoryUsage.used)}MB / ${formatNumber(systemData.memoryUsage.total)}MB</div>
-            <div class="table-cell">${formatNumber(systemData.memoryUsage.percentage)}%</div>
+            <div class="table-cell metric">${usedMB}MB / ${totalMB}MB</div>
+            <div class="table-cell">${percent}</div>
             <div class="table-cell"></div>
         </div>
         <div class="table-row">
             <div class="table-cell">Database Response Time</div>
-            <div class="table-cell ${systemData.databaseHealth.responseTime > 100 ? 'warning' : 'metric'}">${formatNumber(systemData.databaseHealth.responseTime)}ms</div>
-            <div class="table-cell">${systemData.databaseHealth.status}</div>
+            <div class="table-cell ${dbClass}">${dbResp}</div>
+            <div class="table-cell">${dbStatus}</div>
             <div class="table-cell"></div>
         </div>
         <div class="table-row">
             <div class="table-cell">Active Sessions</div>
-            <div class="table-cell metric">${formatNumber(systemData.sessionMetrics.active)}</div>
-            <div class="table-cell">Total: ${formatNumber(systemData.sessionMetrics.total)}</div>
+            <div class="table-cell metric">${activeSess}</div>
+            <div class="table-cell">Total: ${totalSess}</div>
             <div class="table-cell"></div>
         </div>
     `;
-    
+
     tableContainer.innerHTML = html;
 }
 
@@ -761,6 +847,60 @@ function updateDbHealthChart() {
             }
         }
     });
+}
+
+// === SESSION HEALTH RENDERING ===
+function renderSessionHealth(data) {
+    const panel = document.getElementById('sessionHealthPanel');
+    if (!panel) return;
+
+    if (!data || data.error) {
+        panel.innerHTML = `<div class="error">Failed to load session health${data?.error ? ': ' + data.error : ''}</div>`;
+        return;
+    }
+
+    // Erwartete Struktur-Beispiele:
+    // { status: 'OK', sessionMetrics: { total, active, suspicious, perUserMax, stale, byIp }, healthCheck: { issues: [] } }
+    const status = data.status || '-';
+    const metrics = data.sessionMetrics || {};
+    const check = data.healthCheck || {};
+    const issues = Array.isArray(check.issues) ? check.issues : [];
+
+    let html = '<div class="table-header">Session Health Overview</div>';
+    html += `
+        <div class="table-row">
+            <div class="table-cell">Status</div>
+            <div class="table-cell">${status}</div>
+            <div class="table-cell"></div>
+            <div class="table-cell"></div>
+        </div>
+        <div class="table-row">
+            <div class="table-cell">Total Sessions</div>
+            <div class="table-cell metric">${formatNumber(metrics.total || 0)}</div>
+            <div class="table-cell">Active: ${formatNumber(metrics.active || 0)}</div>
+            <div class="table-cell">Suspicious: ${formatNumber(metrics.suspicious || 0)}</div>
+        </div>
+    `;
+
+    if (metrics.perUserMax != null || metrics.stale != null) {
+        html += `
+            <div class="table-row">
+                <div class="table-cell">Per-User Max</div>
+                <div class="table-cell">${formatNumber(metrics.perUserMax || 0)}</div>
+                <div class="table-cell">Stale</div>
+                <div class="table-cell">${formatNumber(metrics.stale || 0)}</div>
+            </div>
+        `;
+    }
+
+    if (issues.length > 0) {
+        html += '<div class="table-row"><div class="table-cell" colspan="4">Issues</div></div>';
+        issues.slice(0, 8).forEach((i) => {
+            html += `<div class="table-row"><div class="table-cell" colspan="4">- ${i}</div></div>`;
+        });
+    }
+
+    panel.innerHTML = html;
 }
 
 function updateCharts() {
