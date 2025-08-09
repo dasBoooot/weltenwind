@@ -573,7 +573,7 @@ router.post('/',
 router.post('/public', 
   publicEndpointLimiter,    // 🔐 KRITISCH: Strenger Spam-Schutz!
   async (req, res) => {
-  const { worldId, email, emails } = req.body;
+  const { worldId, email, emails } = (req.body || {}) as any;
   
   if (!worldId || isNaN(parseInt(worldId))) {
     return res.status(400).json({ error: 'Gültige Welt-ID erforderlich' });
@@ -646,18 +646,18 @@ router.post('/public',
     });
     
   } catch (error) {
-    // Deduplizierungs-/Unique-Fehler abfangen (z. B. exists unique (worldId,email))
     const details = error instanceof Error ? error.message : String(error);
-    const isUnique = /unique/i.test(details) || /duplicate/i.test(details) || /constraint/i.test(details);
-    if (isUnique) {
-      return res.status(200).json({
-        success: true,
-        message: 'Einladungen bereits vorhanden oder dedupliziert',
-        data: { invites: [] }
-      });
+    const code = (error as any)?.code || '';
+    // Validierungsfehler (z. B. ungültige Email) → 400
+    if (/invalid|email|format/i.test(details)) {
+      return res.status(400).json({ error: 'Ungültige Eingabe', details });
+    }
+    // Unique/Dedupe → 200
+    if (/unique|duplicate|constraint/i.test(details) || code === 'P2002') {
+      return res.status(200).json({ success: true, message: 'Einladungen bereits vorhanden oder dedupliziert', data: { invites: [] } });
     }
     loggers.system.error('❌ Fehler beim Erstellen öffentlicher Invites', error, { worldId });
-    res.status(500).json({ error: 'Interner Serverfehler' });
+    return res.status(500).json({ error: 'Interner Serverfehler' });
   }
 });
 

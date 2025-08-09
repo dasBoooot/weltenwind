@@ -126,7 +126,7 @@ router.post('/:id/join',
   worldOperationsLimiter,
   async (req: AuthenticatedRequest, res) => {
   const worldId = parseInt(req.params.id);
-  const { inviteCode } = req.body;
+  const { inviteCode } = (req.body || {}) as any;
 
   if (isNaN(worldId)) {
     return res.status(400).json({ error: 'Ungültige Welt-ID' });
@@ -201,7 +201,8 @@ router.post('/:id/join',
         message: 'Bereits beigetreten'
       });
     }
-    return res.status(500).json({ error: 'Join fehlgeschlagen' });
+    loggers.system.error('❌ World join failed', e, { userId: req.user.id, worldId, endpoint: '/worlds/:id/join' });
+    return res.status(500).json({ error: 'Join fehlgeschlagen', details: e?.message || 'unknown_error' });
   }
 });
 
