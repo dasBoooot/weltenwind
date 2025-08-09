@@ -573,15 +573,17 @@ router.post('/',
 router.post('/public', 
   publicEndpointLimiter,    // 🔐 KRITISCH: Strenger Spam-Schutz!
   async (req, res) => {
-  const { worldId, email, emails } = (req.body || {}) as any;
+  const body: any = req.body || {};
+  const query: any = req.query || {};
+  const worldIdRaw = body.worldId ?? query.worldId;
   
-  if (!worldId || isNaN(parseInt(worldId))) {
+  if (!worldIdRaw || isNaN(parseInt(worldIdRaw))) {
     return res.status(400).json({ error: 'Gültige Welt-ID erforderlich' });
   }
 
   try {
     // Prüfe ob Welt existiert und öffentlich ist
-    const world = await prisma.world.findUnique({ where: { id: parseInt(worldId) } });
+  const world = await prisma.world.findUnique({ where: { id: parseInt(worldIdRaw) } });
     if (!world) {
       return res.status(404).json({ error: 'Welt nicht gefunden' });
     }
@@ -592,9 +594,14 @@ router.post('/public',
       return res.status(403).json({ error: 'Welt ist nicht für öffentliche Einladungen geöffnet' });
     }
 
-    const emailList = [];
-    if (email) emailList.push(email);
-    if (Array.isArray(emails)) emailList.push(...emails);
+  const emailsRaw = body.emails ?? body.email ?? query.emails ?? query.email;
+  const emailList: string[] = [];
+  if (Array.isArray(emailsRaw)) {
+    emailList.push(...emailsRaw);
+  } else if (typeof emailsRaw === 'string') {
+    // Kommagetrennt oder einzelne E-Mail
+    emailList.push(...emailsRaw.split(',').map(s => s.trim()).filter(Boolean));
+  }
     if (emailList.length === 0) {
       return res.status(400).json({ error: 'Mindestens eine E-Mail erforderlich' });
     }
@@ -609,9 +616,9 @@ router.post('/public',
     for (const mail of emailSet) {
       const token = crypto.randomBytes(32).toString('hex');
       try {
-        const invite = await prisma.invite.create({
+      const invite = await prisma.invite.create({
           data: {
-            worldId: parseInt(worldId),
+          worldId: parseInt(worldIdRaw),
             email: mail,
             token,
             invitedById: null, // Kein authentifizierter Benutzer
@@ -619,12 +626,12 @@ router.post('/public',
           }
         });
         invites.push(invite);
-        loggers.system.info('✅ Öffentlicher Invite erstellt', { inviteId: invite.id, worldId: parseInt(worldId), email: mail });
+        loggers.system.info('✅ Öffentlicher Invite erstellt', { inviteId: invite.id, worldId: parseInt(worldIdRaw), email: mail });
       } catch (e: any) {
         // Unique-Kollision (bereits eingeladen) -> überspringen, weiter sammeln
         const msg = String(e?.message || '');
         if (e?.code === 'P2002' || /unique|duplicate|constraint/i.test(msg)) {
-          loggers.system.info('ℹ️ Öffentlicher Invite existiert bereits (dedupe)', { worldId: parseInt(worldId), email: mail });
+          loggers.system.info('ℹ️ Öffentlicher Invite existiert bereits (dedupe)', { worldId: parseInt(worldIdRaw), email: mail });
           continue;
         }
         throw e;
