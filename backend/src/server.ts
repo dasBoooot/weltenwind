@@ -37,7 +37,7 @@ import { apiV1Rewriter } from './middleware/versioning';
 import { problemDetailsMiddleware } from './middleware/problem-details';
 import { idempotencyMiddleware } from './middleware/idempotency';
 
-import authRoutes from './routes/auth';
+import authRoutes, { meAlias } from './routes/auth';
 import worldRoutes from './routes/worlds';
 import inviteRoutes from './routes/invites';
 import logRoutes from './routes/logs';
@@ -53,6 +53,7 @@ import prisma from './libs/prisma';
 import swaggerUi from 'swagger-ui-express';
 import { configureTrustProxy } from './middleware/rateLimiter';
 import { metricsMiddleware, startSystemMetricsCollection, errorTrackingMiddleware } from './middleware/metrics.middleware';
+import { pagePermissionsMiddleware } from './middleware/page-permissions';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -157,6 +158,9 @@ app.use(standardResponseHeaders);
 app.use(etagMiddleware);
 app.use(idempotencyMiddleware);
 
+// Optional dynamic page permission guard (after basics, before routes)
+app.use('/api', pagePermissionsMiddleware);
+
 // 📊 Metriken-Collection Middleware (vor Routen)
 app.use('/api', metricsMiddleware);
 
@@ -165,8 +169,17 @@ app.use(requestLoggingMiddleware);
 
 // === API-Routen ===
 app.use('/api', healthRoutes);  // Health-Check ohne Authentifizierung
+app.use('/api/v1', healthRoutes); // explicit v1 mount for health (client-config etc.)
 app.use('/api/auth', authRoutes);
+app.use('/api', meAlias);
 app.use('/api/worlds', worldRoutes);
+app.use('/api/v1/worlds', worldRoutes); // explicit v1 mount to support canonical links
+
+// Shortlink: /w/:slug → 301 → /api/v1/worlds/:slug/state
+app.get('/w/:slug', (req, res) => {
+  const slug = req.params.slug;
+  return res.redirect(301, `/api/v1/worlds/${slug}/state`);
+});
 app.use('/api/invites', inviteRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/arb', arbRoutes);

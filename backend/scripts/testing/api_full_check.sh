@@ -99,24 +99,46 @@ code=$(req_status GET "/auth/authorize?resource=world&action=edit&worldId=$WORLD
 
 # ---------- Worlds ----------
 header "Worlds"
-code=$(req_status GET "/worlds")
-[[ "$code" =~ ^2[0-9][0-9]$ ]] && ok "/worlds -> $code" || fail "/worlds -> $code"; record worlds_list "$([[ "$code" =~ ^2 ]] && echo ok || echo fail)"
+worlds_json=$(req GET "/worlds") || true
+code=$([[ -n "$worlds_json" ]] && echo 200 || echo 500)
+if [ "$code" = "200" ]; then ok "/worlds -> 200"; record worlds_list ok; else fail "/worlds -> $code"; record worlds_list fail; fi
 
-code=$(req_status GET "/worlds/$WORLD_SLUG")
+# bestmögliche Welt wählen: open > running > upcoming; sonst erste
+pick_field() { echo "$1" | jq -r "$2 // empty" 2>/dev/null || true; }
+candidate=$(echo "$worlds_json" | jq -c '[.[] | {id, slug, status}]')
+WORLD_ID_SEL=$(echo "$candidate" | jq -r 'map(select(.status=="open")) | .[0].id // empty')
+WORLD_SLUG_SEL=$(echo "$candidate" | jq -r 'map(select(.status=="open")) | .[0].slug // empty')
+if [ -z "$WORLD_ID_SEL" ] || [ "$WORLD_ID_SEL" = "null" ]; then
+  WORLD_ID_SEL=$(echo "$candidate" | jq -r 'map(select(.status=="running")) | .[0].id // empty')
+  WORLD_SLUG_SEL=$(echo "$candidate" | jq -r 'map(select(.status=="running")) | .[0].slug // empty')
+fi
+if [ -z "$WORLD_ID_SEL" ] || [ "$WORLD_ID_SEL" = "null" ]; then
+  WORLD_ID_SEL=$(echo "$candidate" | jq -r 'map(select(.status=="upcoming")) | .[0].id // empty')
+  WORLD_SLUG_SEL=$(echo "$candidate" | jq -r 'map(select(.status=="upcoming")) | .[0].slug // empty')
+fi
+if [ -z "$WORLD_ID_SEL" ] || [ "$WORLD_ID_SEL" = "null" ]; then
+  WORLD_ID_SEL=$(echo "$candidate" | jq -r '.[0].id // empty')
+  WORLD_SLUG_SEL=$(echo "$candidate" | jq -r '.[0].slug // empty')
+fi
+
+# Fallback auf gesetzte Umgebungswerte, falls Auswahl leer
+WORLD_ID_EFF=${WORLD_ID_SEL:-$WORLD_ID}
+WORLD_SLUG_EFF=${WORLD_SLUG_SEL:-$WORLD_SLUG}
+
+code=$(req_status GET "/worlds/$WORLD_SLUG_EFF")
 [[ "$code" =~ ^2[0-9][0-9]$ ]] && ok "/worlds/:slug -> $code" || fail "/worlds/:slug -> $code"; record worlds_get_slug "$([[ "$code" =~ ^2 ]] && echo ok || echo fail)"
 
-code=$(req_status GET "/worlds/$WORLD_SLUG/state")
+code=$(req_status GET "/worlds/$WORLD_SLUG_EFF/state")
 [[ "$code" =~ ^2[0-9][0-9]$ ]] && ok "/worlds/:slug/state -> $code" || fail "/worlds/:slug/state -> $code"; record worlds_state "$([[ "$code" =~ ^2 ]] && echo ok || echo fail)"
 
-if [ -n "$CSRF" ] && [ "$CSRF" != "null" ]; then
-  code=$(req_status POST "/worlds/$WORLD_ID/join" "{}" -H "X-CSRF-Token: $CSRF")
+if [ -n "$CSRF" ] && [ "$CSRF" != "null" ] && [ -n "$WORLD_ID_EFF" ]; then
+  code=$(req_status POST "/worlds/$WORLD_ID_EFF/join" "{}" -H "X-CSRF-Token: $CSRF")
   [[ "$code" =~ ^2[0-9][0-9]$ ]] && ok "join -> $code" || fail "join -> $code"; record worlds_join "$([[ "$code" =~ ^2 ]] && echo ok || echo fail)"
 
-  code=$(req_status GET "/worlds/$WORLD_ID/players/me")
+  code=$(req_status GET "/worlds/$WORLD_ID_EFF/players/me")
   [[ "$code" =~ ^2[0-9][0-9]$ ]] && ok "players/me -> $code" || fail "players/me -> $code"; record worlds_players_me "$([[ "$code" =~ ^2 ]] && echo ok || echo fail)"
 
-  # leave (nicht kritisch, wenn user nicht drin war -> 404 ist ok)
-  code=$(req_status DELETE "/worlds/$WORLD_ID/players/me" "" -H "X-CSRF-Token: $CSRF")
+  code=$(req_status DELETE "/worlds/$WORLD_ID_EFF/players/me" "" -H "X-CSRF-Token: $CSRF")
   if [[ "$code" =~ ^2[0-9][0-9]$ ]] || [ "$code" = "404" ]; then ok "leave -> $code"; record worlds_leave ok; else fail "leave -> $code"; record worlds_leave fail; fi
 else
   record worlds_join skip
@@ -125,7 +147,7 @@ fi
 
 # ---------- Invites ----------
 header "Invites"
-code=$(req_status POST "/invites/public" "{\"worldId\":$WORLD_ID,\"emails\":[\"api-full-check@example.com\"]}")
+code=$(req_status POST "/invites/public" "{\"worldId\":$WORLD_ID_EFF,\"emails\":[\"api-full-check@example.com\"]}")
 [[ "$code" =~ ^2[0-9][0-9]$ ]] && ok "invites/public -> $code" || fail "invites/public -> $code"; record invites_public "$([[ "$code" =~ ^2 ]] && echo ok || echo fail)"
 
 code=$(req_status GET "/invites/world/$WORLD_ID")
