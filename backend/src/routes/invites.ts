@@ -1,4 +1,5 @@
 import express from 'express';
+import { Prisma } from '@prisma/client';
 import prisma from '../libs/prisma';
 import { loggers } from '../config/logger.config';
 import { publicEndpointLimiter, inviteOperationsLimiter, createUserSpecificLimiter } from '../middleware/rateLimiter';
@@ -217,7 +218,7 @@ router.post('/accept/:token',
 
   try {
     // Transaktion für Invite-Akzeptierung
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 1. User-E-Mail laden
       const user = await tx.user.findUnique({
         where: { id: userId },

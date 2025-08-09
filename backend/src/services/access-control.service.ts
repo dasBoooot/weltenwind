@@ -29,7 +29,7 @@ export async function hasPermission(
     return false;
   }
 
-  const roleIds = userRoles.map((r) => r.roleId);
+  const roleIds = userRoles.map((r: { roleId: number }) => r.roleId);
 
   // 2. Hole Berechtigungen dieser Rollen (spezifische, Wildcard und globale)
   const matchingPermissions = await prisma.rolePermission.findMany({

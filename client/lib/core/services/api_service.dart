@@ -68,6 +68,7 @@ class ApiService {
       'X-Device-Fingerprint': deviceFingerprint,
       'X-Client-Timezone': 'Europe/Berlin',
       'X-Client-Time': DateTime.now().millisecondsSinceEpoch.toString(),
+      'X-Request-Id': _lastRequestId ?? '',
     };
     
     if (_token != null) {
@@ -75,6 +76,15 @@ class ApiService {
     }
     
     return headers;
+  }
+  String? _lastRequestId;
+
+  void _captureResponseHeaders(http.Response response) {
+    final rid = response.headers['x-request-id'] ?? response.headers['x-trace-id'];
+    if (rid != null && rid.isNotEmpty) {
+      _lastRequestId = rid;
+      AppLogger.api.i('🧭 traceId: $rid');
+    }
   }
 
   // Vollständige Token-Validierung mit JWT-Decoding (mit Rekursionsschutz)
@@ -288,7 +298,8 @@ class ApiService {
         headers: _headers,
       );
       
-      // Log API Response
+      // Log API Response & capture trace id
+      _captureResponseHeaders(response);
       AppLogger.logApiResponse('GET', endpoint, response.statusCode, body: response.body);
       
       // Don't log 404 errors for player status checks
@@ -322,7 +333,6 @@ class ApiService {
     
     try {
       final fullUrl = '${Env.apiUrl}${Env.apiBasePath}$endpoint';
-      print('🌐 API POST: $fullUrl');
       
       final response = await http.post(
         Uri.parse(fullUrl),
@@ -330,10 +340,9 @@ class ApiService {
         body: jsonEncode(data),
       );
       
-      print('📡 API RESPONSE: ${response.statusCode} for $endpoint');
-      
       // Log API Response (ohne sensitive Response-Daten)
       final logResponseBody = endpoint.startsWith('/auth/') ? _sanitizeAuthResponse(response.body) : response.body;
+      _captureResponseHeaders(response);
       AppLogger.logApiResponse('POST', endpoint, response.statusCode, body: logResponseBody);
       
       return await _handleResponse(response, endpoint);
@@ -366,6 +375,7 @@ class ApiService {
       );
       
       // Log API Response
+      _captureResponseHeaders(response);
       AppLogger.logApiResponse('PUT', endpoint, response.statusCode, body: response.body);
       
       return await _handleResponse(response, endpoint);
@@ -394,6 +404,7 @@ class ApiService {
       );
       
       // Log API Response
+      _captureResponseHeaders(response);
       AppLogger.logApiResponse('DELETE', endpoint, response.statusCode, body: response.body);
       
       return await _handleResponse(response, endpoint);

@@ -27,7 +27,7 @@ class Env {
   }
   
   // API Base Path
-  static const String apiBasePath = '/api';
+  static const String apiBasePath = '/api/v1';
   
   // ✅ Static Assets (nginx-proxied, über HTTPS)
   static String get themeEditorUrl => '$apiUrl/theme-editor';

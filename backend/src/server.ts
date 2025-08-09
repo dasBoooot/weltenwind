@@ -30,6 +30,12 @@ import { jwtConfig } from './config/jwt.config';
 // Logging-Konfiguration
 import { loggers } from './config/logger.config';
 import { requestLoggingMiddleware, errorLoggingMiddleware } from './middleware/logging.middleware';
+import { requestContextMiddleware } from './middleware/request-context';
+import { standardResponseHeaders } from './middleware/response-headers';
+import { etagMiddleware } from './middleware/etag';
+import { apiV1Rewriter } from './middleware/versioning';
+import { problemDetailsMiddleware } from './middleware/problem-details';
+import { idempotencyMiddleware } from './middleware/idempotency';
 
 import authRoutes from './routes/auth';
 import worldRoutes from './routes/worlds';
@@ -139,8 +145,17 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// Versioning: support /api/v1 by rewriting to /api
+app.use(apiV1Rewriter);
+
+// Request context & correlation id
+app.use(requestContextMiddleware);
+
 // Middleware
 app.use(express.json());
+app.use(standardResponseHeaders);
+app.use(etagMiddleware);
+app.use(idempotencyMiddleware);
 
 // 📊 Metriken-Collection Middleware (vor Routen)
 app.use('/api', metricsMiddleware);
@@ -460,6 +475,7 @@ if (AUTO_CLEANUP_ENABLED) {
 
 // Error-Logging Middleware (am Ende, vor Server-Start)
 app.use(errorLoggingMiddleware);
+app.use(problemDetailsMiddleware);
 
 // === Graceful Shutdown ===
 process.on('SIGINT', async () => {

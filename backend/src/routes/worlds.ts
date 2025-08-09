@@ -112,7 +112,7 @@ router.get('/:id/players', authenticate, async (req: AuthenticatedRequest, res) 
       }
     }
   });
-  res.json(players.map(p => p.user));
+  res.json(players.map((p: { user: { id: number; username: string; email: string } }) => p.user));
 });
 
 /**

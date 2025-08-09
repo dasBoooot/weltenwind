@@ -36,6 +36,7 @@ export function requestLoggingMiddleware(req: RequestWithStartTime, res: Respons
   res.on('finish', () => {
     const duration = req.startTime ? Date.now() - req.startTime : 0;
     try {
+      const requestId = (res as any).locals?.requestId;
       loggers.api.request(
         req.method,
         req.originalUrl,
@@ -47,6 +48,7 @@ export function requestLoggingMiddleware(req: RequestWithStartTime, res: Respons
           username,
           statusCode: res.statusCode,
           contentLength: res.get('content-length'),
+          requestId,
           ...(req.body && Object.keys(req.body).length > 0 && {
             bodyKeys: Object.keys(req.body)
           })
