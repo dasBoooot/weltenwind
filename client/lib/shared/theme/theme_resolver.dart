@@ -247,22 +247,22 @@ class ThemeResolver {
     // Parse all color variants
     final primary = _parseColor(primaryColors['main'] ?? '#5F4B8B');
     final primaryLight = _parseColor(primaryColors['light'] ?? primaryColors['main'] ?? '#8E79B9');
-    final primaryDark = _parseColor(primaryColors['dark'] ?? primaryColors['main'] ?? '#3F2C5E');
+    // final primaryDark = _parseColor(primaryColors['dark'] ?? primaryColors['main'] ?? '#3F2C5E');
     final onPrimary = _parseColor(primaryColors['contrast'] ?? '#FFFFFF');
     
     final secondary = _parseColor(secondaryColors['main'] ?? '#A3D9B1');
     final secondaryLight = _parseColor(secondaryColors['light'] ?? secondaryColors['main'] ?? '#C8E9CE');
-    final secondaryDark = _parseColor(secondaryColors['dark'] ?? secondaryColors['main'] ?? '#6DA884');
+    // final secondaryDark = _parseColor(secondaryColors['dark'] ?? secondaryColors['main'] ?? '#6DA884');
     final onSecondary = _parseColor(secondaryColors['contrast'] ?? '#0D1117');
     
     final tertiary = _parseColor(tertiaryColors['main'] ?? '#62757F');
     final tertiaryLight = _parseColor(tertiaryColors['light'] ?? tertiaryColors['main'] ?? '#94A3AC');
-    final tertiaryDark = _parseColor(tertiaryColors['dark'] ?? tertiaryColors['main'] ?? '#42535C');
+    // final tertiaryDark = _parseColor(tertiaryColors['dark'] ?? tertiaryColors['main'] ?? '#42535C');
     final onTertiary = _parseColor(tertiaryColors['contrast'] ?? '#FFFFFF');
     
     // Background colors
-    final background = _parseColor(backgroundColors['primary'] ?? '#0A0C10');
-    final backgroundSecondary = _parseColor(backgroundColors['secondary'] ?? '#13161D');
+    // final background = _parseColor(backgroundColors['primary'] ?? '#0A0C10');
+    // final backgroundSecondary = _parseColor(backgroundColors['secondary'] ?? '#13161D');
     final surface = isDark 
         ? _parseColor(backgroundColors['surface_dark'] ?? '#1B1F27')
         : _parseColor(backgroundColors['surface_light'] ?? '#F8FAFC');
@@ -276,24 +276,24 @@ class ThemeResolver {
     final onSurfaceVariant = _parseColor(textColors['secondary'] ?? '#B9C1CC');
     final onSurfaceMuted = _parseColor(textColors['muted'] ?? '#7B8591');
     final onSurfaceInverse = _parseColor(textColors['inverse'] ?? '#0A0C10');
-    final onSurfaceLink = _parseColor(textColors['link'] ?? '#8E79B9');
+    // final onSurfaceLink = _parseColor(textColors['link'] ?? '#8E79B9');
     
     // Status colors
     final error = _parseColor(statusColors['error'] ?? '#EF4444');
-    final success = _parseColor(statusColors['success'] ?? '#10B981');
-    final warning = _parseColor(statusColors['warning'] ?? '#F59E0B');
-    final info = _parseColor(statusColors['info'] ?? '#3B82F6');
+    // final success = _parseColor(statusColors['success'] ?? '#10B981');
+    // final warning = _parseColor(statusColors['warning'] ?? '#F59E0B');
+    // final info = _parseColor(statusColors['info'] ?? '#3B82F6');
     
     // Border colors
     final outline = _parseColor(borderColors['primary'] ?? '#30363D');
     final outlineVariant = _parseColor(borderColors['secondary'] ?? '#21262D');
-    final outlineAccent = _parseColor(borderColors['accent'] ?? '#8E79B9');
-    final outlineMuted = _parseColor(borderColors['muted'] ?? '#6B7280');
+    // final outlineAccent = _parseColor(borderColors['accent'] ?? '#8E79B9');
+    // final outlineMuted = _parseColor(borderColors['muted'] ?? '#6B7280');
     
     // Interactive colors
-    final hoverColor = _parseColor(interactiveColors['hover'] ?? 'rgba(143, 121, 185, 0.08)');
-    final activeColor = _parseColor(interactiveColors['active'] ?? 'rgba(143, 121, 185, 0.15)');
-    final focusColor = _parseColor(interactiveColors['focus'] ?? 'rgba(143, 121, 185, 0.3)');
+    // final hoverColor = _parseColor(interactiveColors['hover'] ?? 'rgba(143, 121, 185, 0.08)');
+    // final activeColor = _parseColor(interactiveColors['active'] ?? 'rgba(143, 121, 185, 0.15)');
+    // final focusColor = _parseColor(interactiveColors['focus'] ?? 'rgba(143, 121, 185, 0.3)');
     final disabledColor = _parseColor(interactiveColors['disabled'] ?? '#7B8591');
     
     // Create comprehensive ColorScheme
@@ -334,16 +334,16 @@ class ThemeResolver {
     final secondaryFont = fonts['secondary'] as Map<String, dynamic>? ?? {};
     
     final primaryFontFamily = primaryFont['family'] as String? ?? 'Roboto';
-    final primaryFontFallback = primaryFont['fallback'] as String? ?? "'Times New Roman', serif";
-    final primaryFontWeights = (primaryFont['weights'] as List<dynamic>? ?? [400, 500, 600, 700])
-        .map((w) => w as int)
-        .toList();
+    // final primaryFontFallback = primaryFont['fallback'] as String? ?? "'Times New Roman', serif";
+    // final primaryFontWeights = (primaryFont['weights'] as List<dynamic>? ?? [400, 500, 600, 700])
+    //     .map((w) => w as int)
+    //     .toList();
     
     final secondaryFontFamily = secondaryFont['family'] as String? ?? 'Roboto';
-    final secondaryFontFallback = secondaryFont['fallback'] as String? ?? "'Courier New', Consolas, monospace";
-    final secondaryFontWeights = (secondaryFont['weights'] as List<dynamic>? ?? [400, 500, 700])
-        .map((w) => w as int)
-        .toList();
+    // final secondaryFontFallback = secondaryFont['fallback'] as String? ?? "'Courier New', Consolas, monospace";
+    // final secondaryFontWeights = (secondaryFont['weights'] as List<dynamic>? ?? [400, 500, 700])
+    //     .map((w) => w as int)
+    //     .toList();
     
     // Extract typography information
     final headingSizes = typography['headingSizes'] as Map<String, dynamic>? ?? {};
@@ -353,7 +353,7 @@ class ThemeResolver {
     final letterSpacing = typography['letterSpacing'] as Map<String, dynamic>? ?? {};
     
     // Parse font weights
-    const lightWeight = FontWeight.w300;
+    // const lightWeight = FontWeight.w300;
     const normalWeight = FontWeight.w400;
     const mediumWeight = FontWeight.w500;
     const semiboldWeight = FontWeight.w600;
@@ -365,7 +365,7 @@ class ThemeResolver {
     final relaxedHeight = _parseLineHeight(lineHeights['relaxed'] ?? '1.75');
     
     // Parse letter spacing
-    final tightSpacing = _parseLetterSpacing(letterSpacing['tight'] ?? '-0.025em');
+    // final tightSpacing = _parseLetterSpacing(letterSpacing['tight'] ?? '-0.025em');
     final normalSpacing = _parseLetterSpacing(letterSpacing['normal'] ?? '0em');
     final wideSpacing = _parseLetterSpacing(letterSpacing['wide'] ?? '0.025em');
     final widerSpacing = _parseLetterSpacing(letterSpacing['wider'] ?? '0.05em');
@@ -525,16 +525,16 @@ class ThemeResolver {
     final durationSlow = _parseDuration(animationDurations['slow'] ?? '500ms');
     
     final scaleHover = _parseScale(animationScale['hover'] ?? '1.05');
-    final scaleActive = _parseScale(animationScale['active'] ?? '0.95');
+    // final scaleActive = _parseScale(animationScale['active'] ?? '0.95');
     
     // Parse shadows
-    final shadowSoftGlow = _parseShadow(shadows['soft_glow'] ?? '0 0 10px rgba(143, 121, 185, 0.3)');
-    final shadowFocusRing = _parseShadow(shadows['focus_ring'] ?? '0 0 0 3px rgba(143, 121, 185, 0.5)');
+    // final shadowSoftGlow = _parseShadow(shadows['soft_glow'] ?? '0 0 10px rgba(143, 121, 185, 0.3)');
+    // final shadowFocusRing = _parseShadow(shadows['focus_ring'] ?? '0 0 0 3px rgba(143, 121, 185, 0.5)');
     final shadowTooltip = _parseShadow(shadows['tooltip'] ?? '0 2px 12px rgba(0, 0, 0, 0.4)');
     
     // Additional theme properties
-    final borderRadius = _parseRadius(jsonData['borderRadius'] ?? '0.5rem');
-    final iconStyle = jsonData['iconStyle'] as String? ?? 'default';
+    // final borderRadius = _parseRadius(jsonData['borderRadius'] ?? '0.5rem');
+    // final iconStyle = jsonData['iconStyle'] as String? ?? 'default';
     
     return ThemeData(
       useMaterial3: true,

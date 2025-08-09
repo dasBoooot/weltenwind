@@ -30,7 +30,7 @@ router.get('/',
   adminEndpointLimiter,
   async (req: AuthenticatedRequest, res) => {
     // Permission-Check: Nur Admins dürfen Metriken einsehen
-    const hasAdminPerm = await hasPermission(req.user!.id, 'system.logs', { type: 'global', objectId: '*' });
+    const hasAdminPerm = await hasPermission(req.user!.id, 'system.metrics', { type: 'global', objectId: '*' });
     if (!hasAdminPerm) {
       return res.status(403).json({ 
         error: 'Keine Berechtigung für Metrics-Zugriff',
@@ -89,7 +89,7 @@ router.get('/summary',
   authenticate,
   adminEndpointLimiter,
   async (req: AuthenticatedRequest, res) => {
-    const hasAdminPerm = await hasPermission(req.user!.id, 'system.logs', { type: 'global', objectId: '*' });
+    const hasAdminPerm = await hasPermission(req.user!.id, 'system.metrics', { type: 'global', objectId: '*' });
     if (!hasAdminPerm) {
       return res.status(403).json({ error: 'Keine Berechtigung für Metrics-Summary' });
     }
@@ -160,7 +160,7 @@ router.get('/api',
   authenticate,
   adminEndpointLimiter,
   async (req: AuthenticatedRequest, res) => {
-    const hasAdminPerm = await hasPermission(req.user!.id, 'system.logs', { type: 'global', objectId: '*' });
+    const hasAdminPerm = await hasPermission(req.user!.id, 'system.metrics', { type: 'global', objectId: '*' });
     if (!hasAdminPerm) {
       return res.status(403).json({ error: 'Keine Berechtigung für API-Metrics' });
     }
@@ -209,7 +209,7 @@ router.get('/users',
   authenticate,
   adminEndpointLimiter,
   async (req: AuthenticatedRequest, res) => {
-    const hasAdminPerm = await hasPermission(req.user!.id, 'system.logs', { type: 'global', objectId: '*' });
+    const hasAdminPerm = await hasPermission(req.user!.id, 'system.metrics', { type: 'global', objectId: '*' });
     if (!hasAdminPerm) {
       return res.status(403).json({ error: 'Keine Berechtigung für User-Metrics' });
     }

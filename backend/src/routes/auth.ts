@@ -931,6 +931,18 @@ router.get('/me', authenticate, async (req: AuthenticatedRequest, res) => {
   res.json(user);
 });
 
+// Alias: /api/v1/me → eigene Nutzerdaten (vereinfacht)
+const meAliasRouter = express.Router();
+meAliasRouter.get('/me', authenticate, async (req: AuthenticatedRequest, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.user!.id },
+    select: { id: true, username: true, email: true }
+  });
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  res.json(user);
+});
+export const meAlias = meAliasRouter;
+
 // === CSRF-Token Endpoint ===
 router.get('/csrf-token', authenticate, getCsrfToken);
 
@@ -1079,44 +1091,62 @@ router.post('/change-password',
 router.get('/permissions', authenticate, async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.user!.id;
-    
-    // Liste aller ARB-Permissions die wir prüfen wollen
-    const arbPermissions = [
-      'arb.view',
-      'arb.edit', 
-      'arb.save',
-      'arb.backup.view',
-      'arb.backup.restore',
-      'arb.backup.delete',
-      'arb.export', 
-      'arb.import',
-      'arb.compare'
-    ];
-    
-    // Prüfe alle Permissions
+    // Dynamisch: optional keys=perm1,perm2,...  (Backwards-Compat: ARB-Defaults)
+    const keysParam = (req.query.keys as string | undefined)?.trim();
+    const permissionKeys = keysParam && keysParam.length > 0
+      ? Array.from(new Set(keysParam.split(',').map(k => k.trim()).filter(k => k.length > 0)))
+      : [
+          // Legacy defaults for ARB tool
+          'arb.view','arb.edit','arb.save',
+          'arb.backup.view','arb.backup.restore','arb.backup.delete',
+          'arb.export','arb.import','arb.compare'
+        ];
+
     const permissions: Record<string, boolean> = {};
-    
-    for (const permission of arbPermissions) {
-      permissions[permission] = await hasPermission(userId, permission, { 
-        type: 'global', 
-        objectId: 'global' 
-      });
+    for (const key of permissionKeys) {
+      permissions[key] = await hasPermission(userId, key, { type: 'global', objectId: 'global' });
     }
-    
-    res.json({
-      success: true,
-      permissions,
-      user: {
-        id: userId,
-        username: req.user!.username
-      }
-    });
-    
+
+    res.json({ success: true, permissions, user: { id: userId, username: req.user!.username } });
+
   } catch (error) {
     loggers.system.error('Error loading user permissions', error, {
       userId: req.user?.id
     });
     res.status(500).json({ error: 'Fehler beim Laden der Berechtigungen' });
+  }
+});
+
+// GET /api/auth/authorize?perm=world.view&scopeType=global&objectId=global
+// or use resource/action mapping: resource=world&action=view&worldId=123
+router.get('/authorize', authenticate, async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = req.user!.id;
+    const { perm, scopeType, objectId, resource, action, worldId } = req.query as Record<string, string>;
+
+    let permissionName = perm;
+    let scope = { type: scopeType || 'global', objectId: objectId || 'global' };
+
+    if (!permissionName && resource && action) {
+      // Minimal mapping for common resources
+      if (resource === 'world' && action === 'view') permissionName = 'world.view';
+      if (resource === 'world' && action === 'edit') permissionName = 'world.edit';
+      if (resource === 'player' && action === 'join') permissionName = 'player.join';
+      if (resource === 'player' && action === 'leave') permissionName = 'player.leave';
+      if (resource === 'invite' && action === 'create') permissionName = 'invite.create';
+      if (resource === 'invite' && action === 'delete') permissionName = 'invite.delete';
+      if (worldId) scope = { type: 'world', objectId: worldId };
+    }
+
+    if (!permissionName) {
+      return res.status(400).json({ error: 'Missing perm or resource/action' });
+    }
+
+    const allowed = await hasPermission(userId, permissionName, scope);
+    return res.json({ allowed });
+  } catch (error) {
+    loggers.system.error('Authorization check failed', error, { route: '/auth/authorize' });
+    return res.status(500).json({ error: 'Interner Serverfehler' });
   }
 });
 

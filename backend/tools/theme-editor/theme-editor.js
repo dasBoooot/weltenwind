@@ -15,9 +15,13 @@ window.onload = function() {
 
     if (savedToken && savedUser) {
         accessToken = savedToken;
-        showThemeEditor(JSON.parse(savedUser));
-        loadAvailableThemes();
-        loadUserPermissions();
+        try {
+            showThemeEditor(JSON.parse(savedUser));
+            loadAvailableThemes();
+            loadUserPermissions();
+        } catch (e) {
+            console.error('Init error:', e);
+        }
     }
 };
 
@@ -72,6 +76,8 @@ function showThemeEditor(user) {
     document.getElementById('loginContainer').classList.add('hidden');
     document.getElementById('themeEditor').classList.remove('hidden');
     document.getElementById('userInfo').textContent = `👤 ${user.username}`;
+    // Enable top-level buttons once editor is visible
+    enableButtons();
 }
 
 function logout() {
@@ -85,7 +91,8 @@ function logout() {
 // === USER PERMISSIONS === 
 async function loadUserPermissions() {
     try {
-        const response = await fetch('/api/auth/user/permissions', {
+        const response = await fetch(`/api/auth/permissions?ts=${Date.now()}`, {
+            cache: 'no-store',
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }
@@ -96,10 +103,19 @@ async function loadUserPermissions() {
             return;
         }
 
+        if (response.status === 304) {
+            // keep existing permissions; do not block UI
+            return;
+        }
+
         if (response.ok) {
-            const data = await response.json();
-            userPermissions = data.permissions;
-            console.log('🔐 User permissions loaded:', userPermissions);
+            try {
+                const data = await response.json();
+                userPermissions = data.permissions || {};
+                console.log('🔐 User permissions loaded:', userPermissions);
+            } catch (_) {
+                // ignore JSON errors on edge responses
+            }
         }
     } catch (error) {
         console.error('❌ Error loading user permissions:', error);
@@ -109,7 +125,8 @@ async function loadUserPermissions() {
 // === THEME MANAGEMENT === 
 async function loadAvailableThemes() {
     try {
-        const response = await fetch('/api/themes', {
+        const response = await fetch(`/api/themes?ts=${Date.now()}`, {
+            cache: 'no-store',
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }
@@ -129,11 +146,13 @@ async function loadAvailableThemes() {
         
         populateThemeSelector();
         
-        // Load first theme by default
-        if (availableThemes.length > 0) {
-            currentTheme = availableThemes[0].filename;
-            document.getElementById('themeSelector').value = currentTheme;
-            loadTheme(currentTheme);
+        const selector = document.getElementById('themeSelector');
+        // Try to keep current selection if present
+        const desired = currentTheme && availableThemes.find(t => t.filename === currentTheme) ? currentTheme : (availableThemes[0]?.filename || '');
+        if (desired) {
+            currentTheme = desired;
+            selector.value = desired;
+            await loadTheme(desired);
         } else {
             showMessage('⚠️ Keine Themes gefunden', 'error');
         }
@@ -146,6 +165,7 @@ async function loadAvailableThemes() {
 
 function populateThemeSelector() {
     const selector = document.getElementById('themeSelector');
+    const prev = selector.value;
     selector.innerHTML = '<option value="">🎨 Theme wählen...</option>';
     
     availableThemes.forEach(theme => {
@@ -154,6 +174,9 @@ function populateThemeSelector() {
         option.textContent = `${theme.name} (v${theme.version})`;
         selector.appendChild(option);
     });
+    if (prev && availableThemes.find(t => t.filename === prev)) {
+        selector.value = prev;
+    }
 }
 
 async function loadSelectedTheme() {
@@ -163,12 +186,16 @@ async function loadSelectedTheme() {
     if (selectedTheme) {
         currentTheme = selectedTheme;
         await loadTheme(selectedTheme);
+    } else {
+        // Clear editor if nothing selected
+        document.getElementById('editorContent').innerHTML = '<div class="info">Bitte ein Theme wählen</div>';
     }
 }
 
 async function loadTheme(themeName) {
     try {
-        const response = await fetch(`/api/themes/${themeName}`, {
+        const response = await fetch(`/api/themes/${themeName}?ts=${Date.now()}`, {
+            cache: 'no-store',
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }
@@ -323,7 +350,7 @@ function createColorItem(groupName, colorName, colorValue) {
     input.type = 'color';
     input.value = colorValue;
     input.addEventListener('change', (e) => {
-        updateColor(groupName, colorName, e.target.value);
+        updateColor(groupName, colorName, e.target.value, e.target);
     });
     
     item.appendChild(preview);
@@ -333,16 +360,17 @@ function createColorItem(groupName, colorName, colorValue) {
     return item;
 }
 
-function updateColor(groupName, colorName, colorValue) {
+function updateColor(groupName, colorName, colorValue, inputEl) {
     if (themeData && themeData.colors && themeData.colors[groupName]) {
         themeData.colors[groupName][colorName] = colorValue;
         
-        // Update preview
-        const preview = event.target.parentNode.querySelector('.color-preview');
-        const valueDiv = event.target.parentNode.querySelector('.color-value');
+        // Update preview (use provided input element instead of global event)
+        const itemRoot = inputEl?.parentNode || null;
+        const preview = itemRoot ? itemRoot.querySelector('.color-preview') : null;
+        const valueDiv = itemRoot ? itemRoot.querySelector('.color-value') : null;
         
-        preview.style.backgroundColor = colorValue;
-        valueDiv.textContent = colorValue;
+        if (preview) preview.style.backgroundColor = colorValue;
+        if (valueDiv) valueDiv.textContent = colorValue;
         
         updatePreview();
     }
@@ -355,7 +383,8 @@ function renderModularEditor() {
     if (!themeData) return;
     
     // Remember current active tab
-    const currentTab = document.querySelector('.editor-tab.active')?.dataset.tab || currentActiveTab;
+    const activeTabEl = document.querySelector('.editor-tab.active');
+    const currentTab = (activeTabEl && activeTabEl.dataset ? activeTabEl.dataset.tab : null) || currentActiveTab;
     currentActiveTab = currentTab;
     
     // Create tab navigation
@@ -414,7 +443,10 @@ function switchTab(tabId) {
     document.querySelectorAll('.editor-tab').forEach(tab => {
         tab.classList.remove('active');
     });
-    document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('active');
+    (function(){
+        var el = document.querySelector('[data-tab="' + tabId + '"]');
+        if (el && el.classList) el.classList.add('active');
+    })();
     
     // Render tab content
     renderTabContent(tabId);

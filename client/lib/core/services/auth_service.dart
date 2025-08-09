@@ -210,7 +210,7 @@ class AuthService {
         };
         
         AppLogger.auth.d('📝 Register Response Debug', error: debugInfo);
-        print('🔍 REGISTER DEBUG: $debugInfo');
+        // debug: AppLogger.auth.d('REGISTER DEBUG', error: debugInfo);
         
         // Token aus der Response extrahieren
         final accessToken = data['accessToken'];
@@ -224,14 +224,13 @@ class AuthService {
           };
           
           AppLogger.auth.e('❌ Token fehlen in Register-Response', error: errorInfo);
-          print('🚨 REGISTER ERROR - Token fehlen: $errorInfo');
           throw Exception('Token nicht erhalten - Backend-Fehler');
         }
         
         // Tokens speichern und API-Service aktualisieren
-        print('✅ REGISTER SUCCESS - Speichere Token...');
+        // debug: AppLogger.auth.d('REGISTER SUCCESS - Speichere Token');
         await _saveTokensAndUpdateService(accessToken, refreshToken);
-        print('✅ REGISTER SUCCESS - Token gespeichert!');
+        // debug: AppLogger.auth.d('REGISTER SUCCESS - Token gespeichert');
         
         final userData = data['user'];
         
@@ -479,7 +478,7 @@ class AuthService {
 
       if (response.statusCode == 200) {
         AppLogger.auth.i('✅ Password erfolgreich zurückgesetzt');
-        print('✅ PASSWORD RESET SUCCESS!');
+        // debug: AppLogger.auth.d('PASSWORD RESET SUCCESS');
         return true;
       } else {
         final errorData = jsonDecode(response.body);
@@ -491,7 +490,7 @@ class AuthService {
         };
         
         AppLogger.auth.e('❌ Password-Reset API-Fehler', error: errorInfo);
-        print('🚨 PASSWORD RESET ERROR: $errorInfo');
+        // debug: AppLogger.auth.d('PASSWORD RESET ERROR', error: errorInfo);
         throw Exception(errorData['error'] ?? errorData['message'] ?? 'Passwort-Zurücksetzung fehlgeschlagen');
       }
     } catch (e) {

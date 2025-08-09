@@ -122,17 +122,16 @@ class ErrorHandler {
   String getUserFriendlyMessage(AppException exception) {
     // TODO: Implement l10n integration
     // This will return localized error messages based on exception type
-    
-    switch (exception.runtimeType) {
-      case AuthException:
+    switch (exception) {
+      case AuthException _:
         return _getAuthErrorMessage(exception as AuthException);
-      case NetworkException:
+      case NetworkException _:
         return _getNetworkErrorMessage(exception as NetworkException);
-      case WorldException:
+      case WorldException _:
         return _getWorldErrorMessage(exception as WorldException);
-      case ThemeException:
+      case ThemeException _:
         return _getThemeErrorMessage(exception as ThemeException);
-      case ValidationException:
+      case ValidationException _:
         return _getValidationErrorMessage(exception as ValidationException);
       default:
         return 'An unexpected error occurred. Please try again.';

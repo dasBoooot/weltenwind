@@ -13,8 +13,10 @@ const explicitLogDir = (process.env.LOG_DIR || '').trim();
 const logsDir = explicitLogDir
   ? path.resolve(explicitLogDir)
   : (isDevelopment
-      ? path.resolve(__dirname, '../../../logs')        // Development: ./logs/
-      : '/var/log/weltenwind');                        // Production: systemd-Standard
+      // Development: top-level logs directory (project root)
+      // Production: systemd-Standard-Verzeichnis
+      ? path.resolve(__dirname, '../../../logs')
+      : '/var/log/weltenwind');
 
 // Bekannte Unterordner-Struktur der Winston-Logs
 const LOG_SUBDIRS = ['system', 'auth', 'api', 'security', 'worlds', 'modules'];

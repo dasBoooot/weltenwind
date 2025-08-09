@@ -106,8 +106,10 @@ class SecurityUtils {
     // Trim whitespace
     String sanitized = input.trim();
     
-    // Remove dangerous characters
-    sanitized = sanitized.replaceAll(RegExp(r'[<>"\'']'), '');
+    // Remove dangerous characters: first <, >, and double quotes via regex
+    sanitized = sanitized.replaceAll(RegExp("[<>\"]"), '');
+    // Then remove single quotes without regex to avoid escaping issues
+    sanitized = sanitized.replaceAll("'", '');
     
     // Remove script tags and javascript
     sanitized = sanitized.replaceAll(RegExp(r'<script.*?</script>', 

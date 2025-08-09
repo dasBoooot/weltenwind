@@ -73,6 +73,23 @@ model RolePermission {
   @@map("role_permissions")
 }
 
+// ===========================================
+// Dynamic Page/URL -> Permission mapping (optional, for server-driven guards)
+// ===========================================
+model PagePermission {
+  id          Int      @id @default(autoincrement())
+  path        String   // e.g. /worlds/:id
+  method      String   @default("GET")
+  permission  String   // e.g. world.view
+  scopeType   String   // global | world | module | player
+  scopeParam  String?  // optional param name to extract from route (e.g. id→worldId)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([path, method, permission])
+  @@map("page_permissions")
+}
+
 model Session {
   id                Int      @id @default(autoincrement())
   userId            Int
@@ -91,8 +108,9 @@ model Session {
 
 model World {
   id               Int               @id @default(autoincrement())
+  slug             String            @unique
   name             String            @unique
-  status           WorldStatus       @default(upcoming)
+  status           String            @default("upcoming")
   createdAt        DateTime          @default(now())
   startsAt         DateTime
   endsAt           DateTime?
@@ -105,8 +123,19 @@ model World {
   invites          Invite[]
   players          Player[]
   preRegistrations PreRegistration[]
+  slugHistory      WorldSlugHistory[]
 
   @@map("worlds")
+}
+
+model WorldSlugHistory {
+  id        Int      @id @default(autoincrement())
+  worldId   Int
+  oldSlug   String   @unique
+  changedAt DateTime @default(now())
+  world     World    @relation(fields: [worldId], references: [id], onDelete: Cascade)
+
+  @@map("world_slug_history")
 }
 
 model Player {
@@ -163,12 +192,4 @@ model PreRegistration {
 
   @@unique([email, worldId])
   @@map("pre_registrations")
-}
-
-enum WorldStatus {
-  upcoming
-  open
-  running
-  closed
-  archived
 }

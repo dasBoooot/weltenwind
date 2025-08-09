@@ -23,7 +23,6 @@ class Env {
   static Future<void> loadFromEnvironment() async {
     // TODO: Load from environment variables or config files
     // For now, keep defaults
-    print('🔧 Environment configuration loaded: apiUrl=$apiUrl, clientUrl=$clientUrl, assetUrl=$assetUrl');
   }
   
   // API Base Path

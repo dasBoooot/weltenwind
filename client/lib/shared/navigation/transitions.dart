@@ -71,20 +71,6 @@ class ElegantTransitions {
     );
   }
   
-  /// 📐 Helper: Slide-Offset basierend auf Richtung
-  static Offset _getSlideOffset(SlideDirection direction) {
-    switch (direction) {
-      case SlideDirection.fromBottom:
-        return const Offset(0.0, 1.0);
-      case SlideDirection.fromTop:
-        return const Offset(0.0, -1.0);
-      case SlideDirection.fromLeft:
-        return const Offset(-1.0, 0.0);
-      case SlideDirection.fromRight:
-        return const Offset(1.0, 0.0);
-    }
-  }
-  
   /// 🔄 Fade Transition für einfachere Navigationen (Auth pages)
   static Widget elegantFade(
     BuildContext context,

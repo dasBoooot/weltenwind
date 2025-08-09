@@ -54,7 +54,7 @@ class AppButton extends BaseComponent {
     // Determine button style based on type
     final buttonStyle = _getButtonStyle(context, colorScheme, isDark);
     final textStyle = _getTextStyle(textTheme);
-    final padding = _getPadding(context);
+    // padding computed within style methods as needed
 
     Widget buttonChild = _buildButtonContent(context, textStyle);
 

@@ -246,7 +246,8 @@ app.use('/arb-manager', (req, res, next) => {
   // Content Security Policy für ARB Manager
   res.setHeader('Content-Security-Policy', [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline'", // Für inline Event-Handler wie onclick
+    "script-src 'self' 'unsafe-inline'", // Skriptquellen
+    "script-src-attr 'unsafe-inline' 'unsafe-hashes'", // Inline-Handler wie onclick zulassen
     "style-src 'self' 'unsafe-inline'",  // Für inline Styles
     "connect-src 'self'",                // Für API-Calls
     "img-src 'self' data:",              // Für Base64-Bilder falls nötig
@@ -279,6 +280,20 @@ app.use('/theme-editor', (req, res, next) => {
       'Expires': '0'
     });
   }
+
+  // CSP für Theme-Editor (Inline-Handler erlauben)
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "script-src-attr 'unsafe-inline' 'unsafe-hashes'",
+    "style-src 'self' 'unsafe-inline'",
+    "connect-src 'self'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'"
+  ].join('; '));
   next();
 });
 

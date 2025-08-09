@@ -5,6 +5,7 @@ import '../features/auth/register_page.dart';
 import '../features/auth/forgot_password_page.dart';
 import '../features/auth/reset_password_page.dart';
 import '../features/world/world_list_page.dart';
+import '../features/world/world_page.dart';
 import '../config/logger.dart';
 import '../core/services/auth_service.dart';
 import '../main.dart';
@@ -108,6 +109,23 @@ class AppRouter {
           },
         ),
       ),
+      GoRoute(
+        path: '/worlds/:idOrSlug',
+        name: 'world-detail',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: WorldPage(idOrSlug: state.pathParameters['idOrSlug']!),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return ElegantTransitions.elegantSlideWithOverlay(
+              context,
+              animation,
+              secondaryAnimation,
+              child,
+              direction: SlideDirection.fromRight,
+            );
+          },
+        ),
+      ),
     ],
     errorBuilder: (context, state) => Scaffold(
       body: Center(
@@ -153,7 +171,8 @@ class AppRouter {
       return null; // No redirect needed
     } catch (e) {
       AppLogger.app.e('❌ Auth redirect failed', error: e);
-      return '/login'; // Safe fallback
+      // Safe fallback: nicht hart zum Login, lasse App zeigen was es kann
+      return null;
     }
   }
 }

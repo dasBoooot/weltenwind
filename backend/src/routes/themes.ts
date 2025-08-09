@@ -4,7 +4,8 @@ import path from 'path';
 import { loggers } from '../config/logger.config';
 import { csrfProtection } from '../middleware/csrf-protection';
 import { adminEndpointLimiter } from '../middleware/rateLimiter';
-import { authenticate } from '../middleware/authenticate';
+import { authenticate, AuthenticatedRequest } from '../middleware/authenticate';
+import { hasPermission } from '../services/access-control.service';
 
 const router = express.Router();
 
@@ -14,39 +15,6 @@ const THEMES_DIR = path.join(__dirname, '../../tools/theme-editor/schemas');
 // Asset-Verzeichnis Pfad für modulare Welten (im Projekt-Root)
 const ASSETS_DIR = path.join(__dirname, '../../../assets/worlds');
 
-/**
- * @swagger
- * /api/themes/named-entrypoints:
- *   get:
- *     summary: Liste aller verfügbaren Named Entrypoints (manifest.json)
- *     tags: [Themes]
- *     description: Lädt alle manifest.json Dateien aus dem assets/worlds Verzeichnis.
- *     responses:
- *       200:
- *         description: Liste der verfügbaren Named Entrypoints
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 entrypoints:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       name:
- *                         type: string
- *                         description: Name des Entrypoints
- *                       filename:
- *                         type: string
- *                         description: Dateiname ohne .json Endung
- *                       description:
- *                         type: string
- *                         description: Beschreibung des Entrypoints
- *                       version:
- *                         type: string
- *                         description: Version des Entrypoints
- */
 router.get('/named-entrypoints', async (req, res) => {
   try {
     // Debug: Welche Route wurde aufgerufen
@@ -107,43 +75,6 @@ router.get('/named-entrypoints', async (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/themes/named-entrypoints/{worldId}/{context}:
- *   get:
- *     summary: Named Entrypoint für spezifische Welt und Kontext laden
- *     tags: [Themes]
- *     description: Lädt manifest.json und theme.ts für eine bestimmte Welt und einen bestimmten Kontext (pre-game, game, loading)
- *     parameters:
- *       - in: path
- *         name: worldId
- *         required: true
- *         schema:
- *           type: string
- *         description: Welt-ID (z.B. default, cyberpunk, space)
- *       - in: path
- *         name: context
- *         required: true
- *         schema:
- *           type: string
- *         description: Theme-Kontext (pre-game, game, loading)
- *     responses:
- *       200:
- *         description: Named Entrypoint Daten
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 manifest:
- *                   type: object
- *                   description: Manifest-Daten
- *                 theme:
- *                   type: object
- *                   description: Theme-Daten
- *       404:
- *         description: Named Entrypoint nicht gefunden
- */
 router.get('/named-entrypoints/:worldId/:context', async (req, res) => {
   try {
     const { worldId, context } = req.params;
@@ -212,87 +143,6 @@ router.get('/named-entrypoints/:worldId/:context', async (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/themes/{name}:
- *   put:
- *     summary: Modulares Theme speichern (nur für Admins)
- *     tags: [Themes]
- *     description: Speichert ein modulares Theme mit flexibler Modul-Struktur
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: name
- *         required: true
- *         schema:
- *           type: string
- *         description: Theme-Dateiname (ohne .json)
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - version
- *             properties:
- *               name:
- *                 type: string
- *                 description: Theme-Name
- *               version:
- *                 type: string
- *                 description: Theme-Version (Semantic Versioning)
- *               description:
- *                 type: string
- *                 description: Theme-Beschreibung
- *               category:
- *                 type: string
- *                 description: Theme-Kategorie
- *               bundle:
- *                 type: object
- *                 description: Bundle-Konfiguration
- *               colors:
- *                 type: object
- *                 description: Farb-Modul (mindestens ein Modul erforderlich)
- *               typography:
- *                 type: object
- *                 description: Typography-Modul
- *               spacing:
- *                 type: object
- *                 description: Spacing-Modul
- *               radius:
- *                 type: object
- *                 description: Border-Radius-Modul
- *               gaming:
- *                 type: object
- *                 description: Gaming-spezifische Elemente
- *               effects:
- *                 type: object
- *                 description: Visual Effects und Animationen
- *               extensions:
- *                 type: object
- *                 description: Theme-spezifische Erweiterungen
- *     responses:
- *       200:
- *         description: Theme erfolgreich gespeichert
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 theme:
- *                   type: string
- *       401:
- *         description: Nicht autorisiert
- *       403:
- *         description: Keine Admin-Berechtigung
- *       400:
- *         description: Ungültige Theme-Daten - mindestens name, version und ein Modul erforderlich
- */
 router.put('/:name', 
   authenticate, 
   csrfProtection,  // 🔐 CSRF-Schutz für Theme-Updates
@@ -308,10 +158,11 @@ router.put('/:name',
       user: user?.email || 'Unknown'
     });
     
-    // TODO: Admin-Check implementieren
-    // if (!user?.isAdmin) {
-    //   return res.status(403).json({ error: 'Admin-Berechtigung erforderlich' });
-    // }
+    // Permission Check: system.theme
+    const canEdit = await hasPermission((req as AuthenticatedRequest).user!.id, 'system.theme', { type: 'global', objectId: 'global' });
+    if (!canEdit) {
+      return res.status(403).json({ error: 'Keine Berechtigung für Theme-Änderungen' });
+    }
     
     // Basis-Validierung für modulare Themes
     if (!themeData.name || !themeData.version) {
@@ -487,40 +338,6 @@ router.put('/:name',
   }
 });
 
-/**
- * @swagger
- * /api/themes/{name}/clone:
- *   post:
- *     summary: Theme klonen (nur für Admins)
- *     tags: [Themes]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: name
- *         required: true
- *         schema:
- *           type: string
- *         description: Quell-Theme Name
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               newName:
- *                 type: string
- *               newDescription:
- *                 type: string
- *     responses:
- *       200:
- *         description: Theme erfolgreich geklont
- *       404:
- *         description: Quell-Theme nicht gefunden
- *       409:
- *         description: Ziel-Theme existiert bereits
- */
 router.post('/:name/clone', 
   authenticate, 
   csrfProtection,  // 🔐 CSRF-Schutz für Theme-Cloning
@@ -537,6 +354,12 @@ router.post('/:name/clone',
       user: user?.email || 'Unknown'
     });
     
+    // Permission Check: system.theme
+    const canClone = await hasPermission((req as AuthenticatedRequest).user!.id, 'system.theme', { type: 'global', objectId: 'global' });
+    if (!canClone) {
+      return res.status(403).json({ error: 'Keine Berechtigung für Theme-Klonen' });
+    }
+
     if (!newName) {
       return res.status(400).json({ error: 'newName ist erforderlich' });
     }
@@ -645,43 +468,6 @@ router.post('/:name/clone',
   }
 });
 
-// === THEME BACKUP MANAGEMENT (basierend auf ARB-Manager Pattern) ===
-
-
-
-/**
- * @swagger
- * /api/themes:
- *   get:
- *     summary: Liste aller verfügbaren modularen Themes
- *     tags: [Themes]
- *     description: Lädt alle verfügbaren modularen Themes aus dem schemas-Verzeichnis
- *     responses:
- *       200:
- *         description: Liste der verfügbaren modularen Themes
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 themes:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       name:
- *                         type: string
- *                         description: Theme-Name
- *                       filename:
- *                         type: string
- *                         description: Dateiname ohne .json Endung
- *                       description:
- *                         type: string
- *                         description: Theme-Beschreibung
- *                       version:
- *                         type: string
- *                         description: Theme-Version (Semantic Versioning)
- */
 router.get('/', async (req, res) => {
   try {
     loggers.system.info('📋 Lade Theme-Liste', {});
@@ -730,64 +516,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// === THEME BACKUP MANAGEMENT (basierend auf ARB-Manager Pattern) ===
-
-/**
- * @swagger
- * /api/themes/{name}/backups:
- *   get:
- *     summary: Liste aller Backups für ein Theme
- *     tags: [Themes]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: name
- *         required: true
- *         schema:
- *           type: string
- *         description: Theme-Name
- *     responses:
- *       200:
- *         description: Liste der Theme-Backups mit Metadaten
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 theme:
- *                   type: string
- *                 backups:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       filename:
- *                         type: string
- *                       timestamp:
- *                         type: string
- *                       created:
- *                         type: string
- *                         format: date-time
- *                       size:
- *                         type: number
- *                       createdBy:
- *                         type: string
- *                       type:
- *                         type: string
- *                       modulesModified:
- *                         type: array
- *                         items:
- *                           type: string
- *                       metadata:
- *                         type: object
- *       403:
- *         description: Keine Berechtigung für Backup-Anzeige
- *       404:
- *         description: Theme nicht gefunden
- */
 router.get('/:name/backups', authenticate, async (req, res) => {
   try {
     const { name: themeName } = req.params;
@@ -894,25 +622,6 @@ router.get('/:name/backups', authenticate, async (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/themes/{name}/audit:
- *   get:
- *     summary: Audit-Trail für ein Theme (Backups + Clone-History)
- *     tags: [Themes]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: name
- *         required: true
- *         schema:
- *           type: string
- *         description: Theme-Name
- *     responses:
- *       200:
- *         description: Vollständiger Audit-Trail mit allen Theme-Aktivitäten
- */
 router.get('/:name/audit', authenticate, async (req, res) => {
   try {
     const { name: themeName } = req.params;
@@ -978,67 +687,6 @@ router.get('/:name/audit', authenticate, async (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/themes/{name}:
- *   get:
- *     summary: Einzelnes modulares Theme laden
- *     tags: [Themes]
- *     description: Lädt ein spezifisches modulares Theme mit allen verfügbaren Modulen
- *     parameters:
- *       - in: path
- *         name: name
- *         required: true
- *         schema:
- *           type: string
- *         description: Theme-Dateiname (ohne .json)
- *     responses:
- *       200:
- *         description: Modulare Theme-Daten
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 name:
- *                   type: string
- *                   description: Theme-Name
- *                 version:
- *                   type: string
- *                   description: Theme-Version
- *                 description:
- *                   type: string
- *                   description: Theme-Beschreibung
- *                 category:
- *                   type: string
- *                   description: Theme-Kategorie (fantasy, sci-fi, etc.)
- *                 bundle:
- *                   type: object
- *                   description: Bundle-Konfiguration
- *                 colors:
- *                   type: object
- *                   description: Farb-Modul (optional)
- *                 typography:
- *                   type: object
- *                   description: Typography-Modul (optional)
- *                 spacing:
- *                   type: object
- *                   description: Spacing-Modul (optional)
- *                 radius:
- *                   type: object
- *                   description: Border-Radius-Modul (optional)
- *                 gaming:
- *                   type: object
- *                   description: Gaming-spezifische Elemente (optional)
- *                 effects:
- *                   type: object
- *                   description: Visual Effects und Animationen (optional)
- *                 extensions:
- *                   type: object
- *                   description: Theme-spezifische Erweiterungen (optional)
- *       404:
- *         description: Theme nicht gefunden
- */
 router.get('/:name', async (req, res) => {
   try {
     const themeName = req.params.name;

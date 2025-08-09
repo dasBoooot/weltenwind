@@ -248,7 +248,8 @@ class AppTextField extends BaseComponent {
       case AppTextFieldType.email:
       case AppTextFieldType.password:
         return TextInputAction.next;
-      default:
+      case AppTextFieldType.text:
+      case AppTextFieldType.number:
         return TextInputAction.done;
     }
   }

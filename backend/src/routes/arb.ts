@@ -28,12 +28,24 @@ router.use((req, res, next) => {
 // ARB-Dateien Pfad
 const ARB_PATH = path.join(__dirname, '../../../client/lib/l10n');
 
-// Verfügbare Sprachen
-const SUPPORTED_LANGUAGES = ['de', 'en'];
+// Sprachen dynamisch aus dem Dateisystem ermitteln (app_*.arb)
+function listSupportedLanguages(): string[] {
+  try {
+    if (!fs.existsSync(ARB_PATH)) return [];
+    return fs
+      .readdirSync(ARB_PATH)
+      .filter(name => name.startsWith('app_') && name.endsWith('.arb'))
+      .map(name => name.replace(/^app_/, '').replace(/\.arb$/, ''))
+      .filter((code, idx, arr) => code && arr.indexOf(code) === idx)
+      .sort();
+  } catch {
+    return [];
+  }
+}
 
 // Hilfsfunktion zur Sprachcode-Validierung
 function validateLanguageCode(language: string): boolean {
-  return SUPPORTED_LANGUAGES.includes(language);
+  return listSupportedLanguages().includes(language);
 }
 
 /**
@@ -43,7 +55,7 @@ function validateLanguageCode(language: string): boolean {
 router.get('/languages', authenticate, async (req: AuthenticatedRequest, res) => {
   try {
     // Prüfe Berechtigung für ARB-Anzeige
-    const canViewArb = await hasPermission(req.user!.id, 'arb.view', { type: 'global', objectId: 'global' });
+    const canViewArb = await hasPermission(req.user!.id, 'system.arb', { type: 'global', objectId: 'global' });
     
     if (!canViewArb) {
       return res.status(403).json({ 
@@ -52,25 +64,20 @@ router.get('/languages', authenticate, async (req: AuthenticatedRequest, res) =>
     }
 
     // Suche nach existierenden ARB-Dateien
-    const languages = [];
-    
-    for (const lang of SUPPORTED_LANGUAGES) {
+    const languages: any[] = [];
+    const detected = listSupportedLanguages();
+    for (const lang of detected) {
       const arbFile = path.join(ARB_PATH, `app_${lang}.arb`);
-      if (fs.existsSync(arbFile)) {
-        const stats = fs.statSync(arbFile);
-        const content = JSON.parse(fs.readFileSync(arbFile, 'utf8'));
-        
-        // Zähle Keys (ohne @-Keys)
-        const keyCount = Object.keys(content).filter(key => !key.startsWith('@')).length;
-        
-        languages.push({
-          code: lang,
-          name: lang === 'de' ? 'Deutsch' : 'English',
-          keyCount,
-          lastModified: stats.mtime,
-          isMaster: lang === 'de' // Deutsche ARB ist Master
-        });
-      }
+      const stats = fs.statSync(arbFile);
+      const content = JSON.parse(fs.readFileSync(arbFile, 'utf8'));
+      const keyCount = Object.keys(content).filter(key => !key.startsWith('@')).length;
+      languages.push({
+        code: lang,
+        name: lang === 'de' ? 'Deutsch' : (lang === 'en' ? 'English' : lang.toUpperCase()),
+        keyCount,
+        lastModified: stats.mtime,
+        isMaster: lang === 'de'
+      });
     }
 
     arbLogger.info('ARB languages retrieved', { 
@@ -96,7 +103,7 @@ router.get('/languages', authenticate, async (req: AuthenticatedRequest, res) =>
 router.get('/compare', authenticate, async (req: AuthenticatedRequest, res) => {
   try {
     // Prüfe Berechtigung für ARB-Vergleichsansicht
-    const canCompareArb = await hasPermission(req.user!.id, 'arb.compare', { type: 'global', objectId: 'global' });
+    const canCompareArb = await hasPermission(req.user!.id, 'system.arb', { type: 'global', objectId: 'global' });
     
     if (!canCompareArb) {
       return res.status(403).json({ 
@@ -117,7 +124,8 @@ router.get('/compare', authenticate, async (req: AuthenticatedRequest, res) => {
     const languageData: { [key: string]: any } = {};
 
     // Lade alle ARB-Dateien
-    for (const lang of SUPPORTED_LANGUAGES) {
+    const allLangs = listSupportedLanguages();
+    for (const lang of allLangs) {
       const arbFile = path.join(ARB_PATH, `app_${lang}.arb`);
       
       if (fs.existsSync(arbFile)) {
@@ -158,11 +166,12 @@ router.get('/compare', authenticate, async (req: AuthenticatedRequest, res) => {
     }
 
     // Bestimme Master-Language Keys (Deutsch)
-    const masterKeys = languageData['de']?.keys || [];
+    const masterLang = 'de';
+    const masterKeys = languageData[masterLang]?.keys || [];
     compareData.totalKeys = masterKeys.length;
 
     // Erstelle Comparison Matrix und Missing Keys Report
-    for (const lang of SUPPORTED_LANGUAGES) {
+    for (const lang of Object.keys(languageData)) {
       if (!languageData[lang]) continue;
 
       const langKeys = languageData[lang].keys;
@@ -229,12 +238,12 @@ router.get('/:language', authenticate, async (req: AuthenticatedRequest, res) =>
     const { language } = req.params;
     
     // Validiere Sprache
-    if (!SUPPORTED_LANGUAGES.includes(language)) {
+    if (!validateLanguageCode(language)) {
       return res.status(400).json({ error: 'Ungültige Sprache' });
     }
 
     // Prüfe Berechtigung für ARB-Anzeige
-    const canViewArb = await hasPermission(req.user!.id, 'arb.view', { type: 'global', objectId: 'global' });
+    const canViewArb = await hasPermission(req.user!.id, 'system.arb', { type: 'global', objectId: 'global' });
     
     if (!canViewArb) {
       return res.status(403).json({ 
@@ -304,12 +313,13 @@ router.put('/:language',
     // Prüfe ob Sprache unterstützt wird
     if (!validateLanguageCode(language)) {
       return res.status(400).json({ 
-        error: `Sprache '${language}' wird nicht unterstützt. Unterstützte Sprachen: ${SUPPORTED_LANGUAGES.join(', ')}` 
+        error: `Sprache '${language}' wird nicht unterstützt.`,
+        supportedLanguages: listSupportedLanguages()
       });
     }
 
     // Prüfe Berechtigung für ARB-Speicherung
-    const canSaveArb = await hasPermission(req.user!.id, 'arb.save', { type: 'global', objectId: 'global' });
+    const canSaveArb = await hasPermission(req.user!.id, 'system.arb', { type: 'global', objectId: 'global' });
     
     if (!canSaveArb) {
       return res.status(403).json({ 
@@ -570,12 +580,12 @@ router.get('/:language/export', authenticate, async (req: AuthenticatedRequest, 
     const { format = 'arb' } = req.query;
     
     // Validiere Sprache
-    if (!SUPPORTED_LANGUAGES.includes(language)) {
+    if (!validateLanguageCode(language)) {
       return res.status(400).json({ error: 'Ungültige Sprache' });
     }
 
     // Prüfe Berechtigung für ARB-Export
-    const canExportArb = await hasPermission(req.user!.id, 'arb.export', { type: 'global', objectId: 'global' });
+    const canExportArb = await hasPermission(req.user!.id, 'system.arb', { type: 'global', objectId: 'global' });
     
     if (!canExportArb) {
       return res.status(403).json({ 
@@ -669,7 +679,7 @@ router.get('/:language/backups', authenticate, async (req: AuthenticatedRequest,
     }
 
     // Prüfe Berechtigung für Backup-Anzeige
-    const canViewBackups = await hasPermission(req.user!.id, 'arb.backup.view', { type: 'global', objectId: 'global' });
+    const canViewBackups = await hasPermission(req.user!.id, 'system.arb', { type: 'global', objectId: 'global' });
     
     if (!canViewBackups) {
       return res.status(403).json({ 
@@ -779,7 +789,7 @@ router.post('/:language/restore/:timestamp',
     }
 
     // Prüfe Berechtigung für Backup-Wiederherstellung
-    const canRestoreBackup = await hasPermission(req.user!.id, 'arb.backup.restore', { type: 'global', objectId: 'global' });
+    const canRestoreBackup = await hasPermission(req.user!.id, 'system.arb', { type: 'global', objectId: 'global' });
     
     if (!canRestoreBackup) {
       return res.status(403).json({ 
@@ -865,12 +875,12 @@ router.delete('/:language/backups/:timestamp',
     
     if (!validateLanguageCode(language)) {
       return res.status(400).json({ 
-        error: `Sprache '${language}' wird nicht unterstützt. Unterstützte Sprachen: ${SUPPORTED_LANGUAGES.join(', ')}` 
+        error: `Sprache '${language}' wird nicht unterstützt. Unterstützte Sprachen: ${listSupportedLanguages().join(', ')}` 
       });
     }
 
     // Prüfe Berechtigung für Backup-Löschung
-    const canDeleteBackup = await hasPermission(req.user!.id, 'arb.backup.delete', { type: 'global', objectId: 'global' });
+    const canDeleteBackup = await hasPermission(req.user!.id, 'system.arb', { type: 'global', objectId: 'global' });
     
     if (!canDeleteBackup) {
       return res.status(403).json({ 
@@ -935,7 +945,7 @@ router.get('/:language/audit', authenticate, async (req: AuthenticatedRequest, r
     if (!validateLanguageCode(language)) {
       return res.status(400).json({ 
         error: 'Ungültiger Sprachcode',
-        supportedLanguages: SUPPORTED_LANGUAGES 
+        supportedLanguages: listSupportedLanguages()
       });
     }
 

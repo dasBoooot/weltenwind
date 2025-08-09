@@ -19,6 +19,7 @@ enum WorldCategory {
 class World {
   final int id;
   final String name;
+  final String? slug;
   final WorldStatus status;
   final DateTime createdAt;
   final DateTime startsAt;
@@ -32,10 +33,12 @@ class World {
   final String? parentTheme;
   final Map<String, dynamic>? themeOverrides;
   final String? themeVariant;
+  final List<String> allowedActions;
 
   World({
     required this.id,
     required this.name,
+    this.slug,
     required this.status,
     required this.createdAt,
     required this.startsAt,
@@ -49,12 +52,14 @@ class World {
     this.parentTheme,
     this.themeOverrides,
     this.themeVariant,
+    this.allowedActions = const [],
   });
 
   factory World.fromJson(Map<String, dynamic> json) {
     return World(
       id: json['id'],
       name: json['name'],
+      slug: json['slug'],
       status: WorldStatus.values.firstWhere(
         (e) => e.toString().split('.').last == json['status'],
         orElse: () => WorldStatus.upcoming,
@@ -76,6 +81,7 @@ class World {
       parentTheme: json['parentTheme'] ?? json['parent_theme'],
       themeOverrides: json['themeOverrides'] ?? json['theme_overrides'],
       themeVariant: json['themeVariant'] ?? json['theme_variant'],
+      allowedActions: (json['allowedActions'] as List?)?.map((e) => e.toString()).toList() ?? const [],
     );
   }
 
@@ -83,6 +89,7 @@ class World {
     return {
       'id': id,
       'name': name,
+      'slug': slug,
       'status': status.toString().split('.').last,
       'createdAt': createdAt.toIso8601String(),
       'startsAt': startsAt.toIso8601String(),
@@ -96,6 +103,7 @@ class World {
       'parentTheme': parentTheme,
       'themeOverrides': themeOverrides,
       'themeVariant': themeVariant,
+      'allowedActions': allowedActions,
     };
   }
 

@@ -8,7 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "seed": "ts-node prisma/seed.ts",
-    "seed:worlds": "ts-node prisma/worlds.seed.ts",
+    "seed:worlds": "ts-node prisma/seeds/worlds.seed.ts",
     "openapi:build": "node ../docs/generate-openapi.js",
     "reset": "npx prisma migrate reset --force --skip-seed && npm run seed",
     "prisma:generate": "npx prisma generate",

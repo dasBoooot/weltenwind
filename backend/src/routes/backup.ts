@@ -14,7 +14,7 @@ async function checkAdminPermission(req: AuthenticatedRequest, res: Response, ne
     return res.status(401).json({ error: 'Nicht authentifiziert' });
   }
 
-  const hasAdminPerm = await hasPermission(req.user.id, 'system.logs', {
+  const hasAdminPerm = await hasPermission(req.user.id, 'system.backup', {
     type: 'global',
     objectId: '*'
   });
@@ -28,33 +28,6 @@ async function checkAdminPermission(req: AuthenticatedRequest, res: Response, ne
   next();
 }
 
-/**
- * @swagger
- * /api/backup:
- *   get:
- *     summary: Backup System Overview
- *     description: Returns comprehensive backup system status and statistics
- *     tags: [Backup Management]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Backup system overview
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 config:
- *                   type: object
- *                   description: Current backup configuration
- *                 stats:
- *                   type: object
- *                   description: Backup statistics
- *                 health:
- *                   type: object
- *                   description: System health status
- */
 router.get('/',
   authenticate,
   adminEndpointLimiter,
@@ -103,19 +76,6 @@ router.get('/',
   }
 );
 
-/**
- * @swagger
- * /api/backup/health:
- *   get:
- *     summary: Backup System Health Check
- *     description: Returns detailed health status of the backup system
- *     tags: [Backup Management]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Backup system health status
- */
 router.get('/health',
   authenticate,
   adminEndpointLimiter,
@@ -142,19 +102,6 @@ router.get('/health',
   }
 );
 
-/**
- * @swagger
- * /api/backup/jobs:
- *   get:
- *     summary: Active Backup Jobs
- *     description: Returns list of currently active and recent backup jobs
- *     tags: [Backup Management]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of backup jobs
- */
 router.get('/jobs',
   authenticate,
   adminEndpointLimiter,
@@ -190,19 +137,6 @@ router.get('/jobs',
   }
 );
 
-/**
- * @swagger
- * /api/backup/tables:
- *   get:
- *     summary: Database Table Information
- *     description: Returns intelligent analysis of database tables with backup strategies
- *     tags: [Backup Management]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Database table analysis
- */
 router.get('/tables',
   authenticate,
   adminEndpointLimiter,
@@ -250,39 +184,6 @@ router.get('/tables',
   }
 );
 
-/**
- * @swagger
- * /api/backup/create:
- *   post:
- *     summary: Create Manual Backup
- *     description: Creates a manual backup with optional table selection
- *     tags: [Backup Management]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: false
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               type:
- *                 type: string
- *                 enum: [manual, daily, weekly, monthly]
- *                 default: manual
- *               tables:
- *                 type: array
- *                 items:
- *                   type: string
- *                 description: Specific tables to backup (optional)
- *     responses:
- *       202:
- *         description: Backup job started
- *       400:
- *         description: Invalid request
- *       503:
- *         description: Backup system disabled or unavailable
- */
 router.post('/create',
   authenticate,
   adminEndpointLimiter,
@@ -348,19 +249,6 @@ router.post('/create',
   }
 );
 
-/**
- * @swagger
- * /api/backup/stats:
- *   get:
- *     summary: Backup Statistics
- *     description: Returns detailed backup system statistics
- *     tags: [Backup Management]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Backup statistics
- */
 router.get('/stats',
   authenticate,
   adminEndpointLimiter,
@@ -396,19 +284,6 @@ router.get('/stats',
   }
 );
 
-/**
- * @swagger
- * /api/backup/discover:
- *   post:
- *     summary: Rediscover Database Structure
- *     description: Forces rediscovery of database structure and table analysis
- *     tags: [Backup Management]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Database structure rediscovered successfully
- */
 router.post('/discover',
   authenticate,
   adminEndpointLimiter,

@@ -68,7 +68,18 @@ const WORLD_THEMES = [
 
 export async function seedWorlds() {
   // 🎨 THEME-SPEZIFISCHE WELTEN erstellen
+  function toSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[^\w\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  }
+
   for (const worldData of WORLD_THEMES) {
+    const slug = toSlug(worldData.name);
     await prisma.world.upsert({
       where: { name: worldData.name },
       update: {
@@ -77,9 +88,10 @@ export async function seedWorlds() {
         parentTheme: worldData.parentTheme,
         themeOverrides: worldData.themeOverrides,
       },
-      create: {
+      create: ({
         name: worldData.name,
-        status: worldData.status,
+        slug,
+        status: worldData.status as any,
         startsAt: new Date(),
         createdAt: new Date(),
         // 🎨 THEME FIELDS
@@ -87,25 +99,28 @@ export async function seedWorlds() {
         themeVariant: worldData.themeVariant,
         parentTheme: worldData.parentTheme,
         themeOverrides: worldData.themeOverrides,
-      },
+      } as any),
     });
   }
 
   // 🔄 LEGACY: Basis-Welten für jeden Status beibehalten
-  const statuses = ['upcoming','open','running','active','closed','archived'];
+  const statuses = ['upcoming','open','running','active','closed','archived'] as const;
   for (const status of statuses) {
+    const name = `Basis_${status}`;
+    const slug = toSlug(name);
     await prisma.world.upsert({
-      where: { name: `Basis_${status}` },
+      where: { name },
       update: {},
-      create: {
-        name: `Basis_${status}`,
-        status,
+      create: ({
+        name,
+        slug,
+        status: status as any,
         startsAt: new Date(),
         createdAt: new Date(),
         // 🎨 DEFAULT THEME
         themeBundle: 'default_world_bundle',
         themeVariant: 'standard',
-      },
+      } as any),
     });
   }
 } 

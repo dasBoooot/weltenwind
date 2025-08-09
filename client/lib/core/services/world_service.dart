@@ -62,6 +62,11 @@ class WorldService {
   final ApiService _apiService = ApiService();
   final AuthService _authService = AuthService();
 
+  // raw helper for WorldPage slug fetch
+  Future<http.Response> apiGetRaw(String endpoint) async {
+    return _apiService.get(endpoint);
+  }
+
   // Strukturierte Fehlerbehandlung mit Error-Codes
   WorldErrorCode _parseErrorCode(Map<String, dynamic> errorData) {
     final errorCode = errorData['errorCode'] as String?;

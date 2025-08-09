@@ -4,6 +4,7 @@ import { seedRolePermissions } from './seeds/role-permissions.seed';
 import { seedUsers } from './seeds/users.seed';
 import { seedUserRoles } from './seeds/user-roles.seed';
 import { seedWorlds } from './seeds/worlds.seed';
+import { seedPagePermissions } from './seeds/page-permissions.seed';
 
 async function main() {
   console.log('🌱 Starting database seeding...');
@@ -25,6 +26,8 @@ async function main() {
   
   console.log('🌍 Seeding worlds...');
   await seedWorlds();
+  console.log('🛡️ Seeding page permissions...');
+  await seedPagePermissions();
   
   console.log('✅ Database seeding completed!');
 }

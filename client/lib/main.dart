@@ -10,7 +10,6 @@ import 'core/services/world_service.dart';
 import 'core/services/invite_service.dart';
 import 'core/services/client_config_service.dart';
 import 'core/infrastructure/error_handler.dart';
-import 'config/env.dart';
 import 'core/infrastructure/performance_monitor.dart';
 import 'shared/theme/theme_manager.dart';
 import 'core/providers/theme_provider.dart';

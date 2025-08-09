@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/logger.dart';
 import '../../core/services/world_service.dart';
+import '../../core/services/api_service.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/models/world.dart';
 import '../../main.dart';
@@ -73,6 +74,11 @@ class _WorldListPageState extends State<WorldListPage> {
           icon: const Icon(Icons.refresh),
           onPressed: _loadWorlds,
           tooltip: 'Refresh Worlds',
+        ),
+        IconButton(
+          icon: const Icon(Icons.person),
+          onPressed: _showMe,
+          tooltip: 'Test /me',
         ),
         IconButton(
           icon: const Icon(Icons.logout),
@@ -156,7 +162,7 @@ class _WorldListPageState extends State<WorldListPage> {
       worldName: world.name,
       worldStatus: '${world.status.name.toUpperCase()} • ${world.playerCount} players',
       worldIcon: statusIcon,
-      onJoin: () => _joinWorld(world),
+      onJoin: () => _openWorld(world),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -183,7 +189,7 @@ class _WorldListPageState extends State<WorldListPage> {
                   style: const TextStyle(fontSize: 10),
                 ),
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                backgroundColor: statusColor.withOpacity(0.2),
+                backgroundColor: statusColor.withValues(alpha: 0.2),
                 labelStyle: TextStyle(color: statusColor),
               ),
               
@@ -195,7 +201,7 @@ class _WorldListPageState extends State<WorldListPage> {
                     style: const TextStyle(fontSize: 10),
                   ),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                  backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                   labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
               
@@ -206,7 +212,7 @@ class _WorldListPageState extends State<WorldListPage> {
                   style: const TextStyle(fontSize: 10),
                 ),
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                backgroundColor: Colors.grey.withOpacity(0.2),
+                backgroundColor: Colors.grey.withValues(alpha: 0.2),
                 labelStyle: const TextStyle(color: Colors.grey),
               ),
             ],
@@ -226,6 +232,35 @@ class _WorldListPageState extends State<WorldListPage> {
         ],
       ),
     );
+  }
+  void _openWorld(World world) {
+    final String pathParam = (world.slug != null && world.slug!.isNotEmpty)
+        ? world.slug!
+        : world.id.toString();
+    context.go('/worlds/$pathParam');
+  }
+
+  Future<void> _showMe() async {
+    try {
+      final api = ApiService();
+      final res = await api.get('/me');
+      if (!mounted) return;
+      if (res.statusCode == 200) {
+        final data = res.body;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('ME: $data')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('ME failed: ${res.statusCode}')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('ME error: $e')),
+      );
+    }
   }
 
   Color _getWorldStatusColor(WorldStatus status) {

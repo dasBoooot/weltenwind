@@ -58,8 +58,13 @@ class AppScaffold extends BaseComponent {
 
     // Add WillPopScope if onWillPop is provided
     if (onWillPop != null) {
-      scaffold = WillPopScope(
-        onWillPop: onWillPop,
+      scaffold = PopScope(
+        canPop: true,
+        onPopInvoked: (didPop) async {
+          if (!didPop) {
+            await onWillPop!();
+          }
+        },
         child: scaffold,
       );
     }
@@ -163,8 +168,13 @@ class AuthScaffold extends AppScaffold {
 
     // Add WillPopScope if onWillPop is provided
     if (onWillPop != null) {
-      mainContent = WillPopScope(
-        onWillPop: onWillPop,
+      mainContent = PopScope(
+        canPop: true,
+        onPopInvoked: (didPop) async {
+          if (!didPop) {
+            await onWillPop!();
+          }
+        },
         child: mainContent,
       );
     }
