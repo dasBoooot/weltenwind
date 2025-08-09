@@ -49,9 +49,10 @@ req() {
 
 req_status() {
   local method="$1" path="$2"
-  shift 2
+  shift 2 || true
   local code
-  code=$(req "$method" "$path" "$@" -o /dev/null -w "%{http_code}") || true
+  # Wichtig: data-Parameter leer lassen, damit zusätzliche curl-Optionen nicht als Body gesendet werden
+  code=$(req "$method" "$path" "" -o /dev/null -w "%{http_code}") || true
   echo "$code"
 }
 
@@ -166,7 +167,7 @@ done
 header "Backup"
 for p in "/backup" "/backup/health" "/backup/jobs" "/backup/tables" "/backup/stats"; do
   code=$(req_status GET "$p")
-  if [[ "$code" =~ ^2[0-9][0-9]$ ]] || [ "$code" = "403" ]]; then ok "$p -> $code"; record "backup_$p" ok; else fail "$p -> $code"; record "backup_$p" fail; fi
+  if [[ "$code" =~ ^2[0-9][0-9]$ ]] || [ "$code" = "403" ]; then ok "$p -> $code"; record "backup_$p" ok; else fail "$p -> $code"; record "backup_$p" fail; fi
 done
 
 # ---------- ARB Manager API ----------
@@ -183,19 +184,21 @@ fails=$(printf '%s\n' "${_results[@]}" | grep -c "|fail" || true)
 if [ "$fails" -eq 0 ]; then ok "Full API Check abgeschlossen (keine harten Fehler)"; else fail "$fails harte Fehler gefunden"; fi
 
 if [ "$REPORT_LC" = "json" ]; then
-  # kompakter JSON Report
-  jq -n --arg api "$API_BASE" --arg user "$USERNAME" --arg worldId "$WORLD_ID" --arg worldSlug "$WORLD_SLUG" \
-    '{
-      api: $api,
-      username: $user,
-      world: { id: $worldId, slug: $worldSlug },
-      results: ([$ENV._results] | flatten | map( split("|") | { name: .[0], status: .[1] })),
-      summary: {
-        total: ([$ENV._results] | flatten | length),
-        failures: ([$ENV._results] | flatten | map( split("|") | .[1]) | map(select(.=="fail")) | length)
-      },
-      timestamp: (now|todate)
-    }'
+  results_text=$(printf '%s\n' "${_results[@]}")
+  jq -n --arg api "$API_BASE" --arg user "$USERNAME" --arg worldId "$WORLD_ID" --arg worldSlug "$WORLD_SLUG" --arg results "$results_text" '
+    def parseResults($s): ($s | split("\n") | map(select(length>0) | split("|") | {name: .[0], status: .[1]}));
+    def failCount($arr): ($arr | map(select(.status=="fail")) | length);
+    (
+      parseResults($results) as $r | {
+        api: $api,
+        username: $user,
+        world: { id: $worldId, slug: $worldSlug },
+        results: $r,
+        summary: { total: ($r|length), failures: failCount($r) },
+        timestamp: (now|todate)
+      }
+    )
+  '
 fi
 
 
