@@ -57,6 +57,8 @@ req_status() {
   else
     code=$(req "$method" "$path" "" "$@" -o /dev/null -w "%{http_code}") || true
   fi
+  # normalize to first 3 digits in case curl prints extra
+  code="${code:0:3}"
   echo "$code"
 }
 
