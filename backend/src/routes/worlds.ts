@@ -136,7 +136,7 @@ router.post('/:id/join',
   if (!world) {
     return res.status(404).json({ error: 'Welt nicht gefunden' });
   }
-  if (world.status === 'archived') {
+  if (world.status === 'archived' || world.status === 'closed') {
     return res.status(403).json({ error: 'Welt ist archiviert' });
   }
 
@@ -225,7 +225,8 @@ router.delete('/:id/players/me',
     }
   });
   if (!player) {
-    return res.status(404).json({ error: 'Kein Spielstatus für diese Welt gefunden' });
+    // idempotent: bereits kein Player -> 200
+    return res.json({ success: true, code: 'not_member', message: 'Nicht Mitglied' });
   }
   await prisma.player.delete({ where: { id: player.id } });
   res.json({
@@ -425,16 +426,31 @@ router.delete('/:id/pre-register', async (req, res) => {
  * GET /api/worlds/:id/state
  * Welt-Status öffentlich abrufen (keine Authentifizierung erforderlich)
  */
-router.get('/:id/state', async (req, res) => {
-  const worldId = parseInt(req.params.id);
-  if (isNaN(worldId)) {
-    return res.status(400).json({ error: 'Ungültige Welt-ID' });
+router.get('/:idOrSlug/state', async (req, res) => {
+  const idOrSlug = req.params.idOrSlug;
+  let world: any = null;
+  if (/^\d+$/.test(idOrSlug)) {
+    const worldId = parseInt(idOrSlug, 10);
+    world = await prisma.world.findUnique({ where: { id: worldId } });
+  } else {
+    // Access via any until Prisma types regenerated after migration
+    const client: any = prisma as any;
+    world = await client.world.findUnique({ where: { slug: idOrSlug } });
+    if (!world) {
+      const history = await client.worldSlugHistory.findUnique({ where: { oldSlug: idOrSlug } });
+      if (history) {
+        const current = await prisma.world.findUnique({ where: { id: history.worldId } });
+        const currentSlug = (current as any)?.slug as string | undefined;
+        if (currentSlug) {
+          return res.redirect(301, `/api/worlds/${currentSlug}/state`);
+        }
+      }
+    }
   }
-  const world = await prisma.world.findUnique({ where: { id: worldId } });
   if (!world) {
     return res.status(404).json({ error: 'Welt nicht gefunden' });
   }
-  const playerCount = await prisma.player.count({ where: { worldId } });
+  const playerCount = await prisma.player.count({ where: { worldId: world.id } });
   res.json({ state: world.status, playerCount });
 });
 
@@ -455,9 +471,23 @@ router.get('/', authenticate, async (req: AuthenticatedRequest, res) => {
     return res.status(403).json({ error: 'Keine Berechtigung zum Weltzugriff' });
   }
 
-  const worlds = await prisma.world.findMany({
+  const worlds: any = await prisma.world.findMany({
     where: { status: { not: 'archived' } },
-    orderBy: { startsAt: 'asc' }
+    orderBy: { startsAt: 'asc' },
+    select: {
+      id: true,
+      name: true,
+      // @ts-ignore slug exists in schema; client may lag behind types
+      slug: true,
+      status: true,
+      createdAt: true,
+      startsAt: true,
+      endsAt: true,
+      themeBundle: true,
+      parentTheme: true,
+      themeOverrides: true,
+      themeVariant: true,
+    }
   });
 
   res.json(worlds);
@@ -468,33 +498,60 @@ router.get('/', authenticate, async (req: AuthenticatedRequest, res) => {
  * Abrufen einer einzelnen Welt
  * Permission: world.view (global scope)
  */
-router.get('/:id', authenticate, async (req: AuthenticatedRequest, res) => {
-  // Debug-Info entfernt - bereits in API-Logging erfasst
-  const worldId = parseInt(req.params.id, 10);
-  
-  if (isNaN(worldId)) {
-    return res.status(400).json({ error: 'Ungültige Welt-ID' });
-  }
-
+router.get('/:idOrSlug', authenticate, async (req: AuthenticatedRequest, res) => {
   requireUser(req);
-  
+
   const allowed = await hasPermission(req.user.id, 'world.view', {
     type: 'global',
     objectId: 'global'
   });
-
   if (!allowed) {
     return res.status(403).json({ error: 'Keine Berechtigung zum Weltzugriff' });
   }
 
-  const world = await prisma.world.findUnique({
-    where: { id: worldId }
-  });
+  const idOrSlug = req.params.idOrSlug;
+  let world: any = null;
+  if (/^\d+$/.test(idOrSlug)) {
+    world = await prisma.world.findUnique({
+      where: { id: parseInt(idOrSlug, 10) },
+      select: {
+        id: true,
+        name: true,
+        // @ts-ignore slug exists
+        slug: true,
+        status: true,
+        createdAt: true,
+        startsAt: true,
+        endsAt: true,
+        themeBundle: true,
+        parentTheme: true,
+        themeOverrides: true,
+        themeVariant: true,
+      }
+    });
+  } else {
+    const client: any = prisma as any;
+    world = await client.world.findUnique({
+      where: { slug: idOrSlug },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        status: true,
+        createdAt: true,
+        startsAt: true,
+        endsAt: true,
+        themeBundle: true,
+        parentTheme: true,
+        themeOverrides: true,
+        themeVariant: true,
+      }
+    });
+  }
 
   if (!world) {
     return res.status(404).json({ error: 'Welt nicht gefunden' });
   }
-
   res.json(world);
 });
 

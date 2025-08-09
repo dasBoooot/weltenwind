@@ -604,7 +604,7 @@ router.post('/public',
       return res.status(400).json({ error: 'Mindestens eine gültige E-Mail erforderlich' });
     }
 
-    const invites = [];
+    const invites: any[] = [];
     for (const mail of emailSet) {
       const token = crypto.randomBytes(32).toString('hex');
       const invite = await prisma.invite.create({
@@ -641,14 +641,18 @@ router.post('/public',
     });
     
   } catch (error) {
-    loggers.system.error('❌ Fehler beim Erstellen öffentlicher Invites', error, {
-      worldId
-    });
-    
-    res.status(500).json({
-      error: 'Interner Serverfehler',
-      details: 'Fehler beim Erstellen der öffentlichen Einladungen'
-    });
+    // Deduplizierungs-/Unique-Fehler abfangen (z. B. exists unique (worldId,email))
+    const details = error instanceof Error ? error.message : String(error);
+    const isUnique = /unique/i.test(details) || /duplicate/i.test(details) || /constraint/i.test(details);
+    if (isUnique) {
+      return res.status(200).json({
+        success: true,
+        message: 'Einladungen bereits vorhanden oder dedupliziert',
+        data: { invites: [] }
+      });
+    }
+    loggers.system.error('❌ Fehler beim Erstellen öffentlicher Invites', error, { worldId });
+    res.status(500).json({ error: 'Interner Serverfehler' });
   }
 });
 

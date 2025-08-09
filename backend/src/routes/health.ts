@@ -8,69 +8,6 @@ import { hasPermission } from '../services/access-control.service';
 
 const router = Router();
 
-/**
- * @swagger
- * /api/health:
- *   get:
- *     summary: Health Check Endpoint
- *     description: Returns the health status of the Weltenwind Backend API
- *     tags:
- *       - System
- *     responses:
- *       200:
- *         description: Service is healthy
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "OK"
- *                 timestamp:
- *                   type: number
- *                   example: 1640995200000
- *                 uptime:
- *                   type: number
- *                   example: 12345.67
- *                 environment:
- *                   type: string
- *                   example: "production"
- *                 version:
- *                   type: string
- *                   example: "1.0.0"
- *                 memory:
- *                   type: object
- *                   properties:
- *                     used:
- *                       type: number
- *                       example: 45
- *                     total:
- *                       type: number
- *                       example: 128
- *                 database:
- *                   type: object
- *                   properties:
- *                     status:
- *                       type: string
- *                       example: "connected"
- *                     responseTime:
- *                       type: number
- *                       example: 12.34
- *       503:
- *         description: Service is unhealthy
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "ERROR"
- *                 error:
- *                   type: string
- *                   example: "Database connection failed"
- */
 router.get('/health', async (req: Request, res: Response) => {
   const startTime = Date.now();
 
@@ -218,38 +155,32 @@ router.get('/health/detailed', async (req: Request, res: Response) => {
   }
 });
 
-/**
- * @swagger
- * /api/health/client-config:
- *   get:
- *     summary: Client Configuration Endpoint
- *     description: Returns public URLs for client configuration (no auth required)
- *     tags:
- *       - System
- *     responses:
- *       200:
- *         description: Client configuration URLs
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 apiUrl:
- *                   type: string
- *                   example: "https://192.168.2.168/api"
- *                 clientUrl:
- *                   type: string
- *                   example: "https://192.168.2.168"
- *                 assetUrl:
- *                   type: string
- *                   example: "https://192.168.2.168"
- *                 environment:
- *                   type: string
- *                   example: "production"
- *                 timestamp:
- *                   type: number
- *                   example: 1640995200000
- */
+
+// Legacy path expected by tools: /api/health/client-config
+router.get('/health/client-config', async (req: Request, res: Response) => {
+  try {
+    const clientConfig = {
+      apiUrl: process.env.PUBLIC_API_URL || 'https://192.168.2.168/api',
+      clientUrl: process.env.PUBLIC_CLIENT_URL || 'https://192.168.2.168',
+      assetUrl: process.env.PUBLIC_ASSETS_URL || 'https://192.168.2.168',
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: Date.now(),
+      version: '1.0.0'
+    };
+
+    loggers.clientConfig.requested(req.ip || 'unknown', req.get('User-Agent'));
+    loggers.clientConfig.served(req.ip || 'unknown', clientConfig);
+    res.json(clientConfig);
+  } catch (error: any) {
+    loggers.system.error('Failed to provide client configuration (legacy path)', error);
+    res.status(500).json({
+      error: 'Client configuration failed',
+      details: error?.message || 'Unknown error'
+    });
+  }
+});
+
+// Canonical path: /api/client-config
 router.get('/client-config', async (req: Request, res: Response) => {
   try {
     const clientConfig = {
