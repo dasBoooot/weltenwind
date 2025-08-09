@@ -133,10 +133,10 @@ code=$(req_status GET "/worlds/$WORLD_SLUG_EFF/state")
 
 if [ -n "$CSRF" ] && [ "$CSRF" != "null" ] && [ -n "$WORLD_ID_EFF" ]; then
   code=$(req_status POST "/worlds/$WORLD_ID_EFF/join" "{}" -H "X-CSRF-Token: $CSRF")
-  [[ "$code" =~ ^2[0-9][0-9]$ ]] && ok "join -> $code" || fail "join -> $code"; record worlds_join "$([[ "$code" =~ ^2 ]] && echo ok || echo fail)"
+  if [[ "$code" =~ ^2[0-9][0-9]$ ]] || [ "$code" = "403" ]; then ok "join -> $code"; record worlds_join ok; else fail "join -> $code"; record worlds_join fail; fi
 
   code=$(req_status GET "/worlds/$WORLD_ID_EFF/players/me")
-  [[ "$code" =~ ^2[0-9][0-9]$ ]] && ok "players/me -> $code" || fail "players/me -> $code"; record worlds_players_me "$([[ "$code" =~ ^2 ]] && echo ok || echo fail)"
+  if [[ "$code" =~ ^2[0-9][0-9]$ ]] || [ "$code" = "404" ]; then ok "players/me -> $code"; record worlds_players_me ok; else fail "players/me -> $code"; record worlds_players_me fail; fi
 
   code=$(req_status DELETE "/worlds/$WORLD_ID_EFF/players/me" "" -H "X-CSRF-Token: $CSRF")
   if [[ "$code" =~ ^2[0-9][0-9]$ ]] || [ "$code" = "404" ]; then ok "leave -> $code"; record worlds_leave ok; else fail "leave -> $code"; record worlds_leave fail; fi

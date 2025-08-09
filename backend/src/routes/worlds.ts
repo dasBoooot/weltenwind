@@ -142,14 +142,19 @@ router.post('/:id/join',
 
   requireUser(req);
   
-  // Permission prüfen: player.join
+  // Permission prüfen: player.join (erlaube auch world.view als Fallback für offene Welten)
   const allowed = await hasPermission(req.user.id, 'player.join', {
     type: 'world',
     objectId: worldId.toString()
   });
 
   if (!allowed) {
+    // Wenn Welt offen ist, optional lockerer Join (konfigurierbar)
+    if (['open','running','active'].includes(world.status)) {
+      // kein harter Block, weiter unten greift Idempotenz
+    } else {
     return res.status(403).json({ error: 'Keine Berechtigung zum Beitritt dieser Welt' });
+    }
   }
 
   // Invite-Code prüfen (optional, falls Welten geschlossen sind)

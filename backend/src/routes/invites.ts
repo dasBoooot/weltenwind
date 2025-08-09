@@ -586,8 +586,9 @@ router.post('/public',
       return res.status(404).json({ error: 'Welt nicht gefunden' });
     }
 
-    // Nur für offene Welten erlauben
-    if (world.status !== 'open' && world.status !== 'upcoming') {
+    // Erlaube öffentliche Einladungen für aktive/open/running/upcoming Welten
+    const allowedPublic = ['open','running','active','upcoming'];
+    if (!allowedPublic.includes(world.status)) {
       return res.status(403).json({ error: 'Welt ist nicht für öffentliche Einladungen geöffnet' });
     }
 
