@@ -50,9 +50,13 @@ req() {
 req_status() {
   local method="$1" path="$2"
   shift 2 || true
-  local code
-  # Wichtig: data-Parameter leer lassen, damit zusätzliche curl-Optionen nicht als Body gesendet werden
-  code=$(req "$method" "$path" "" -o /dev/null -w "%{http_code}") || true
+  local data="${1:-}"
+  if [ -n "$data" ]; then
+    shift 1 || true
+    code=$(req "$method" "$path" "$data" "$@" -o /dev/null -w "%{http_code}") || true
+  else
+    code=$(req "$method" "$path" "" "$@" -o /dev/null -w "%{http_code}") || true
+  fi
   echo "$code"
 }
 
