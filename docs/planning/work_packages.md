@@ -16,19 +16,25 @@ Format je WP: Ziel • Umfang • API/DB • Client • Security/Ops • DoD
  - Express-Setup: `helmet`, `cors` (Whitelist), `compression`, zentrale Schema-Validation (z. B. `zod`) vor Controllern
  - Config: `.env` hierarchisch (default/prod/local) + Schema-Validation beim Boot (z. B. `zod`)
 
-Status: Implementiert
+Status: Implementiert (inkl. Smoke-Test)
 - Server: Middlewares `request-context` (X-Request-Id), `versioning` (/api/v1→/api), `etag` (starkes ETag + 304), `idempotency` (In-Memory TTL), `problem-details` (RFC7807), `response-headers` (standard Headers). Eingehängt in `src/server.ts` vor Routen und als Fehler-Handler.
 - Logging: `logging.middleware` erweitert um `requestId`; Winston bleibt JSON-fähig; Request/Trace-ID in Headers.
 - Client: `Env.apiBasePath` → `/api/v1`; `ApiService` übernimmt `X-Request-Id` in Logs und sendet es weiter; verarbeitet 304 sauber.
+- Tests: Smoke-Test Script unter `backend/scripts/testing/wp1_smoke_test.sh` (Flags: `JOIN_TEST=1`, `REPORT=json`) deckt Login, Worlds, Slugs/State, Authorize (RBAC), PagePermission-geschützte Aktionen (Join/Leave), ETag und Idempotency ab.
 - Next: OpenAPI anpassen (Base URL /api/v1), CI-Linting ergänzen; Idempotency-Store später auf DB/Redis heben.
 
 ### WP2: Routing & Slugs
 - Ziel: Saubere Navigation inkl. Deep-Links
 - Umfang: `/worlds`, `/worlds/:idOrSlug`, `/worlds/:idOrSlug/chat`, `/w/:slug → 301`, `/me` Alias; GoRouter ShellRoute; RBAC/Scope Guards
-- API/DB: `worlds.slug` + `world_slug_history` (optional) für Canonicals
-- Client: Tabs ↔ URL Sync; Guards via AccessControlService
+- API/DB: `worlds.slug` + `world_slug_history` (implementiert) für Canonicals; server-getriebene PagePermissions (`page_permissions`) für URL/Method-Rechte (dynamisch, DB-basiert)
+- Client: GoRouter-Route `/worlds/:idOrSlug` implementiert; Navigation nutzt serverseitig gelieferten `slug`; Guards via `AuthorizationService` → `/auth/authorize` (resource/action) statt harter Perm-Strings
 - Security/Ops: Open-Redirects vermeiden; Canonical 301 serverseitig
 - DoD: Navigationsfluss inkl. Guards und Redirects funktioniert
+
+Status: In Arbeit (Teilziele erreicht)
+- Implementiert: Slugs + Slug-History, Shortlink `/w/:slug` → 301, `/me` Alias, dynamische RBAC über `/auth/authorize` (resource/action) und `PagePermission`-Middleware
+- Getestet: World-Liste, World-Detail via `idOrSlug`, World-State public, Authorize-Checks; Join/Leave (mit CSRF) erfolgreich im Smoke-Test
+- Ausstehend: Zusätzliche Routen (`/worlds/:idOrSlug/chat`), Tabs ↔ URL Sync, weiterführende PagePermission-Einträge
 
 - DoD+: Slug-Uniqueness + `world_slug_history` → canonical resolver getestet.
 - Add: Guard-Contract: `AccessControlService.hasPermission(user, perm, scopeCtx)` als Middleware für Pages & WS‑Join; `world_slug_history` mit `UNIQUE(oldSlug)` und „last wins“ Canonical-Regel; `/me` Alias später erweitern (`/users/me/sessions`, `/users/me/devices`).
