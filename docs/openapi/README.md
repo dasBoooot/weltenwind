@@ -44,7 +44,7 @@ npm install
 
 ### **Generated File verwenden:**
 - **Backend**: Das Backend lädt automatisch `generated/api-combined.yaml`
-- **Swagger UI**: Verfügbar unter `http://localhost:3000/api/docs`
+- **Swagger UI**: Verfügbar unter `https://<VM-IP>/api/docs`
 - **External Tools**: Import `generated/api-combined.yaml` in Postman, Insomnia, etc.
 
 ---
@@ -105,7 +105,7 @@ npm install
 1. **Edit Individual Spec**: Modify appropriate `specs/*.yaml` file
 2. **Add Schemas**: Define request/response schemas in respective file
 3. **Regenerate**: Run `node generate-openapi.js`
-4. **Test**: Check Swagger UI at `http://localhost:3000/api/docs`
+4. **Test**: Check Swagger UI at `https://<VM-IP>/api/docs`
 
 ### **Creating New API Module:**
 1. **Create Spec File**: Add new `specs/module.yaml`

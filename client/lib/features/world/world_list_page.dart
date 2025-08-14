@@ -10,6 +10,7 @@ import '../../shared/components/layout/app_scaffold.dart';
 import '../../shared/components/cards/app_card.dart';
 import '../../shared/components/buttons/app_button.dart';
 import '../../shared/components/layout/app_container.dart';
+import '../../shared/theme/theme_resolver.dart';
 import '../../shared/theme/theme_manager.dart';
 
 class WorldListPage extends StatefulWidget {
@@ -22,11 +23,24 @@ class WorldListPage extends StatefulWidget {
 class _WorldListPageState extends State<WorldListPage> {
   List<World> _worlds = [];
   bool _isLoading = true;
-  final ThemeManager _themeManager = ThemeManager();
+  late final World _defaultWorld;
 
   @override
   void initState() {
     super.initState();
+    _defaultWorld = World(
+      id: 0,
+      name: 'Default',
+      status: WorldStatus.open,
+      createdAt: DateTime.now(),
+      startsAt: DateTime.now(),
+      description: 'Default background for world list',
+      assets: 'default',
+    );
+    // Ensure Default Theme when entering the list page
+    try {
+      ThemeManager().clearWorldTheme();
+    } catch (_) {}
     _loadWorlds();
   }
 
@@ -34,6 +48,12 @@ class _WorldListPageState extends State<WorldListPage> {
     try {
       final worldService = ServiceLocator.get<WorldService>();
       final worlds = await worldService.getWorlds();
+      // Optional: preload themes for smoother card rendering
+      try {
+        await ThemeManager().preloadWorldThemes(worlds);
+      } catch (e) {
+        AppLogger.app.w('Theme preload failed', error: e);
+      }
       
         setState(() {
           _worlds = worlds;
@@ -67,7 +87,10 @@ class _WorldListPageState extends State<WorldListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MainScaffold(
+    return MainScaffoldWithBackground(
+      world: _defaultWorld,
+      pageType: 'world_list',
+      themeContext: 'pre-game',
       title: const Text('🌍 Worlds'),
       actions: [
         IconButton(
@@ -133,104 +156,131 @@ class _WorldListPageState extends State<WorldListPage> {
     return AppContent(
       child: AppSection(
         title: Text('Available Worlds (${_worlds.length})'),
-        subtitle: const Text('🎨 Each world has unique themes! Click to join and experience them.'),
-        child: GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: _getCrossAxisCount(context),
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: _getChildAspectRatio(context),
+        subtitle: const Text('🎨 Each world has unique themes! Click to open.'),
+        child: Scrollbar(
+          thumbVisibility: true,
+          child: GridView.builder(
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 420,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 1.20,
+            ),
+            itemCount: _worlds.length,
+            itemBuilder: (context, index) {
+              final world = _worlds[index];
+              return _buildWorldCard(world);
+            },
           ),
-          itemCount: _worlds.length,
-          itemBuilder: (context, index) {
-            final world = _worlds[index];
-            return _buildWorldCard(world);
-          },
         ),
       ),
     );
   }
 
   Widget _buildWorldCard(World world) {
-    final statusColor = _getWorldStatusColor(world.status);
+    final statusColor = _getWorldStatusColor(context, world.status);
     final statusIcon = _getWorldStatusIcon(world.status);
     final themeInfo = _getWorldThemeInfo(world);
 
-    return WorldCard(
-      worldName: world.name,
-      worldStatus: '${world.status.name.toUpperCase()} • ${world.playerCount} players',
-      worldIcon: statusIcon,
-      onJoin: () => _openWorld(world),
+    return FutureBuilder<ThemeData>(
+      future: ThemeResolver().resolveWorldTheme(world, context: 'pre-game'),
+      builder: (ctx, snap) {
+        buildCard(BuildContext useCtx) {
+          final cs = Theme.of(useCtx).colorScheme;
+          final tt = Theme.of(useCtx).textTheme;
+          return WorldCard(
+            size: AppCardSize.compact,
+            worldName: world.name,
+            worldStatus: '${world.status.name.toUpperCase()} • ${world.playerCount} players',
+            worldIcon: statusIcon,
+            onJoin: () => _openWorld(world),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: cs.primary.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(statusIcon, size: 16, color: cs.primary),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-          // World description
-          if (world.description != null && world.description!.isNotEmpty) ...[
+                          Text(world.name, style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 2),
                           Text(
-              world.description!,
-              style: Theme.of(context).textTheme.bodySmall,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+                            '${world.status.name.toUpperCase()} • ${world.playerCount} players',
+                            style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                // Tags
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: [
+                    Chip(
+                      label: Text(world.category.name.toUpperCase(), style: const TextStyle(fontSize: 10)),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      backgroundColor: statusColor.withValues(alpha: 0.18),
+                      labelStyle: TextStyle(color: statusColor),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    if (themeInfo != null)
+                      Chip(
+                        label: Text('🎨 $themeInfo', style: const TextStyle(fontSize: 10)),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: cs.primary.withValues(alpha: 0.18),
+                        labelStyle: TextStyle(color: cs.primary),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      ),
+                    Chip(
+                      label: Text('Created ${_formatDate(world.createdAt)}', style: const TextStyle(fontSize: 10)),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      backgroundColor: cs.onSurface.withValues(alpha: 0.08),
+                      labelStyle: TextStyle(color: cs.onSurfaceVariant),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                AppButton(
+                  onPressed: () => _openWorld(world),
+                  type: AppButtonType.primary,
+                  size: AppButtonSize.medium,
+                  fullWidth: true,
+                  icon: Icons.login,
+                  child: const Text('Join'),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-          ],
-          
-          // World info chips
-          Wrap(
-            spacing: 8,
-            runSpacing: 4,
-            children: [
-              // Category chip
-              Chip(
-                label: Text(
-                  world.category.name.toUpperCase(),
-                  style: const TextStyle(fontSize: 10),
-                ),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                backgroundColor: statusColor.withValues(alpha: 0.2),
-                labelStyle: TextStyle(color: statusColor),
-              ),
-              
-              // Theme chip (MIXED THEME HIGHLIGHT!)
-              if (themeInfo != null)
-                Chip(
-                  label: Text(
-                    '🎨 $themeInfo',
-                    style: const TextStyle(fontSize: 10),
-                  ),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                  labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-                ),
-              
-              // Date info
-              Chip(
-                label: Text(
-                  'Created ${_formatDate(world.createdAt)}',
-                  style: const TextStyle(fontSize: 10),
-                ),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                backgroundColor: Colors.grey.withValues(alpha: 0.2),
-                labelStyle: const TextStyle(color: Colors.grey),
-              ),
-            ],
-          ),
-          
-          const Spacer(),
-          
-          // Join button
-          AppButton(
-            onPressed: () => _joinWorld(world),
-            type: AppButtonType.primary,
-            size: AppButtonSize.medium,
-            fullWidth: true,
-            icon: Icons.rocket_launch,
-            child: const Text('Join World'),
-          ),
-        ],
-      ),
+          );
+        }
+
+        if (snap.connectionState == ConnectionState.done && snap.hasData) {
+               return Theme(
+             data: snap.data!,
+             child: Builder(builder: (inner) => buildCard(inner)),
+           );
+        }
+        // Fallback: render im App-Theme, bis Theme geladen
+        return buildCard(context);
+      },
     );
   }
   void _openWorld(World world) {
@@ -263,18 +313,19 @@ class _WorldListPageState extends State<WorldListPage> {
     }
   }
 
-  Color _getWorldStatusColor(WorldStatus status) {
+  Color _getWorldStatusColor(BuildContext context, WorldStatus status) {
+    final cs = Theme.of(context).colorScheme;
     switch (status) {
       case WorldStatus.open:
-        return Colors.green;
+        return cs.secondary;
       case WorldStatus.running:
-        return Colors.blue;
+        return cs.primary;
       case WorldStatus.upcoming:
-        return Colors.orange;
+        return cs.tertiary;
       case WorldStatus.closed:
-        return Colors.red;
+        return cs.error;
       case WorldStatus.archived:
-        return Colors.grey;
+        return cs.onSurfaceVariant;
     }
   }
 
@@ -294,10 +345,8 @@ class _WorldListPageState extends State<WorldListPage> {
   }
 
   String? _getWorldThemeInfo(World world) {
-    if (world.themeBundle != null) {
-      return world.themeVariant != null 
-          ? '${world.themeBundle} (${world.themeVariant})'
-          : world.themeBundle;
+    if (world.assets != null && world.assets!.isNotEmpty) {
+      return world.assets;
     }
     return null;
   }
@@ -313,59 +362,4 @@ class _WorldListPageState extends State<WorldListPage> {
     return '${(difference / 30).round()}m ago';
   }
 
-  int _getCrossAxisCount(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth < 768) return 1; // Mobile: 1 column
-    if (screenWidth < 1024) return 2; // Tablet: 2 columns
-    return 3; // Desktop: 3 columns
-  }
-
-  double _getChildAspectRatio(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth < 768) return 1.2; // Mobile: taller cards
-    return 0.8; // Tablet/Desktop: square-ish cards
-  }
-
-  Future<void> _joinWorld(World world) async {
-    try {
-      AppLogger.app.i('🎯 Joining world: ${world.name} (Theme: ${world.themeBundle})');
-      
-      // 🎨 APPLY WORLD THEME BEFORE JOINING!
-      if (world.themeBundle != null) {
-        await _themeManager.setWorldTheme(world);
-        AppLogger.app.i('✅ World theme applied: ${world.themeBundle}');
-        
-        if (mounted) {
-          // Show theme change notification
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('🎨 Theme changed to: ${world.themeBundle}'),
-              duration: const Duration(seconds: 2),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
-        }
-      }
-      
-      // TODO: Implement actual world joining logic
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('🚀 Joining ${world.name}...'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      AppLogger.error.e('Failed to join world', error: e);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ Failed to join world: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    }
-  }
 }

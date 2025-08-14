@@ -221,6 +221,10 @@ flutter run -d chrome --web-port 8080
 # Debug-Build mit allen Entwickler-Tools
 ```
 
+### **API-Umgebung (Projekt-Setup)**
+- API-Basis-URL aus Runtime-Config/Environment beziehen (`public_api_url`).
+- Im VM-Setup: `https://<VM-IP>/api` verwenden (kein `localhost`).
+
 ### **Production Build**
 ```bash
 # Web Build für Production

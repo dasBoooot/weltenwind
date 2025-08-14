@@ -15,7 +15,7 @@ Authentifiziert einen Benutzer und erstellt eine Session.
 
 **Request:**
 ```bash
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST https://<VM-IP>/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "AAbb1234!!"}'
 ```
@@ -41,7 +41,7 @@ Beendet eine Benutzer-Session.
 
 **Request:**
 ```bash
-curl -X POST http://localhost:3000/api/auth/logout \
+curl -X POST https://<VM-IP>/api/auth/logout \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -62,7 +62,7 @@ Registriert einen neuen Benutzer.
 
 **Request:**
 ```bash
-curl -X POST http://localhost:3000/api/auth/register \
+curl -X POST https://<VM-IP>/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "username": "newuser",
@@ -91,7 +91,7 @@ Fordert einen Passwort-Reset an.
 
 **Request:**
 ```bash
-curl -X POST http://localhost:3000/api/auth/request-reset \
+curl -X POST https://<VM-IP>/api/auth/request-reset \
   -H "Content-Type: application/json" \
   -d '{"email": "user@example.com"}'
 ```
@@ -112,7 +112,7 @@ Setzt das Passwort mit einem Reset-Token zurück.
 
 **Request:**
 ```bash
-curl -X POST http://localhost:3000/api/auth/reset-password \
+curl -X POST https://<VM-IP>/api/auth/reset-password \
   -H "Content-Type: application/json" \
   -d '{
     "token": "reset_token_here",
@@ -136,7 +136,7 @@ Ruft die eigenen Benutzerdaten ab.
 
 **Request:**
 ```bash
-curl -X GET http://localhost:3000/api/auth/me \
+curl -X GET https://<VM-IP>/api/auth/me \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -165,12 +165,12 @@ curl -X GET http://localhost:3000/api/auth/me \
 ### 1. Login-Tests
 ```bash
 # Erfolgreicher Login
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST https://<VM-IP>/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "AAbb1234!!"}'
 
 # Fehlgeschlagener Login
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST https://<VM-IP>/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "wrongpassword"}'
 # → 401 Unauthorized
@@ -179,7 +179,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 ### 2. Registrierung-Tests
 ```bash
 # Erfolgreiche Registrierung
-curl -X POST http://localhost:3000/api/auth/register \
+curl -X POST https://<VM-IP>/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "username": "newuser",
@@ -188,7 +188,7 @@ curl -X POST http://localhost:3000/api/auth/register \
   }'
 
 # Registrierung mit existierendem Username
-curl -X POST http://localhost:3000/api/auth/register \
+curl -X POST https://<VM-IP>/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin",
@@ -201,11 +201,11 @@ curl -X POST http://localhost:3000/api/auth/register \
 ### 3. Me-Endpunkt-Tests
 ```bash
 # Erfolgreicher Zugriff auf eigene Daten
-curl -X GET http://localhost:3000/api/auth/me \
+curl -X GET https://<VM-IP>/api/auth/me \
   -H "Authorization: Bearer ADMIN_TOKEN"
 
 # Ohne Token
-curl -X GET http://localhost:3000/api/auth/me
+curl -X GET https://<VM-IP>/api/auth/me
 # → 401 Unauthorized
 ```
 

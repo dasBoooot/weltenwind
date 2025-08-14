@@ -10,6 +10,7 @@ import '../services/dynamic_asset_service.dart';
 import 'models/world_theme.dart';
 import 'models/theme_bundle.dart';
 import 'models/named_entrypoints.dart';
+import 'extensions.dart';
 
 class ThemeResolver {
   static final ThemeResolver _instance = ThemeResolver._internal();
@@ -36,7 +37,7 @@ class ThemeResolver {
       AppLogger.app.d('🎯 Resolving theme for world: ${world.name} (${world.id}) in context: $context');
 
       // 1. Try to get world-specific theme from Named Entrypoints
-      final namedEntrypointTheme = await _getNamedEntrypointTheme(world.themeBundle ?? 'default', context, isDarkMode);
+      final namedEntrypointTheme = await _getNamedEntrypointTheme(world.assets ?? 'default', context, isDarkMode);
       if (namedEntrypointTheme != null) {
         AppLogger.app.d('✅ Found Named Entrypoint theme for context: $context');
         return namedEntrypointTheme;
@@ -50,33 +51,22 @@ class ThemeResolver {
       }
 
       // 3. Try to get theme from bundle
-      if (world.themeBundle != null) {
+      if (world.assets != null) {
         final bundleTheme = await _getBundleTheme(
-          world.themeBundle!,
-          world.themeVariant ?? userPreferredVariant,
+          world.assets!,
+          userPreferredVariant,
           isDarkMode,
         );
         if (bundleTheme != null) {
-          AppLogger.app.d('✅ Found bundle theme: ${world.themeBundle}');
+          AppLogger.app.d('✅ Found bundle theme: ${world.assets}');
           return bundleTheme;
         }
       }
 
       // 4. Try parent theme
-      if (world.parentTheme != null) {
-        final parentTheme = await _getParentTheme(world.parentTheme!, isDarkMode);
-        if (parentTheme != null) {
-          AppLogger.app.d('✅ Found parent theme: ${world.parentTheme}');
-          return parentTheme;
-        }
-      }
-
       // 5. Apply theme overrides to fallback
       final fallbackTheme = await _getFallbackTheme(isDarkMode);
-      if (world.themeOverrides != null && world.themeOverrides!.isNotEmpty) {
-        AppLogger.app.d('🎨 Applying theme overrides to fallback');
-        return _applyThemeOverrides(fallbackTheme, world.themeOverrides!);
-      }
+      // Overrides deprecated
 
       AppLogger.app.d('⚡ Using fallback theme');
       return fallbackTheme;
@@ -349,7 +339,7 @@ class ThemeResolver {
     final headingSizes = typography['headingSizes'] as Map<String, dynamic>? ?? {};
     final bodySizes = typography['bodySizes'] as Map<String, dynamic>? ?? {};
     final lineHeights = typography['lineHeights'] as Map<String, dynamic>? ?? {};
-    final fontWeights = typography['fontWeights'] as Map<String, dynamic>? ?? {};
+    // final fontWeights = typography['fontWeights'] as Map<String, dynamic>? ?? {};
     final letterSpacing = typography['letterSpacing'] as Map<String, dynamic>? ?? {};
     
     // Parse font weights
@@ -517,7 +507,7 @@ class ThemeResolver {
     final shadows = effects['shadows'] as Map<String, dynamic>? ?? {};
     
     final animationDurations = animations['duration'] as Map<String, dynamic>? ?? {};
-    final animationEasing = animations['easing'] as Map<String, dynamic>? ?? {};
+    // final animationEasing = animations['easing'] as Map<String, dynamic>? ?? {};
     final animationScale = animations['scale'] as Map<String, dynamic>? ?? {};
     
     final durationFast = _parseDuration(animationDurations['fast'] ?? '150ms');
@@ -536,7 +526,8 @@ class ThemeResolver {
     // final borderRadius = _parseRadius(jsonData['borderRadius'] ?? '0.5rem');
     // final iconStyle = jsonData['iconStyle'] as String? ?? 'default';
     
-    return ThemeData(
+    // Build ThemeData
+    final theme = ThemeData(
       useMaterial3: true,
       brightness: isDark ? Brightness.dark : Brightness.light,
       colorScheme: colorScheme,
@@ -798,6 +789,39 @@ class ThemeResolver {
       
       
     );
+
+    // Attach ThemeExtensions for spacing, radius and effects
+    final withExtensions = theme.copyWith(
+      extensions: <ThemeExtension<dynamic>>[
+        AppSpacingTheme(
+          xs: spacingXs,
+          sm: spacingSm,
+          md: spacingMd,
+          lg: spacingLg,
+          xl: spacingXl,
+          xxl: spacingXxl,
+          xxxl: spacingXxxl,
+          section: spacingSection,
+        ),
+        AppRadiusTheme(
+          none: radiusNone,
+          small: radiusSmall,
+          medium: radiusMedium,
+          large: radiusLarge,
+          xl: radiusXl,
+          full: radiusFull,
+        ),
+        AppEffectsTheme(
+          durationFast: durationFast,
+          durationNormal: durationNormal,
+          durationSlow: durationSlow,
+          scaleHover: scaleHover,
+          tooltipShadow: shadowTooltip,
+        ),
+      ],
+    );
+
+    return withExtensions;
   }
 
   /// Get theme from Named Entrypoints
@@ -998,13 +1022,7 @@ class ThemeResolver {
     final luminance = backgroundColor.computeLuminance();
     return luminance > 0.5 ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
   }
-
-  /// Get parent theme
-  Future<ThemeData?> _getParentTheme(String parentTheme, bool isDarkMode) async {
-    // TODO: Implement parent theme resolution
-    return null;
-  }
-
+  
   /// Get fallback theme
   Future<ThemeData> _getFallbackTheme(bool isDarkMode) async {
     // Try to load default theme as fallback
@@ -1023,12 +1041,6 @@ class ThemeResolver {
         brightness: isDarkMode ? Brightness.dark : Brightness.light,
       ),
     );
-  }
-
-  /// Apply theme overrides
-  ThemeData _applyThemeOverrides(ThemeData baseTheme, Map<String, dynamic> overrides) {
-    // TODO: Implement theme override application
-    return baseTheme;
   }
 
   /// Clear cache
@@ -1111,18 +1123,35 @@ class ThemeResolver {
     String? pageType,
   }) async {
     try {
-      final cacheKey = 'background_${world.themeBundle ?? 'default'}_${context}_${pageType ?? 'default'}';
+      final cacheKey = 'background_${world.assets ?? 'default'}_${context}_${pageType ?? 'default'}';
       
       // Check cache first
       if (_backgroundCache.containsKey(cacheKey)) {
         return _backgroundCache[cacheKey];
       }
 
-      final worldId = world.themeBundle ?? 'default';
+      String worldId = world.assets ?? 'default';
+      // Try to resolve to manifest.id for correct asset folder mapping
+      try {
+        final manifest = await _namedEntrypointsService.getNamedEntrypoint(worldId);
+        if (manifest != null && manifest.id.isNotEmpty) {
+          worldId = manifest.id;
+        }
+      } catch (_) {
+        // ignore and use themeBundle fallback
+      }
       final dynamicAssetService = DynamicAssetService(); // Use singleton
 
-      // Try to get from Named Entrypoints first
-      final namedEntrypointTheme = await _getNamedEntrypointThemeJson(worldId, context);
+      // Try to get from Named Entrypoints first (with graceful fallbacks)
+      final contextsToTry = <String>{context, 'pre-game', 'loading'};
+      Map<String, dynamic>? namedEntrypointTheme;
+      for (final ctx in contextsToTry) {
+        namedEntrypointTheme = await _getNamedEntrypointThemeJson(worldId, ctx);
+        if (namedEntrypointTheme != null && namedEntrypointTheme['backgrounds'] != null) {
+          break;
+        }
+      }
+
       if (namedEntrypointTheme != null && namedEntrypointTheme['backgrounds'] != null) {
         final backgrounds = namedEntrypointTheme['backgrounds'] as Map<String, dynamic>;
         AppLogger.app.d('🔍 Theme backgrounds: $backgrounds');
@@ -1158,7 +1187,7 @@ class ThemeResolver {
       return null;
 
     } catch (e) {
-      AppLogger.app.e('❌ Background resolution failed for world ${world.themeBundle ?? 'default'}: $e');
+      AppLogger.app.e("❌ Background resolution failed for world ${world.assets ?? 'default'}: $e");
       return null;
     }
   }

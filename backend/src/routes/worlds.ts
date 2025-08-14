@@ -500,10 +500,7 @@ router.get('/', authenticate, async (req: AuthenticatedRequest, res) => {
       createdAt: true,
       startsAt: true,
       endsAt: true,
-      themeBundle: true,
-      parentTheme: true,
-      themeOverrides: true,
-      themeVariant: true,
+      assets: true,
     }
   });
 
@@ -540,10 +537,7 @@ router.get('/:idOrSlug', authenticate, async (req: AuthenticatedRequest, res) =>
         createdAt: true,
         startsAt: true,
         endsAt: true,
-        themeBundle: true,
-        parentTheme: true,
-        themeOverrides: true,
-        themeVariant: true,
+        assets: true,
       }
     });
   } else {
@@ -558,10 +552,7 @@ router.get('/:idOrSlug', authenticate, async (req: AuthenticatedRequest, res) =>
         createdAt: true,
         startsAt: true,
         endsAt: true,
-        themeBundle: true,
-        parentTheme: true,
-        themeOverrides: true,
-        themeVariant: true,
+        assets: true,
       }
     });
   }

@@ -9,7 +9,7 @@
 ### **Base URL**
 ```
 Production:  https://your-domain.com/api
-Development: http://localhost:3000/api
+Development (Projekt-Setup mit VM): https://<VM-IP>/api
 ```
 
 ### **Authentifizierung**
@@ -66,16 +66,16 @@ Versioning: Path-based (/api/v1/...)
 ### **🎨 Theme System**
 | Endpunkt | Beschreibung | Dokumentation |
 |----------|--------------|---------------|
-| `GET /themes` | Verfügbare Themes | [themes.md](themes.md#list-themes) |
-| `GET /themes/:id` | Theme-Details | [themes.md](themes.md#get-theme) |
-| `GET /themes/bundles` | Theme-Bundles | [themes.md](themes.md#list-bundles) |
-| `GET /themes/world/:worldId` | Welt-spezifisches Theme | [themes.md](themes.md#world-theme) |
+| `GET /themes` | Verfügbare Themes | Swagger `/api/docs` |
+| `GET /themes/:id` | Theme-Details | Swagger `/api/docs` |
+| `GET /themes/bundles` | Theme-Bundles | Swagger `/api/docs` |
+| `GET /themes/world/:worldId` | Welt-spezifisches Theme | Swagger `/api/docs` |
 
 ### **⚙️ System & Health**
 | Endpunkt | Beschreibung | Dokumentation |
 |----------|--------------|---------------|
-| `GET /health` | System-Status | [system.md](system.md#health-check) |
-| `GET /version` | API-Version | [system.md](system.md#version) |
+| `GET /health` | System-Status | Swagger `/api/docs` |
+| `GET /version` | API-Version | Swagger `/api/docs` |
 | `GET /docs` | Swagger-Dokumentation | Auto-generiert |
 
 ---
@@ -328,7 +328,7 @@ INVITE_ALREADY_USED: "Einladung bereits verwendet"
 ## 🛠️ **Development Tools**
 
 ### **Swagger/OpenAPI**
-- **URL**: `http://localhost:3000/api/docs`
+- **URL**: `https://<VM-IP>/api/docs`
 - **Interactive**: Alle Endpunkte testbar
 - **Schema**: Vollständige Request/Response-Schemas
 - **Authentication**: JWT-Token-Support
@@ -336,16 +336,16 @@ INVITE_ALREADY_USED: "Einladung bereits verwendet"
 ### **Postman Collection**
 ```bash
 # Postman Collection exportieren
-curl http://localhost:3000/api/docs/json > weltenwind-api.json
+curl https://<VM-IP>/api/docs/json > weltenwind-api.json
 ```
 
 ### **API Testing**
 ```bash
 # Health Check
-curl http://localhost:3000/api/health
+curl https://<VM-IP>/api/health
 
 # Authentication Test
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST https://<VM-IP>/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "testuser", "password": "testpass"}'
 ```

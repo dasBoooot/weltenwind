@@ -5,6 +5,7 @@ library;
 
 import 'package:flutter/material.dart';
 import '../base/base_component.dart';
+import '../../theme/extensions.dart';
 
 enum AppCardType {
   elevated,
@@ -64,31 +65,48 @@ class AppCard extends BaseComponent {
   Widget build(BuildContext context) {
     final colorScheme = getColorScheme(context);
     final isDark = isDarkMode(context);
+    final effects = Theme.of(context).extension<AppEffectsTheme>();
 
     Widget cardContent = _buildCardContent(context);
 
     // Apply card decoration based on type
     final decoration = _getCardDecoration(context, colorScheme, isDark);
     
-    Widget card = Container(
+    Widget card = AnimatedContainer(
       width: width,
       height: height,
       constraints: constraints,
       margin: margin ?? _getDefaultMargin(context),
       decoration: decoration,
+      duration: effects?.durationNormal ?? const Duration(milliseconds: 200),
       child: ClipRRect(
         borderRadius: borderRadius ?? getBorderRadius(context),
         child: cardContent,
       ),
     );
 
-    // Add tap functionality if provided
+    // Add tap functionality with safe hover animation if provided
     if (onTap != null || onLongPress != null) {
-      card = InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
-        borderRadius: borderRadius ?? getBorderRadius(context),
-        child: card,
+      final hoverScale = (effects?.scaleHover ?? 1.03).clamp(1.0, 1.08);
+      final animDuration = effects?.durationFast ?? const Duration(milliseconds: 150);
+      card = StatefulBuilder(
+        builder: (ctx, setSt) {
+          bool hovering = false;
+          return MouseRegion(
+            onEnter: (_) => setSt(() { hovering = true; }),
+            onExit: (_) => setSt(() { hovering = false; }),
+            child: InkWell(
+              onTap: onTap,
+              onLongPress: onLongPress,
+              borderRadius: borderRadius ?? getBorderRadius(context),
+              child: AnimatedScale(
+                scale: hovering ? hoverScale : 1.0,
+                duration: animDuration,
+                child: card,
+              ),
+            ),
+          );
+        },
       );
     }
 
@@ -180,6 +198,7 @@ class AppCard extends BaseComponent {
     bool isDark,
   ) {
     final cardBorderRadius = borderRadius ?? getBorderRadius(context);
+    // Extensions available if needed in the future
 
     switch (type) {
       case AppCardType.elevated:
@@ -214,29 +233,27 @@ class AppCard extends BaseComponent {
 
   /// Get default margin based on size
   EdgeInsets _getDefaultMargin(BuildContext context) {
-    final isCompact = getScreenSize(context) == ScreenSize.mobile;
-    
+    final spacing = Theme.of(context).extension<AppSpacingTheme>();
     switch (size) {
       case AppCardSize.compact:
-        return EdgeInsets.all(isCompact ? 4.0 : 8.0);
+        return EdgeInsets.all(spacing?.sm ?? 8.0);
       case AppCardSize.standard:
-        return EdgeInsets.all(isCompact ? 8.0 : 12.0);
+        return EdgeInsets.all(spacing?.md ?? 12.0);
       case AppCardSize.expanded:
-        return EdgeInsets.all(isCompact ? 12.0 : 16.0);
+        return EdgeInsets.all(spacing?.lg ?? 16.0);
     }
   }
 
   /// Get default padding based on size
   EdgeInsets _getDefaultPadding(BuildContext context) {
-    final isCompact = getScreenSize(context) == ScreenSize.mobile;
-    
+    final spacing = Theme.of(context).extension<AppSpacingTheme>();
     switch (size) {
       case AppCardSize.compact:
-        return EdgeInsets.all(isCompact ? 12.0 : 16.0);
+        return EdgeInsets.all(spacing?.md ?? 16.0);
       case AppCardSize.standard:
-        return EdgeInsets.all(isCompact ? 16.0 : 20.0);
+        return EdgeInsets.all(spacing?.lg ?? 20.0);
       case AppCardSize.expanded:
-        return EdgeInsets.all(isCompact ? 20.0 : 24.0);
+        return EdgeInsets.all(spacing?.xl ?? 24.0);
     }
   }
 }
@@ -252,17 +269,13 @@ class WorldCard extends AppCard {
     VoidCallback? onJoin,
     super.size,
   }) : super(
-          type: AppCardType.elevated,
+          // Use filled variant to lean into theme surfaces and avoid stark whites
+          type: AppCardType.filled,
           title: worldName != null ? Text(worldName) : null,
           subtitle: worldStatus != null ? Text(worldStatus) : null,
           leading: worldIcon != null ? Icon(worldIcon) : null,
-          trailing: onJoin != null 
-              ? IconButton(
-                  onPressed: onJoin,
-                  icon: const Icon(Icons.play_arrow),
-                  tooltip: 'Join World',
-                )
-              : null,
+          // Do not add a second action in the header; actions belong in card content per theme
+          trailing: null,
         );
 }
 

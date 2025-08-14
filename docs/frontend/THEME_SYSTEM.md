@@ -271,10 +271,10 @@ location /api/assets/ {
 
 ## 📚 **Verwandte Dokumentation**
 
-- **[Backend Theme API](api/themes.md)** - Vollständige API-Dokumentation
+- **API-Dokumentation**: Swagger unter `/api/docs`
 - **[Frontend Architecture](README.md)** - Flutter Client-Architektur
-- **[Deployment Guide](guides/deployment-guide.md)** - Production Setup
-- **[Security Guide](backend/security/)** - Asset-Security & CORS
+- **[Dynamic Configuration](DYNAMIC_CONFIGURATION.md)** - Runtime-Config
+- **[Backend Security](../backend/security/)** - Asset-Security & CORS
 
 ---
 

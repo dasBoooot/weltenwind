@@ -2,67 +2,32 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// 🎨 THEME BUNDLES für verschiedene World-Typen
+// 🎯 Definierte Welten mit Assets-Bundles (Manifest-Ordner unter assets/worlds/<assets>)
 const WORLD_THEMES = [
   {
     name: 'Mittelerde Abenteuer',
     status: 'open' as any,
-    themeBundle: 'fantasy_world_bundle',
-    themeVariant: 'tolkien',
-    parentTheme: 'default_world_bundle',
-    themeOverrides: {
-      primaryColor: '#8B4513',
-      accentColor: '#DAA520',
-      backgroundStyle: 'medieval'
-    }
+    assets: 'tolkien'
   },
   {
     name: 'Cyberpunk 2177',
     status: 'running' as any,
-    themeBundle: 'sci_fi_world_bundle',
-    themeVariant: 'cyberpunk',
-    parentTheme: 'default_world_bundle',
-    themeOverrides: {
-      primaryColor: '#00FFFF',
-      accentColor: '#FF00FF',
-      backgroundStyle: 'neon'
-    }
+    assets: 'cyberpunk'
   },
   {
     name: 'Antikes Rom',
     status: 'open' as any,
-    themeBundle: 'ancient_world_bundle',
-    themeVariant: 'roman',
-    parentTheme: 'default_world_bundle',
-    themeOverrides: {
-      primaryColor: '#800020',
-      accentColor: '#FFD700',
-      backgroundStyle: 'marble'
-    }
+    assets: 'roman'
   },
   {
     name: 'Mystische Wälder',
     status: 'upcoming' as any,
-    themeBundle: 'fantasy_world_bundle',
-    themeVariant: 'nature',
-    parentTheme: 'fantasy_world_bundle',
-    themeOverrides: {
-      primaryColor: '#228B22',
-      accentColor: '#32CD32',
-      backgroundStyle: 'forest'
-    }
+    assets: 'nature'
   },
   {
     name: 'Weltraum Station Alpha',
     status: 'running' as any,
-    themeBundle: 'sci_fi_world_bundle',
-    themeVariant: 'space',
-    parentTheme: 'sci_fi_world_bundle',
-    themeOverrides: {
-      primaryColor: '#191970',
-      accentColor: '#00CED1',
-      backgroundStyle: 'stars'
-    }
+    assets: 'space'
   }
 ];
 
@@ -78,48 +43,22 @@ export async function seedWorlds() {
       .replace(/-+/g, '-');
   }
 
-  for (const worldData of WORLD_THEMES) {
-    const slug = toSlug(worldData.name);
+  // 🧹 Nur die fünf definierten Welten erstellen/aktualisieren
+  for (const world of WORLD_THEMES) {
+    const slug = toSlug(world.name);
     await prisma.world.upsert({
-      where: { name: worldData.name },
+      where: { name: world.name },
       update: {
-        themeBundle: worldData.themeBundle,
-        themeVariant: worldData.themeVariant,
-        parentTheme: worldData.parentTheme,
-        themeOverrides: worldData.themeOverrides,
-      },
+        status: world.status,
+        assets: world.assets,
+      } as any,
       create: ({
-        name: worldData.name,
+        name: world.name,
         slug,
-        status: worldData.status as any,
+        status: world.status,
         startsAt: new Date(),
         createdAt: new Date(),
-        // 🎨 THEME FIELDS
-        themeBundle: worldData.themeBundle,
-        themeVariant: worldData.themeVariant,
-        parentTheme: worldData.parentTheme,
-        themeOverrides: worldData.themeOverrides,
-      } as any),
-    });
-  }
-
-  // 🔄 LEGACY: Basis-Welten für jeden Status beibehalten
-  const statuses = ['upcoming','open','running','active','closed','archived'] as const;
-  for (const status of statuses) {
-    const name = `Basis_${status}`;
-    const slug = toSlug(name);
-    await prisma.world.upsert({
-      where: { name },
-      update: {},
-      create: ({
-        name,
-        slug,
-        status: status as any,
-        startsAt: new Date(),
-        createdAt: new Date(),
-        // 🎨 DEFAULT THEME
-        themeBundle: 'default_world_bundle',
-        themeVariant: 'standard',
+        assets: world.assets,
       } as any),
     });
   }

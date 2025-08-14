@@ -101,7 +101,7 @@ global:
 scrape_configs:
   - job_name: 'weltenwind-backend'
     static_configs:
-      - targets: ['localhost:3000']
+      - targets: ['127.0.0.1:3000']
     metrics_path: '/api/metrics'  # Du musst diesen Endpoint erstellen
     
   - job_name: 'node-exporter'
@@ -323,7 +323,7 @@ echo "   - Netdata: http://192.168.2.168:19999"
 echo
 echo "📋 Next steps:"
 echo "   1. Open Uptime Kuma and add monitors for:"
-echo "      - http://localhost:3000/api/health (Backend)"
+echo "      - https://<VM-IP>/api/health (Backend)"
 echo "      - tcp://localhost:5432 (PostgreSQL)" 
 echo "      - tcp://localhost:5555 (Prisma Studio)"
 echo "   2. Configure notifications (Discord/Email)"

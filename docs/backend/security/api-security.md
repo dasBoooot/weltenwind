@@ -187,7 +187,7 @@ if (response.status === 423) {
 ```bash
 # Rate Limiting testen
 for i in {1..10}; do
-  curl -X POST http://localhost:3000/api/auth/login \
+  curl -X POST https://<VM-IP>/api/auth/login \
     -H "Content-Type: application/json" \
     -d '{"username":"test","password":"wrong"}'
 done

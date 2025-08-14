@@ -27,12 +27,7 @@ class World {
   final String? description;
   final WorldCategory category;
   final int playerCount;
-  
-  // 🎨 THEME INTEGRATION - World-spezifische Themes
-  final String? themeBundle;
-  final String? parentTheme;
-  final Map<String, dynamic>? themeOverrides;
-  final String? themeVariant;
+  final String? assets;
   final List<String> allowedActions;
 
   World({
@@ -46,12 +41,7 @@ class World {
     this.description,
     this.category = WorldCategory.classic,
     this.playerCount = 0,
-    
-    // 🎨 THEME FIELDS
-    this.themeBundle,
-    this.parentTheme,
-    this.themeOverrides,
-    this.themeVariant,
+    this.assets,
     this.allowedActions = const [],
   });
 
@@ -75,12 +65,7 @@ class World {
           )
         : WorldCategory.classic,
       playerCount: json['playerCount'] ?? 0,
-      
-      // 🎨 THEME FIELDS FROM DB
-      themeBundle: json['themeBundle'] ?? json['theme_bundle'],
-      parentTheme: json['parentTheme'] ?? json['parent_theme'],
-      themeOverrides: json['themeOverrides'] ?? json['theme_overrides'],
-      themeVariant: json['themeVariant'] ?? json['theme_variant'],
+      assets: json['assets'] ?? json['themeBundle'] ?? json['theme_bundle'],
       allowedActions: (json['allowedActions'] as List?)?.map((e) => e.toString()).toList() ?? const [],
     );
   }
@@ -97,12 +82,7 @@ class World {
       'description': description,
       'category': category.toString().split('.').last,
       'playerCount': playerCount,
-      
-      // 🎨 THEME FIELDS  
-      'themeBundle': themeBundle,
-      'parentTheme': parentTheme,
-      'themeOverrides': themeOverrides,
-      'themeVariant': themeVariant,
+      'assets': assets,
       'allowedActions': allowedActions,
     };
   }

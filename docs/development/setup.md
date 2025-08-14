@@ -82,9 +82,11 @@ npx prisma studio
 
 ### API-Dokumentation
 ```bash
-# Swagger UI starten
-cd docs
-npm run dev
+# OpenAPI kombinierte Spezifikation generieren
+cd docs/openapi
+npm install
+node generate-openapi.js
+# Swagger UI ist über das Backend erreichbar: https://<VM-IP>/api/docs
 ```
 
 ### Datenbank-Migrationen
@@ -127,6 +129,10 @@ npm test
 ```bash
 npm run test:integration
 ```
+
+## Plattform-Hinweise (Projekt-Setup)
+- Windows PowerShell verwenden (keine Linux-Only Befehle).
+- API-Tests gegen `https://<VM-IP>/api` (kein `localhost` im VM-Setup).
 
 ## Deployment
 

@@ -270,10 +270,10 @@ AppLogger.app.i('✅ Client configuration loaded successfully', error: {
 
 ## 📚 **Verwandte Dokumentation**
 
-- **[Backend Environment Variables](backend/infrastructure/environment-variables.md)**
-- **[SSL & nginx Setup](backend/infrastructure/ssl-nginx-setup.md)**
-- **[Theme System](frontend/THEME_SYSTEM.md)**
-- **[Deployment Guide](guides/deployment-guide.md)**
+- **[Backend Environment Variables](../backend/infrastructure/environment-variables.md)**
+- **[SSL & nginx Setup](../backend/infrastructure/ssl-nginx-setup.md)**
+- **[Theme System](THEME_SYSTEM.md)**
+- **[Quick Start](../guides/quick-start.md)**
 
 ---
 

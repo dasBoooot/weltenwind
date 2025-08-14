@@ -78,7 +78,7 @@ npm install -g pm2
 pm2 start dist/index.js --name "weltenwind-backend"
 
 # Nginx Reverse Proxy
-# Konfiguration siehe: docs/guides/deployment-guide.md
+# Konfiguration siehe: docs/backend/infrastructure/ssl-nginx-setup.md
 ```
 
 #### **2. Frontend Build & Deploy**
@@ -186,17 +186,16 @@ pm2 logs weltenwind-backend
 
 ## 📚 **Nächste Schritte**
 
-### **Als Entwickler**
+### **Als Entwickler**  
 - 📖 [Frontend-Architektur](../frontend/README.md) verstehen
 - 🔧 [API-Referenz](../api/README.md) studieren  
-- 🎨 [Theme-System](../frontend/theming-system.md) erkunden
-- 🌍 [i18n-System](../frontend/internationalization.md) erweitern
+- 🎨 [Theme-System](../frontend/THEME_SYSTEM.md) erkunden
+  
 
 ### **Als Administrator**  
-- 🚀 [Deployment-Guide](deployment-guide.md) für Production
-- 🔐 [Security-Guide](../backend/authentication.md) für Absicherung
-- 📊 [Monitoring-Setup](../development/monitoring.md) einrichten
-- 🔄 [Backup-Strategie](../backend/deployment.md#backup) planen
+- 🚀 [Production Deployment](../backend/operations/production-updates.md)
+- 🔐 [API Security](../backend/security/api-security.md)
+- 📊 [Logging & Monitoring](../backend/infrastructure/logging-implementation.md)
 
 ### **Als Benutzer**
 - 🎮 [User-Guide](user-guide.md) für erweiterte Features

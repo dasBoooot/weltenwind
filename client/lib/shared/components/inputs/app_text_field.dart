@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../base/base_component.dart';
+import '../../theme/extensions.dart';
 
 enum AppTextFieldType {
   text,
@@ -125,7 +126,7 @@ class AppTextField extends BaseComponent {
     return Text(
       helperText!,
       style: textTheme.bodySmall?.copyWith(
-        color: colorScheme.onSurface.withValues(alpha: 0.7),
+        color: colorScheme.onSurface.withOpacity(0.7),
       ),
     );
   }
@@ -136,7 +137,9 @@ class AppTextField extends BaseComponent {
     ColorScheme colorScheme,
     bool isDark,
   ) {
-    final borderRadius = getBorderRadius(context, radius: 8.0);
+    final radiusExt = Theme.of(context).extension<AppRadiusTheme>();
+    final spacingExt = Theme.of(context).extension<AppSpacingTheme>();
+    final borderRadius = radiusExt?.radiusSmall ?? getBorderRadius(context, radius: 8.0);
 
     return InputDecoration(
       hintText: hint,
@@ -155,7 +158,7 @@ class AppTextField extends BaseComponent {
       enabledBorder: OutlineInputBorder(
         borderRadius: borderRadius,
         borderSide: BorderSide(
-          color: colorScheme.outline.withValues(alpha: 0.5),
+          color: colorScheme.outline.withOpacity(0.5),
           width: 1.0,
         ),
       ),
@@ -183,7 +186,7 @@ class AppTextField extends BaseComponent {
       disabledBorder: OutlineInputBorder(
         borderRadius: borderRadius,
         borderSide: BorderSide(
-          color: colorScheme.outline.withValues(alpha: 0.3),
+          color: colorScheme.outline.withOpacity(0.3),
           width: 1.0,
         ),
       ),
@@ -191,26 +194,26 @@ class AppTextField extends BaseComponent {
       // Fill styling
       filled: true,
       fillColor: isDark 
-          ? colorScheme.surface.withValues(alpha: 0.8)
+          ? colorScheme.surface.withOpacity(0.8)
           : colorScheme.surface,
       
       // Content padding
       contentPadding: getResponsivePadding(
         context,
-        mobile: 12.0,
-        tablet: 16.0,
-        desktop: 16.0,
+        mobile: spacingExt?.sm ?? 12.0,
+        tablet: spacingExt?.md ?? 16.0,
+        desktop: spacingExt?.md ?? 16.0,
       ),
       
       // Counter styling
       counterStyle: TextStyle(
-        color: colorScheme.onSurface.withValues(alpha: 0.6),
+        color: colorScheme.onSurface.withOpacity(0.6),
         fontSize: 12,
       ),
       
       // Hint styling
       hintStyle: TextStyle(
-        color: colorScheme.onSurface.withValues(alpha: 0.5),
+        color: colorScheme.onSurface.withOpacity(0.5),
       ),
       
       // Helper text styling
@@ -235,7 +238,6 @@ class AppTextField extends BaseComponent {
         return TextInputType.multiline;
       case AppTextFieldType.text:
       case AppTextFieldType.password:
-      default:
         return TextInputType.text;
     }
   }

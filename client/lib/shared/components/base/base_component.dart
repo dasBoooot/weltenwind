@@ -5,6 +5,7 @@ library;
 
 import 'package:flutter/material.dart';
 import '../../theme/theme_manager.dart';
+import '../../theme/extensions.dart';
 
 abstract class BaseComponent extends StatelessWidget {
   const BaseComponent({super.key});
@@ -37,6 +38,8 @@ abstract class BaseComponent extends StatelessWidget {
 
   /// Get theme-aware border radius
   BorderRadius getBorderRadius(BuildContext context, {double radius = 12.0}) {
+    final ext = Theme.of(context).extension<AppRadiusTheme>();
+    if (radius == 12.0 && ext != null) return ext.radiusMedium;
     return BorderRadius.circular(radius);
   }
 
@@ -62,13 +65,14 @@ abstract class BaseComponent extends StatelessWidget {
     double desktop = 32.0,
   }) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final spacing = Theme.of(context).extension<AppSpacingTheme>();
     
     if (screenWidth < 768) {
-      return EdgeInsets.all(mobile);
+      return EdgeInsets.all(spacing?.md ?? mobile);
     } else if (screenWidth < 1024) {
-      return EdgeInsets.all(tablet);
+      return EdgeInsets.all(spacing?.lg ?? tablet);
     } else {
-      return EdgeInsets.all(desktop);
+      return EdgeInsets.all(spacing?.xl ?? desktop);
     }
   }
 

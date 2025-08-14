@@ -114,7 +114,7 @@ loggers.security.csrfTokenInvalid(
 
 ### Log-Viewer aufrufen:
 ```
-http://localhost:3000/log-viewer/
+https://<VM-IP>/log-viewer/
 ```
 
 **Features:**
@@ -265,7 +265,7 @@ mkdir -p logs
 npm run dev
 
 # Test-Login für Log-Generierung
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST https://<VM-IP>/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser1","password":"wrongpassword"}'
 
@@ -274,7 +274,7 @@ tail -f logs/auth.log
 tail -f logs/security.log
 
 # Web-UI öffnen
-open http://localhost:3000/log-viewer/
+open https://<VM-IP>/log-viewer/
 ```
 
 ## 🚀 **Empfohlene Reihenfolge**

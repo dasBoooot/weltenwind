@@ -5,6 +5,7 @@ library;
 
 import 'package:flutter/material.dart';
 import '../base/base_component.dart';
+import '../../theme/extensions.dart';
 
 enum AppContainerType {
   normal,
@@ -99,7 +100,8 @@ class AppContainer extends BaseComponent {
     ColorScheme colorScheme,
     bool isDark,
   ) {
-    final containerBorderRadius = borderRadius ?? getBorderRadius(context);
+    final radiusExt = Theme.of(context).extension<AppRadiusTheme>();
+    final containerBorderRadius = borderRadius ?? (radiusExt?.radiusMedium ?? getBorderRadius(context));
 
     switch (type) {
       case AppContainerType.normal:
@@ -139,12 +141,12 @@ class AppContainer extends BaseComponent {
   /// Get default padding
   EdgeInsets _getDefaultPadding(BuildContext context) {
     if (!responsive) return EdgeInsets.zero;
-    
+    final spacing = Theme.of(context).extension<AppSpacingTheme>();
     return getResponsivePadding(
       context,
-      mobile: 16.0,
-      tablet: 20.0,
-      desktop: 24.0,
+      mobile: spacing?.md ?? 16.0,
+      tablet: spacing?.lg ?? 20.0,
+      desktop: spacing?.lg ?? 24.0,
     );
   }
 

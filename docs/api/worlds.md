@@ -15,7 +15,7 @@ Zeigt alle nicht archivierten Welten an.
 
 **Request:**
 ```bash
-curl -X GET http://localhost:3000/api/worlds \
+curl -X GET https://<VM-IP>/api/worlds \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -40,7 +40,7 @@ curl -X GET http://localhost:3000/api/worlds \
 
 **Request:**
 ```bash
-curl -X POST http://localhost:3000/api/worlds/1/edit \
+curl -X POST https://<VM-IP>/api/worlds/1/edit \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"status": "active"}'
@@ -67,7 +67,7 @@ Tritt einer Welt bei.
 
 **Request:**
 ```bash
-curl -X POST http://localhost:3000/api/worlds/1/join \
+curl -X POST https://<VM-IP>/api/worlds/1/join \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"inviteCode": "optional"}'
@@ -90,7 +90,7 @@ Zeigt den eigenen Spielstatus in einer Welt an.
 
 **Request:**
 ```bash
-curl -X GET http://localhost:3000/api/worlds/1/players/me \
+curl -X GET https://<VM-IP>/api/worlds/1/players/me \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -115,7 +115,7 @@ Verlässt eine Welt.
 
 **Request:**
 ```bash
-curl -X DELETE http://localhost:3000/api/worlds/1/players/me \
+curl -X DELETE https://<VM-IP>/api/worlds/1/players/me \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -135,7 +135,7 @@ Zeigt alle Spieler einer Welt an.
 
 **Request:**
 ```bash
-curl -X GET http://localhost:3000/api/worlds/1/players \
+curl -X GET https://<VM-IP>/api/worlds/1/players \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -159,7 +159,7 @@ Zeigt den öffentlichen Status einer Welt an.
 
 **Request:**
 ```bash
-curl -X GET http://localhost:3000/api/worlds/1/state
+curl -X GET https://<VM-IP>/api/worlds/1/state
 ```
 
 **Response:**
@@ -241,7 +241,7 @@ Vorregistrierung für eine Welt.
 
 **Request:**
 ```bash
-curl -X POST http://localhost:3000/api/worlds/1/pre-register \
+curl -X POST https://<VM-IP>/api/worlds/1/pre-register \
   -H "Content-Type: application/json" \
   -d '{"email": "user@example.com", "config": {}}'
 ```
@@ -261,7 +261,7 @@ Vorregistrierung zurückziehen.
 
 **Request:**
 ```bash
-curl -X DELETE "http://localhost:3000/api/worlds/1/pre-register?email=user@example.com"
+curl -X DELETE "https://<VM-IP>/api/worlds/1/pre-register?email=user@example.com"
 ```
 
 **Response:**
@@ -289,7 +289,7 @@ curl -X DELETE "http://localhost:3000/api/worlds/1/pre-register?email=user@examp
 ### 1. Admin-Tests
 ```bash
 # Admin kann alles
-curl -X POST http://localhost:3000/api/worlds/1/edit \
+curl -X POST https://<VM-IP>/api/worlds/1/edit \
   -H "Authorization: Bearer ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"status": "active"}'
@@ -298,11 +298,11 @@ curl -X POST http://localhost:3000/api/worlds/1/edit \
 ### 2. User-Tests
 ```bash
 # User kann beitreten
-curl -X POST http://localhost:3000/api/worlds/1/join \
+curl -X POST https://<VM-IP>/api/worlds/1/join \
   -H "Authorization: Bearer USER_TOKEN"
 
 # User kann nicht bearbeiten
-curl -X POST http://localhost:3000/api/worlds/1/edit \
+curl -X POST https://<VM-IP>/api/worlds/1/edit \
   -H "Authorization: Bearer USER_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"status": "active"}'
@@ -312,13 +312,13 @@ curl -X POST http://localhost:3000/api/worlds/1/edit \
 ### 3. Mod-Tests
 ```bash
 # Mod kann Einladungen erstellen
-curl -X POST http://localhost:3000/api/worlds/1/invites \
+curl -X POST https://<VM-IP>/api/worlds/1/invites \
   -H "Authorization: Bearer MOD_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"email": "user@example.com"}'
 
 # Mod kann nicht bearbeiten
-curl -X POST http://localhost:3000/api/worlds/1/edit \
+curl -X POST https://<VM-IP>/api/worlds/1/edit \
   -H "Authorization: Bearer MOD_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"status": "active"}'

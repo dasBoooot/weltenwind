@@ -119,14 +119,14 @@ await fetch('/api/auth/logout', {
 
 ```bash
 # Security Headers testen
-curl -I http://localhost:3000/api/auth/me
+curl -I https://<VM-IP>/api/auth/me
 
 # CSRF-Token abrufen
-curl http://localhost:3000/api/auth/csrf-token \
+curl https://<VM-IP>/api/auth/csrf-token \
   -H "Authorization: Bearer <access-token>"
 
 # Mit CSRF-Token ausloggen
-curl -X POST http://localhost:3000/api/auth/logout \
+curl -X POST https://<VM-IP>/api/auth/logout \
   -H "Authorization: Bearer <access-token>" \
   -H "X-CSRF-Token: <csrf-token>"
 ```

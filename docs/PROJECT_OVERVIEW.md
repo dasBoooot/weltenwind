@@ -117,18 +117,14 @@ docs/
 │
 ├── frontend/                    # Flutter Client Dokumentation
 │   ├── README.md                # Frontend-Übersicht  
-│   ├── architecture.md          # Frontend-Architektur
-│   ├── theming-system.md        # Theme & Design System
-│   ├── navigation.md            # Smart Navigation System
-│   ├── internationalization.md  # i18n & Localization
-│   └── deployment.md            # Build & Deployment
+│   ├── THEME_SYSTEM.md          # Theme & Design System
+│   └── DYNAMIC_CONFIGURATION.md # Runtime-Konfiguration
 │
 ├── backend/                     # API & Backend Dokumentation 
 │   ├── README.md                # Backend-Übersicht
-│   ├── api-reference.md         # API-Endpunkte Referenz
-│   ├── authentication.md        # Auth & Security
-│   ├── database-schema.md       # DB-Schema & Models  
-│   └── deployment.md            # Server Deployment
+│   ├── security/                # Security & Auth
+│   ├── infrastructure/          # Infrastruktur & Ops
+│   └── operations/              # Development & Deployment
 │
 ├── api/                         # API-spezifische Docs
 │   ├── README.md                # API-Übersicht
@@ -139,8 +135,6 @@ docs/
 │
 ├── guides/                      # User & Developer Guides
 │   ├── quick-start.md           # Schnellstart-Guide
-│   ├── development-setup.md     # Development Environment
-│   ├── deployment-guide.md      # Production Deployment
 │   ├── user-guide.md            # End-User Manual
 │   └── contribution-guide.md    # Contribution Guidelines
 │
@@ -156,19 +150,18 @@ docs/
 ## 🚀 **Quick Start**
 
 ### **Für Entwickler**
-1. **Setup**: [Development Setup Guide](guides/development-setup.md)
+1. **Setup**: [Development Setup Guide](development/setup.md)
 2. **API**: [API Reference](api/README.md)  
-3. **Frontend**: [Frontend Architecture](frontend/architecture.md)
+3. **Frontend**: [Frontend Architecture](frontend/README.md)
 
 ### **Für Administratoren**
-1. **Deployment**: [Deployment Guide](guides/deployment-guide.md)
-2. **Configuration**: [Backend Configuration](backend/deployment.md)
-3. **Monitoring**: [Logging & Monitoring](development/monitoring.md)
+1. **Deployment**: [Production Deployment](backend/operations/production-updates.md)
+2. **Configuration**: [Backend Configuration](backend/infrastructure/environment-variables.md)
+3. **Monitoring**: [Logging & Monitoring](backend/infrastructure/logging-implementation.md)
 
 ### **Für Benutzer**
-1. **Getting Started**: [User Guide](guides/user-guide.md)
-2. **World Creation**: [World Management](api/worlds.md)
-3. **Invite Friends**: [Invite System Guide](guides/user-guide.md#invites)
+1. **Worlds**: [World Management](api/worlds.md)
+2. **Einladungen**: [Invite System](api/invites.md)
 
 ---
 

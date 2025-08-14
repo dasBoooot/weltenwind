@@ -77,8 +77,7 @@ router.get('/validate/:token', async (req, res) => {
             id: true,
             name: true,
             status: true,
-            themeBundle: true,
-            themeVariant: true,
+            assets: true,
             createdAt: true,
             startsAt: true,
             endsAt: true

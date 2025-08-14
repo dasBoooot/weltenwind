@@ -138,16 +138,16 @@ async function changePassword(currentPassword: string, newPassword: string) {
 3. **Testing**
    ```bash
    # 1. Login
-   curl -X POST http://localhost:3000/api/auth/login \
+   curl -X POST https://<VM-IP>/api/auth/login \
      -H "Content-Type: application/json" \
      -d '{"username":"testuser","password":"Test123!"}'
    
    # 2. CSRF-Token abrufen
-   curl http://localhost:3000/api/auth/csrf-token \
+   curl https://<VM-IP>/api/auth/csrf-token \
      -H "Authorization: Bearer <access-token>"
    
    # 3. Passwort ändern (mit Session-Rotation)
-   curl -X POST http://localhost:3000/api/auth/change-password \
+   curl -X POST https://<VM-IP>/api/auth/change-password \
      -H "Authorization: Bearer <access-token>" \
      -H "X-CSRF-Token: <csrf-token>" \
      -H "Content-Type: application/json" \

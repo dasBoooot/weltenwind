@@ -124,15 +124,15 @@ class ErrorHandler {
     // This will return localized error messages based on exception type
     switch (exception) {
       case AuthException _:
-        return _getAuthErrorMessage(exception as AuthException);
+        return _getAuthErrorMessage(exception);
       case NetworkException _:
-        return _getNetworkErrorMessage(exception as NetworkException);
+        return _getNetworkErrorMessage(exception);
       case WorldException _:
-        return _getWorldErrorMessage(exception as WorldException);
+        return _getWorldErrorMessage(exception);
       case ThemeException _:
-        return _getThemeErrorMessage(exception as ThemeException);
+        return _getThemeErrorMessage(exception);
       case ValidationException _:
-        return _getValidationErrorMessage(exception as ValidationException);
+        return _getValidationErrorMessage(exception);
       default:
         return 'An unexpected error occurred. Please try again.';
     }

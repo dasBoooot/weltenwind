@@ -13,16 +13,14 @@
 - 🔌 **[API-Referenz](api/README.md)** - Vollständige REST API Dokumentation
 
 ### **🖥️ Für Administratoren**
-- 🚀 **[Deployment Guide](guides/deployment-guide.md)** - Production Setup
-- 🔐 **[Security Guide](backend/authentication.md)** - Sicherheits-Best-Practices
-- 📊 **[Monitoring](development/monitoring.md)** - System-Überwachung
+- 🚀 **[Deployment](backend/operations/production-updates.md)** - Production Setup
+- 🔐 **[Security Guide](backend/security/api-security.md)** - Sicherheits-Best-Practices
+- 📊 **[Monitoring](backend/infrastructure/logging-implementation.md)** - Logging & Metriken
 - 💾 **[Datenbank-Schema](database/schema.md)** - DB-Struktur & Migrations
 
 ### **🎮 Für Benutzer**
-- 📖 **[User Guide](guides/user-guide.md)** - Spieler-Handbuch
 - 📨 **[Invite-System](api/invites.md)** - Freunde einladen
 - 🌍 **[Welt-Management](api/worlds.md)** - Welten erstellen & verwalten
-- 🎨 **[Personalisierung](guides/customization.md)** - Themes & Settings
 
 ---
 
@@ -36,10 +34,7 @@ docs/
 ├── 📁 frontend/                 # 📱 Flutter Client Dokumentation
 │   ├── README.md                # Frontend-Architektur & Übersicht
 │   ├── THEME_SYSTEM.md          # 🎨 Named Entrypoints Theme System
-│   ├── DYNAMIC_CONFIGURATION.md # 🔧 Dynamic Configuration System
-│   ├── navigation.md            # Smart Navigation System
-│   ├── internationalization.md  # i18n & Localization
-│   └── deployment.md            # Build & Deployment
+│   └── DYNAMIC_CONFIGURATION.md # 🔧 Dynamic Configuration System
 │
 ├── 📁 backend/                  # ⚡ Node.js Backend Dokumentation
 │   ├── README.md                # Backend-Architektur & Übersicht
@@ -61,14 +56,10 @@ docs/
 │   ├── README.md                # API-Übersicht & Standards
 │   ├── auth.md                  # Authentication & User Management
 │   ├── worlds.md                # World Management API
-│   ├── invites.md               # Invite System API (✨ Neu überarbeitet!)
-│   ├── themes.md                # Theme System API
-│   └── errors.md                # Error Handling & Codes
+│   └── invites.md               # Invite System API
 │
 ├── 📁 guides/                   # 📋 Praktische Anleitungen
 │   ├── quick-start.md           # 🚀 5-Minuten-Setup für alle
-│   ├── development-setup.md     # Development Environment
-│   ├── deployment-guide.md      # Production Deployment
 │   ├── user-guide.md            # End-User Manual
 │   └── contribution-guide.md    # Contribution Guidelines
 │
@@ -168,13 +159,20 @@ flutter run -d chrome
 ```
 ➡️ **[Frontend-Setup](frontend/README.md#development)**
 
-### **Option 3: API erkunden**
+### **Option 3: API erkunden (Projekt-Setup mit VM)**
 ```bash
-cd backend
-npm run dev
-# Öffne: http://localhost:3000/api/docs
+# Backend im VM-Setup läuft bereits (Service)
+# Swagger-UI im Projekt-Setup:
+# Öffne: https://<VM-IP>/api/docs
 ```
 ➡️ **[API-Dokumentation](api/README.md)**
+
+---
+
+## ⚠️ Projekt-Hinweis (ergänzend zu den Spielregeln)
+- Windows PowerShell verwenden (keine Linux-Only Befehle).
+- VM-Setup: API-Tests über `https://<VM-IP>/api` (kein `localhost`).
+- OpenAPI-Generierung: `cd docs/openapi && npm install && node generate-openapi.js`
 
 ---
 
@@ -187,10 +185,10 @@ npm run dev
 | **📨 Invite System** | ✅ Neu überarbeitet | [invites.md](api/invites.md) |
 | **🎨 Dynamic Theme System** | ✅ Production Ready | [THEME_SYSTEM.md](frontend/THEME_SYSTEM.md) |
 | **📱 Cross-Platform Client** | ✅ Web/iOS/Android | [frontend/README.md](frontend/README.md) |
-| **🌐 Internationalization** | ✅ DE/EN Support | [i18n.md](frontend/internationalization.md) |
+| **🌐 Internationalization** | ✅ DE/EN Support | Frontend Docs |
 | **⚡ Enterprise Security** | ✅ Production Ready | [security/](backend/security/) |
 | **📊 Professional Logging** | ✅ Production Ready | [logging-implementation.md](backend/infrastructure/logging-implementation.md) |
-| **🛠️ Admin Tools Suite** | ✅ Production Ready | [tools/README.md](../backend/tools/README.md) |
+| **🛠️ Admin Tools Suite** | ✅ Production Ready | Backend Docs |
 | **🔄 Real-time Gaming** | 📋 Planned | [scaling-strategy.md](architecture/scaling-strategy.md) |
 
 ---
@@ -201,7 +199,7 @@ npm run dev
 - 📖 **Dokumentation durchsuchen**: Nutze die Navigation oben
 - 🐛 **Bug Report**: [GitHub Issues](https://github.com/dasBoooot/weltenwind/issues)
 - 💡 **Feature Request**: [GitHub Discussions](https://github.com/dasBoooot/weltenwind/discussions)
-- 📧 **Direkter Kontakt**: Siehe [Contribution Guide](guides/contribution-guide.md)
+ 
 
 ### **Contributing**
 - 🔄 **Pull Requests**: Willkommen für alle Verbesserungen

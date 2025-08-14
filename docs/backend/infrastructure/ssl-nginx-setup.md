@@ -168,7 +168,7 @@ if (isDevelopment) {
 
 ```bash
 # Backend Internal URLs
-BASE_URL="http://localhost:3000"
+BASE_URL="http://127.0.0.1:3000"
 
 # Public/External URLs (über nginx)
 PUBLIC_API_URL="https://192.168.2.168/api"

@@ -59,7 +59,7 @@ Das Weltenwind-System enthält **10 Test-User** mit verschiedenen Rollen für En
 ### 🔐 Login-Test
 ```bash
 # Admin-Login
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST https://<VM-IP>/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"AAbb1234!!"}'
 ```
@@ -67,38 +67,38 @@ curl -X POST http://localhost:3000/api/auth/login \
 ### 🌍 Welt-Funktionen testen
 ```bash
 # Alle Welten anzeigen (admin)
-curl -X GET http://localhost:3000/api/worlds \
+curl -X GET https://<VM-IP>/api/worlds \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # Welt bearbeiten (admin)
-curl -X POST http://localhost:3000/api/worlds/1/edit \
+curl -X POST https://<VM-IP>/api/worlds/1/edit \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"status":"open"}'
 
 # Spieler einladen (admin)
-curl -X POST http://localhost:3000/api/worlds/1/invites \
+curl -X POST https://<VM-IP>/api/worlds/1/invites \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"email":"newuser@example.com"}'
 
 # Alle Spieler anzeigen (admin)
-curl -X GET http://localhost:3000/api/worlds/1/players \
+curl -X GET https://<VM-IP>/api/worlds/1/players \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### 👤 User-Funktionen testen
 ```bash
 # Welt beitreten (user)
-curl -X POST http://localhost:3000/api/worlds/1/join \
+curl -X POST https://<VM-IP>/api/worlds/1/join \
   -H "Authorization: Bearer USER_TOKEN"
 
 # Eigenen Status anzeigen (user)
-curl -X GET http://localhost:3000/api/worlds/1/players/me \
+curl -X GET https://<VM-IP>/api/worlds/1/players/me \
   -H "Authorization: Bearer USER_TOKEN"
 
 # Welt verlassen (user)
-curl -X DELETE http://localhost:3000/api/worlds/1/players/me \
+curl -X DELETE https://<VM-IP>/api/worlds/1/players/me \
   -H "Authorization: Bearer USER_TOKEN"
 ```
 

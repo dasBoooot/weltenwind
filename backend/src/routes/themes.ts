@@ -15,6 +15,68 @@ const THEMES_DIR = path.join(__dirname, '../../tools/theme-editor/schemas');
 // Asset-Verzeichnis Pfad für modulare Welten (im Projekt-Root)
 const ASSETS_DIR = path.join(__dirname, '../../../assets/worlds');
 
+// Dynamische Auflösung von Welt-/Bundle-IDs über Manifeste (keine Hardcodings)
+function listWorldDirs(): string[] {
+  if (!fs.existsSync(ASSETS_DIR)) return [];
+  return fs.readdirSync(ASSETS_DIR, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => dirent.name);
+}
+
+function tryReadManifest(worldDir: string): any | null {
+  try {
+    const manifestPath = path.join(ASSETS_DIR, worldDir, 'manifest.json');
+    if (!fs.existsSync(manifestPath)) return null;
+    return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function normalizeId(id: string): string {
+  return String(id || '').trim().toLowerCase();
+}
+
+function resolveWorldId(requestedId: string): string | null {
+  const needle = normalizeId(requestedId);
+  // 1) Direkter Ordner-Treffer
+  if (fs.existsSync(path.join(ASSETS_DIR, needle))) return needle;
+
+  // 2) Über Manifeste: id, name oder aliases[] matchen
+  const candidates = listWorldDirs();
+  for (const dir of candidates) {
+    const manifest = tryReadManifest(dir);
+    if (!manifest) continue;
+
+    const manifestId = normalizeId(manifest.id || manifest.name || dir);
+    if (manifestId === needle) return dir;
+
+    // Match gegen bundle.* Felder (z.B. seed-typ "fantasy_world_bundle")
+    const bundle = manifest.bundle || {};
+    const bundleType = normalizeId(bundle.type || '');
+    const bundleName = normalizeId(bundle.name || '');
+    if (bundleType && bundleType === needle) return dir;
+    if (bundleName && bundleName === needle) return dir;
+
+    // Aliases unterstützen
+    const aliases: string[] = Array.isArray(manifest.aliases) ? manifest.aliases : [];
+    if (aliases.map(normalizeId).includes(needle)) return dir;
+  }
+  return null;
+}
+
+function resolveThemeName(requestedName: string): string | null {
+  // Themes werden 1:1 wie WorldIDs benannt. Versuche zunächst direkten Treffer.
+  if (fs.existsSync(path.join(THEMES_DIR, `${requestedName}.json`))) return requestedName;
+
+  // Ansonsten nutze die dynamische Weltauflösung und spiegle den Namen
+  const resolvedWorld = resolveWorldId(requestedName);
+  if (resolvedWorld && fs.existsSync(path.join(THEMES_DIR, `${resolvedWorld}.json`))) {
+    return resolvedWorld;
+  }
+  return null;
+}
+
 router.get('/named-entrypoints', async (req, res) => {
   try {
     // Debug: Welche Route wurde aufgerufen
@@ -78,16 +140,17 @@ router.get('/named-entrypoints', async (req, res) => {
 router.get('/named-entrypoints/:worldId/:context', async (req, res) => {
   try {
     const { worldId, context } = req.params;
+    const resolvedWorldId = resolveWorldId(worldId) || worldId;
     
-    loggers.system.info('🎨 Lade Named Entrypoint', { worldId, context });
+    loggers.system.info('🎨 Lade Named Entrypoint', { worldId, resolvedWorldId, context });
     
     // Manifest-Datei laden
-    const manifestPath = path.join(ASSETS_DIR, worldId, 'manifest.json');
+    const manifestPath = path.join(ASSETS_DIR, resolvedWorldId, 'manifest.json');
     if (!fs.existsSync(manifestPath)) {
       loggers.system.warn('⚠️ Manifest nicht gefunden', { worldId });
       return res.status(404).json({ 
         error: 'Manifest nicht gefunden',
-        worldId
+        worldId: resolvedWorldId
       });
     }
     
@@ -99,20 +162,20 @@ router.get('/named-entrypoints/:worldId/:context', async (req, res) => {
       loggers.system.warn('⚠️ Theme-Kontext nicht gefunden', { worldId, context });
       return res.status(404).json({ 
         error: 'Theme-Kontext nicht gefunden',
-        worldId,
+        worldId: resolvedWorldId,
         context,
         availableContexts: Object.keys(manifest.entrypoints?.themes || {})
       });
     }
     
     const themeEntrypoint = manifest.entrypoints.themes[context];
-    const themePath = path.join(ASSETS_DIR, worldId, themeEntrypoint.file);
+    const themePath = path.join(ASSETS_DIR, resolvedWorldId, themeEntrypoint.file);
     
     if (!fs.existsSync(themePath)) {
-      loggers.system.warn('⚠️ Theme-Datei nicht gefunden', { worldId, context, file: themeEntrypoint.file });
+      loggers.system.warn('⚠️ Theme-Datei nicht gefunden', { worldId: resolvedWorldId, context, file: themeEntrypoint.file });
       return res.status(404).json({ 
         error: 'Theme-Datei nicht gefunden',
-        worldId,
+        worldId: resolvedWorldId,
         context,
         file: themeEntrypoint.file
       });
@@ -122,7 +185,7 @@ router.get('/named-entrypoints/:worldId/:context', async (req, res) => {
     const themeContent = fs.readFileSync(themePath, 'utf8');
     const themeData = JSON.parse(themeContent);
     
-    loggers.system.info('✅ Named Entrypoint erfolgreich geladen', { worldId, context });
+    loggers.system.info('✅ Named Entrypoint erfolgreich geladen', { worldId: resolvedWorldId, context });
     res.json({
       manifest,
       theme: {
@@ -689,22 +752,24 @@ router.get('/:name/audit', authenticate, async (req, res) => {
 
 router.get('/:name', async (req, res) => {
   try {
-    const themeName = req.params.name;
-    const filePath = path.join(THEMES_DIR, `${themeName}.json`);
+    const themeNameRaw = req.params.name;
+    const themeName = resolveThemeName(themeNameRaw);
+    const filePath = themeName ? path.join(THEMES_DIR, `${themeName}.json`) : '';
     
     // Debug: Welche Route wurde aufgerufen
     loggers.system.info('🎨 Lade Theme (/:name Route)', { 
       theme: themeName,
+      requested: themeNameRaw,
       originalUrl: req.originalUrl,
       path: req.path,
       params: req.params
     });
     
-    if (!fs.existsSync(filePath)) {
-      loggers.system.warn('⚠️ Theme nicht gefunden', { theme: themeName });
+    if (!themeName || !fs.existsSync(filePath)) {
+      loggers.system.warn('⚠️ Theme nicht gefunden', { theme: themeNameRaw });
       return res.status(404).json({ 
         error: 'Theme nicht gefunden',
-        theme: themeName
+        theme: themeNameRaw
       });
     }
     

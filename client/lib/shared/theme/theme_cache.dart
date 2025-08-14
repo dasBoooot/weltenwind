@@ -1,6 +1,3 @@
-/// 💾 Theme Cache
-/// 
-/// High-performance caching system for theme data
 library;
 
 import 'package:flutter/material.dart';

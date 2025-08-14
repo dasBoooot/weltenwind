@@ -8,7 +8,7 @@ import '../../../config/env.dart';
 /// 
 /// Zeigt ein Hintergrundbild basierend auf der aktuellen Welt und dem Theme an.
 /// Unterstützt verschiedene Overlay-Typen für bessere Lesbarkeit.
-class BackgroundImage extends StatelessWidget {
+class BackgroundImage extends StatefulWidget {
   final World world;
   final String? pageType;
   final String themeContext;
@@ -31,44 +31,67 @@ class BackgroundImage extends StatelessWidget {
   });
 
   @override
+  State<BackgroundImage> createState() => _BackgroundImageState();
+}
+
+class _BackgroundImageState extends State<BackgroundImage> {
+  late Future<String?> _imageFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _imageFuture = ThemeResolver().resolveBackgroundImage(
+      widget.world,
+      context: widget.themeContext,
+      pageType: widget.pageType,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant BackgroundImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.world.assets != widget.world.assets ||
+        oldWidget.pageType != widget.pageType ||
+        oldWidget.themeContext != widget.themeContext) {
+      _imageFuture = ThemeResolver().resolveBackgroundImage(
+        widget.world,
+        context: widget.themeContext,
+        pageType: widget.pageType,
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<String?>(
-      future: ThemeResolver().resolveBackgroundImage(
-        world,
-        context: themeContext,
-        pageType: pageType,
-      ),
+      future: _imageFuture,
       builder: (context, snapshot) {
         AppLogger.app.d('🖼️ BackgroundImage build', error: {
           'hasData': snapshot.hasData,
           'data': snapshot.data,
           'error': snapshot.error,
-          'world': world.themeBundle,
-          'pageType': pageType,
-          'context': themeContext,
+          'world': widget.world.assets,
+          'pageType': widget.pageType,
+          'context': widget.themeContext,
           'connectionState': snapshot.connectionState.toString(),
         });
         
-        // Show loading indicator while waiting
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Stack(
             children: [
               _buildFallbackBackground(context),
-              child,
+              widget.child,
             ],
           );
         }
         
         return Stack(
           children: [
-            // Background (mit IgnorePointer)
             if (snapshot.hasData && snapshot.data != null)
               _buildBackgroundWithImage(context, snapshot.data!)
             else
               _buildFallbackBackground(context),
-            
-            // Content (ohne IgnorePointer)
-            child,
+            widget.child,
           ],
         );
       },
@@ -98,13 +121,13 @@ class BackgroundImage extends StatelessWidget {
   Widget _buildOverlay(BuildContext context) {
     final theme = Theme.of(context);
     
-    switch (overlayType) {
+    switch (widget.overlayType) {
       case BackgroundOverlayType.none:
         return const SizedBox.shrink();
         
       case BackgroundOverlayType.solid:
         return Container(
-          color: theme.colorScheme.surface.withValues(alpha: overlayOpacity),
+          color: theme.colorScheme.surface.withValues(alpha: widget.overlayOpacity),
         );
         
       case BackgroundOverlayType.gradient:
@@ -114,9 +137,9 @@ class BackgroundImage extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                theme.colorScheme.surface.withValues(alpha: overlayOpacity),
-                theme.colorScheme.surface.withValues(alpha: overlayOpacity * 0.7),
-                theme.colorScheme.surface.withValues(alpha: overlayOpacity),
+                theme.colorScheme.surface.withValues(alpha: widget.overlayOpacity),
+                theme.colorScheme.surface.withValues(alpha: widget.overlayOpacity * 0.7),
+                theme.colorScheme.surface.withValues(alpha: widget.overlayOpacity),
               ],
             ),
           ),
@@ -129,14 +152,15 @@ class BackgroundImage extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                theme.colorScheme.primary.withValues(alpha: overlayOpacity * 0.5),
-                theme.colorScheme.secondary.withValues(alpha: overlayOpacity * 0.3),
-                theme.colorScheme.tertiary.withValues(alpha: overlayOpacity * 0.4),
+                theme.colorScheme.primary.withValues(alpha: widget.overlayOpacity * 0.5),
+                theme.colorScheme.secondary.withValues(alpha: widget.overlayOpacity * 0.3),
+                theme.colorScheme.tertiary.withValues(alpha: widget.overlayOpacity * 0.4),
               ],
             ),
           ),
         );
     }
+    return const SizedBox.shrink();
   }
 
   Widget _buildImageWidget(String imagePath) {

@@ -7,7 +7,7 @@ import '../../shared/components/layout/app_scaffold.dart';
 import '../../shared/components/inputs/app_text_field.dart';
 import '../../shared/components/buttons/app_button.dart';
 import '../../shared/components/cards/app_card.dart';
-import '../../shared/components/layout/app_container.dart';
+import '../../shared/components/layout/themed_panel.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/utils/validators.dart';
 import '../../shared/theme/theme_manager.dart';
@@ -47,14 +47,10 @@ class _LoginPageState extends State<LoginPage> {
         createdAt: DateTime.now(),
         startsAt: DateTime.now(),
         description: 'Default world for authentication',
-        themeBundle: 'default',
-        themeVariant: 'pre-game',
-        parentTheme: null,
-        themeOverrides: null,
+        assets: 'default',
       );
 
-      // Set the theme for pre-game context
-      await _themeManager.setWorldTheme(_defaultWorld, context: 'pre-game');
+      await _themeManager.clearWorldTheme();
     } catch (e) {
       AppLogger.app.w('⚠️ Failed to load default theme: $e');
       // Continue with fallback theme
@@ -135,45 +131,20 @@ class _LoginPageState extends State<LoginPage> {
     return AuthScaffold(
       titleText: l10n.authLoginTitle,
       world: _defaultWorld,
-      pageType: 'login',
+      pageType: 'auth',
       overlayType: BackgroundOverlayType.gradient,
       overlayOpacity: 0.4,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: AppContent(
-          maxWidth: 450,
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: ThemedPanel(
+          title: 'Sign In',
+          subtitle: 'Sign in to manage your worlds',
+          maxWidth: 520,
           child: Form(
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-              // Welcome Card
-              AppCard(
-                type: AppCardType.outlined,
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    Text(
-                      '🌍 ${l10n.authLoginWelcome}',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.authLoginSubtitle,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-              
-              const SizedBox(height: 32),
-              
               // Login Form Card
               AppCard(
                 type: AppCardType.elevated,
@@ -204,20 +175,18 @@ class _LoginPageState extends State<LoginPage> {
                      
                      const SizedBox(height: 32),
                      
-                     AppButton(
+                      AppButton(
                        onPressed: _isLoading ? null : _login,
                        type: AppButtonType.primary,
                        size: AppButtonSize.large,
                        fullWidth: true,
                        isLoading: _isLoading,
                        icon: Icons.login,
-                       child: Flexible(
-                         child: Text(
-                           l10n.authLoginButton,
-                           overflow: TextOverflow.ellipsis,
-                           textAlign: TextAlign.center,
-                         ),
-                       ),
+                        child: Text(
+                          l10n.authLoginButton,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                        ),
                      ),
                      
                      const SizedBox(height: 24),
@@ -232,12 +201,12 @@ class _LoginPageState extends State<LoginPage> {
                            onPressed: () => context.go('/forgot-password'),
                            child: Text(l10n.authForgotPassword),
                          ),
-                         Text(
-                           '|',
-                           style: theme.textTheme.bodySmall?.copyWith(
-                             color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                           Text(
+                             '|',
+                             style: theme.textTheme.bodySmall?.copyWith(
+                               color: theme.colorScheme.onSurface.withOpacity(0.5),
+                             ),
                            ),
-                         ),
                          TextButton(
                            onPressed: () => context.go('/register'),
                            child: Text(l10n.authRegisterButton),
