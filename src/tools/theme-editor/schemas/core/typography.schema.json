@@ -1,0 +1,1063 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/core/typography.schema.json",
+  "title": "Weltenwind Core Typography Schema",
+  "description": "FontFamily System mit Fantasy-Schriftarten, Text-Styles und Gaming-optimierter Typographie",
+  "type": "object",
+  "required": ["fontFamily", "textStyles", "responsive"],
+  "properties": {
+    "fontFamily": {
+      "type": "object",
+      "description": "Font-Familie Definitionen für verschiedene Verwendungszwecke",
+      "required": ["primary", "secondary", "body", "monospace"],
+      "properties": {
+        "primary": {
+          "type": "object",
+          "description": "Primäre Font-Familie für Standard UI-Elemente",
+          "required": ["name", "fallbacks"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Inter",
+              "description": "Name der primären Schriftart"
+            },
+            "fallbacks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+              "description": "Fallback-Schriftarten"
+            },
+            "weight": {
+              "type": "object",
+              "properties": {
+                "light": { "type": "number", "default": 300, "description": "Light Schriftgewicht" },
+                "normal": { "type": "number", "default": 400, "description": "Normal Schriftgewicht" },
+                "medium": { "type": "number", "default": 500, "description": "Medium Schriftgewicht" },
+                "semibold": { "type": "number", "default": 600, "description": "Semibold Schriftgewicht" },
+                "bold": { "type": "number", "default": 700, "description": "Bold Schriftgewicht" }
+              }
+            },
+            "variants": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["normal", "italic", "oblique"]
+              },
+              "default": ["normal", "italic"],
+              "description": "Verfügbare Schrift-Varianten"
+            }
+          }
+        },
+        "secondary": {
+          "type": "object",
+          "description": "Sekundäre Font-Familie für Überschriften und besondere Elemente",
+          "required": ["name", "fallbacks"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Cinzel Decorative",
+              "description": "Name der sekundären Schriftart (Fantasy/Display)"
+            },
+            "fallbacks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": ["Cinzel", "Trajan Pro", "serif"],
+              "description": "Fantasy Font Fallbacks"
+            },
+            "weight": {
+              "type": "object",
+              "properties": {
+                "normal": { "type": "number", "default": 400 },
+                "bold": { "type": "number", "default": 700 },
+                "black": { "type": "number", "default": 900 }
+              }
+            },
+            "usage": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["headings", "titles", "logos", "decorative", "hero"]
+              },
+              "default": ["headings", "titles"],
+              "description": "Empfohlene Verwendung"
+            }
+          }
+        },
+        "body": {
+          "type": "object",
+          "description": "Body-Text Font-Familie für Fließtext",
+          "required": ["name", "fallbacks"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Inter",
+              "description": "Body-Text Schriftart"
+            },
+            "fallbacks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+              "description": "Body-Text Fallbacks"
+            },
+            "readability": {
+              "type": "object",
+              "properties": {
+                "optimized": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Lesbarkeits-Optimierung aktiviert"
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1.2,
+                  "maximum": 2.0,
+                  "default": 1.6,
+                  "description": "Optimale Zeilenhöhe für Lesbarkeit"
+                },
+                "letterSpacing": {
+                  "type": "number",
+                  "minimum": -0.05,
+                  "maximum": 0.1,
+                  "default": 0.01,
+                  "description": "Optimaler Zeichenabstand"
+                }
+              }
+            }
+          }
+        },
+        "monospace": {
+          "type": "object",
+          "description": "Monospace Font für Code und Daten",
+          "required": ["name", "fallbacks"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "JetBrains Mono",
+              "description": "Monospace Schriftart"
+            },
+            "fallbacks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": ["Fira Code", "Source Code Pro", "Menlo", "Monaco", "Consolas", "monospace"],
+              "description": "Monospace Fallbacks"
+            },
+            "features": {
+              "type": "object",
+              "properties": {
+                "ligatures": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Code-Ligaturen aktiviert"
+                },
+                "tabularNums": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Tabellarische Zahlen für Alignment"
+                }
+              }
+            }
+          }
+        },
+        "fantasy": {
+          "type": "object",
+          "description": "Fantasy-spezifische Schriftarten für Gaming-Kontext",
+          "properties": {
+            "magical": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "default": "Uncial Antiqua",
+                  "description": "Magische/Antike Schriftart"
+                },
+                "fallbacks": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "default": ["Luminari", "Papyrus", "fantasy"],
+                  "description": "Magische Font Fallbacks"
+                },
+                "usage": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "default": ["spells", "artifacts", "lore", "inscriptions"]
+                }
+              }
+            },
+            "runic": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "default": "Runic",
+                  "description": "Runische Schriftart"
+                },
+                "fallbacks": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "default": ["Old English Text MT", "fantasy"],
+                  "description": "Runische Font Fallbacks"
+                },
+                "usage": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "default": ["ancient", "dwarven", "nordic", "engravings"]
+                }
+              }
+            },
+            "elvish": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "default": "Tengwar",
+                  "description": "Elvische Schriftart"
+                },
+                "fallbacks": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "default": ["Luminari", "fantasy"],
+                  "description": "Elvische Font Fallbacks"
+                },
+                "usage": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "default": ["elven", "nature", "high-magic", "scrolls"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "textStyles": {
+      "type": "object",
+      "description": "Vordefinierte Text-Styles für verschiedene UI-Kontexte",
+      "required": ["heading", "body", "caption", "button", "input"],
+      "properties": {
+        "heading": {
+          "type": "object",
+          "description": "Überschriften-Styles in verschiedenen Größen",
+          "required": ["h1", "h2", "h3"],
+          "properties": {
+            "h1": {
+              "type": "object",
+              "required": ["fontSize", "fontWeight", "lineHeight"],
+              "properties": {
+                "fontSize": {
+                  "type": "number",
+                  "minimum": 24,
+                  "maximum": 64,
+                  "default": 32,
+                  "description": "H1 Schriftgröße in px"
+                },
+                "fontWeight": {
+                  "type": "string",
+                  "enum": ["300", "400", "500", "600", "700", "800", "900", "normal", "bold"],
+                  "default": "700",
+                  "description": "H1 Schriftgewicht"
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1.0,
+                  "maximum": 2.0,
+                  "default": 1.2,
+                  "description": "H1 Zeilenhöhe"
+                },
+                "letterSpacing": {
+                  "type": "number",
+                  "minimum": -0.05,
+                  "maximum": 0.1,
+                  "default": -0.02,
+                  "description": "H1 Zeichenabstand"
+                },
+                "fontFamily": {
+                  "type": "string",
+                  "default": "secondary",
+                  "description": "H1 Font-Familie (primary|secondary|fantasy)"
+                },
+                "textTransform": {
+                  "type": "string",
+                  "enum": ["none", "uppercase", "lowercase", "capitalize"],
+                  "default": "none",
+                  "description": "Text-Transformation"
+                }
+              }
+            },
+            "h2": {
+              "type": "object",
+              "required": ["fontSize", "fontWeight", "lineHeight"],
+              "properties": {
+                "fontSize": {
+                  "type": "number",
+                  "minimum": 20,
+                  "maximum": 48,
+                  "default": 28,
+                  "description": "H2 Schriftgröße in px"
+                },
+                "fontWeight": {
+                  "type": "string",
+                  "enum": ["300", "400", "500", "600", "700", "800", "900", "normal", "bold"],
+                  "default": "600",
+                  "description": "H2 Schriftgewicht"
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1.0,
+                  "maximum": 2.0,
+                  "default": 1.3,
+                  "description": "H2 Zeilenhöhe"
+                },
+                "letterSpacing": {
+                  "type": "number",
+                  "minimum": -0.05,
+                  "maximum": 0.1,
+                  "default": -0.01,
+                  "description": "H2 Zeichenabstand"
+                },
+                "fontFamily": {
+                  "type": "string",
+                  "default": "secondary",
+                  "description": "H2 Font-Familie"
+                }
+              }
+            },
+            "h3": {
+              "type": "object",
+              "required": ["fontSize", "fontWeight", "lineHeight"],
+              "properties": {
+                "fontSize": {
+                  "type": "number",
+                  "minimum": 16,
+                  "maximum": 32,
+                  "default": 24,
+                  "description": "H3 Schriftgröße in px"
+                },
+                "fontWeight": {
+                  "type": "string",
+                  "enum": ["300", "400", "500", "600", "700", "800", "900", "normal", "bold"],
+                  "default": "600",
+                  "description": "H3 Schriftgewicht"
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1.0,
+                  "maximum": 2.0,
+                  "default": 1.4,
+                  "description": "H3 Zeilenhöhe"
+                },
+                "letterSpacing": {
+                  "type": "number",
+                  "minimum": -0.05,
+                  "maximum": 0.1,
+                  "default": 0,
+                  "description": "H3 Zeichenabstand"
+                },
+                "fontFamily": {
+                  "type": "string",
+                  "default": "primary",
+                  "description": "H3 Font-Familie"
+                }
+              }
+            },
+            "h4": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "default": 20 },
+                "fontWeight": { "type": "string", "default": "500" },
+                "lineHeight": { "type": "number", "default": 1.4 },
+                "fontFamily": { "type": "string", "default": "primary" }
+              }
+            },
+            "h5": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "default": 18 },
+                "fontWeight": { "type": "string", "default": "500" },
+                "lineHeight": { "type": "number", "default": 1.5 },
+                "fontFamily": { "type": "string", "default": "primary" }
+              }
+            },
+            "h6": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "default": 16 },
+                "fontWeight": { "type": "string", "default": "500" },
+                "lineHeight": { "type": "number", "default": 1.5 },
+                "fontFamily": { "type": "string", "default": "primary" }
+              }
+            }
+          }
+        },
+        "body": {
+          "type": "object",
+          "description": "Body-Text Styles",
+          "required": ["large", "regular", "small"],
+          "properties": {
+            "large": {
+              "type": "object",
+              "required": ["fontSize", "fontWeight", "lineHeight"],
+              "properties": {
+                "fontSize": {
+                  "type": "number",
+                  "minimum": 16,
+                  "maximum": 24,
+                  "default": 18,
+                  "description": "Große Body-Text Größe"
+                },
+                "fontWeight": {
+                  "type": "string",
+                  "enum": ["300", "400", "500", "600", "normal"],
+                  "default": "400",
+                  "description": "Body Large Schriftgewicht"
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1.2,
+                  "maximum": 2.0,
+                  "default": 1.6,
+                  "description": "Body Large Zeilenhöhe"
+                },
+                "letterSpacing": {
+                  "type": "number",
+                  "minimum": -0.02,
+                  "maximum": 0.05,
+                  "default": 0,
+                  "description": "Body Large Zeichenabstand"
+                },
+                "fontFamily": {
+                  "type": "string",
+                  "default": "body",
+                  "description": "Body Large Font-Familie"
+                }
+              }
+            },
+            "regular": {
+              "type": "object",
+              "required": ["fontSize", "fontWeight", "lineHeight"],
+              "properties": {
+                "fontSize": {
+                  "type": "number",
+                  "minimum": 14,
+                  "maximum": 20,
+                  "default": 16,
+                  "description": "Standard Body-Text Größe"
+                },
+                "fontWeight": {
+                  "type": "string",
+                  "enum": ["300", "400", "500", "600", "normal"],
+                  "default": "400",
+                  "description": "Body Regular Schriftgewicht"
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1.2,
+                  "maximum": 2.0,
+                  "default": 1.5,
+                  "description": "Body Regular Zeilenhöhe"
+                },
+                "letterSpacing": {
+                  "type": "number",
+                  "minimum": -0.02,
+                  "maximum": 0.05,
+                  "default": 0,
+                  "description": "Body Regular Zeichenabstand"
+                },
+                "fontFamily": {
+                  "type": "string",
+                  "default": "body",
+                  "description": "Body Regular Font-Familie"
+                }
+              }
+            },
+            "small": {
+              "type": "object",
+              "required": ["fontSize", "fontWeight", "lineHeight"],
+              "properties": {
+                "fontSize": {
+                  "type": "number",
+                  "minimum": 12,
+                  "maximum": 16,
+                  "default": 14,
+                  "description": "Kleine Body-Text Größe"
+                },
+                "fontWeight": {
+                  "type": "string",
+                  "enum": ["300", "400", "500", "600", "normal"],
+                  "default": "400",
+                  "description": "Body Small Schriftgewicht"
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1.2,
+                  "maximum": 2.0,
+                  "default": 1.4,
+                  "description": "Body Small Zeilenhöhe"
+                },
+                "letterSpacing": {
+                  "type": "number",
+                  "minimum": -0.02,
+                  "maximum": 0.05,
+                  "default": 0.01,
+                  "description": "Body Small Zeichenabstand"
+                },
+                "fontFamily": {
+                  "type": "string",
+                  "default": "body",
+                  "description": "Body Small Font-Familie"
+                }
+              }
+            }
+          }
+        },
+        "caption": {
+          "type": "object",
+          "description": "Caption/Label Text Styles",
+          "required": ["regular", "small"],
+          "properties": {
+            "regular": {
+              "type": "object",
+              "required": ["fontSize", "fontWeight", "lineHeight"],
+              "properties": {
+                "fontSize": {
+                  "type": "number",
+                  "minimum": 10,
+                  "maximum": 16,
+                  "default": 12,
+                  "description": "Caption Schriftgröße"
+                },
+                "fontWeight": {
+                  "type": "string",
+                  "enum": ["300", "400", "500", "600", "normal", "medium"],
+                  "default": "500",
+                  "description": "Caption Schriftgewicht"
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1.2,
+                  "maximum": 2.0,
+                  "default": 1.3,
+                  "description": "Caption Zeilenhöhe"
+                },
+                "letterSpacing": {
+                  "type": "number",
+                  "minimum": -0.02,
+                  "maximum": 0.1,
+                  "default": 0.02,
+                  "description": "Caption Zeichenabstand"
+                },
+                "textTransform": {
+                  "type": "string",
+                  "enum": ["none", "uppercase", "lowercase", "capitalize"],
+                  "default": "none",
+                  "description": "Caption Text-Transformation"
+                },
+                "fontFamily": {
+                  "type": "string",
+                  "default": "primary",
+                  "description": "Caption Font-Familie"
+                }
+              }
+            },
+            "small": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "default": 10 },
+                "fontWeight": { "type": "string", "default": "500" },
+                "lineHeight": { "type": "number", "default": 1.2 },
+                "letterSpacing": { "type": "number", "default": 0.03 },
+                "textTransform": { "type": "string", "default": "uppercase" }
+              }
+            }
+          }
+        },
+        "button": {
+          "type": "object",
+          "description": "Button Text Styles",
+          "required": ["regular", "small", "large"],
+          "properties": {
+            "regular": {
+              "type": "object",
+              "required": ["fontSize", "fontWeight", "lineHeight"],
+              "properties": {
+                "fontSize": {
+                  "type": "number",
+                  "minimum": 12,
+                  "maximum": 20,
+                  "default": 16,
+                  "description": "Button Text Größe"
+                },
+                "fontWeight": {
+                  "type": "string",
+                  "enum": ["400", "500", "600", "700", "normal", "medium", "semibold", "bold"],
+                  "default": "600",
+                  "description": "Button Text Gewicht"
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1.0,
+                  "maximum": 1.6,
+                  "default": 1.2,
+                  "description": "Button Text Zeilenhöhe"
+                },
+                "letterSpacing": {
+                  "type": "number",
+                  "minimum": -0.02,
+                  "maximum": 0.1,
+                  "default": 0.01,
+                  "description": "Button Text Zeichenabstand"
+                },
+                "textTransform": {
+                  "type": "string",
+                  "enum": ["none", "uppercase", "lowercase", "capitalize"],
+                  "default": "none",
+                  "description": "Button Text Transformation"
+                },
+                "fontFamily": {
+                  "type": "string",
+                  "default": "primary",
+                  "description": "Button Font-Familie"
+                }
+              }
+            },
+            "small": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "default": 14 },
+                "fontWeight": { "type": "string", "default": "500" },
+                "lineHeight": { "type": "number", "default": 1.2 },
+                "letterSpacing": { "type": "number", "default": 0.02 }
+              }
+            },
+            "large": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "default": 18 },
+                "fontWeight": { "type": "string", "default": "600" },
+                "lineHeight": { "type": "number", "default": 1.2 },
+                "letterSpacing": { "type": "number", "default": 0 }
+              }
+            }
+          }
+        },
+        "input": {
+          "type": "object",
+          "description": "Input Field Text Styles",
+          "required": ["placeholder", "value", "label"],
+          "properties": {
+            "placeholder": {
+              "type": "object",
+              "required": ["fontSize", "fontWeight"],
+              "properties": {
+                "fontSize": {
+                  "type": "number",
+                  "minimum": 12,
+                  "maximum": 18,
+                  "default": 16,
+                  "description": "Placeholder Text Größe"
+                },
+                "fontWeight": {
+                  "type": "string",
+                  "enum": ["300", "400", "500", "normal"],
+                  "default": "400",
+                  "description": "Placeholder Text Gewicht"
+                },
+                "opacity": {
+                  "type": "number",
+                  "minimum": 0.3,
+                  "maximum": 1.0,
+                  "default": 0.7,
+                  "description": "Placeholder Transparenz"
+                },
+                "fontFamily": {
+                  "type": "string",
+                  "default": "body",
+                  "description": "Placeholder Font-Familie"
+                }
+              }
+            },
+            "value": {
+              "type": "object",
+              "required": ["fontSize", "fontWeight"],
+              "properties": {
+                "fontSize": {
+                  "type": "number",
+                  "minimum": 12,
+                  "maximum": 18,
+                  "default": 16,
+                  "description": "Input Value Text Größe"
+                },
+                "fontWeight": {
+                  "type": "string",
+                  "enum": ["300", "400", "500", "normal"],
+                  "default": "400",
+                  "description": "Input Value Text Gewicht"
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1.2,
+                  "maximum": 1.8,
+                  "default": 1.4,
+                  "description": "Input Value Zeilenhöhe"
+                },
+                "fontFamily": {
+                  "type": "string",
+                  "default": "body",
+                  "description": "Input Value Font-Familie"
+                }
+              }
+            },
+            "label": {
+              "type": "object",
+              "properties": {
+                "fontSize": { "type": "number", "default": 14 },
+                "fontWeight": { "type": "string", "default": "500" },
+                "lineHeight": { "type": "number", "default": 1.3 },
+                "letterSpacing": { "type": "number", "default": 0.01 },
+                "fontFamily": { "type": "string", "default": "primary" }
+              }
+            }
+          }
+        },
+        "gaming": {
+          "type": "object",
+          "description": "Gaming-spezifische Text Styles",
+          "properties": {
+            "itemName": {
+              "type": "object",
+              "description": "Item-Namen in Tooltips und Inventar",
+              "properties": {
+                "fontSize": { "type": "number", "default": 14 },
+                "fontWeight": { "type": "string", "default": "600" },
+                "lineHeight": { "type": "number", "default": 1.2 },
+                "fontFamily": { "type": "string", "default": "primary" }
+              }
+            },
+            "itemDescription": {
+              "type": "object",
+              "description": "Item-Beschreibungen",
+              "properties": {
+                "fontSize": { "type": "number", "default": 12 },
+                "fontWeight": { "type": "string", "default": "400" },
+                "lineHeight": { "type": "number", "default": 1.4 },
+                "fontFamily": { "type": "string", "default": "body" }
+              }
+            },
+            "hudText": {
+              "type": "object",
+              "description": "HUD-Text (Health, Mana, etc.)",
+              "properties": {
+                "fontSize": { "type": "number", "default": 12 },
+                "fontWeight": { "type": "string", "default": "600" },
+                "lineHeight": { "type": "number", "default": 1.0 },
+                "letterSpacing": { "type": "number", "default": 0.02 },
+                "fontFamily": { "type": "string", "default": "monospace" }
+              }
+            },
+            "floatingText": {
+              "type": "object",
+              "description": "Floating Combat Text",
+              "properties": {
+                "fontSize": { "type": "number", "default": 16 },
+                "fontWeight": { "type": "string", "default": "700" },
+                "lineHeight": { "type": "number", "default": 1.0 },
+                "textShadow": { "type": "boolean", "default": true },
+                "fontFamily": { "type": "string", "default": "primary" }
+              }
+            },
+            "questText": {
+              "type": "object",
+              "description": "Quest-Texte und Dialoge",
+              "properties": {
+                "fontSize": { "type": "number", "default": 16 },
+                "fontWeight": { "type": "string", "default": "400" },
+                "lineHeight": { "type": "number", "default": 1.6 },
+                "fontFamily": { "type": "string", "default": "body" }
+              }
+            },
+            "magic": {
+              "type": "object",
+              "description": "Magische Texte und Zaubersprüche",
+              "properties": {
+                "fontSize": { "type": "number", "default": 14 },
+                "fontWeight": { "type": "string", "default": "500" },
+                "lineHeight": { "type": "number", "default": 1.3 },
+                "fontFamily": { "type": "string", "default": "fantasy" },
+                "textShadow": { "type": "boolean", "default": true },
+                "glow": { "type": "boolean", "default": true }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responsive": {
+      "type": "object",
+      "description": "Responsive Typography Einstellungen",
+      "required": ["enabled", "breakpoints"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Responsive Typography aktiviert"
+        },
+        "breakpoints": {
+          "type": "object",
+          "description": "Schriftgrößen-Anpassungen pro Breakpoint",
+          "properties": {
+            "mobile": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 0.7,
+                  "maximum": 1.0,
+                  "default": 0.9,
+                  "description": "Skalierungsfaktor für Mobile"
+                },
+                "minFontSize": {
+                  "type": "number",
+                  "minimum": 12,
+                  "maximum": 16,
+                  "default": 14,
+                  "description": "Minimale Schriftgröße auf Mobile"
+                }
+              }
+            },
+            "tablet": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 0.8,
+                  "maximum": 1.1,
+                  "default": 0.95,
+                  "description": "Skalierungsfaktor für Tablet"
+                }
+              }
+            },
+            "desktop": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 0.9,
+                  "maximum": 1.2,
+                  "default": 1.0,
+                  "description": "Skalierungsfaktor für Desktop"
+                }
+              }
+            },
+            "wide": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 1.0,
+                  "maximum": 1.3,
+                  "default": 1.05,
+                  "description": "Skalierungsfaktor für Wide Screens"
+                }
+              }
+            }
+          }
+        },
+        "fluidTypography": {
+          "type": "object",
+          "description": "Fluid Typography (CSS clamp)",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Fluid Typography aktiviert"
+            },
+            "minViewport": {
+              "type": "number",
+              "default": 320,
+              "description": "Minimale Viewport-Breite für Fluid Typography"
+            },
+            "maxViewport": {
+              "type": "number",
+              "default": 1200,
+              "description": "Maximale Viewport-Breite für Fluid Typography"
+            }
+          }
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "description": "Accessibility und Lesbarkeits-Optimierungen",
+      "properties": {
+        "contrast": {
+          "type": "object",
+          "properties": {
+            "wcagLevel": {
+              "type": "string",
+              "enum": ["AA", "AAA"],
+              "default": "AA",
+              "description": "WCAG Kontrast-Level"
+            },
+            "enhanced": {
+              "type": "boolean",
+              "default": false,
+              "description": "Verbesserter Kontrast-Modus"
+            }
+          }
+        },
+        "readability": {
+          "type": "object",
+          "properties": {
+            "dyslexiaFriendly": {
+              "type": "boolean",
+              "default": false,
+              "description": "Legasthenie-freundliche Schriftarten"
+            },
+            "increasedSpacing": {
+              "type": "boolean",
+              "default": false,
+              "description": "Vergrößerte Zeichen- und Zeilenabstände"
+            },
+            "reducedAnimation": {
+              "type": "boolean",
+              "default": false,
+              "description": "Reduzierte Text-Animationen"
+            }
+          }
+        },
+        "scaling": {
+          "type": "object",
+          "properties": {
+            "respectUserPrefs": {
+              "type": "boolean",
+              "default": true,
+              "description": "Browser/System Font-Größen-Einstellungen respektieren"
+            },
+            "maxScale": {
+              "type": "number",
+              "minimum": 1.5,
+              "maximum": 3.0,
+              "default": 2.0,
+              "description": "Maximaler Skalierungsfaktor"
+            }
+          }
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "description": "Typography Performance Optimierungen",
+      "properties": {
+        "fontLoading": {
+          "type": "object",
+          "properties": {
+            "strategy": {
+              "type": "string",
+              "enum": ["swap", "fallback", "optional", "auto"],
+              "default": "swap",
+              "description": "Font-Loading Strategie"
+            },
+            "preload": {
+              "type": "array",
+              "items": { "type": "string" },
+              "default": ["primary", "secondary"],
+              "description": "Fonts zum Preloading"
+            }
+          }
+        },
+        "optimization": {
+          "type": "object",
+          "properties": {
+            "subsetFonts": {
+              "type": "boolean",
+              "default": true,
+              "description": "Font-Subsetting für kleinere Dateien"
+            },
+            "variableFonts": {
+              "type": "boolean",
+              "default": false,
+              "description": "Variable Fonts verwenden"
+            },
+            "fontDisplay": {
+              "type": "string",
+              "enum": ["auto", "block", "swap", "fallback", "optional"],
+              "default": "swap",
+              "description": "CSS font-display Wert"
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "fontFamily": {
+        "primary": {
+          "name": "Inter",
+          "fallbacks": ["system-ui", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+          "weight": {
+            "normal": 400,
+            "medium": 500,
+            "semibold": 600,
+            "bold": 700
+          }
+        },
+        "secondary": {
+          "name": "Cinzel Decorative",
+          "fallbacks": ["Cinzel", "serif"],
+          "usage": ["headings", "titles"]
+        },
+        "fantasy": {
+          "magical": {
+            "name": "Uncial Antiqua",
+            "usage": ["spells", "artifacts", "lore"]
+          }
+        }
+      },
+      "textStyles": {
+        "heading": {
+          "h1": {
+            "fontSize": 32,
+            "fontWeight": "700",
+            "lineHeight": 1.2,
+            "letterSpacing": -0.02,
+            "fontFamily": "secondary"
+          }
+        },
+        "body": {
+          "regular": {
+            "fontSize": 16,
+            "fontWeight": "400",
+            "lineHeight": 1.5,
+            "fontFamily": "body"
+          }
+        },
+        "gaming": {
+          "magic": {
+            "fontSize": 14,
+            "fontWeight": "500",
+            "fontFamily": "fantasy",
+            "glow": true
+          }
+        }
+      },
+      "responsive": {
+        "enabled": true,
+        "breakpoints": {
+          "mobile": {
+            "scaleFactor": 0.9,
+            "minFontSize": 14
+          }
+        }
+      }
+    }
+  ]
+}

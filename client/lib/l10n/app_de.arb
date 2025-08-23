@@ -1,0 +1,565 @@
+{
+  "@@locale": "de",
+  "@@context": "weltenwind-game",
+  
+  "appTitle": "Weltenwind",
+  "@appTitle": {
+    "description": "The application title",
+    "context": "app_core"
+  },
+  "authLoginTitle": "Anmelden",
+  "@authLoginTitle": {
+    "description": "Titel der Anmeldeseite",
+    "context": "auth_login"
+  },
+  "authLoginWelcome": "Willkommen bei Weltenwind",
+  "@authLoginWelcome": {
+    "description": "Willkommensnachricht auf der Anmeldeseite",
+    "context": "auth_login"
+  },
+  "authLoginSubtitle": "Melde dich an, um deine Welten zu verwalten",
+  "@authLoginSubtitle": {
+    "description": "Untertitel auf der Anmeldeseite",
+    "context": "auth_login"
+  },
+  "authLoginButton": "Anmelden",
+  "@authLoginButton": {
+    "description": "Text des Anmelde-Buttons",
+    "context": "auth_login"
+  },
+  "authLoginFailedCredentials": "Anmeldung fehlgeschlagen. Bitte überprüfe deine Anmeldedaten.",
+  "@authLoginFailedCredentials": {
+    "description": "Fehlermeldung bei ungültigen Anmeldedaten",
+    "context": "auth_login"
+  },
+  "authLoginFailedGeneric": "Anmeldung fehlgeschlagen: {error}",
+  "@authLoginFailedGeneric": {
+    "description": "Allgemeine Anmeldung-Fehlermeldung mit Details",
+    "context": "auth_login",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "authDontHaveAccountRegister": "Noch kein Account? Registrieren",
+  "@authDontHaveAccountRegister": {
+    "description": "Link-Text zur Registrierungsseite",
+    "context": "auth_login"
+  },
+  "authRegisterTitle": "Registrieren",
+  "@authRegisterTitle": {
+    "description": "Titel der Registrierungsseite",
+    "context": "auth_register"
+  },
+  "authJoinWeltenwind": "Bei Weltenwind registrieren",
+  "@authJoinWeltenwind": {
+    "description": "Willkommenstitel auf der Registrierungsseite",
+    "context": "auth_register"
+  },
+  "authRegisterSubtitle": "Erstelle deinen Account und starte dein Abenteuer",
+  "@authRegisterSubtitle": {
+    "description": "Untertitel auf der Registrierungsseite",
+    "context": "auth_register"
+  },
+  "authRegisterButton": "Registrieren",
+  "@authRegisterButton": {
+    "description": "Text des Registrierungs-Buttons",
+    "context": "auth_register"
+  },
+  "authAlreadyHaveAccount": "Bereits einen Account? Anmelden",
+  "@authAlreadyHaveAccount": {
+    "description": "Link-Text zur Anmeldeseite",
+    "context": "auth_register"
+  },
+  "authValidationFixErrors": "Bitte behebe die obigen Fehler",
+  "@authValidationFixErrors": {
+    "description": "Allgemeine Validierungsfehlermeldung",
+    "context": "auth_register"
+  },
+  "authAcceptTermsRequired": "Bitte akzeptiere die Nutzungsbedingungen und Datenschutzerklärung",
+  "@authAcceptTermsRequired": {
+    "description": "Fehlermeldung bei nicht akzeptierten Nutzungsbedingungen",
+    "context": "auth_register"
+  },
+  "authRegisterSuccessMessage": "Registrierung erfolgreich! Willkommen bei Weltenwind!",
+  "@authRegisterSuccessMessage": {
+    "description": "Erfolgsmeldung nach der Registrierung",
+    "context": "auth_register"
+  },
+  "authRegisterFailedGeneric": "Registrierung fehlgeschlagen. Bitte versuche es erneut.",
+  "@authRegisterFailedGeneric": {
+    "description": "Allgemeine Registrierungsfehlermeldung",
+    "context": "auth_register"
+  },
+  "authEmailExistsError": "Ein Account mit dieser E-Mail existiert bereits",
+  "@authEmailExistsError": {
+    "description": "Fehler wenn E-Mail bereits existiert",
+    "context": "auth_register"
+  },
+  "authUsernameTakenError": "Dieser Benutzername ist bereits vergeben",
+  "@authUsernameTakenError": {
+    "description": "Fehler wenn Benutzername vergeben ist",
+    "context": "auth_register"
+  },
+  "authForgotPassword": "Passwort vergessen?",
+  "@authForgotPassword": {
+    "description": "Link-Text für Passwort vergessen",
+    "context": "auth_forgot_password"
+  },
+  "authForgotPasswordTitle": "Passwort zurücksetzen",
+  "@authForgotPasswordTitle": {
+    "description": "Titel auf der Passwort-vergessen-Seite",
+    "context": "auth_forgot_password"
+  },
+  "authForgotPasswordSubtitle": "Gib deine E-Mail-Adresse ein und wir senden dir Anweisungen zum Zurücksetzen deines Passworts.",
+  "@authForgotPasswordSubtitle": {
+    "description": "Anweisungen auf der Passwort-vergessen-Seite",
+    "context": "auth_forgot_password"
+  },
+  "authSendResetEmail": "Reset-E-Mail senden",
+  "@authSendResetEmail": {
+    "description": "Button zum Senden der Reset-E-Mail",
+    "context": "auth_forgot_password"
+  },
+  "authEmailSentTitle": "E-Mail versendet!",
+  "@authEmailSentTitle": {
+    "description": "Titel wenn Reset-E-Mail versendet wurde",
+    "context": "auth_forgot_password"
+  },
+  "authEmailSentMessage": "Wir haben Anweisungen zum Zurücksetzen des Passworts an deine E-Mail-Adresse gesendet.",
+  "@authEmailSentMessage": {
+    "description": "Nachricht wenn Reset-E-Mail versendet wurde",
+    "context": "auth_forgot_password"
+  },
+  "authNextStepsTitle": "Nächste Schritte:",
+  "@authNextStepsTitle": {
+    "description": "Titel für nächste Schritte Sektion",
+    "context": "auth_forgot_password"
+  },
+  "authStepCheckEmail": "1. Prüfe deinen E-Mail-Posteingang",
+  "@authStepCheckEmail": {
+    "description": "Schritt 1 im Passwort-Reset-Prozess",
+    "context": "auth_forgot_password"
+  },
+  "authStepClickLink": "2. Klicke auf den Reset-Link in der E-Mail",
+  "@authStepClickLink": {
+    "description": "Schritt 2 im Passwort-Reset-Prozess",
+    "context": "auth_forgot_password"
+  },
+  "authStepCreatePassword": "3. Erstelle ein neues sicheres Passwort",
+  "@authStepCreatePassword": {
+    "description": "Schritt 3 im Passwort-Reset-Prozess",
+    "context": "auth_forgot_password"
+  },
+  "authStepLogin": "4. Melde dich mit deinem neuen Passwort an",
+  "@authStepLogin": {
+    "description": "Schritt 4 im Passwort-Reset-Prozess",
+    "context": "auth_forgot_password"
+  },
+  "authResendEmail": "E-Mail erneut senden",
+  "@authResendEmail": {
+    "description": "Button zum erneuten Senden der Reset-E-Mail",
+    "context": "auth_forgot_password"
+  },
+  "authPasswordResetSentMessage": "Passwort-Reset-Anweisungen an deine E-Mail gesendet",
+  "@authPasswordResetSentMessage": {
+    "description": "Erfolgsmeldung wenn Reset-E-Mail gesendet wurde",
+    "context": "auth_forgot_password"
+  },
+  "authTooManyResendAttempts": "Zu viele Wiederholungsversuche. Bitte warte, bevor du es erneut versuchst.",
+  "@authTooManyResendAttempts": {
+    "description": "Rate-Limit-Fehler für Wiederholungsversuche",
+    "context": "auth_forgot_password"
+  },
+  "authResendEmailSuccess": "Passwort-Reset-E-Mail erneut gesendet",
+  "@authResendEmailSuccess": {
+    "description": "Erfolgsmeldung wenn E-Mail erneut gesendet wurde",
+    "context": "auth_forgot_password"
+  },
+  "authResendEmailFailed": "E-Mail konnte nicht erneut gesendet werden. Bitte versuche es später erneut.",
+  "@authResendEmailFailed": {
+    "description": "Fehlermeldung wenn erneutes Senden fehlschlägt",
+    "context": "auth_forgot_password"
+  },
+  "authEmailNotFoundSecure": "Falls diese E-Mail in unserem System existiert, erhältst du Reset-Anweisungen.",
+  "@authEmailNotFoundSecure": {
+    "description": "Sichere Nachricht wenn E-Mail nicht gefunden",
+    "context": "auth_forgot_password"
+  },
+  "authUnableToProcessRequest": "Anfrage konnte nicht verarbeitet werden. Bitte versuche es später erneut.",
+  "@authUnableToProcessRequest": {
+    "description": "Allgemeiner Fehler für Anfrageverarbeitung",
+    "context": "auth_forgot_password"
+  },
+  "authResetPassword": "Passwort zurücksetzen",
+  "@authResetPassword": {
+    "description": "Titel für Passwort-zurücksetzen-Seite",
+    "context": "auth_reset_password"
+  },
+  "authCreateNewPassword": "Neues Passwort erstellen",
+  "@authCreateNewPassword": {
+    "description": "Titel für Passwort-Reset-Formular",
+    "context": "auth_reset_password"
+  },
+  "authResetPasswordSubtitle": "Gib ein starkes neues Passwort für deinen Account ein.",
+  "@authResetPasswordSubtitle": {
+    "description": "Anweisungen auf der Passwort-zurücksetzen-Seite",
+    "context": "auth_reset_password"
+  },
+  "authNewPassword": "Neues Passwort",
+  "@authNewPassword": {
+    "description": "Label für neues Passwort Feld",
+    "context": "auth_reset_password"
+  },
+  "authInvalidResetLink": "Ungültiger Reset-Link",
+  "@authInvalidResetLink": {
+    "description": "Titel wenn Reset-Link ungültig ist",
+    "context": "auth_reset_password"
+  },
+  "authRequestNewResetLink": "Neuen Reset-Link anfordern",
+  "@authRequestNewResetLink": {
+    "description": "Button-Text für neuen Reset-Link anfordern",
+    "context": "auth_reset_password"
+  },
+  "authResetLinkInvalidExpired": "Dieser Reset-Link ist ungültig oder abgelaufen",
+  "@authResetLinkInvalidExpired": {
+    "description": "Fehler wenn Reset-Token ungültig ist",
+    "context": "auth_reset_password"
+  },
+  "authResetPasswordSuccess": "Passwort erfolgreich zurückgesetzt! Du kannst dich jetzt mit deinem neuen Passwort anmelden.",
+  "@authResetPasswordSuccess": {
+    "description": "Erfolgsmeldung nach Passwort-Reset",
+    "context": "auth_reset_password"
+  },
+  "authResetPasswordFailed": "Passwort-Reset fehlgeschlagen. Bitte versuche es erneut.",
+  "@authResetPasswordFailed": {
+    "description": "Fehlermeldung wenn Passwort-Reset fehlschlägt",
+    "context": "auth_reset_password"
+  },
+  "authResetLinkInvalidRequest": "Dieser Reset-Link ist ungültig oder abgelaufen. Bitte fordere einen neuen an.",
+  "@authResetLinkInvalidRequest": {
+    "description": "Fehler wenn Reset-Link ungültig mit Handlungsvorschlag",
+    "context": "auth_reset_password"
+  },
+  "authResetLinkExpiredRequest": "Dieser Reset-Link ist abgelaufen. Bitte fordere einen neuen an.",
+  "@authResetLinkExpiredRequest": {
+    "description": "Fehler wenn Reset-Link abgelaufen mit Handlungsvorschlag",
+    "context": "auth_reset_password"
+  },
+  "authUnableToResetPassword": "Passwort konnte nicht zurückgesetzt werden. Bitte versuche es erneut oder fordere einen neuen Reset-Link an.",
+  "@authUnableToResetPassword": {
+    "description": "Allgemeiner Fehler für Passwort-Reset mit Handlungsvorschlägen",
+    "context": "auth_reset_password"
+  },
+  "authSecurityTips": "Sicherheitstipps:",
+  "@authSecurityTips": {
+    "description": "Titel für Sicherheitstipps-Bereich",
+    "context": "auth_reset_password"
+  },
+  "authEmailLabel": "E-Mail",
+  "@authEmailLabel": {
+    "description": "Label für E-Mail-Eingabefeld",
+    "context": "auth_fields"
+  },
+  "authEmailHint": "Gib deine E-Mail-Adresse ein",
+  "@authEmailHint": {
+    "description": "Hinweistext für E-Mail-Eingabe",
+    "context": "auth_fields"
+  },
+  "authEmailRequired": "E-Mail ist erforderlich",
+  "@authEmailRequired": {
+    "description": "Validierungsfehler für fehlende E-Mail",
+    "context": "auth_fields"
+  },
+  "authPasswordLabel": "Passwort",
+  "@authPasswordLabel": {
+    "description": "Label für Passwort-Eingabefeld",
+    "context": "auth_fields"
+  },
+  "authPasswordHint": "Gib dein Passwort ein",
+  "@authPasswordHint": {
+    "description": "Hinweistext für Passwort-Eingabe",
+    "context": "auth_fields"
+  },
+  "authPasswordRequired": "Passwort ist erforderlich",
+  "@authPasswordRequired": {
+    "description": "Validierungsfehler für fehlendes Passwort",
+    "context": "auth_fields"
+  },
+  "authUsernameLabel": "Benutzername",
+  "@authUsernameLabel": {
+    "description": "Label für Benutzername-Eingabefeld",
+    "context": "auth_fields"
+  },
+  "authUsernameHint": "Gib deinen Benutzernamen ein",
+  "@authUsernameHint": {
+    "description": "Hinweistext für Benutzername-Eingabe",
+    "context": "auth_fields"
+  },
+  "authConfirmPassword": "Passwort bestätigen",
+  "@authConfirmPassword": {
+    "description": "Label für Passwort-Bestätigungs-Feld",
+    "context": "auth_fields"
+  },
+  "authConfirmPasswordHint": "Gib dein Passwort erneut ein",
+  "@authConfirmPasswordHint": {
+    "description": "Hinweistext für Passwort-Bestätigung",
+    "context": "auth_fields"
+  },
+  "authRegisterUsernameHint": "Wähle einen eindeutigen Benutzernamen",
+  "@authRegisterUsernameHint": {
+    "description": "Hinweistext für Benutzername-Eingabe bei Registrierung",
+    "context": "auth_register"
+  },
+  "authRegisterPasswordHint": "Erstelle ein starkes Passwort",
+  "@authRegisterPasswordHint": {
+    "description": "Hinweistext für Passwort-Eingabe bei Registrierung",
+    "context": "auth_register"
+  },
+  "authBackToLogin": "Zurück zur Anmeldung",
+  "@authBackToLogin": {
+    "description": "Link-Text zurück zur Anmeldung",
+    "context": "auth_navigation"
+  },
+  "authNetworkError": "Netzwerkfehler. Bitte überprüfe deine Verbindung und versuche es erneut.",
+  "@authNetworkError": {
+    "description": "Netzwerk-Fehlermeldung",
+    "context": "auth_errors"
+  },
+  "authPasswordStrengthLabel": "Passwort-Stärke: ",
+  "@authPasswordStrengthLabel": {
+    "description": "Label für Passwort-Stärke-Anzeige",
+    "context": "auth_password_strength"
+  },
+  "authPasswordStrengthVeryWeak": "Sehr schwach",
+  "@authPasswordStrengthVeryWeak": {
+    "description": "Passwort-Stärke-Level",
+    "context": "auth_password_strength"
+  },
+  "authPasswordStrengthWeak": "Schwach",
+  "@authPasswordStrengthWeak": {
+    "description": "Passwort-Stärke-Level",
+    "context": "auth_password_strength"
+  },
+  "authPasswordStrengthFair": "Akzeptabel",
+  "@authPasswordStrengthFair": {
+    "description": "Passwort-Stärke-Level",
+    "context": "auth_password_strength"
+  },
+  "authPasswordStrengthGood": "Gut",
+  "@authPasswordStrengthGood": {
+    "description": "Passwort-Stärke-Level",
+    "context": "auth_password_strength"
+  },
+  "authPasswordStrengthStrong": "Stark",
+  "@authPasswordStrengthStrong": {
+    "description": "Passwort-Stärke-Level",
+    "context": "auth_password_strength"
+  },
+  "authIAgreeToThe": "Ich stimme den ",
+  "@authIAgreeToThe": {
+    "description": "Zustimmungs-Präfix-Text",
+    "context": "auth_legal"
+  },
+  "authTermsOfService": "Nutzungsbedingungen",
+  "@authTermsOfService": {
+    "description": "Nutzungsbedingungen-Link-Text",
+    "context": "auth_legal"
+  },
+  "authPrivacyPolicy": "Datenschutzerklärung",
+  "@authPrivacyPolicy": {
+    "description": "Datenschutzerklärung-Link-Text",
+    "context": "auth_legal"
+  },
+  "authPasswordRequirementsTitle": "Passwort-Anforderungen:",
+  "@authPasswordRequirementsTitle": {
+    "description": "Titel für Passwort-Anforderungen-Bereich",
+    "context": "auth_legal"
+  },
+  "authListBullet": "• ",
+  "@authListBullet": {
+    "description": "Aufzählungspunkt für Listen",
+    "context": "ui_elements"
+  },
+  "authTooManyResetAttempts": "Zu viele Versuche zum Zurücksetzen des Passworts. Bitte versuchen Sie es später noch einmal.",
+  "@authTooManyResetAttempts": {
+    "description": "Fehlermeldung bei zu vielen Reset-Versuchen",
+    "context": "auth_reset_password"
+  },
+  "authPasswordTooWeak": "Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort.",
+  "@authPasswordTooWeak": {
+    "description": "Fehlermeldung bei zu schwachem Passwort",
+    "context": "auth_reset_password"
+  },
+  "authTooManyRegistrationAttempts": "Zu viele Registrierungsversuche. Bitte versuchen Sie es später noch einmal.",
+  "@authTooManyRegistrationAttempts": {
+    "description": "Fehlermeldung bei zu vielen Registrierungsversuchen",
+    "context": "auth_register"
+  },
+  "authUsernameRequired": "Benutzername ist erforderlich",
+  "@authUsernameRequired": {
+    "description": "Validierungsfehler für fehlenden Benutzername",
+    "context": "auth_fields"
+  },
+  "authUsernameMinLength": "Benutzername muss mindestens {minLength} Zeichen lang sein",
+  "@authUsernameMinLength": {
+    "description": "Validierungsfehler für zu kurzen Benutzername",
+    "context": "auth_fields",
+    "placeholders": {
+      "minLength": {
+        "type": "int"
+      }
+    }
+  },
+  "authUsernameMaxLength": "Benutzername darf maximal {maxLength} Zeichen lang sein",
+  "@authUsernameMaxLength": {
+    "description": "Validierungsfehler für zu langen Benutzername",
+    "context": "auth_fields",
+    "placeholders": {
+      "maxLength": {
+        "type": "int"
+      }
+    }
+  },
+  "authUsernameInvalidChars": "Benutzername enthält ungültige Zeichen",
+  "@authUsernameInvalidChars": {
+    "description": "Validierungsfehler für ungültige Zeichen im Benutzername",
+    "context": "auth_fields"
+  },
+  "authUsernameInvalidStart": "Benutzername darf nicht mit einer Zahl beginnen",
+  "@authUsernameInvalidStart": {
+    "description": "Validierungsfehler für Benutzername der mit Zahl beginnt",
+    "context": "auth_fields"
+  },
+  "authUsernameReserved": "Dieser Benutzername ist reserviert",
+  "@authUsernameReserved": {
+    "description": "Validierungsfehler für reservierten Benutzername",
+    "context": "auth_fields"
+  },
+  "authEmailTooLong": "E-Mail-Adresse ist zu lang",
+  "@authEmailTooLong": {
+    "description": "Validierungsfehler für zu lange E-Mail",
+    "context": "auth_fields"
+  },
+  "authEmailInvalid": "Ungültige E-Mail-Adresse",
+  "@authEmailInvalid": {
+    "description": "Validierungsfehler für ungültige E-Mail",
+    "context": "auth_fields"
+  },
+  "authEmailInvalidChars": "E-Mail-Adresse enthält ungültige Zeichen",
+  "@authEmailInvalidChars": {
+    "description": "Validierungsfehler für ungültige Zeichen in E-Mail",
+    "context": "auth_fields"
+  },
+  "authEmailInvalidDomain": "Ungültige E-Mail-Domain",
+  "@authEmailInvalidDomain": {
+    "description": "Validierungsfehler für ungültige E-Mail-Domain",
+    "context": "auth_fields"
+  },
+  "authConfirmPasswordRequired": "Passwort-Bestätigung ist erforderlich",
+  "@authConfirmPasswordRequired": {
+    "description": "Validierungsfehler für fehlende Passwort-Bestätigung",
+    "context": "auth_fields"
+  },
+  "authPasswordsDoNotMatch": "Passwörter stimmen nicht überein",
+  "@authPasswordsDoNotMatch": {
+    "description": "Validierungsfehler für nicht übereinstimmende Passwörter",
+    "context": "auth_fields"
+  },
+  "authPasswordMinLength": "Passwort muss mindestens {minLength} Zeichen lang sein",
+  "@authPasswordMinLength": {
+    "description": "Validierungsfehler für zu kurzes Passwort",
+    "context": "auth_fields",
+    "placeholders": {
+      "minLength": {
+        "type": "int"
+      }
+    }
+  },
+  "authPasswordUppercase": "Mindestens ein Großbuchstabe erforderlich",
+  "@authPasswordUppercase": {
+    "description": "Passwort-Anforderung für Großbuchstaben",
+    "context": "auth_fields"
+  },
+  "authPasswordLowercase": "Mindestens ein Kleinbuchstabe erforderlich",
+  "@authPasswordLowercase": {
+    "description": "Passwort-Anforderung für Kleinbuchstaben",
+    "context": "auth_fields"
+  },
+  "authPasswordNumber": "Mindestens eine Zahl erforderlich",
+  "@authPasswordNumber": {
+    "description": "Passwort-Anforderung für Zahlen",
+    "context": "auth_fields"
+  },
+  "authPasswordSpecialChar": "Mindestens ein Sonderzeichen erforderlich",
+  "@authPasswordSpecialChar": {
+    "description": "Passwort-Anforderung für Sonderzeichen",
+    "context": "auth_fields"
+  },
+  "authPasswordNotCommon": "Passwort darf nicht zu einfach sein",
+  "@authPasswordNotCommon": {
+    "description": "Passwort-Anforderung für Komplexität",
+    "context": "auth_fields"
+  },
+  "authFieldRequired": "{fieldName} ist erforderlich",
+  "@authFieldRequired": {
+    "description": "Allgemeine Validierungsfehlermeldung für erforderliche Felder",
+    "context": "auth_fields",
+    "placeholders": {
+      "fieldName": {
+        "type": "String"
+      }
+    }
+  },
+  "authThisField": "Dieses Feld",
+  "@authThisField": {
+    "description": "Generischer Feldname für Validierungsfehler",
+    "context": "auth_fields"
+  },
+  "worldStatusUpcoming": "Bevorstehend",
+  "@worldStatusUpcoming": {
+    "description": "Status für bevorstehende Welten",
+    "context": "world_status"
+  },
+  "worldStatusOpen": "Offen",
+  "@worldStatusOpen": {
+    "description": "Status für offene Welten",
+    "context": "world_status"
+  },
+  "worldStatusRunning": "Laufend",
+  "@worldStatusRunning": {
+    "description": "Status für laufende Welten",
+    "context": "world_status"
+  },
+  "worldStatusClosed": "Geschlossen",
+  "@worldStatusClosed": {
+    "description": "Status für geschlossene Welten",
+    "context": "world_status"
+  },
+  "worldStatusArchived": "Archiviert",
+  "@worldStatusArchived": {
+    "description": "Status für archivierte Welten",
+    "context": "world_status"
+  },
+  "worldCategoryClassic": "Klassisch",
+  "@worldCategoryClassic": {
+    "description": "Kategorie für klassische Welten",
+    "context": "world_category"
+  },
+  "worldCategoryPvP": "PvP",
+  "@worldCategoryPvP": {
+    "description": "Kategorie für PvP-Welten",
+    "context": "world_category"
+  },
+  "worldCategoryEvent": "Event",
+  "@worldCategoryEvent": {
+    "description": "Kategorie für Event-Welten",
+    "context": "world_category"
+  },
+  "worldCategoryExperimental": "Experimentell",
+  "@worldCategoryExperimental": {
+    "description": "Kategorie für experimentelle Welten",
+    "context": "world_category"
+  }
+}

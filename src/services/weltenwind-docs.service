@@ -1,0 +1,30 @@
+[Unit]
+Description=Weltenwind Swagger Documentation Service
+Documentation=https://github.com/weltenwind/backend
+After=network.target
+PartOf=weltenwind.target
+
+[Service]
+Type=simple
+User=weltenwind
+Group=weltenwind
+WorkingDirectory=/srv/weltenwind/backend
+Environment="NODE_ENV=production"
+ExecStart=/usr/bin/npx serve -s node_modules/swagger-editor-dist -l 3001
+# Health Check - Port 3001 muss erreichbar sein
+ExecStartPost=/bin/bash -c 'for i in {1..15}; do nc -z localhost 3001 >/dev/null 2>&1 && break || sleep 2; done'
+# Advanced Restart Policy
+Restart=always
+RestartSec=10
+RestartSteps=5
+RestartMaxDelaySec=120
+StandardOutput=append:/var/log/weltenwind/docs.log
+StandardError=append:/var/log/weltenwind/docs.error.log
+
+# Security Settings
+NoNewPrivileges=true
+PrivateTmp=true
+ReadWritePaths=/var/log/weltenwind
+
+[Install]
+WantedBy=weltenwind.target multi-user.target 

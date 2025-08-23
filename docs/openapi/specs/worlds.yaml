@@ -1,0 +1,528 @@
+paths:
+  /worlds:
+    get:
+      tags:
+        - Worlds
+      summary: List Worlds
+      description: Get a list of all available worlds
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [upcoming, open, running, closed, archived]
+          description: Filter by world status
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Items per page
+      responses:
+        '200':
+          description: List of worlds
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/World'
+                      pagination:
+                        $ref: '#/components/schemas/PaginationInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      tags:
+        - Worlds
+      summary: Create World
+      description: Create a new world
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorldRequest'
+      responses:
+        '201':
+          description: World created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/World'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /worlds/{id}:
+    get:
+      tags:
+        - Worlds
+      summary: Get World Details
+      description: Get detailed information about a specific world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: World details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WorldDetails'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    put:
+      tags:
+        - Worlds
+      summary: Update World
+      description: Update world settings and configuration
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWorldRequest'
+      responses:
+        '200':
+          description: World updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/World'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    delete:
+      tags:
+        - Worlds
+      summary: Delete World
+      description: Permanently delete a world (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: World deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /worlds/{id}/join:
+    post:
+      tags:
+        - Worlds
+      summary: Join World
+      description: Join a world as a player
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: Successfully joined world
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PlayerInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          description: Already a member of this world
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /worlds/{id}/players:
+    get:
+      tags:
+        - Worlds
+      summary: List World Players
+      description: Get list of all players in a world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive]
+          description: Filter by player status
+      responses:
+        '200':
+          description: List of world players
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PlayerInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /worlds/{id}/players/me:
+    get:
+      tags:
+        - Worlds
+      summary: Get My Player Info
+      description: Get current user's player information in this world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: Player information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PlayerInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    delete:
+      tags:
+        - Worlds
+      summary: Leave World
+      description: Leave a world (remove my player)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: Successfully left world
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /worlds/{id}/state:
+    get:
+      tags:
+        - Worlds
+      summary: Get World State
+      description: Get current state and status information of a world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: World state information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WorldState'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    World:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        name:
+          type: string
+          example: "Mittelalter-Abenteuer"
+        description:
+          type: string
+          example: "Eine epische mittelalterliche Welt voller Abenteuer"
+        status:
+          type: string
+          enum: [upcoming, open, running, closed, archived]
+          example: "open"
+        themeBundle:
+          type: string
+          example: "medieval"
+        themeVariant:
+          type: string
+          example: "castle"
+        playerCount:
+          type: integer
+          example: 42
+        maxPlayers:
+          type: integer
+          example: 100
+        createdAt:
+          type: string
+          format: date-time
+        creator:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+
+    WorldDetails:
+      allOf:
+        - $ref: '#/components/schemas/World'
+        - type: object
+          properties:
+            players:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlayerInfo'
+
+    CreateWorldRequest:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: "Meine neue Welt"
+        description:
+          type: string
+          minLength: 10
+          maxLength: 1000
+          example: "Eine aufregende neue Welt zum Erkunden"
+        themeBundle:
+          type: string
+          example: "medieval"
+        maxPlayers:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          example: 50
+
+    UpdateWorldRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: "Aktualisierte Welt"
+        description:
+          type: string
+          minLength: 10
+          maxLength: 1000  
+          example: "Eine aktualisierte Beschreibung"
+        status:
+          type: string
+          enum: [upcoming, open, running, closed, archived]
+          example: "open"
+        themeBundle:
+          type: string
+          example: "medieval"
+        themeVariant:
+          type: string
+          example: "castle"
+        maxPlayers:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          example: 100
+
+    WorldState:
+      type: object
+      properties:
+        worldId:
+          type: integer
+          example: 123
+        status:
+          type: string
+          enum: [upcoming, open, running, closed, archived]
+          example: "running"
+        playerCount:
+          type: integer
+          example: 42
+        maxPlayers:
+          type: integer
+          example: 100
+        isOpen:
+          type: boolean
+          example: true
+        canJoin:
+          type: boolean
+          example: true
+        lastActivity:
+          type: string
+          format: date-time
+          example: "2025-01-05T14:30:00Z"
+        uptime:
+          type: integer
+          description: "Uptime in seconds"
+          example: 86400
+        gameState:
+          type: object
+          description: "Game-specific state information"
+          additionalProperties: true
+
+    PlayerInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        worldId:
+          type: integer
+        joinedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [active, inactive]
+        user:
+          $ref: '#/components/schemas/User'
+
+    PaginationInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 157
+        pages:
+          type: integer
+          example: 8
+        hasNext:
+          type: boolean
+          example: true
+        hasPrev:
+          type: boolean
+          example: false

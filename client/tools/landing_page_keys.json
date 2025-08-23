@@ -1,0 +1,149 @@
+{
+  "new_keys_needed": [
+    {
+      "string": "Dein Portal zu unendlichen Welten", 
+      "suggested_key": "landingSubtitle",
+      "category": "landing"
+    },
+    {
+      "string": "🎮 Spiele • 🌍 Erkunde • 🤝 Verbinde",
+      "suggested_key": "landingTagline", 
+      "category": "landing"
+    },
+    {
+      "string": "Jetzt kostenlos starten",
+      "suggested_key": "landingStartButton",
+      "category": "landing"
+    },
+    {
+      "string": "Keine Kreditkarte erforderlich",
+      "suggested_key": "landingNoCreditCard",
+      "category": "landing"
+    },
+    {
+      "string": "Bereits Mitglied? Anmelden", 
+      "suggested_key": "landingLoginPrompt",
+      "category": "landing"
+    },
+    {
+      "string": "Kostenlos registrieren →",
+      "suggested_key": "landingRegisterButton",
+      "category": "landing"
+    },
+    {
+      "string": "Spieler",
+      "suggested_key": "landingStatsPlayers", 
+      "category": "landing"
+    },
+    {
+      "string": "Online",
+      "suggested_key": "landingStatsOnline",
+      "category": "landing"
+    },
+    {
+      "string": "Entdecke mehr",
+      "suggested_key": "landingDiscoverMore",
+      "category": "landing"
+    },
+    {
+      "string": "Was macht Weltenwind besonders?",
+      "suggested_key": "landingFeaturesTitle",
+      "category": "landing"
+    },
+    {
+      "string": "Erlebe Gaming auf einem neuen Level",
+      "suggested_key": "landingFeaturesSubtitle",
+      "category": "landing"
+    },
+    {
+      "string": "Unendliche Welten",
+      "suggested_key": "landingFeatureWorldsTitle",
+      "category": "landing"
+    },
+    {
+      "string": "Erkunde hunderte einzigartige Spielwelten oder erschaffe deine eigene",
+      "suggested_key": "landingFeatureWorldsDesc",
+      "category": "landing"
+    },
+    {
+      "string": "Community", 
+      "suggested_key": "landingFeatureCommunityTitle",
+      "category": "landing"
+    },
+    {
+      "string": "Verbinde dich mit Spielern aus der ganzen Welt",
+      "suggested_key": "landingFeatureCommunityDesc",
+      "category": "landing"
+    },
+    {
+      "string": "Sicher & Fair",
+      "suggested_key": "landingFeatureSecurityTitle",
+      "category": "landing" 
+    },
+    {
+      "string": "Modernste Sicherheit und faire Spielregeln für alle",
+      "suggested_key": "landingFeatureSecurityDesc",
+      "category": "landing"
+    },
+    {
+      "string": "Blitzschnell",
+      "suggested_key": "landingFeatureSpeedTitle",
+      "category": "landing"
+    },
+    {
+      "string": "Optimierte Server für minimale Latenz",
+      "suggested_key": "landingFeatureSpeedDesc", 
+      "category": "landing"
+    },
+    {
+      "string": "Überall spielen",
+      "suggested_key": "landingFeatureMobileTitle",
+      "category": "landing"
+    },
+    {
+      "string": "Auf PC, Tablet oder Smartphone - immer dabei",
+      "suggested_key": "landingFeatureMobileDesc",
+      "category": "landing"
+    },
+    {
+      "string": "Belohnungen",
+      "suggested_key": "landingFeatureRewardsTitle",
+      "category": "landing"
+    },
+    {
+      "string": "Sammle Erfolge und exklusive Belohnungen", 
+      "suggested_key": "landingFeatureRewardsDesc",
+      "category": "landing"
+    },
+    {
+      "string": "Bereit für dein Abenteuer?",
+      "suggested_key": "landingCtaTitle",
+      "category": "landing"
+    },
+    {
+      "string": "Schließe dich tausenden Spielern an und starte noch heute!",
+      "suggested_key": "landingCtaSubtitle",
+      "category": "landing"
+    },
+    {
+      "string": "© 2024 Weltenwind. Alle Rechte vorbehalten.",
+      "suggested_key": "footerCopyright",
+      "category": "footer"
+    },
+    {
+      "string": "Datenschutz",
+      "suggested_key": "footerPrivacy",
+      "category": "footer"
+    },
+    {
+      "string": "Impressum",
+      "suggested_key": "footerLegal",
+      "category": "footer"
+    },
+    {
+      "string": "Support", 
+      "suggested_key": "footerSupport",
+      "category": "footer"
+    }
+  ]
+}

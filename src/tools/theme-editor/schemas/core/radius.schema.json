@@ -1,0 +1,749 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/core/radius.schema.json",
+  "title": "Weltenwind Core Border Radius Schema",
+  "description": "Konsistentes Border-Radius System für UI-Elemente, Gaming-Komponenten und responsive Design",
+  "type": "object",
+  "required": ["base", "semantic", "responsive"],
+  "properties": {
+    "base": {
+      "type": "object",
+      "description": "Basis Border-Radius Werte",
+      "required": ["scale"],
+      "properties": {
+        "scale": {
+          "type": "object",
+          "description": "Border-Radius Skala für konsistente Rundungen",
+          "required": ["none", "xs", "sm", "md", "lg", "xl", "full"],
+          "properties": {
+            "none": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0,
+              "default": 0,
+              "description": "Keine Rundung"
+            },
+            "xs": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 4,
+              "default": 2,
+              "description": "Extra Small Radius"
+            },
+            "sm": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 6,
+              "default": 4,
+              "description": "Small Radius"
+            },
+            "md": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 12,
+              "default": 8,
+              "description": "Medium Radius"
+            },
+            "lg": {
+              "type": "number",
+              "minimum": 8,
+              "maximum": 20,
+              "default": 12,
+              "description": "Large Radius"
+            },
+            "xl": {
+              "type": "number",
+              "minimum": 12,
+              "maximum": 32,
+              "default": 16,
+              "description": "Extra Large Radius"
+            },
+            "xxl": {
+              "type": "number",
+              "minimum": 16,
+              "maximum": 48,
+              "default": 24,
+              "description": "Extra Extra Large Radius"
+            },
+            "full": {
+              "type": "number",
+              "minimum": 50,
+              "maximum": 9999,
+              "default": 9999,
+              "description": "Full/Circle Radius"
+            }
+          }
+        },
+        "adaptive": {
+          "type": "object",
+          "description": "Adaptive Radius basierend auf Element-Größe",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Adaptive Radius aktiviert"
+            },
+            "ratio": {
+              "type": "number",
+              "minimum": 0.05,
+              "maximum": 0.3,
+              "default": 0.1,
+              "description": "Radius als Verhältnis zur Element-Größe"
+            },
+            "maxRadius": {
+              "type": "number",
+              "minimum": 16,
+              "maximum": 64,
+              "default": 32,
+              "description": "Maximaler adaptiver Radius"
+            }
+          }
+        }
+      }
+    },
+    "semantic": {
+      "type": "object",
+      "description": "Semantische Border-Radius Definitionen für spezifische UI-Kontexte",
+      "required": ["components", "surfaces"],
+      "properties": {
+        "components": {
+          "type": "object",
+          "description": "Component-spezifische Border-Radius Werte",
+          "properties": {
+            "button": {
+              "type": "object",
+              "properties": {
+                "small": {
+                  "type": "number",
+                  "minimum": 2,
+                  "maximum": 12,
+                  "default": 6,
+                  "description": "Small Button Radius"
+                },
+                "medium": {
+                  "type": "number",
+                  "minimum": 4,
+                  "maximum": 16,
+                  "default": 8,
+                  "description": "Medium Button Radius"
+                },
+                "large": {
+                  "type": "number",
+                  "minimum": 6,
+                  "maximum": 20,
+                  "default": 12,
+                  "description": "Large Button Radius"
+                },
+                "pill": {
+                  "type": "number",
+                  "minimum": 50,
+                  "maximum": 9999,
+                  "default": 9999,
+                  "description": "Pill Button Radius (vollständig gerundet)"
+                },
+                "icon": {
+                  "type": "number",
+                  "minimum": 6,
+                  "maximum": 50,
+                  "default": 8,
+                  "description": "Icon Button Radius"
+                }
+              }
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "default": {
+                  "type": "number",
+                  "minimum": 2,
+                  "maximum": 16,
+                  "default": 8,
+                  "description": "Standard Input Radius"
+                },
+                "rounded": {
+                  "type": "number",
+                  "minimum": 16,
+                  "maximum": 9999,
+                  "default": 24,
+                  "description": "Rounded Input Radius"
+                },
+                "search": {
+                  "type": "number",
+                  "minimum": 12,
+                  "maximum": 50,
+                  "default": 20,
+                  "description": "Search Input Radius"
+                }
+              }
+            },
+            "card": {
+              "type": "object",
+              "properties": {
+                "default": {
+                  "type": "number",
+                  "minimum": 4,
+                  "maximum": 24,
+                  "default": 12,
+                  "description": "Standard Card Radius"
+                },
+                "elevated": {
+                  "type": "number",
+                  "minimum": 8,
+                  "maximum": 32,
+                  "default": 16,
+                  "description": "Elevated Card Radius"
+                },
+                "image": {
+                  "type": "number",
+                  "minimum": 6,
+                  "maximum": 20,
+                  "default": 8,
+                  "description": "Card mit Bild Radius"
+                }
+              }
+            },
+            "modal": {
+              "type": "object",
+              "properties": {
+                "default": {
+                  "type": "number",
+                  "minimum": 8,
+                  "maximum": 32,
+                  "default": 16,
+                  "description": "Standard Modal Radius"
+                },
+                "large": {
+                  "type": "number",
+                  "minimum": 12,
+                  "maximum": 48,
+                  "default": 24,
+                  "description": "Large Modal Radius"
+                },
+                "fullscreen": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 16,
+                  "default": 0,
+                  "description": "Fullscreen Modal Radius"
+                }
+              }
+            },
+            "avatar": {
+              "type": "object",
+              "properties": {
+                "default": {
+                  "type": "number",
+                  "minimum": 4,
+                  "maximum": 16,
+                  "default": 8,
+                  "description": "Standard Avatar Radius"
+                },
+                "rounded": {
+                  "type": "number",
+                  "minimum": 25,
+                  "maximum": 50,
+                  "default": 50,
+                  "description": "Rounded Avatar Radius (%)"
+                },
+                "square": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 8,
+                  "default": 4,
+                  "description": "Square Avatar Radius"
+                }
+              }
+            },
+            "badge": {
+              "type": "object",
+              "properties": {
+                "default": {
+                  "type": "number",
+                  "minimum": 2,
+                  "maximum": 8,
+                  "default": 4,
+                  "description": "Standard Badge Radius"
+                },
+                "pill": {
+                  "type": "number",
+                  "minimum": 50,
+                  "maximum": 9999,
+                  "default": 9999,
+                  "description": "Pill Badge Radius"
+                }
+              }
+            },
+            "tooltip": {
+              "type": "object",
+              "properties": {
+                "default": {
+                  "type": "number",
+                  "minimum": 2,
+                  "maximum": 12,
+                  "default": 6,
+                  "description": "Standard Tooltip Radius"
+                }
+              }
+            },
+            "progress": {
+              "type": "object",
+              "properties": {
+                "bar": {
+                  "type": "number",
+                  "minimum": 2,
+                  "maximum": 16,
+                  "default": 8,
+                  "description": "Progress Bar Radius"
+                },
+                "track": {
+                  "type": "number",
+                  "minimum": 2,
+                  "maximum": 16,
+                  "default": 8,
+                  "description": "Progress Track Radius"
+                }
+              }
+            }
+          }
+        },
+        "surfaces": {
+          "type": "object",
+          "description": "Surface-spezifische Border-Radius Werte",
+          "properties": {
+            "page": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 24,
+              "default": 0,
+              "description": "Page Container Radius"
+            },
+            "panel": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 20,
+              "default": 12,
+              "description": "Panel/Section Radius"
+            },
+            "sidebar": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 16,
+              "default": 0,
+              "description": "Sidebar Radius"
+            },
+            "header": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 16,
+              "default": 0,
+              "description": "Header Radius"
+            },
+            "footer": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 16,
+              "default": 0,
+              "description": "Footer Radius"
+            }
+          }
+        }
+      }
+    },
+    "gaming": {
+      "type": "object",
+      "description": "Gaming-spezifische Border-Radius Definitionen",
+      "properties": {
+        "inventory": {
+          "type": "object",
+          "properties": {
+            "slot": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 16,
+              "default": 6,
+              "description": "Inventory Slot Radius"
+            },
+            "item": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 12,
+              "default": 4,
+              "description": "Inventory Item Radius"
+            },
+            "tooltip": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 12,
+              "default": 8,
+              "description": "Inventory Tooltip Radius"
+            },
+            "category": {
+              "type": "number",
+              "minimum": 6,
+              "maximum": 20,
+              "default": 12,
+              "description": "Inventory Category Tab Radius"
+            }
+          }
+        },
+        "hud": {
+          "type": "object",
+          "properties": {
+            "minimap": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 20,
+              "default": 8,
+              "description": "Minimap Radius"
+            },
+            "panel": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 16,
+              "default": 8,
+              "description": "HUD Panel Radius"
+            },
+            "button": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 12,
+              "default": 6,
+              "description": "HUD Button Radius"
+            },
+            "notification": {
+              "type": "number",
+              "minimum": 6,
+              "maximum": 16,
+              "default": 10,
+              "description": "HUD Notification Radius"
+            }
+          }
+        },
+        "progress": {
+          "type": "object",
+          "properties": {
+            "healthBar": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 16,
+              "default": 8,
+              "description": "Health Bar Radius"
+            },
+            "manaBar": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 16,
+              "default": 8,
+              "description": "Mana Bar Radius"
+            },
+            "expBar": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 12,
+              "default": 6,
+              "description": "Experience Bar Radius"
+            }
+          }
+        },
+        "dialog": {
+          "type": "object",
+          "properties": {
+            "window": {
+              "type": "number",
+              "minimum": 8,
+              "maximum": 24,
+              "default": 16,
+              "description": "Dialog Window Radius"
+            },
+            "portrait": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 50,
+              "default": 8,
+              "description": "Character Portrait Radius"
+            },
+            "choice": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 12,
+              "default": 8,
+              "description": "Dialog Choice Button Radius"
+            }
+          }
+        },
+        "combat": {
+          "type": "object",
+          "properties": {
+            "actionButton": {
+              "type": "number",
+              "minimum": 6,
+              "maximum": 16,
+              "default": 10,
+              "description": "Combat Action Button Radius"
+            },
+            "targetFrame": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 12,
+              "default": 6,
+              "description": "Target Frame Radius"
+            },
+            "effect": {
+              "type": "number",
+              "minimum": 50,
+              "maximum": 9999,
+              "default": 50,
+              "description": "Combat Effect Radius (circular)"
+            }
+          }
+        }
+      }
+    },
+    "responsive": {
+      "type": "object",
+      "description": "Responsive Border-Radius Anpassungen",
+      "required": ["enabled", "breakpoints"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Responsive Border-Radius aktiviert"
+        },
+        "breakpoints": {
+          "type": "object",
+          "description": "Border-Radius Anpassungen pro Breakpoint",
+          "properties": {
+            "mobile": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 0.5,
+                  "maximum": 1.0,
+                  "default": 0.8,
+                  "description": "Radius-Skalierung für Mobile"
+                },
+                "maxRadius": {
+                  "type": "number",
+                  "minimum": 8,
+                  "maximum": 20,
+                  "default": 12,
+                  "description": "Maximaler Radius auf Mobile"
+                },
+                "touchOptimized": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Touch-optimierte Radius-Werte"
+                }
+              }
+            },
+            "tablet": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 0.7,
+                  "maximum": 1.1,
+                  "default": 0.9,
+                  "description": "Radius-Skalierung für Tablet"
+                }
+              }
+            },
+            "desktop": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 0.9,
+                  "maximum": 1.2,
+                  "default": 1.0,
+                  "description": "Radius-Skalierung für Desktop"
+                }
+              }
+            },
+            "wide": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 1.0,
+                  "maximum": 1.3,
+                  "default": 1.1,
+                  "description": "Radius-Skalierung für Wide Screens"
+                }
+              }
+            }
+          }
+        },
+        "contextual": {
+          "type": "object",
+          "description": "Kontext-abhängige Radius-Anpassungen",
+          "properties": {
+            "fullscreen": {
+              "type": "object",
+              "properties": {
+                "reduceRadius": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Radius in Fullscreen-Modi reduzieren"
+                },
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 0.3,
+                  "maximum": 1.0,
+                  "default": 0.5,
+                  "description": "Radius-Reduktion in Fullscreen"
+                }
+              }
+            },
+            "modal": {
+              "type": "object",
+              "properties": {
+                "increaseRadius": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Radius für Modals erhöhen"
+                },
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 1.0,
+                  "maximum": 1.5,
+                  "default": 1.2,
+                  "description": "Radius-Erhöhung für Modals"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "description": "Accessibility-konforme Border-Radius Richtlinien",
+      "properties": {
+        "focusIndicators": {
+          "type": "object",
+          "properties": {
+            "matchRadius": {
+              "type": "boolean",
+              "default": true,
+              "description": "Focus-Indikator Radius an Element anpassen"
+            },
+            "offset": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 8,
+              "default": 4,
+              "description": "Focus-Indikator Radius Offset"
+            }
+          }
+        },
+        "clickableAreas": {
+          "type": "object",
+          "properties": {
+            "minRadius": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 8,
+              "default": 4,
+              "description": "Minimaler Radius für klickbare Elemente"
+            },
+            "touchFriendly": {
+              "type": "boolean",
+              "default": true,
+              "description": "Touch-freundliche Radius-Werte"
+            }
+          }
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "description": "Performance-Optimierungen für Border-Radius",
+      "properties": {
+        "rendering": {
+          "type": "object",
+          "properties": {
+            "avoidComplexShapes": {
+              "type": "boolean",
+              "default": true,
+              "description": "Komplexe Border-Radius Kombinationen vermeiden"
+            },
+            "useSimpleValues": {
+              "type": "boolean",
+              "default": true,
+              "description": "Einfache Radius-Werte für bessere Performance"
+            },
+            "gpuAccelerated": {
+              "type": "boolean",
+              "default": false,
+              "description": "GPU-beschleunigte Border-Radius"
+            }
+          }
+        },
+        "css": {
+          "type": "object",
+          "properties": {
+            "useCustomProperties": {
+              "type": "boolean",
+              "default": true,
+              "description": "CSS Custom Properties für Radius verwenden"
+            },
+            "optimize": {
+              "type": "boolean",
+              "default": true,
+              "description": "Radius-Werte für CSS-Performance optimieren"
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "base": {
+        "scale": {
+          "none": 0,
+          "xs": 2,
+          "sm": 4,
+          "md": 8,
+          "lg": 12,
+          "xl": 16,
+          "full": 9999
+        }
+      },
+      "semantic": {
+        "components": {
+          "button": {
+            "medium": 8,
+            "pill": 9999
+          },
+          "card": {
+            "default": 12,
+            "elevated": 16
+          }
+        }
+      },
+      "gaming": {
+        "inventory": {
+          "slot": 6,
+          "tooltip": 8
+        },
+        "hud": {
+          "minimap": 8,
+          "panel": 8
+        }
+      },
+      "responsive": {
+        "enabled": true,
+        "breakpoints": {
+          "mobile": {
+            "scaleFactor": 0.8,
+            "touchOptimized": true
+          }
+        }
+      }
+    }
+  ]
+}

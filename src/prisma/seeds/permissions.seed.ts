@@ -1,0 +1,57 @@
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export async function seedPermissions() {
+  const permissionNames = [
+    // Welt-Management
+    'world.view',
+    'world.create', 
+    'world.edit',
+    'world.delete',
+    'world.archive',
+    
+    // Player-Management
+    'player.join',
+    'player.leave',
+    'player.view_own',
+    'player.view_all',
+    'player.invite',
+    'player.kick',
+    'player.ban',
+    'player.mute',
+    'player.promote',
+    'player.demote',
+    
+    // Invite-Management
+    'invite.create',
+    'invite.view',
+    'invite.manage',
+    'invite.delete',
+    
+    // System-Management
+    'system.admin',
+    'system.moderation',
+    'system.support',
+    'system.development',
+    'system.view_own',
+    
+    // Tools unter System-Kontext
+    'system.arb',
+    'system.theme',
+    'system.logs',
+    'system.metrics',
+    'system.backup'
+  ];
+
+  for (const name of permissionNames) {
+    await prisma.permission.upsert({
+      where: { name },
+      update: {},
+      create: {
+        name,
+        description: name.replace('.', ' '), // Beschreibung generieren
+      },
+    });
+  }
+} 

@@ -1,0 +1,57 @@
+[Unit]
+Description=Weltenwind Backend API Service (Development)
+Documentation=https://github.com/weltenwind/backend
+After=network.target postgresql.service
+PartOf=weltenwind.target
+
+[Service]
+Type=simple
+User=weltenwind
+Group=weltenwind
+WorkingDirectory=/srv/weltenwind/backend
+
+# Development environment
+Environment="NODE_ENV=development"
+Environment="PORT=3000"
+Environment="LOG_LEVEL=debug"
+Environment="LOG_TO_FILE=true"
+Environment="LOG_TO_CONSOLE=true"
+Environment="LOG_TRACE_REQUESTS=true"
+# Ensure the service writes logs to the shared logs directory via the symlink
+Environment="LOG_DIR=/srv/weltenwind/logs"
+ # Stabilize file watching on HGFS/VMware
+ Environment="CHOKIDAR_USEPOLLING=true"
+ Environment="CHOKIDAR_INTERVAL=1000"
+ Environment="TS_NODE_TRANSPILE_ONLY=true"
+ Environment="UV_THREADPOOL_SIZE=8"
+
+# Load project .env as well (overrides above if present)
+EnvironmentFile=/srv/weltenwind/backend/.env
+
+# Start in dev mode (ts-node / nodemon as configured by package.json)
+ExecStart=/usr/bin/npm run dev --silent -- \
+  --ignore-watch node_modules \
+  --ignore-watch ../client \
+  --ignore-watch ../docs \
+  --ignore-watch ../assets \
+  --exit-child
+
+# Conservative restart policy to avoid flapping on file changes
+Restart=on-failure
+RestartSec=3
+TimeoutStartSec=120
+
+# Route stdout/stderr to journald only; Winston writes files itself
+StandardOutput=journal
+StandardError=journal
+
+# Security & FS access
+NoNewPrivileges=true
+PrivateTmp=true
+# Allow writes to backend and logs (include symlink target path for safety)
+ReadWritePaths=/srv/weltenwind/backend /srv/weltenwind/logs /mnt/hgfs/sharedFolder_weltenwind/logs
+
+[Install]
+WantedBy=weltenwind.target multi-user.target
+
+

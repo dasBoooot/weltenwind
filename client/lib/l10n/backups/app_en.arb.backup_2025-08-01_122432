@@ -1,0 +1,1371 @@
+{
+  "@@locale": "en",
+  "@@context": "weltenwind-game",
+  "appTitle": "Weltenwind",
+  "@appTitle": {
+    "description": "The application title",
+    "context": "app"
+  },
+  "authLoginTitle": "Sign In",
+  "@authLoginTitle": {
+    "description": "Title for the login page",
+    "context": "authentication"
+  },
+  "authLoginButton": "Sign In",
+  "@authLoginButton": {
+    "description": "Button text for login",
+    "context": "authentication"
+  },
+  "authRegisterTitle": "Register",
+  "@authRegisterTitle": {
+    "description": "Title for the registration page",
+    "context": "authentication"
+  },
+  "authRegisterButton": "Register",
+  "@authRegisterButton": {
+    "description": "Button text for registration",
+    "context": "authentication"
+  },
+  "authLogoutButton": "Sign Out",
+  "@authLogoutButton": {
+    "description": "Button for signing out",
+    "context": "authentication"
+  },
+  "authEmailLabel": "Email",
+  "@authEmailLabel": {
+    "description": "Label for email input field",
+    "context": "authentication"
+  },
+  "authPasswordLabel": "Password",
+  "@authPasswordLabel": {
+    "description": "Label for password input field",
+    "context": "authentication"
+  },
+  "authUsernameLabel": "Username",
+  "@authUsernameLabel": {
+    "description": "Label for username input field",
+    "context": "authentication"
+  },
+  "authLoginWelcome": "Welcome to Weltenwind",
+  "@authLoginWelcome": {
+    "description": "Welcome title on login page",
+    "context": "authentication"
+  },
+  "authLoginSubtitle": "Sign in to manage your worlds",
+  "@authLoginSubtitle": {
+    "description": "Subtitle on login page",
+    "context": "authentication"
+  },
+  "authUsernameRequired": "Please enter your username",
+  "@authUsernameRequired": {
+    "description": "Validation error for empty username field",
+    "context": "authentication"
+  },
+  "authUsernameMinLength": "Username must be at least 3 characters long",
+  "@authUsernameMinLength": {
+    "description": "Validation error for username too short",
+    "context": "authentication"
+  },
+  "authPasswordRequired": "Please enter your password",
+  "@authPasswordRequired": {
+    "description": "Validation error for empty password field",
+    "context": "authentication"
+  },
+  "authPasswordMinLength": "Password must be at least 6 characters long",
+  "@authPasswordMinLength": {
+    "description": "Validation error for password too short",
+    "context": "authentication"
+  },
+  "authRememberMe": "Stay signed in",
+  "@authRememberMe": {
+    "description": "Checkbox text for 'Stay signed in'",
+    "context": "authentication"
+  },
+  "authForgotPassword": "Forgot password?",
+  "@authForgotPassword": {
+    "description": "Link text for forgot password",
+    "context": "authentication"
+  },
+  "authNoAccount": "Don't have an account?",
+  "@authNoAccount": {
+    "description": "Text before registration link",
+    "context": "authentication"
+  },
+  "authLoginLoading": "Signing in...",
+  "@authLoginLoading": {
+    "description": "Loading text during login",
+    "context": "authentication"
+  },
+  "authGoogleLabel": "Google",
+  "@authGoogleLabel": {
+    "description": "Label for Google login button",
+    "context": "authentication"
+  },
+  "authGithubLabel": "GitHub",
+  "@authGithubLabel": {
+    "description": "Label for GitHub login button",
+    "context": "authentication"
+  },
+  "authGoogleComingSoon": "Google login will be available soon",
+  "@authGoogleComingSoon": {
+    "description": "Coming soon text for Google login",
+    "context": "authentication"
+  },
+  "authGithubComingSoon": "GitHub login will be available soon",
+  "@authGithubComingSoon": {
+    "description": "Coming soon text for GitHub login",
+    "context": "authentication"
+  },
+  "authRegisterWelcome": "Join Weltenwind",
+  "@authRegisterWelcome": {
+    "description": "Welcome title on registration page",
+    "context": "authentication"
+  },
+  "authRegisterSubtitle": "Create your account and start your adventure",
+  "@authRegisterSubtitle": {
+    "description": "Subtitle on registration page",
+    "context": "authentication"
+  },
+  "authUsernameRequiredAlt": "Username is required",
+  "@authUsernameRequiredAlt": {
+    "description": "Alternative validation error for empty username field",
+    "context": "authentication"
+  },
+  "authUsernameInvalidChars": "Username can only contain letters, numbers, and underscores",
+  "@authUsernameInvalidChars": {
+    "description": "Validation error for invalid username characters",
+    "context": "authentication"
+  },
+  "authEmailRequired": "Please enter your email",
+  "@authEmailRequired": {
+    "description": "Validation error for empty email field",
+    "context": "authentication"
+  },
+  "authHaveAccount": "Already have an account?",
+  "@authHaveAccount": {
+    "description": "Text before login link on register page",
+    "context": "authentication"
+  },
+  "authRegisterSuccessWelcome": "Registration successful! Welcome to Weltenwind!",
+  "@authRegisterSuccessWelcome": {
+    "description": "Success message after registration",
+    "context": "authentication"
+  },
+  "authForgotPasswordTitle": "Reset Password",
+  "@authForgotPasswordTitle": {
+    "description": "Title for forgot password page",
+    "context": "authentication"
+  },
+  "authForgotPasswordDescription": "We'll send you a link to reset your password.",
+  "@authForgotPasswordDescription": {
+    "description": "Description on forgot password page",
+    "context": "authentication"
+  },
+  "authForgotPasswordEmailLabel": "Email Address",
+  "@authForgotPasswordEmailLabel": {
+    "description": "Label for email input on forgot password page",
+    "context": "authentication"
+  },
+  "authForgotPasswordEmailRequired": "Please enter your email address",
+  "@authForgotPasswordEmailRequired": {
+    "description": "Validation error for empty email on forgot password",
+    "context": "authentication"
+  },
+  "authForgotPasswordSuccess": "Email sent! Please check your inbox.",
+  "@authForgotPasswordSuccess": {
+    "description": "Success message after sending password reset email",
+    "context": "authentication"
+  },
+  "authForgotPasswordSendButton": "Send Link",
+  "@authForgotPasswordSendButton": {
+    "description": "Button text for sending password reset link",
+    "context": "authentication"
+  },
+  "authForgotPasswordBackToLogin": "Back to Sign In",
+  "@authForgotPasswordBackToLogin": {
+    "description": "Button text to go back to login after successful sending",
+    "context": "authentication"
+  },
+  "authForgotPasswordCancel": "Cancel",
+  "@authForgotPasswordCancel": {
+    "description": "Button text to cancel password reset request",
+    "context": "authentication"
+  },
+  "authResetPasswordInvalidToken": "The reset link is invalid or expired. Please request a new link.",
+  "@authResetPasswordInvalidToken": {
+    "description": "Error message for invalid reset token",
+    "context": "authentication"
+  },
+  "authResetPasswordSuccessTitle": "Password Changed Successfully!",
+  "@authResetPasswordSuccessTitle": {
+    "description": "Title after successful password reset",
+    "context": "authentication"
+  },
+  "authResetPasswordTitle": "Set New Password",
+  "@authResetPasswordTitle": {
+    "description": "Title on password reset page",
+    "context": "authentication"
+  },
+  "authResetPasswordSuccessMessage": "You will be automatically redirected to sign in...",
+  "@authResetPasswordSuccessMessage": {
+    "description": "Message after successful password reset",
+    "context": "authentication"
+  },
+  "authResetPasswordDescription": "Please enter your new password.",
+  "@authResetPasswordDescription": {
+    "description": "Description on password reset page",
+    "context": "authentication"
+  },
+  "authNewPasswordLabel": "New Password",
+  "@authNewPasswordLabel": {
+    "description": "Label for new password input field",
+    "context": "authentication"
+  },
+  "authPasswordHelperText": "At least 6 characters",
+  "@authPasswordHelperText": {
+    "description": "Helper text under password input field",
+    "context": "authentication"
+  },
+  "authNewPasswordRequired": "Please enter a new password",
+  "@authNewPasswordRequired": {
+    "description": "Validation error for empty new password",
+    "context": "authentication"
+  },
+  "authPasswordNoSpaces": "Password cannot contain spaces",
+  "@authPasswordNoSpaces": {
+    "description": "Validation error for spaces in password",
+    "context": "authentication"
+  },
+  "authConfirmPasswordLabel": "Confirm Password",
+  "@authConfirmPasswordLabel": {
+    "description": "Label for password confirmation input field",
+    "context": "authentication"
+  },
+  "authConfirmPasswordRequired": "Please confirm your new password",
+  "@authConfirmPasswordRequired": {
+    "description": "Validation error for empty password confirmation",
+    "context": "authentication"
+  },
+  "authPasswordsDoNotMatch": "Passwords do not match",
+  "@authPasswordsDoNotMatch": {
+    "description": "Validation error when passwords don't match",
+    "context": "authentication"
+  },
+  "authPasswordRequirementsTitle": "Password Requirements:",
+  "@authPasswordRequirementsTitle": {
+    "description": "Title for password requirements section",
+    "context": "authentication"
+  },
+  "authRequirementMinLength": "At least 6 characters",
+  "@authRequirementMinLength": {
+    "description": "Password requirement: minimum length",
+    "context": "authentication"
+  },
+  "authRequirementNoSpaces": "No spaces allowed",
+  "@authRequirementNoSpaces": {
+    "description": "Password requirement: no spaces",
+    "context": "authentication"
+  },
+  "authRequirementPasswordsMatch": "Passwords match",
+  "@authRequirementPasswordsMatch": {
+    "description": "Password requirement: passwords match validation",
+    "context": "authentication"
+  },
+  "authResetPasswordButton": "Reset Password",
+  "@authResetPasswordButton": {
+    "description": "Button text for password reset",
+    "context": "authentication"
+  },
+  "authBackToLogin": "Back to Sign In",
+  "@authBackToLogin": {
+    "description": "Link text to go back to login",
+    "context": "authentication"
+  },
+  "navDashboard": "Dashboard",
+  "@navDashboard": {
+    "description": "Navigation item for dashboard",
+    "context": "navigation"
+  },
+  "navWorldList": "Worlds",
+  "@navWorldList": {
+    "description": "Navigation item for world list",
+    "context": "navigation"
+  },
+  "navProfile": "Profile",
+  "@navProfile": {
+    "description": "Navigation item for user profile",
+    "context": "navigation"
+  },
+  "worldsTitle": "Game Worlds",
+  "@worldsTitle": {
+    "description": "Title for worlds section",
+    "context": "worlds"
+  },
+  "worldLeaveButton": "Leave",
+  "@worldLeaveButton": {
+    "description": "Button text to leave a world",
+    "context": "worlds"
+  },
+  "worldPreRegisterButton": "Pre-Register",
+  "@worldPreRegisterButton": {
+    "description": "Button text to pre-register for a world",
+    "context": "worlds"
+  },
+  "worldCancelPreRegisterButton": "Cancel Pre-Registration",
+  "@worldCancelPreRegisterButton": {
+    "description": "Button text to cancel pre-registration",
+    "context": "worlds"
+  },
+  "worldStatusUpcoming": "Upcoming",
+  "@worldStatusUpcoming": {
+    "description": "Status label for upcoming worlds",
+    "context": "worlds"
+  },
+  "worldStatusOpen": "Open",
+  "@worldStatusOpen": {
+    "description": "Status label for open worlds",
+    "context": "worlds"
+  },
+  "worldStatusRunning": "Active",
+  "@worldStatusRunning": {
+    "description": "Status label for running worlds",
+    "context": "worlds"
+  },
+  "worldStatusClosed": "Closed",
+  "@worldStatusClosed": {
+    "description": "Status label for closed worlds",
+    "context": "worlds"
+  },
+  "errorGeneral": "An error occurred. Please try again.",
+  "@errorGeneral": {
+    "description": "General error message",
+    "context": "errors"
+  },
+  "errorNetwork": "Network error. Please check your connection.",
+  "@errorNetwork": {
+    "description": "Network error message",
+    "context": "errors"
+  },
+  "errorUnauthorized": "You are not authorized to access this resource.",
+  "@errorUnauthorized": {
+    "description": "Unauthorized access error message",
+    "context": "errors"
+  },
+  "errorValidationEmail": "Please enter a valid email address",
+  "@errorValidationEmail": {
+    "description": "Email validation error message",
+    "context": "errors"
+  },
+  "errorValidationPassword": "Password must be at least 8 characters long",
+  "@errorValidationPassword": {
+    "description": "Password validation error message",
+    "context": "errors"
+  },
+  "buttonOk": "OK",
+  "@buttonOk": {
+    "description": "OK button text",
+    "context": "common"
+  },
+  "commonOr": "or",
+  "@commonOr": {
+    "description": "Or conjunction text",
+    "context": "common"
+  },
+  "commonLanguage": "Language",
+  "@commonLanguage": {
+    "description": "Language selection label",
+    "context": "common"
+  },
+  "buttonCancel": "Cancel",
+  "@buttonCancel": {
+    "description": "Cancel button text",
+    "context": "common"
+  },
+  "buttonSave": "Save",
+  "@buttonSave": {
+    "description": "Save button text",
+    "context": "common"
+  },
+  "buttonRetry": "Try Again",
+  "@buttonRetry": {
+    "description": "Retry button text",
+    "context": "common"
+  },
+  "loadingText": "Loading...",
+  "@loadingText": {
+    "description": "Generic loading text",
+    "context": "common"
+  },
+  "landingSubtitle": "Your portal to infinite worlds",
+  "@landingSubtitle": {
+    "description": "Subtitle on the landing page",
+    "context": "landing"
+  },
+  "landingTagline": "🎮 Play • 🌍 Explore • 🤝 Connect",
+  "@landingTagline": {
+    "description": "Tagline on the landing page",
+    "context": "landing"
+  },
+  "landingStartButton": "Start Free Now",
+  "@landingStartButton": {
+    "description": "Main CTA button on landing page",
+    "context": "landing"
+  },
+  "landingNoCreditCard": "No credit card required",
+  "@landingNoCreditCard": {
+    "description": "No credit card disclaimer",
+    "context": "landing"
+  },
+  "landingLoginPrompt": "Already a member? Sign in",
+  "@landingLoginPrompt": {
+    "description": "Login prompt for existing users",
+    "context": "landing"
+  },
+  "landingRegisterButton": "Register for Free →",
+  "@landingRegisterButton": {
+    "description": "Registration button text",
+    "context": "landing"
+  },
+  "landingStatsPlayers": "Players",
+  "@landingStatsPlayers": {
+    "description": "Player count label in stats",
+    "context": "landing"
+  },
+  "landingStatsOnline": "Online",
+  "@landingStatsOnline": {
+    "description": "Online count label in stats",
+    "context": "landing"
+  },
+  "landingDiscoverMore": "Discover More",
+  "@landingDiscoverMore": {
+    "description": "Discover more button text",
+    "context": "landing"
+  },
+  "landingFeaturesTitle": "What makes Weltenwind special?",
+  "@landingFeaturesTitle": {
+    "description": "Features section title",
+    "context": "landing"
+  },
+  "landingFeaturesSubtitle": "Experience gaming on a new level",
+  "@landingFeaturesSubtitle": {
+    "description": "Features section subtitle",
+    "context": "landing"
+  },
+  "landingFeatureWorldsTitle": "Infinite Worlds",
+  "@landingFeatureWorldsTitle": {
+    "description": "Worlds feature title",
+    "context": "landing"
+  },
+  "landingFeatureWorldsDesc": "Explore hundreds of unique game worlds or create your own",
+  "@landingFeatureWorldsDesc": {
+    "description": "Worlds feature description",
+    "context": "landing"
+  },
+  "landingFeatureCommunityTitle": "Community",
+  "@landingFeatureCommunityTitle": {
+    "description": "Community feature title",
+    "context": "landing"
+  },
+  "landingFeatureCommunityDesc": "Connect with players from around the world",
+  "@landingFeatureCommunityDesc": {
+    "description": "Community feature description",
+    "context": "landing"
+  },
+  "landingFeatureSecurityTitle": "Safe & Fair",
+  "@landingFeatureSecurityTitle": {
+    "description": "Security feature title",
+    "context": "landing"
+  },
+  "landingFeatureSecurityDesc": "State-of-the-art security and fair rules for everyone",
+  "@landingFeatureSecurityDesc": {
+    "description": "Security feature description",
+    "context": "landing"
+  },
+  "landingFeatureSpeedTitle": "Lightning Fast",
+  "@landingFeatureSpeedTitle": {
+    "description": "Speed feature title",
+    "context": "landing"
+  },
+  "landingFeatureSpeedDesc": "Optimized servers for minimal latency",
+  "@landingFeatureSpeedDesc": {
+    "description": "Speed feature description",
+    "context": "landing"
+  },
+  "landingFeatureMobileTitle": "Play Everywhere",
+  "@landingFeatureMobileTitle": {
+    "description": "Mobile feature title",
+    "context": "landing"
+  },
+  "landingFeatureMobileDesc": "On PC, tablet or smartphone - always with you",
+  "@landingFeatureMobileDesc": {
+    "description": "Mobile feature description",
+    "context": "landing"
+  },
+  "landingFeatureRewardsTitle": "Rewards",
+  "@landingFeatureRewardsTitle": {
+    "description": "Rewards feature title",
+    "context": "landing"
+  },
+  "landingFeatureRewardsDesc": "Collect achievements and exclusive rewards",
+  "@landingFeatureRewardsDesc": {
+    "description": "Rewards feature description",
+    "context": "landing"
+  },
+  "landingCtaTitle": "Ready for your adventure?",
+  "@landingCtaTitle": {
+    "description": "Final CTA section title",
+    "context": "landing"
+  },
+  "landingCtaSubtitle": "Join thousands of players and start today!",
+  "@landingCtaSubtitle": {
+    "description": "Final CTA section subtitle",
+    "context": "landing"
+  },
+  "footerCopyright": "© 2024 Weltenwind. All rights reserved.",
+  "@footerCopyright": {
+    "description": "Copyright notice in footer",
+    "context": "footer"
+  },
+  "footerPrivacy": "Privacy",
+  "@footerPrivacy": {
+    "description": "Privacy link in footer",
+    "context": "footer"
+  },
+  "footerLegal": "Legal",
+  "@footerLegal": {
+    "description": "Legal link in footer",
+    "context": "footer"
+  },
+  "footerSupport": "Support",
+  "@footerSupport": {
+    "description": "Support link in footer",
+    "context": "footer"
+  },
+  "worldListTitle": "Choose Your World",
+  "@worldListTitle": {
+    "description": "Main title on world list page",
+    "context": "worlds"
+  },
+  "worldListSubtitle": "Select your world",
+  "@worldListSubtitle": {
+    "description": "Subtitle on world list page",
+    "context": "worlds"
+  },
+  "worldListLoadingError": "Error loading worlds: {error}",
+  "@worldListLoadingError": {
+    "description": "Error message when loading worlds",
+    "context": "worlds",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "worldListErrorTitle": "Error Loading Worlds",
+  "@worldListErrorTitle": {
+    "description": "Title for world loading error",
+    "context": "worlds"
+  },
+  "worldListErrorUnknown": "Unknown error",
+  "@worldListErrorUnknown": {
+    "description": "Unknown error when loading worlds",
+    "context": "worlds"
+  },
+  "worldListEmptyTitle": "No Worlds Found",
+  "@worldListEmptyTitle": {
+    "description": "Title when no worlds available",
+    "context": "worlds"
+  },
+  "worldListEmptyMessage": "Try different filter settings.",
+  "@worldListEmptyMessage": {
+    "description": "Message when no worlds found",
+    "context": "worlds"
+  },
+  "worldListRefreshButton": "Refresh",
+  "@worldListRefreshButton": {
+    "description": "Button to refresh world list",
+    "context": "worlds"
+  },
+  "worldListCreateButton": "New World",
+  "@worldListCreateButton": {
+    "description": "Button to create new world",
+    "context": "worlds"
+  },
+  "worldListLoadingText": "Loading worlds...",
+  "@worldListLoadingText": {
+    "description": "Loading text for world list",
+    "context": "worlds"
+  },
+  "worldAlreadyMember": "You are already a member of world \"{worldName}\"!",
+  "@worldAlreadyMember": {
+    "description": "Message when user is already member of world",
+    "context": "worlds",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "The name of the world"
+      }
+    }
+  },
+  "worldPreRegisterSuccessful": "Successfully pre-registered for {worldName}!",
+  "@worldPreRegisterSuccessful": {
+    "description": "Success message for pre-registration",
+    "context": "worlds",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "The name of the world"
+      }
+    }
+  },
+  "worldPreRegisterCancelled": "Pre-registration for {worldName} cancelled.",
+  "@worldPreRegisterCancelled": {
+    "description": "Message when pre-registration is cancelled",
+    "context": "worlds",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "The name of the world"
+      }
+    }
+  },
+  "worldLeaveDialogTitle": "Leave World?",
+  "@worldLeaveDialogTitle": {
+    "description": "Dialog title for leaving world",
+    "context": "worlds"
+  },
+  "worldLeaveDialogMessage": "Do you really want to leave world \"{worldName}\"?",
+  "@worldLeaveDialogMessage": {
+    "description": "Dialog message for leaving world",
+    "context": "worlds",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "The name of the world"
+      }
+    }
+  },
+  "worldLeaveConfirm": "Leave",
+  "@worldLeaveConfirm": {
+    "description": "Confirm button for leaving world",
+    "context": "worlds"
+  },
+  "worldLeaveSuccessful": "You have left {worldName}.",
+  "@worldLeaveSuccessful": {
+    "description": "Success message when leaving world",
+    "context": "worlds",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "The name of the world"
+      }
+    }
+  },
+  "worldPlayButton": "Play",
+  "@worldPlayButton": {
+    "description": "Button to start playing in world",
+    "context": "worlds"
+  },
+  "worldLogoutError": "Error signing out",
+  "@worldLogoutError": {
+    "description": "Error message when logout fails",
+    "context": "worlds"
+  },
+  "worldRegisterNow": "Register Now",
+  "@worldRegisterNow": {
+    "description": "Register now button text",
+    "context": "worlds"
+  },
+  "worldAlreadyRegistered": "Already registered? Sign in",
+  "@worldAlreadyRegistered": {
+    "description": "Sign in prompt for registered users",
+    "context": "worlds"
+  },
+  "worldLogoutAndRegister": "Sign out & register again",
+  "@worldLogoutAndRegister": {
+    "description": "Sign out and register again button",
+    "context": "worlds"
+  },
+  "worldBackToHome": "Back to Home",
+  "@worldBackToHome": {
+    "description": "Back to home button text",
+    "context": "worlds"
+  },
+  "worldBackToWorlds": "Back to Worlds",
+  "@worldBackToWorlds": {
+    "description": "Back to worlds button text",
+    "context": "worlds"
+  },
+  "worldLoginButton": "Sign In",
+  "@worldLoginButton": {
+    "description": "Sign in button text",
+    "context": "worlds"
+  },
+  "worldRegisterButton": "Register",
+  "@worldRegisterButton": {
+    "description": "Register button text",
+    "context": "worlds"
+  },
+  "worldLogoutButton": "Sign Out",
+  "@worldLogoutButton": {
+    "description": "Sign out button text",
+    "context": "worlds"
+  },
+  "worldNotFoundTitle": "World Not Found",
+  "@worldNotFoundTitle": {
+    "description": "Title when world not found",
+    "context": "worlds"
+  },
+  "worldNotFoundMessage": "The requested world does not exist or is not available.",
+  "@worldNotFoundMessage": {
+    "description": "Message when world not found",
+    "context": "worlds"
+  },
+  "worldLoadingError": "Error Loading",
+  "@worldLoadingError": {
+    "description": "Generic world loading error",
+    "context": "worlds"
+  },
+  "worldInformationTitle": "Information",
+  "@worldInformationTitle": {
+    "description": "World information section title",
+    "context": "worlds"
+  },
+  "worldStartDate": "Start: {date}",
+  "@worldStartDate": {
+    "description": "World start date label",
+    "context": "worlds",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "description": "The start date"
+      }
+    }
+  },
+  "worldEndDate": "End: {date}",
+  "@worldEndDate": {
+    "description": "World end date label",
+    "context": "worlds",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "description": "The end date"
+      }
+    }
+  },
+  "worldDateUnknown": "Unknown",
+  "@worldDateUnknown": {
+    "description": "Unknown date placeholder",
+    "context": "worlds"
+  },
+  "worldAboutTitle": "About This World",
+  "@worldAboutTitle": {
+    "description": "World about section title",
+    "context": "worlds"
+  },
+  "worldAboutDescription": "This is an exciting world full of adventures and challenges. Explore unknown territories, form alliances and become a legend!",
+  "@worldAboutDescription": {
+    "description": "Default world description",
+    "context": "worlds"
+  },
+  "worldRulesTitle": "Rules",
+  "@worldRulesTitle": {
+    "description": "World rules section title",
+    "context": "worlds"
+  },
+  "worldStatsTitle": "World Statistics",
+  "@worldStatsTitle": {
+    "description": "World statistics section title",
+    "context": "worlds"
+  },
+  "worldPlayersActive": "{count} players active",
+  "@worldPlayersActive": {
+    "description": "Active players count",
+    "context": "worlds",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Number of active players"
+      }
+    }
+  },
+  "worldDefaultDescription": "An exciting world full of adventures",
+  "@worldDefaultDescription": {
+    "description": "Default world description",
+    "context": "worlds"
+  },
+  "worldCategoryClassic": "Classic",
+  "@worldCategoryClassic": {
+    "description": "Classic world category",
+    "context": "worlds"
+  },
+  "worldCategoryPvP": "Player vs Player",
+  "@worldCategoryPvP": {
+    "description": "PvP world category",
+    "context": "worlds"
+  },
+  "worldCategoryEvent": "Event",
+  "@worldCategoryEvent": {
+    "description": "Event world category",
+    "context": "worlds"
+  },
+  "worldCategoryExperimental": "Experimental",
+  "@worldCategoryExperimental": {
+    "description": "Experimental world category",
+    "context": "worlds"
+  },
+  "worldFiltersStatus": "Status:",
+  "@worldFiltersStatus": {
+    "description": "Status filter label",
+    "context": "worlds"
+  },
+  "worldFiltersCategory": "Category:",
+  "@worldFiltersCategory": {
+    "description": "Category filter label",
+    "context": "worlds"
+  },
+  "worldFiltersSortBy": "Sort by:",
+  "@worldFiltersSortBy": {
+    "description": "Sort by filter label",
+    "context": "worlds"
+  },
+  "worldFiltersSortStartDate": "Start Date",
+  "@worldFiltersSortStartDate": {
+    "description": "Sort by start date option",
+    "context": "worlds"
+  },
+  "worldFiltersSortName": "Name",
+  "@worldFiltersSortName": {
+    "description": "Sort by name option",
+    "context": "worlds"
+  },
+  "worldFiltersSortStatus": "Status",
+  "@worldFiltersSortStatus": {
+    "description": "Sort by status option",
+    "context": "worlds"
+  },
+  "worldFiltersSortPlayerCount": "Player Count",
+  "@worldFiltersSortPlayerCount": {
+    "description": "Sort by player count option",
+    "context": "worlds"
+  },
+  "worldFiltersActiveFilters": "Active filters:",
+  "@worldFiltersActiveFilters": {
+    "description": "Active filters label",
+    "context": "worlds"
+  },
+  "worldFiltersResetAll": "Reset All",
+  "@worldFiltersResetAll": {
+    "description": "Reset all filters button",
+    "context": "worlds"
+  },
+  "worldStatusArchived": "Archived",
+  "@worldStatusArchived": {
+    "description": "Archived world status",
+    "context": "worlds"
+  },
+  "userInfoClickForDetails": "Click for details",
+  "@userInfoClickForDetails": {
+    "description": "Click for details tooltip",
+    "context": "common"
+  },
+  "userInfoRoles": "Roles:",
+  "@userInfoRoles": {
+    "description": "User roles label",
+    "context": "common"
+  },
+  "navigationJoinRequiredMessage": "You must join the world first to see the dashboard",
+  "@navigationJoinRequiredMessage": {
+    "description": "Message when user needs to join world for dashboard",
+    "context": "navigation"
+  },
+  "navigationBack": "Back",
+  "@navigationBack": {
+    "description": "Back navigation button",
+    "context": "navigation"
+  },
+  "navigationWorldOverview": "World Overview",
+  "@navigationWorldOverview": {
+    "description": "World overview navigation item",
+    "context": "navigation"
+  },
+  "navigationWorldDetails": "World Details",
+  "@navigationWorldDetails": {
+    "description": "World details navigation item",
+    "context": "navigation"
+  },
+  "navigationDashboard": "To Dashboard",
+  "@navigationDashboard": {
+    "description": "Dashboard navigation item",
+    "context": "navigation"
+  },
+  "navigationDashboardRequiresJoin": "Dashboard (Join required)",
+  "@navigationDashboardRequiresJoin": {
+    "description": "Dashboard navigation when join required",
+    "context": "navigation"
+  },
+  "navigationTitle": "Navigation",
+  "@navigationTitle": {
+    "description": "Navigation section title",
+    "context": "navigation"
+  },
+  "navigationOpenMenu": "Open Menu",
+  "@navigationOpenMenu": {
+    "description": "Open menu button text",
+    "context": "navigation"
+  },
+  "navigationTooltipJoinRequired": "You must join the world to see the dashboard",
+  "@navigationTooltipJoinRequired": {
+    "description": "Tooltip when join required for dashboard",
+    "context": "navigation"
+  },
+  "worldJoinSuccess": "Successfully joined world \"{worldName}\"!",
+  "@worldJoinSuccess": {
+    "description": "Success message when joining world",
+    "context": "worldActions",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "The name of the world"
+      }
+    }
+  },
+  "worldJoinFailed": "Join failed. Please try again.",
+  "@worldJoinFailed": {
+    "description": "Error message when joining world fails",
+    "context": "worldActions"
+  },
+  "worldJoinPreRegistrationError": "Error during pre-registration",
+  "@worldJoinPreRegistrationError": {
+    "description": "Error message for pre-registration failure",
+    "context": "worldActions"
+  },
+  "worldJoinCancelPreRegistrationError": "Error canceling pre-registration",
+  "@worldJoinCancelPreRegistrationError": {
+    "description": "Error message when canceling pre-registration fails",
+    "context": "worldActions"
+  },
+  "worldJoinLeaveDialogTitle": "Leave World?",
+  "@worldJoinLeaveDialogTitle": {
+    "description": "Leave world dialog title",
+    "context": "worldActions"
+  },
+  "worldJoinLeaveDialogContent": "Do you really want to leave world \"{worldName}\"?",
+  "@worldJoinLeaveDialogContent": {
+    "description": "Leave world dialog content",
+    "context": "worldActions",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "The name of the world"
+      }
+    }
+  },
+  "worldJoinUnknownWorld": "Unknown",
+  "@worldJoinUnknownWorld": {
+    "description": "Unknown world placeholder",
+    "context": "worldActions"
+  },
+  "worldJoinBackToWorldsButton": "Back to Worlds",
+  "@worldJoinBackToWorldsButton": {
+    "description": "Back to worlds button text",
+    "context": "worldActions"
+  },
+  "worldJoinCancelPreRegistrationButton": "Cancel Pre-registration",
+  "@worldJoinCancelPreRegistrationButton": {
+    "description": "Cancel pre-registration button text",
+    "context": "worldActions"
+  },
+  "worldJoinCancelPreRegistrationInProgress": "Canceling...",
+  "@worldJoinCancelPreRegistrationInProgress": {
+    "description": "Canceling pre-registration loading text",
+    "context": "worldActions"
+  },
+  "worldJoinGenericError": "An error occurred: {error}",
+  "@worldJoinGenericError": {
+    "description": "Generic error message with details",
+    "context": "worldActions",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "worldJoinUnknownError": "Unknown error",
+  "@worldJoinUnknownError": {
+    "description": "Unknown error message",
+    "context": "worldActions"
+  },
+  "worldJoinUnknownWorldName": "Unknown World",
+  "@worldJoinUnknownWorldName": {
+    "description": "Unknown world name placeholder",
+    "context": "worldActions"
+  },
+  "worldJoinPreRegisterButton": "Pre-register",
+  "@worldJoinPreRegisterButton": {
+    "description": "Pre-register button text",
+    "context": "worldActions"
+  },
+  "worldJoinPreRegisterInProgress": "Registering...",
+  "@worldJoinPreRegisterInProgress": {
+    "description": "Pre-registration loading text",
+    "context": "worldActions"
+  },
+  "worldJoinLeaveInProgress": "Leaving...",
+  "@worldJoinLeaveInProgress": {
+    "description": "Leaving world loading text",
+    "context": "worldActions"
+  },
+  "worldJoinNowButton": "Join Now",
+  "@worldJoinNowButton": {
+    "description": "Join now button text",
+    "context": "worldActions"
+  },
+  "worldJoinInProgress": "Joining...",
+  "@worldJoinInProgress": {
+    "description": "Joining world loading text",
+    "context": "worldActions"
+  },
+  "worldJoinWorldClosedStatus": "This world is currently closed",
+  "@worldJoinWorldClosedStatus": {
+    "description": "Message when world is closed",
+    "context": "worldActions"
+  },
+  "worldJoinWorldArchivedStatus": "This world is archived",
+  "@worldJoinWorldArchivedStatus": {
+    "description": "Message when world is archived",
+    "context": "worldActions"
+  },
+  "worldJoinErrorLoadingWorldData": "Error loading world data: {error}",
+  "@worldJoinErrorLoadingWorldData": {
+    "description": "Error loading world data",
+    "context": "worldActions",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "invitePageTitle": "Invitation",
+  "@invitePageTitle": {
+    "description": "Invite page title",
+    "context": "invite"
+  },
+  "inviteWelcomeTitle": "You've Been Invited!",
+  "@inviteWelcomeTitle": {
+    "description": "Invite welcome title",
+    "context": "invite"
+  },
+  "inviteWelcomeSubtitle": "You've been invited to world \"{worldName}\"",
+  "@inviteWelcomeSubtitle": {
+    "description": "Invite welcome subtitle",
+    "context": "invite",
+    "placeholders": {
+      "worldName": {
+        "type": "String",
+        "description": "The name of the world"
+      }
+    }
+  },
+  "inviteFromUser": "Invited by {username}",
+  "@inviteFromUser": {
+    "description": "Invited by user text",
+    "context": "invite",
+    "placeholders": {
+      "username": {
+        "type": "String",
+        "description": "The username who sent the invitation"
+      }
+    }
+  },
+  "inviteDetailsTitle": "Invitation Details",
+  "@inviteDetailsTitle": {
+    "description": "Invitation details section title",
+    "context": "invite"
+  },
+  "inviteDetailsEmail": "Email",
+  "@inviteDetailsEmail": {
+    "description": "Email field label",
+    "context": "invite"
+  },
+  "inviteDetailsWorld": "World",
+  "@inviteDetailsWorld": {
+    "description": "World field label",
+    "context": "invite"
+  },
+  "inviteDetailsStatus": "Status",
+  "@inviteDetailsStatus": {
+    "description": "Status field label",
+    "context": "invite"
+  },
+  "inviteDetailsExpires": "Expires",
+  "@inviteDetailsExpires": {
+    "description": "Expiration field label",
+    "context": "invite"
+  },
+  "inviteActionRegisterHint": "You need an account to join the world.",
+  "@inviteActionRegisterHint": {
+    "description": "Hint to register for joining world",
+    "context": "invite"
+  },
+  "inviteActionRegisterAndJoin": "Register & Join",
+  "@inviteActionRegisterAndJoin": {
+    "description": "Register and join button text",
+    "context": "invite"
+  },
+  "inviteActionAlreadyHaveAccount": "Already have an account? Sign in",
+  "@inviteActionAlreadyHaveAccount": {
+    "description": "Sign in prompt for existing users",
+    "context": "invite"
+  },
+  "inviteActionLoginHint": "You already have an account. Sign in to join the world.",
+  "@inviteActionLoginHint": {
+    "description": "Hint to login for joining world",
+    "context": "invite"
+  },
+  "inviteActionLogin": "Sign In",
+  "@inviteActionLogin": {
+    "description": "Sign in button text",
+    "context": "invite"
+  },
+  "inviteActionAcceptHint": "Hello {username}! You can now accept or decline the invitation.",
+  "@inviteActionAcceptHint": {
+    "description": "Accept invitation hint",
+    "context": "invite",
+    "placeholders": {
+      "username": {
+        "type": "String",
+        "description": "The username"
+      }
+    }
+  },
+  "inviteActionAccept": "Accept Invitation",
+  "@inviteActionAccept": {
+    "description": "Accept invitation button text",
+    "context": "invite"
+  },
+  "inviteActionDecline": "Decline",
+  "@inviteActionDecline": {
+    "description": "Decline invitation button text",
+    "context": "invite"
+  },
+  "inviteActionWrongEmailHint": "You are signed in as {currentEmail}, but the invitation is for {inviteEmail}. You need to sign out and register with the correct email.",
+  "@inviteActionWrongEmailHint": {
+    "description": "Wrong email hint",
+    "context": "invite",
+    "placeholders": {
+      "currentEmail": {
+        "type": "String",
+        "description": "Current user's email"
+      },
+      "inviteEmail": {
+        "type": "String",
+        "description": "Invitation target email"
+      }
+    }
+  },
+  "inviteActionLogoutAndRegister": "Sign Out & Register",
+  "@inviteActionLogoutAndRegister": {
+    "description": "Sign out and register button text",
+    "context": "invite"
+  },
+  "inviteActionUnknownStatus": "Unknown status. Please try again later.",
+  "@inviteActionUnknownStatus": {
+    "description": "Unknown status message",
+    "context": "invite"
+  },
+  "inviteErrorNoData": "No invitation data available.",
+  "@inviteErrorNoData": {
+    "description": "No invitation data error",
+    "context": "invite"
+  },
+  "inviteErrorInvalidOrExpired": "Invitation invalid or expired",
+  "@inviteErrorInvalidOrExpired": {
+    "description": "Invalid or expired invitation error",
+    "context": "invite"
+  },
+  "inviteErrorLoadingData": "Error loading invitation data: {error}",
+  "@inviteErrorLoadingData": {
+    "description": "Error loading invitation data",
+    "context": "invite",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "inviteErrorAcceptFailed": "Error accepting invitation",
+  "@inviteErrorAcceptFailed": {
+    "description": "Error accepting invitation",
+    "context": "invite"
+  },
+  "inviteErrorAcceptException": "Error accepting invitation: {error}",
+  "@inviteErrorAcceptException": {
+    "description": "Error accepting invitation with details",
+    "context": "invite",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "inviteErrorDeclineFailed": "Error declining invitation",
+  "@inviteErrorDeclineFailed": {
+    "description": "Error declining invitation",
+    "context": "invite"
+  },
+  "inviteErrorDeclineException": "Error declining invitation: {error}",
+  "@inviteErrorDeclineException": {
+    "description": "Error declining invitation with details",
+    "context": "invite",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "inviteDeclineSuccess": "Invitation declined",
+  "@inviteDeclineSuccess": {
+    "description": "Invitation declined success message",
+    "context": "invite"
+  },
+  "marketingDiscoverMoreWorlds": "Discover more exciting worlds",
+  "@marketingDiscoverMoreWorlds": {
+    "description": "Discover more worlds header in marketing",
+    "context": "marketing"
+  },
+  "marketingCallToAction": "Discover hundreds of worlds, create your own, or join existing communities!",
+  "@marketingCallToAction": {
+    "description": "Marketing call-to-action text",
+    "context": "marketing"
+  },
+  "marketingFeatureCommunityTitle": "Community",
+  "@marketingFeatureCommunityTitle": {
+    "description": "Community feature title in marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureCommunityDesc": "Play with friends",
+  "@marketingFeatureCommunityDesc": {
+    "description": "Community feature description in marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureCreateTitle": "Create",
+  "@marketingFeatureCreateTitle": {
+    "description": "Create feature title in marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureCreateDesc": "Build your world",
+  "@marketingFeatureCreateDesc": {
+    "description": "Create feature description in marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureExploreTitle": "Explore",
+  "@marketingFeatureExploreTitle": {
+    "description": "Explore feature title in marketing",
+    "context": "marketing"
+  },
+  "marketingFeatureExploreDesc": "New adventures",
+  "@marketingFeatureExploreDesc": {
+    "description": "Explore feature description in marketing",
+    "context": "marketing"
+  },
+  "marketingBrowseAllWorlds": "Browse All Worlds",
+  "@marketingBrowseAllWorlds": {
+    "description": "Browse all worlds button text",
+    "context": "marketing"
+  },
+  "inviteDetailsCreated": "Created on",
+  "@inviteDetailsCreated": {
+    "description": "Invitation creation date label",
+    "context": "invite"
+  },
+  "inviteWidgetTitle": "Send invitation for {worldName}",
+  "@inviteWidgetTitle": {
+    "description": "Invite widget title",
+    "context": "invite",
+    "placeholders": {
+      "worldName": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteWidgetEmailLabel": "Email Address",
+  "@inviteWidgetEmailLabel": {
+    "context": "invite"
+  },
+  "inviteWidgetEmailHint": "friend@example.com",
+  "@inviteWidgetEmailHint": {
+    "context": "invite"
+  },
+  "inviteWidgetEmailRequired": "Email address is required",
+  "@inviteWidgetEmailRequired": {
+    "context": "invite"
+  },
+  "inviteWidgetEmailInvalid": "Invalid email address",
+  "@inviteWidgetEmailInvalid": {
+    "context": "invite"
+  },
+  "inviteWidgetSendEmailOption": "Send email automatically",
+  "@inviteWidgetSendEmailOption": {
+    "context": "invite"
+  },
+  "inviteWidgetSendEmailHint": "Disable to create invitation link only",
+  "@inviteWidgetSendEmailHint": {
+    "context": "invite"
+  },
+  "inviteWidgetSendButton": "Send Invitation",
+  "@inviteWidgetSendButton": {
+    "context": "invite"
+  },
+  "inviteWidgetCreateLinkButton": "Create Link",
+  "@inviteWidgetCreateLinkButton": {
+    "context": "invite"
+  },
+  "inviteWidgetSuccessWithEmail": "Invitation successfully sent to {email}!",
+  "@inviteWidgetSuccessWithEmail": {
+    "context": "invite",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteWidgetSuccessLinkOnly": "Invitation link successfully created!",
+  "@inviteWidgetSuccessLinkOnly": {
+    "context": "invite"
+  },
+  "inviteWidgetCopyLink": "Copy",
+  "@inviteWidgetCopyLink": {
+    "context": "invite"
+  },
+  "inviteWidgetDialogTitle": "Invite Player",
+  "@inviteWidgetDialogTitle": {
+    "context": "invite"
+  },
+  "inviteWidgetCancel": "Cancel",
+  "@inviteWidgetCancel": {
+    "context": "invite"
+  },
+  "inviteWidgetLinkTitle": "Invitation Link:",
+  "@inviteWidgetLinkTitle": {
+    "context": "invite"
+  },
+  "worldInviteButton": "Invite",
+  "@worldInviteButton": {
+    "context": "worldActions"
+  },
+  "authLoginSuccessButInviteFailed": "Login successful, but invitation could not be accepted.",
+  "@authLoginSuccessButInviteFailed": {
+    "context": "auth"
+  },
+  "authRegisterSuccessButInviteFailed": "Registration successful, but invitation could not be accepted.",
+  "@authRegisterSuccessButInviteFailed": {
+    "context": "auth"
+  }
+}

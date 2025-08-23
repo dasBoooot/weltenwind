@@ -1,0 +1,604 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/gaming/inventory.schema.json",
+  "title": "Weltenwind Gaming Inventory Schema",
+  "description": "RPG Inventar-System mit Slot-Management, Rarity Colors und Interactive Effects",
+  "type": "object",
+  "required": ["slots", "rarity", "layout", "interactions"],
+  "properties": {
+    "slots": {
+      "type": "object",
+      "description": "Inventar-Slot Konfiguration für RPG-Items",
+      "required": ["size", "spacing", "borderRadius", "borderWidth"],
+      "properties": {
+        "size": {
+          "type": "number",
+          "minimum": 32,
+          "maximum": 128,
+          "default": 64,
+          "description": "Slot-Größe in Pixeln (quadratisch)"
+        },
+        "spacing": {
+          "type": "number", 
+          "minimum": 2,
+          "maximum": 16,
+          "default": 4,
+          "description": "Abstand zwischen Slots in Pixeln"
+        },
+        "borderRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 16,
+          "default": 8,
+          "description": "Rundung der Slot-Ecken"
+        },
+        "borderWidth": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 4,
+          "default": 2,
+          "description": "Breite der Slot-Umrandung"
+        },
+        "backgroundColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#2A1810",
+          "description": "Hintergrundfarbe leerer Slots"
+        },
+        "borderColor": {
+          "type": "string", 
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#7C6BAF",
+          "description": "Standard-Umrandungsfarbe"
+        },
+        "hoverBorderColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$", 
+          "default": "#A594D1",
+          "description": "Umrandungsfarbe bei Hover"
+        },
+        "selectedBorderColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#FFD700",
+          "description": "Umrandungsfarbe für ausgewählte Slots"
+        },
+        "disabledOpacity": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 1.0,
+          "default": 0.5,
+          "description": "Transparenz für deaktivierte Slots"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rarity": {
+      "type": "object",
+      "description": "Item-Seltenheits-System mit Farb-Kodierung",
+      "required": ["common", "uncommon", "rare", "epic", "legendary"],
+      "properties": {
+        "common": {
+          "type": "object",
+          "required": ["color", "glowIntensity"],
+          "properties": {
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FFFFFF",
+              "description": "Weiß - Häufige Items"
+            },
+            "glowIntensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1.0,  
+              "default": 0.0,
+              "description": "Glow-Stärke (0 = kein Glow)"
+            },
+            "name": {
+              "type": "string",
+              "default": "Gewöhnlich",
+              "description": "Lokalisierter Name der Seltenheit"
+            }
+          }
+        },
+        "uncommon": {
+          "type": "object",
+          "required": ["color", "glowIntensity"],
+          "properties": {
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#1EFF00",
+              "description": "Grün - Ungewöhnliche Items"
+            },
+            "glowIntensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1.0,
+              "default": 0.2
+            },
+            "name": {
+              "type": "string", 
+              "default": "Ungewöhnlich"
+            }
+          }
+        },
+        "rare": {
+          "type": "object",
+          "required": ["color", "glowIntensity"],
+          "properties": {
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#0070DD",
+              "description": "Blau - Seltene Items"
+            },
+            "glowIntensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1.0,
+              "default": 0.4
+            },
+            "name": {
+              "type": "string",
+              "default": "Selten"
+            }
+          }
+        },
+        "epic": {
+          "type": "object",
+          "required": ["color", "glowIntensity"],
+          "properties": {
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#A335EE", 
+              "description": "Violett - Epische Items"
+            },
+            "glowIntensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1.0,
+              "default": 0.6
+            },
+            "name": {
+              "type": "string",
+              "default": "Episch"
+            }
+          }
+        },
+        "legendary": {
+          "type": "object",
+          "required": ["color", "glowIntensity"],
+          "properties": {
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FF8000",
+              "description": "Orange - Legendäre Items"
+            },
+            "glowIntensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1.0,
+              "default": 0.8
+            },
+            "name": {
+              "type": "string",
+              "default": "Legendär"
+            }
+          }
+        },
+        "mythic": {
+          "type": "object",
+          "description": "Optionale höchste Seltenheitsstufe",
+          "properties": {
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FF0080",
+              "description": "Pink - Mythische Items"
+            },
+            "glowIntensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1.0,
+              "default": 1.0
+            },
+            "name": {
+              "type": "string",
+              "default": "Mythisch"
+            },
+            "animated": {
+              "type": "boolean",
+              "default": true,
+              "description": "Animierte Effekte für mythische Items"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "layout": {
+      "type": "object",
+      "description": "Inventar-Layout Konfigurationen",
+      "required": ["type", "columns"],
+      "properties": {
+        "type": {
+          "type": "string", 
+          "enum": ["grid", "list", "compact", "bag"],
+          "default": "grid",
+          "description": "Layout-Typ des Inventars"
+        },
+        "columns": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 12,
+          "default": 6,
+          "description": "Anzahl Spalten im Grid-Layout"
+        },
+        "rows": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 4,
+          "description": "Anzahl Zeilen im Grid-Layout"
+        },
+        "maxItems": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 1000,
+          "default": 100,
+          "description": "Maximale Anzahl Items im Inventar"
+        },
+        "autoSort": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatisches Sortieren nach Seltenheit"
+        },
+        "categories": {
+          "type": "object",
+          "description": "Item-Kategorien für Organisation",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Kategorie-System aktiviert"
+            },
+            "tabs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "name", "icon"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Eindeutige Kategorie-ID"
+                  },
+                  "name": {
+                    "type": "string", 
+                    "description": "Anzeigename der Kategorie"
+                  },
+                  "icon": {
+                    "type": "string",
+                    "description": "Icon-Name für die Kategorie"
+                  },
+                  "color": {
+                    "type": "string",
+                    "pattern": "^#[0-9A-Fa-f]{6}$",
+                    "description": "Kategorie-Akzentfarbe"
+                  }
+                }
+              },
+              "default": [
+                { "id": "all", "name": "Alle", "icon": "inventory" },
+                { "id": "weapons", "name": "Waffen", "icon": "sword", "color": "#E74C3C" },
+                { "id": "armor", "name": "Rüstung", "icon": "shield", "color": "#3498DB" },
+                { "id": "consumables", "name": "Verbrauchsgegenstände", "icon": "potion", "color": "#27AE60" },
+                { "id": "materials", "name": "Materialien", "icon": "gem", "color": "#F39C12" },
+                { "id": "quest", "name": "Quest-Items", "icon": "scroll", "color": "#9B59B6" }
+              ]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "interactions": {
+      "type": "object",
+      "description": "Interaktive Inventar-Features",
+      "required": ["hover", "selection", "dragDrop"],
+      "properties": {
+        "hover": {
+          "type": "object",
+          "description": "Hover-Effekt Konfiguration",
+          "required": ["enabled", "effect"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Hover-Effekte aktiviert"
+            },
+            "effect": {
+              "type": "string",
+              "enum": ["glow", "scale", "lift", "none"],
+              "default": "glow",
+              "description": "Art des Hover-Effekts"
+            },
+            "scaleAmount": {
+              "type": "number",
+              "minimum": 1.0,
+              "maximum": 1.3,
+              "default": 1.05,
+              "description": "Skalierungsfaktor bei Scale-Effekt"
+            },
+            "glowRadius": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 20,
+              "default": 8,
+              "description": "Glow-Radius in Pixeln"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 100,
+              "maximum": 1000,
+              "default": 200,
+              "description": "Animationsdauer in Millisekunden"
+            }
+          }
+        },
+        "selection": {
+          "type": "object",
+          "description": "Item-Auswahl System",
+          "required": ["enabled", "multiSelect"],
+          "properties": {
+            "enabled": {
+              "type": "boolean", 
+              "default": true,
+              "description": "Item-Auswahl aktiviert"
+            },
+            "multiSelect": {
+              "type": "boolean",
+              "default": false,
+              "description": "Mehrfach-Auswahl erlaubt"
+            },
+            "highlightColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{8}$",
+              "default": "#FFD70080",
+              "description": "Auswahl-Highlight Farbe mit Alpha"
+            },
+            "borderGlow": {
+              "type": "boolean",
+              "default": true,
+              "description": "Glühende Umrandung bei Auswahl"
+            }
+          }
+        },
+        "dragDrop": {
+          "type": "object",
+          "description": "Drag & Drop Funktionalität",
+          "required": ["enabled", "ghostOpacity"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Drag & Drop aktiviert"
+            },
+            "ghostOpacity": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 1.0,
+              "default": 0.7,
+              "description": "Transparenz des Drag-Ghosts"
+            },
+            "dropZoneColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{8}$",
+              "default": "#27AE6040",
+              "description": "Drop-Zone Highlight Farbe"
+            },
+            "invalidDropColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{8}$",
+              "default": "#E74C3C40",
+              "description": "Ungültiger Drop-Bereich Farbe"
+            },
+            "snapToGrid": {
+              "type": "boolean",
+              "default": true,
+              "description": "Automatisches Einrasten ins Grid"
+            }
+          }
+        },
+        "tooltip": {
+          "type": "object",
+          "description": "Item-Tooltip System",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Tooltips aktiviert"
+            },
+            "delay": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2000,
+              "default": 500,
+              "description": "Verzögerung bis Tooltip erscheint (ms)"
+            },
+            "maxWidth": {
+              "type": "number",
+              "minimum": 200,
+              "maximum": 500,
+              "default": 300,
+              "description": "Maximale Tooltip-Breite"
+            },
+            "showRarity": {
+              "type": "boolean",
+              "default": true,
+              "description": "Seltenheit im Tooltip anzeigen"
+            },
+            "showStats": {
+              "type": "boolean",
+              "default": true,
+              "description": "Item-Stats im Tooltip anzeigen"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "animations": {
+      "type": "object",
+      "description": "Inventar-Animationen und Effekte",
+      "properties": {
+        "itemAppear": {
+          "type": "object",
+          "description": "Animation für neue Items",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "type": {
+              "type": "string",
+              "enum": ["fade", "scale", "drop", "sparkle"],
+              "default": "sparkle"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 200,
+              "maximum": 1000,
+              "default": 500
+            }
+          }
+        },
+        "itemDisappear": {
+          "type": "object",
+          "description": "Animation für entfernte Items",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "type": {
+              "type": "string",
+              "enum": ["fade", "scale", "dissolve"],
+              "default": "dissolve"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 200,
+              "maximum": 1000,
+              "default": 300
+            }
+          }
+        },
+        "sorting": {
+          "type": "object",
+          "description": "Animation beim Sortieren",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 300,
+              "maximum": 1500,
+              "default": 800
+            },
+            "easing": {
+              "type": "string",
+              "default": "cubic-bezier(0.4, 0, 0.2, 1)"
+            }
+          }
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "description": "Barrierefreiheit für Inventar-System",
+      "properties": {
+        "keyboardNavigation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Tastatur-Navigation aktiviert"
+        },
+        "screenReaderSupport": {
+          "type": "boolean",
+          "default": true,
+          "description": "Screen Reader Unterstützung"
+        },
+        "highContrastMode": {
+          "type": "boolean", 
+          "default": false,
+          "description": "Hoher Kontrast Modus"
+        },
+        "focusIndicator": {
+          "type": "object",
+          "properties": {
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#A594D1"
+            },
+            "width": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 5,
+              "default": 3
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "slots": {
+        "size": 64,
+        "spacing": 4,
+        "borderRadius": 8,
+        "borderWidth": 2,
+        "backgroundColor": "#2A1810",
+        "borderColor": "#7C6BAF"
+      },
+      "rarity": {
+        "legendary": {
+          "color": "#FF8000",
+          "glowIntensity": 0.8,
+          "name": "Legendär"
+        }
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 6,
+        "rows": 4,
+        "categories": {
+          "enabled": true,
+          "tabs": [
+            { "id": "weapons", "name": "Waffen", "icon": "sword", "color": "#E74C3C" }
+          ]
+        }
+      },
+      "interactions": {
+        "hover": {
+          "enabled": true,
+          "effect": "glow",
+          "glowRadius": 8,
+          "duration": 200
+        },
+        "dragDrop": {
+          "enabled": true,
+          "ghostOpacity": 0.7,
+          "snapToGrid": true
+        }
+      }
+    }
+  ]
+}

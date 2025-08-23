@@ -1,0 +1,339 @@
+openapi: 3.0.3
+info:
+  title: Weltenwind API
+  version: 1.0.0
+  description: |
+    ## Einladungs-System
+    
+    ### Token-basierte Einladungen
+    Das Einladungs-System verwendet sichere Token für die Verwaltung von Welt-Einladungen:
+    - Eindeutige, unveränderliche Token für jede Einladung
+    - Automatische Ablaufkontrolle
+    - E-Mail-basierte Zuordnung
+    - Intelligente Benutzer-Status-Erkennung
+    
+    ### Benutzer-Status-Erkennung
+    Das System erkennt automatisch den aktuellen Benutzer-Status und gibt entsprechende Handlungsempfehlungen:
+    - **not_logged_in**: Neue Registrierung erforderlich
+    - **user_exists_not_logged_in**: Login mit existierendem Account
+    - **correct_email**: Direkter Invite-Accept möglich
+    - **wrong_email**: Logout und Neuregistrierung erforderlich
+    
+    ### Sicherheits-Features
+    - Token-Validierung gegen Manipulation
+    - E-Mail-Verifizierung beim Accept
+    - Automatische Ablaufkontrolle
+    - Schutz vor doppelter Akzeptierung
+
+tags:
+  - name: Invites
+    description: |
+      Einladungs-System:
+      - Token-basierte Einladungen validieren
+      - Einladungen annehmen und Welten beitreten
+      - Intelligente Benutzer-Status-Erkennung
+
+paths:
+  /api/invites/validate/{token}:
+    get:
+      summary: Invite-Token validieren und Benutzer-Status prüfen
+      description: |
+        **Permission:** Keine (öffentlich)
+        
+        Validiert einen Invite-Token und gibt detaillierte Informationen über die Einladung,
+        die Welt und den aktuellen Benutzer-Status zurück. Dieser Endpunkt erkennt automatisch,
+        ob der Benutzer angemeldet ist, und gibt entsprechende Handlungsempfehlungen zurück.
+        
+        ### Benutzer-Status-Types:
+        - `not_logged_in`: Benutzer nicht angemeldet, E-Mail unbekannt → Registrierung erforderlich
+        - `user_exists_not_logged_in`: Benutzer existiert, ist aber nicht angemeldet → Login erforderlich  
+        - `correct_email`: Benutzer angemeldet mit korrekter E-Mail → Kann Einladung annehmen
+        - `wrong_email`: Benutzer angemeldet mit falscher E-Mail → Logout und Neuregistrierung erforderlich
+        
+        ### Required Actions:
+        - `register`: Neue Registrierung erforderlich
+        - `login`: Login mit existierendem Account erforderlich
+        - `join_world`: Benutzer kann Einladung direkt annehmen
+        - `logout_and_register`: Logout und Neuregistrierung mit korrekter E-Mail erforderlich
+      tags: [Invites]
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+          description: Der Invite-Token
+      responses:
+        '200':
+          description: Token erfolgreich validiert
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      world:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: "Meine Welt"
+                          status:
+                            type: string
+                            enum: [upcoming, open, running, closed, archived]
+                            example: "open"
+                          themeBundle:
+                            type: string
+                            example: "full-gaming"
+                            description: Theme-Bundle ID für diese Welt
+                          themeVariant:
+                            type: string
+                            nullable: true
+                            example: "cyberpunk"
+                            description: Theme-Variante (falls abweichend von Standard)
+                          createdAt:
+                            type: string
+                            format: date-time
+                          startsAt:
+                            type: string
+                            format: date-time
+                          endsAt:
+                            type: string
+                            format: date-time
+                            nullable: true
+                      invite:
+                        type: object
+                        properties:
+                          email:
+                            type: string
+                            example: "user@example.com"
+                          createdAt:
+                            type: string
+                            format: date-time
+                          expiresAt:
+                            type: string
+                            format: date-time
+                          acceptedAt:
+                            type: string
+                            format: date-time
+                            nullable: true
+                          invitedBy:
+                            type: object
+                            nullable: true
+                            properties:
+                              username:
+                                type: string
+                                example: "admin"
+                      userStatus:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            enum: [not_logged_in, user_exists_not_logged_in, correct_email, wrong_email]
+                            example: "user_exists_not_logged_in"
+                          requiresAction:
+                            type: string
+                            enum: [register, login, join_world, logout_and_register]
+                            example: "login"
+                          currentUser:
+                            type: object
+                            nullable: true
+                            properties:
+                              username:
+                                type: string
+                              email:
+                                type: string
+        '404':
+          description: Token nicht gefunden oder abgelaufen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Einladung nicht gefunden oder abgelaufen"
+                  details:
+                    type: string
+                    example: "Der Einladungslink ist ungültig oder bereits abgelaufen."
+        '400':
+          description: Welt nicht verfügbar
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Welt nicht verfügbar"
+                  details:
+                    type: string
+                    example: "Die eingeladene Welt ist bereits beendet."
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/invites/accept/{token}:
+    post:
+      summary: Invite-Token akzeptieren und Welt beitreten
+      description: |
+        **Permission:** Authentifiziert (Bearer Token erforderlich)
+        
+        Akzeptiert eine Einladung und fügt den Benutzer zur entsprechenden Welt hinzu.
+        Der Benutzer muss mit der E-Mail-Adresse angemeldet sein, für die die Einladung erstellt wurde.
+        
+        ### Verhalten je nach Welt-Status:
+        - **upcoming**: Benutzer wird vorregistriert
+        - **open/running**: Benutzer wird direkt zur Welt hinzugefügt
+        
+        ### Fehlerbehandlung:
+        - `409 Conflict`: Einladung bereits akzeptiert
+        - `403 Forbidden`: E-Mail-Adresse stimmt nicht überein
+        - `410 Gone`: Token abgelaufen
+        - `400 Bad Request`: Welt nicht verfügbar
+      tags: [Invites]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+          description: Der Invite-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+              description: Leerer Request-Body
+      responses:
+        '200':
+          description: Einladung erfolgreich akzeptiert
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Invite successfully accepted"
+                  data:
+                    type: object
+                    properties:
+                      world:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: "Meine Welt"
+                          status:
+                            type: string
+                            example: "open"
+                      action:
+                        type: string
+                        enum: [joined, pre_registered]
+                        example: "joined"
+                        description: "joined = direkt beigetreten, pre_registered = vorregistriert"
+        '400':
+          description: Token fehlt oder Welt nicht verfügbar
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Token erforderlich"
+        '403':
+          description: E-Mail-Adresse stimmt nicht überein
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Diese Einladung ist nicht für deine E-Mail-Adresse bestimmt"
+        '404':
+          description: Token nicht gefunden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Ungültiger Invite-Token"
+        '409':
+          description: Einladung bereits akzeptiert
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invite bereits akzeptiert"
+        '410':
+          description: Token abgelaufen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invite-Token ist abgelaufen"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Token für authentifizierte Anfragen
+
+  responses:
+    Unauthorized:
+      description: Nicht authentifiziert
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Unauthorized"
+    InternalError:
+      description: Interner Serverfehler
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Internal server error" 

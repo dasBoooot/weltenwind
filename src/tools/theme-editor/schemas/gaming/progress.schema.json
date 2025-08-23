@@ -1,0 +1,632 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/gaming/progress.schema.json", 
+  "title": "Weltenwind Gaming Progress Bars Schema",
+  "description": "RPG Progress Bar System für Health, Mana, XP und Custom Bars mit Animationen",
+  "type": "object",
+  "required": ["base", "health", "mana", "experience"],
+  "properties": {
+    "base": {
+      "type": "object",
+      "description": "Basis-Konfiguration für alle Progress Bars",
+      "required": ["height", "borderRadius", "borderWidth"],
+      "properties": {
+        "height": {
+          "type": "number",
+          "minimum": 8,
+          "maximum": 32,
+          "default": 16,
+          "description": "Standard Höhe der Progress Bars"
+        },
+        "borderRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 16,
+          "default": 8,
+          "description": "Rundung der Progress Bar Ecken"
+        },
+        "borderWidth": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 4,
+          "default": 1,
+          "description": "Breite der Progress Bar Umrandung"
+        },
+        "backgroundColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#2A1810",
+          "description": "Hintergrundfarbe leerer Progress Bars"
+        },
+        "borderColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#7C6BAF",
+          "description": "Standard Umrandungsfarbe"
+        },
+        "animationDuration": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 2000,
+          "default": 500,
+          "description": "Standard Animationsdauer in Millisekunden"
+        },
+        "gradient": {
+          "type": "object",
+          "description": "Gradient-Effekte für Progress Bars",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Gradient-Effekte aktiviert"
+            },
+            "direction": {
+              "type": "string",
+              "enum": ["horizontal", "vertical", "radial"],
+              "default": "horizontal",
+              "description": "Gradient-Richtung"
+            },
+            "intensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1.0,
+              "default": 0.3,
+              "description": "Gradient-Intensität"
+            }
+          }
+        },
+        "glow": {
+          "type": "object",
+          "description": "Glow-Effekte für Progress Bars",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Glow-Effekte aktiviert"
+            },
+            "radius": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 20,
+              "default": 4,
+              "description": "Glow-Radius in Pixeln"
+            },
+            "intensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1.0,
+              "default": 0.5,
+              "description": "Glow-Intensität"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "health": {
+      "type": "object",
+      "description": "Health Bar spezifische Konfiguration",
+      "required": ["fillColor", "criticalThreshold"],
+      "properties": {
+        "fillColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#E74C3C",
+          "description": "Farbe des Health Bar Fills"
+        },
+        "criticalThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1.0,
+          "default": 0.25,
+          "description": "Kritischer Health-Wert (0-1)"
+        },
+        "criticalColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#FF4444",
+          "description": "Farbe bei niedrigem Health"
+        },
+        "lowHealthColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#FF6666",
+          "description": "Farbe bei mittlerem Health"
+        },
+        "warningThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1.0,
+          "default": 0.5,
+          "description": "Warnschwelle für mittleres Health"
+        },
+        "pulse": {
+          "type": "object",
+          "description": "Pulsing-Effekt bei niedrigem Health",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Pulsing bei kritischem Health"
+            },
+            "intensity": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 1.0,
+              "default": 0.8,
+              "description": "Pulsing-Intensität"
+            },
+            "speed": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 3.0,
+              "default": 1.5,
+              "description": "Pulsing-Geschwindigkeit"
+            }
+          }
+        },
+        "regeneration": {
+          "type": "object",
+          "description": "Health Regeneration Anzeige",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Regeneration-Effekte anzeigen"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#27AE60",
+              "description": "Farbe der Regeneration"
+            },
+            "glowColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#2ECC71",
+              "description": "Glow-Farbe bei Regeneration"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "mana": {
+      "type": "object",
+      "description": "Mana/Magic Bar Konfiguration",
+      "required": ["fillColor"],
+      "properties": {
+        "fillColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#3498DB",
+          "description": "Farbe des Mana Bar Fills"
+        },
+        "lowManaThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1.0,
+          "default": 0.3,
+          "description": "Niedrig-Mana Schwellwert"
+        },
+        "lowManaColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#5DADE2",
+          "description": "Farbe bei niedrigem Mana"
+        },
+        "shimmer": {
+          "type": "object",
+          "description": "Magischer Shimmer-Effekt",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Shimmer-Effekt aktiviert"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#85C1E9",
+              "description": "Shimmer-Farbe"
+            },
+            "speed": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 3.0,
+              "default": 1.2,
+              "description": "Shimmer-Geschwindigkeit"
+            },
+            "intensity": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 1.0,
+              "default": 0.6,
+              "description": "Shimmer-Intensität"
+            }
+          }
+        },
+        "spellCast": {
+          "type": "object",
+          "description": "Spell-Casting Effekte",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Spell-Cast Effekte"
+            },
+            "glowColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#AED6F1",
+              "description": "Glow bei Zauberspruch"
+            },
+            "flashDuration": {
+              "type": "number",
+              "minimum": 100,
+              "maximum": 1000,
+              "default": 300,
+              "description": "Flash-Dauer bei Zauber"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "experience": {
+      "type": "object",
+      "description": "Experience/XP Bar Konfiguration",
+      "required": ["fillColor"],
+      "properties": {
+        "fillColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#F39C12",
+          "description": "Farbe des XP Bar Fills"
+        },
+        "levelUpColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#FFD700",
+          "description": "Farbe bei Level Up"
+        },
+        "nearLevelUpThreshold": {
+          "type": "number",
+          "minimum": 0.7,
+          "maximum": 1.0,
+          "default": 0.9,
+          "description": "Schwelle für 'fast Level Up'"
+        },
+        "nearLevelUpColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#F7DC6F",
+          "description": "Farbe kurz vor Level Up"
+        },
+        "levelUp": {
+          "type": "object",
+          "description": "Level Up Animation",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Level Up Animation aktiviert"
+            },
+            "flashColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FFD700",
+              "description": "Flash-Farbe bei Level Up"
+            },
+            "glowRadius": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 30,
+              "default": 15,
+              "description": "Glow-Radius bei Level Up"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 500,
+              "maximum": 3000,
+              "default": 1500,
+              "description": "Dauer der Level Up Animation"
+            },
+            "sparkles": {
+              "type": "boolean",
+              "default": true,
+              "description": "Sparkle-Partikel bei Level Up"
+            }
+          }
+        },
+        "segments": {
+          "type": "object",
+          "description": "Segmentierte XP-Darstellung",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Segmentierte XP Bar"
+            },
+            "count": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 20,
+              "default": 10,
+              "description": "Anzahl Segmente"
+            },
+            "spacing": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 5,
+              "default": 2,
+              "description": "Abstand zwischen Segmenten"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "stamina": {
+      "type": "object",
+      "description": "Stamina/Ausdauer Bar (optional)",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Stamina Bar aktiviert"
+        },
+        "fillColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#27AE60",
+          "description": "Farbe des Stamina Bar Fills"
+        },
+        "exhaustedColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#E67E22",
+          "description": "Farbe bei niedrigem Stamina"
+        },
+        "exhaustedThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.5,
+          "default": 0.2,
+          "description": "Erschöpfungs-Schwellwert"
+        },
+        "recovery": {
+          "type": "object",
+          "description": "Stamina-Regenerierung",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Regeneration-Effekte"
+            },
+            "glowColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#2ECC71",
+              "description": "Glow bei Regeneration"
+            }
+          }
+        }
+      }
+    },
+    "custom": {
+      "type": "object",
+      "description": "Custom Progress Bars für spezielle Zwecke",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Custom Progress Bars aktiviert"
+        },
+        "slots": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "fillColor"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Eindeutige ID der Custom Bar"
+              },
+              "name": {
+                "type": "string",
+                "description": "Anzeigename der Custom Bar"
+              },
+              "fillColor": {
+                "type": "string",
+                "pattern": "^#[0-9A-Fa-f]{6}$",
+                "description": "Fill-Farbe der Custom Bar"
+              },
+              "icon": {
+                "type": "string",
+                "description": "Icon für die Custom Bar"
+              },
+              "threshold": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1.0,
+                "description": "Kritische Schwelle"
+              },
+              "thresholdColor": {
+                "type": "string",
+                "pattern": "^#[0-9A-Fa-f]{6}$",
+                "description": "Farbe bei kritischem Wert"
+              }
+            }
+          },
+          "description": "Liste custom Progress Bars"
+        }
+      }
+    },
+    "animations": {
+      "type": "object",
+      "description": "Animationen für Progress Bars",
+      "properties": {
+        "fillAnimation": {
+          "type": "object",
+          "description": "Fill-Animation Einstellungen",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Fill-Animationen aktiviert"
+            },
+            "easing": {
+              "type": "string",
+              "default": "cubic-bezier(0.4, 0, 0.2, 1)",
+              "description": "Easing-Funktion für Fill"
+            },
+            "smoothing": {
+              "type": "boolean",
+              "default": true,
+              "description": "Smooth Fill-Übergänge"
+            }
+          }
+        },
+        "damageFlash": {
+          "type": "object",
+          "description": "Schaden-Flash Animation",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Damage Flash aktiviert"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FFFFFF",
+              "description": "Flash-Farbe bei Schaden"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 50,
+              "maximum": 500,
+              "default": 150,
+              "description": "Flash-Dauer"
+            }
+          }
+        },
+        "healGlow": {
+          "type": "object",
+          "description": "Heilungs-Glow Animation",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Heal Glow aktiviert"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#27AE60",
+              "description": "Glow-Farbe bei Heilung"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 200,
+              "maximum": 1000,
+              "default": 500,
+              "description": "Glow-Dauer"
+            }
+          }
+        }
+      }
+    },
+    "positioning": {
+      "type": "object",
+      "description": "Progress Bar Positionierung",
+      "properties": {
+        "layout": {
+          "type": "string",
+          "enum": ["horizontal", "vertical", "circular"],
+          "default": "horizontal",
+          "description": "Layout der Progress Bars"
+        },
+        "alignment": {
+          "type": "string",
+          "enum": ["left", "center", "right", "top", "bottom"],
+          "default": "left",
+          "description": "Ausrichtung der Bars"
+        },
+        "spacing": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 4,
+          "description": "Abstand zwischen Progress Bars"
+        },
+        "labels": {
+          "type": "object",
+          "description": "Label-Konfiguration",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Labels anzeigen"
+            },
+            "position": {
+              "type": "string",
+              "enum": ["inside", "outside", "overlay"],
+              "default": "inside",
+              "description": "Label-Position"
+            },
+            "showValues": {
+              "type": "boolean",
+              "default": true,
+              "description": "Werte in Labels anzeigen"
+            },
+            "showPercentage": {
+              "type": "boolean",
+              "default": false,
+              "description": "Prozentuale Werte anzeigen"
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "base": {
+        "height": 16,
+        "borderRadius": 8,
+        "backgroundColor": "#2A1810",
+        "animationDuration": 500
+      },
+      "health": {
+        "fillColor": "#E74C3C",
+        "criticalThreshold": 0.25,
+        "criticalColor": "#FF4444",
+        "pulse": {
+          "enabled": true,
+          "intensity": 0.8
+        }
+      },
+      "mana": {
+        "fillColor": "#3498DB",
+        "shimmer": {
+          "enabled": true,
+          "color": "#85C1E9",
+          "speed": 1.2
+        }
+      },
+      "experience": {
+        "fillColor": "#F39C12",
+        "levelUpColor": "#FFD700",
+        "levelUp": {
+          "enabled": true,
+          "sparkles": true,
+          "duration": 1500
+        }
+      }
+    }
+  ]
+}

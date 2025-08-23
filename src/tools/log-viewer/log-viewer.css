@@ -1,0 +1,252 @@
+/* Weltenwind Log-Viewer CSS */
+/* Professional Admin Tool Styling */
+
+body { 
+    font-family: monospace; 
+    margin: 20px; 
+    background: #1a1a1a; 
+    color: #fff; 
+}
+
+.login-container { 
+    max-width: 400px; 
+    margin: 100px auto; 
+    padding: 30px; 
+    background: #333; 
+    border-radius: 10px; 
+    text-align: center; 
+}
+
+.controls { 
+    margin-bottom: 20px; 
+    padding: 10px; 
+    background: #333; 
+    border-radius: 5px; 
+}
+
+select, input, button { 
+    margin: 5px; 
+    padding: 8px; 
+    background: #555; 
+    color: #fff; 
+    border: 1px solid #777; 
+    border-radius: 3px; 
+}
+
+input[type="text"], input[type="password"] { 
+    width: 200px; 
+}
+
+button { 
+    cursor: pointer; 
+}
+
+button:hover { 
+    background: #666; 
+}
+
+.log-container { 
+    background: #222; 
+    padding: 15px; 
+    border-radius: 5px; 
+    height: 70vh; 
+    overflow-y: auto; 
+}
+
+.log-entry { 
+    margin: 2px 0; 
+    padding: 5px; 
+    border-left: 3px solid #555; 
+}
+
+.log-entry.INFO { 
+    border-color: #4CAF50; 
+}
+
+.log-entry.WARN { 
+    border-color: #FF9800; 
+}
+
+.log-entry.ERROR { 
+    border-color: #F44336; 
+}
+
+/* Lowercase variants to match JS classes */
+.log-entry.info { 
+    border-color: #4CAF50; 
+}
+.log-entry.warn { 
+    border-color: #FF9800; 
+}
+.log-entry.error { 
+    border-color: #F44336; 
+}
+.log-entry.debug { 
+    border-color: #9C27B0; 
+}
+
+.timestamp { 
+    color: #888; 
+    margin-right: 10px;
+}
+
+.level { 
+    font-weight: bold; 
+    margin-right: 10px; 
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.level.info { 
+    color: #4CAF50; 
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.level.warn { 
+    color: #FF9800; 
+    background: rgba(255, 152, 0, 0.1);
+}
+
+.level.error { 
+    color: #f44336; 
+    background: rgba(244, 67, 54, 0.1);
+}
+
+.level.debug { 
+    color: #9C27B0; 
+    background: rgba(156, 39, 176, 0.1);
+}
+
+.module { 
+    color: #2196F3; 
+    font-weight: bold; 
+    margin-right: 10px;
+}
+
+.action { 
+    color: #00BCD4; 
+    font-weight: bold; 
+    margin-right: 10px;
+    padding: 1px 4px;
+    background: rgba(0, 188, 212, 0.1);
+    border-radius: 2px;
+}
+
+.username { 
+    color: #4CAF50; 
+    margin-right: 10px;
+}
+
+.ip { 
+    color: #FF9800; 
+    margin-right: 10px;
+}
+
+.message { 
+    color: #fff; 
+}
+
+.metadata { 
+    color: #999; 
+    font-size: 0.9em; 
+    margin-left: 20px; 
+    white-space: pre-wrap;
+}
+
+.hidden { 
+    display: none; 
+}
+
+/* Header-Layout */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #555;
+}
+
+.header h1 {
+    margin: 0;
+    color: #4CAF50;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-section span {
+    color: #ccc;
+    font-size: 0.9em;
+}
+
+/* Log-Info-Panel */
+.log-info-panel {
+    background: #2a2a2a;
+    border: 1px solid #555;
+    border-radius: 5px;
+    margin: 10px 0;
+    position: relative;
+    clear: both; /* Verhindert Überlappung mit float-Elementen */
+}
+
+.log-info-panel #logInfoContent {
+    padding: 10px;
+    font-size: 0.9em;
+    color: #ccc;
+    display: none;
+}
+
+.log-info-panel.expanded #logInfoContent {
+    display: block;
+}
+
+.log-info-panel #logInfoToggle {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #444;
+    border: 1px solid #666;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.log-info-panel #logInfoToggle:hover {
+    background: #555;
+}
+
+.log-info-detail {
+    margin: 5px 0;
+    padding: 3px 0;
+}
+
+.log-info-detail strong {
+    color: #4CAF50;
+    display: inline-block;
+    width: 150px;
+}
+
+.log-info-files {
+    background: #333;
+    padding: 5px;
+    border-radius: 3px;
+    margin-top: 5px;
+    font-family: monospace;
+    font-size: 0.8em;
+}
+
+.error { 
+    color: #F44336; 
+    margin: 10px 0; 
+}
+
+.success { 
+    color: #4CAF50; 
+    margin: 10px 0; 
+}

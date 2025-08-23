@@ -1,0 +1,618 @@
+paths:
+  /api/query-performance:
+    get:
+      summary: Query-Performance-Übersicht
+      description: Umfassende Statistiken über Datenbank-Query-Performance mit Performance-Metriken
+      tags:
+        - Query Performance
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: timeframe
+          in: query
+          description: Zeitraum für Statistiken in Stunden (optional)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 168
+            default: 24
+      responses:
+        '200':
+          description: Erfolgreich - Query-Performance-Daten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryPerformanceOverview'
+        '401':
+          description: Unauthorized - Nicht authentifiziert
+        '403':
+          description: Forbidden - Keine Admin-Berechtigung
+        '500':
+          description: Interner Serverfehler
+
+  /api/query-performance/health:
+    get:
+      summary: Query-Performance Health Check
+      description: Health-Status des Query-Performance-Monitoring-Systems
+      tags:
+        - Query Performance
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Health-Status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryHealthStatus'
+
+  /api/query-performance/slow-queries:
+    get:
+      summary: Langsame Queries
+      description: Liste der langsamsten Datenbank-Queries mit Details und Optimierungsempfehlungen
+      tags:
+        - Query Analysis
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Maximale Anzahl der zurückgegebenen Queries
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: minDuration
+          in: query
+          description: Minimale Query-Dauer in ms
+          required: false
+          schema:
+            type: integer
+            minimum: 100
+            default: 1000
+      responses:
+        '200':
+          description: Erfolgreich - Langsame Queries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlowQueriesList'
+
+  /api/query-performance/recommendations:
+    get:
+      summary: Index-Optimierungs-Empfehlungen
+      description: Intelligente Empfehlungen für Datenbank-Index-Optimierungen basierend auf Query-Patterns
+      tags:
+        - Query Optimization
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Index-Empfehlungen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexRecommendations'
+
+  /api/query-performance/summary:
+    get:
+      summary: Performance-Zusammenfassung
+      description: Kompakte Zusammenfassung der wichtigsten Query-Performance-Metriken
+      tags:
+        - Query Performance
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Performance-Zusammenfassung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryPerformanceSummary'
+
+  /api/query-performance/tables:
+    get:
+      summary: Tabellen-Performance-Analyse
+      description: Performance-Analyse pro Datenbank-Tabelle mit Query-Statistiken
+      tags:
+        - Query Analysis
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Tabellen-Performance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TablePerformanceAnalysis'
+
+  /api/query-performance/operations:
+    get:
+      summary: Query-Operations-Analyse
+      description: Analyse der verschiedenen Query-Operationen (SELECT, INSERT, UPDATE, DELETE)
+      tags:
+        - Query Analysis
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Operations-Analyse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryOperationsAnalysis'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    QueryPerformanceOverview:
+      type: object
+      properties:
+        totalQueries:
+          type: integer
+          description: Gesamtzahl der Queries
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Query-Dauer (ms)
+        medianDuration:
+          type: number
+          description: Median Query-Dauer (ms)
+        maxDuration:
+          type: number
+          description: Maximale Query-Dauer (ms)
+        errorRate:
+          type: number
+          description: Query-Fehlerquote (%)
+        performance:
+          $ref: '#/components/schemas/PerformanceStats'
+        byOperation:
+          $ref: '#/components/schemas/OperationStats'
+        byTable:
+          $ref: '#/components/schemas/TableStats'
+        timestamp:
+          type: integer
+          description: Unix timestamp der Datenerhebung
+        timeframeHours:
+          type: integer
+          description: Zeitraum der Analyse in Stunden
+
+    QueryHealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, critical]
+          description: Allgemeiner Query-Performance-Status
+        checks:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthCheck'
+        metrics:
+          $ref: '#/components/schemas/HealthMetrics'
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PerformanceAlert'
+
+    HealthCheck:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name des Health-Checks
+        status:
+          type: string
+          enum: [pass, fail]
+          description: Check-Ergebnis
+        message:
+          type: string
+          description: Detailnachricht
+        threshold:
+          type: number
+          description: Schwellenwert (optional)
+        currentValue:
+          type: number
+          description: Aktueller Wert (optional)
+
+    HealthMetrics:
+      type: object
+      properties:
+        avgResponseTime:
+          type: number
+          description: Durchschnittliche Response-Zeit (ms)
+        slowQueryThreshold:
+          type: number
+          description: Slow-Query-Schwellenwert (ms)
+        slowQueryCount:
+          type: integer
+          description: Anzahl langsamer Queries
+        errorCount:
+          type: integer
+          description: Anzahl Query-Fehler
+        queryVolume:
+          type: integer
+          description: Query-Volumen (Queries/Stunde)
+
+    PerformanceAlert:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [slow_query, high_error_rate, resource_usage, index_missing]
+          description: Alert-Typ
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+          description: Schweregrad
+        message:
+          type: string
+          description: Alert-Nachricht
+        table:
+          type: string
+          description: Betroffene Tabelle (optional)
+        query:
+          type: string
+          description: Betroffene Query (optional)
+        recommendation:
+          type: string
+          description: Empfohlene Aktion
+
+    SlowQueriesList:
+      type: object
+      properties:
+        slowQueries:
+          type: array
+          items:
+            $ref: '#/components/schemas/SlowQuery'
+        totalCount:
+          type: integer
+          description: Gesamtzahl langsamer Queries
+        thresholdMs:
+          type: integer
+          description: Verwendeter Schwellenwert (ms)
+        summary:
+          $ref: '#/components/schemas/SlowQueriesSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+
+    SlowQuery:
+      type: object
+      properties:
+        operation:
+          type: string
+          description: Query-Operation (SELECT, INSERT, etc.)
+        table:
+          type: string
+          description: Betroffene Tabelle
+        avgDuration:
+          type: number
+          description: Durchschnittliche Dauer (ms)
+        maxDuration:
+          type: number
+          description: Maximale Dauer (ms)
+        count:
+          type: integer
+          description: Häufigkeit der Query
+        lastOccurrence:
+          type: string
+          format: date-time
+          description: Letztes Auftreten
+        recommendation:
+          type: string
+          description: Optimierungsempfehlung
+        impact:
+          type: string
+          enum: [low, medium, high]
+          description: Performance-Impact
+
+    SlowQueriesSummary:
+      type: object
+      properties:
+        totalSlowQueries:
+          type: integer
+          description: Gesamtzahl langsamer Queries
+        mostAffectedTable:
+          type: string
+          description: Am meisten betroffene Tabelle
+        avgSlowQueryDuration:
+          type: number
+          description: Durchschnittliche Dauer langsamer Queries (ms)
+        recommendations:
+          type: integer
+          description: Anzahl verfügbarer Empfehlungen
+
+    IndexRecommendations:
+      type: object
+      properties:
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndexRecommendation'
+        totalRecommendations:
+          type: integer
+          description: Gesamtzahl Empfehlungen
+        potentialImpact:
+          $ref: '#/components/schemas/ImpactSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+
+    IndexRecommendation:
+      type: object
+      properties:
+        table:
+          type: string
+          description: Tabellenname
+        columns:
+          type: array
+          items:
+            type: string
+          description: Empfohlene Index-Spalten
+        indexType:
+          type: string
+          enum: [btree, hash, gin, gist]
+          description: Empfohlener Index-Typ
+        reason:
+          type: string
+          description: Begründung für die Empfehlung
+        impact:
+          type: string
+          enum: [low, medium, high]
+          description: Erwarteter Performance-Impact
+        query:
+          type: string
+          description: SQL für Index-Erstellung
+        rollback:
+          type: string
+          description: SQL für Index-Entfernung
+        estimatedImprovement:
+          type: number
+          description: Geschätzte Verbesserung (%)
+        affectedQueries:
+          type: integer
+          description: Anzahl betroffener Queries
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: Empfehlungspriorität
+
+    ImpactSummary:
+      type: object
+      properties:
+        highImpact:
+          type: integer
+          description: Empfehlungen mit hohem Impact
+        mediumImpact:
+          type: integer
+          description: Empfehlungen mit mittlerem Impact
+        lowImpact:
+          type: integer
+          description: Empfehlungen mit niedrigem Impact
+        totalQueries:
+          type: integer
+          description: Gesamtzahl betroffener Queries
+        estimatedImprovement:
+          type: number
+          description: Geschätzte Gesamtverbesserung (%)
+
+    QueryPerformanceSummary:
+      type: object
+      properties:
+        totalQueries:
+          type: integer
+          description: Gesamtzahl Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Dauer (ms)
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+        errorRate:
+          type: number
+          description: Fehlerquote (%)
+        topTables:
+          type: array
+          items:
+            type: string
+          description: Top 5 meist abgefragte Tabellen
+        recommendations:
+          type: integer
+          description: Verfügbare Index-Empfehlungen
+        healthStatus:
+          type: string
+          enum: [healthy, degraded, critical]
+          description: Allgemeiner Performance-Status
+
+    TablePerformanceAnalysis:
+      type: object
+      properties:
+        tables:
+          type: array
+          items:
+            $ref: '#/components/schemas/TablePerformance'
+        summary:
+          $ref: '#/components/schemas/TablePerformanceSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+
+    TablePerformance:
+      type: object
+      properties:
+        tableName:
+          type: string
+          description: Tabellenname
+        queryCount:
+          type: integer
+          description: Anzahl Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Query-Dauer (ms)
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+        operations:
+          $ref: '#/components/schemas/TableOperations'
+        lastAccess:
+          type: string
+          format: date-time
+          description: Letzter Zugriff
+        indexRecommendations:
+          type: integer
+          description: Anzahl Index-Empfehlungen
+
+    TableOperations:
+      type: object
+      properties:
+        select:
+          type: integer
+          description: SELECT-Operationen
+        insert:
+          type: integer
+          description: INSERT-Operationen
+        update:
+          type: integer
+          description: UPDATE-Operationen
+        delete:
+          type: integer
+          description: DELETE-Operationen
+
+    TablePerformanceSummary:
+      type: object
+      properties:
+        totalTables:
+          type: integer
+          description: Anzahl analysierter Tabellen
+        mostActiveTable:
+          type: string
+          description: Aktivste Tabelle
+        slowestTable:
+          type: string
+          description: Langsamste Tabelle
+        tablesWithRecommendations:
+          type: integer
+          description: Tabellen mit Index-Empfehlungen
+
+    QueryOperationsAnalysis:
+      type: object
+      properties:
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationPerformance'
+        summary:
+          $ref: '#/components/schemas/OperationsSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+
+    OperationPerformance:
+      type: object
+      properties:
+        operation:
+          type: string
+          enum: [SELECT, INSERT, UPDATE, DELETE]
+          description: Query-Operation
+        count:
+          type: integer
+          description: Anzahl Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Dauer (ms)
+        medianDuration:
+          type: number
+          description: Median Dauer (ms)
+        maxDuration:
+          type: number
+          description: Maximale Dauer (ms)
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+        errorRate:
+          type: number
+          description: Fehlerquote (%)
+
+    OperationsSummary:
+      type: object
+      properties:
+        totalOperations:
+          type: integer
+          description: Gesamtzahl Operationen
+        slowestOperation:
+          type: string
+          description: Langsamste Operation
+        mostFrequentOperation:
+          type: string
+          description: Häufigste Operation
+        operationDistribution:
+          type: object
+          additionalProperties:
+            type: number
+          description: Verteilung der Operationen (%)
+
+    PerformanceStats:
+      type: object
+      properties:
+        p50:
+          type: number
+          description: 50. Perzentil (ms)
+        p95:
+          type: number
+          description: 95. Perzentil (ms)
+        p99:
+          type: number
+          description: 99. Perzentil (ms)
+
+    OperationStats:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/OperationStat'
+
+    OperationStat:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Anzahl Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Dauer (ms)
+
+    TableStats:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/TableStat'
+
+    TableStat:
+      type: object
+      properties:
+        queries:
+          type: integer
+          description: Anzahl Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Dauer (ms)
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+
+tags:
+  - name: Query Performance
+    description: Allgemeine Query-Performance-Überwachung
+  - name: Query Analysis
+    description: Detaillierte Query-Analyse und Slow-Query-Detection
+  - name: Query Optimization
+    description: Index-Empfehlungen und Performance-Optimierung

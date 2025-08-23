@@ -1,0 +1,4105 @@
+openapi: 3.0.3
+info:
+  title: Weltenwind API
+  version: 1.0.0
+  description: |
+    **Weltenwind API** - Eine moderne REST API für Multi-World Gaming Platform
+
+    Diese API ermöglicht das Management von Benutzern, Welten, Einladungen und Themes.
+
+    ## Authentication
+    Die API verwendet JWT Bearer Token für Authentifizierung.
+
+    ## Base URL
+    - Development: `http://192.168.2.168:3000/api`
+    - Production: `https://your-domain.com/api`
+  contact:
+    name: Weltenwind Team
+    url: https://github.com/dasBoooot/weltenwind
+  license:
+    name: BSD 2-Clause
+    url: https://opensource.org/licenses/BSD-2-Clause
+servers:
+  - url: http://192.168.2.168:3000/api
+    description: Development Server
+  - url: https://api.weltenwind.com/api
+    description: Production Server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Token für Authentifizierung
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Operation successful
+        data:
+          type: object
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          properties:
+            code:
+              type: string
+              example: ERROR_CODE
+            message:
+              type: string
+              example: Human-readable error message
+            details:
+              type: string
+              example: Additional error details
+          description: Error message
+          example: Client configuration failed
+        details:
+          type: string
+          description: Detailed error information
+          example: Failed to load environment variables
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Validation failed
+            fields:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        username:
+          type: string
+          example: player1
+        email:
+          type: string
+          format: email
+          example: player@example.com
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-01-05T10:30:00Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2025-01-05T10:30:00Z'
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Username or email address
+        password:
+          type: string
+          format: password
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+          description: JWT authentication token
+    ResetPasswordRequest:
+      type: object
+      required:
+        - token
+        - password
+      properties:
+        token:
+          type: string
+          description: Password reset token from email
+          example: abc123-reset-token-xyz789
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: newSecurePassword123
+    ChangePasswordRequest:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+          format: password
+          description: Current user password
+        newPassword:
+          type: string
+          format: password
+          minLength: 8
+          description: New password
+    PasswordStrength:
+      type: object
+      properties:
+        score:
+          type: integer
+          minimum: 0
+          maximum: 4
+          description: Password strength score (0=weak, 4=strong)
+          example: 3
+        isValid:
+          type: boolean
+          description: Whether password meets minimum requirements
+          example: true
+        feedback:
+          type: object
+          properties:
+            warning:
+              type: string
+              example: This is a common password
+            suggestions:
+              type: array
+              items:
+                type: string
+              example:
+                - Add another word or two
+                - Use a longer password
+        checks:
+          type: object
+          properties:
+            minLength:
+              type: boolean
+              example: true
+            hasUppercase:
+              type: boolean
+              example: true
+            hasLowercase:
+              type: boolean
+              example: true
+            hasNumbers:
+              type: boolean
+              example: true
+            hasSpecialChars:
+              type: boolean
+              example: false
+    UserPermissions:
+      type: object
+      properties:
+        userId:
+          type: integer
+          example: 123
+        globalPermissions:
+          type: array
+          items:
+            type: string
+          example:
+            - view_worlds
+            - join_worlds
+        worldPermissions:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            '456':
+              - edit_world
+              - invite_players
+            '789':
+              - view_world_players
+        roles:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              scope:
+                type: string
+              permissions:
+                type: array
+                items:
+                  type: string
+    World:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        name:
+          type: string
+          example: Mittelalter-Abenteuer
+        description:
+          type: string
+          example: Eine epische mittelalterliche Welt voller Abenteuer
+        status:
+          type: string
+          enum:
+            - upcoming
+            - open
+            - running
+            - closed
+            - archived
+          example: open
+        themeBundle:
+          type: string
+          example: medieval
+        themeVariant:
+          type: string
+          example: castle
+        playerCount:
+          type: integer
+          example: 42
+        maxPlayers:
+          type: integer
+          example: 100
+        createdAt:
+          type: string
+          format: date-time
+        creator:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+    WorldDetails:
+      allOf:
+        - $ref: '#/components/schemas/World'
+        - type: object
+          properties:
+            players:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlayerInfo'
+    CreateWorldRequest:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: Meine neue Welt
+        description:
+          type: string
+          minLength: 10
+          maxLength: 1000
+          example: Eine aufregende neue Welt zum Erkunden
+        themeBundle:
+          type: string
+          example: medieval
+        maxPlayers:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          example: 50
+    UpdateWorldRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: Aktualisierte Welt
+        description:
+          type: string
+          minLength: 10
+          maxLength: 1000
+          example: Eine aktualisierte Beschreibung
+        status:
+          type: string
+          enum:
+            - upcoming
+            - open
+            - running
+            - closed
+            - archived
+          example: open
+        themeBundle:
+          type: string
+          example: medieval
+        themeVariant:
+          type: string
+          example: castle
+        maxPlayers:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          example: 100
+    WorldState:
+      type: object
+      properties:
+        worldId:
+          type: integer
+          example: 123
+        status:
+          type: string
+          enum:
+            - upcoming
+            - open
+            - running
+            - closed
+            - archived
+          example: running
+        playerCount:
+          type: integer
+          example: 42
+        maxPlayers:
+          type: integer
+          example: 100
+        isOpen:
+          type: boolean
+          example: true
+        canJoin:
+          type: boolean
+          example: true
+        lastActivity:
+          type: string
+          format: date-time
+          example: '2025-01-05T14:30:00Z'
+        uptime:
+          type: integer
+          description: Uptime in seconds
+          example: 86400
+        gameState:
+          type: object
+          description: Game-specific state information
+          additionalProperties: true
+    PlayerInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        worldId:
+          type: integer
+        joinedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+        user:
+          $ref: '#/components/schemas/User'
+    PaginationInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 100
+        total:
+          type: integer
+          example: 5678
+        pages:
+          type: integer
+          example: 57
+        hasNext:
+          type: boolean
+          example: true
+        hasPrev:
+          type: boolean
+          example: false
+    CreateInviteRequest:
+      type: object
+      required:
+        - worldId
+        - email
+      properties:
+        worldId:
+          type: integer
+          example: 123
+        email:
+          type: string
+          format: email
+          example: friend@example.com
+        message:
+          type: string
+          maxLength: 500
+          example: Komm und spiele mit uns!
+    Invite:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 456
+        token:
+          type: string
+          example: abc123xyz789
+        worldId:
+          type: integer
+          example: 123
+        email:
+          type: string
+          format: email
+          example: friend@example.com
+        inviterUserId:
+          type: integer
+          example: 789
+        message:
+          type: string
+          example: Komm und spiele mit uns!
+        status:
+          type: string
+          enum:
+            - pending
+            - accepted
+            - declined
+            - expired
+          example: pending
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        inviteUrl:
+          type: string
+          example: https://weltenwind.com/invite/abc123xyz789
+    InviteListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        worldId:
+          type: integer
+        worldName:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+            - accepted
+            - declined
+            - expired
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        inviteUrl:
+          type: string
+    InviteValidation:
+      type: object
+      properties:
+        invite:
+          type: object
+          properties:
+            id:
+              type: integer
+            email:
+              type: string
+            message:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            expiresAt:
+              type: string
+              format: date-time
+        world:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            description:
+              type: string
+            themeBundle:
+              type: string
+            themeVariant:
+              type: string
+            status:
+              type: string
+            playerCount:
+              type: integer
+            maxPlayers:
+              type: integer
+            creator:
+              type: object
+              properties:
+                username:
+                  type: string
+        inviter:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+        userStatus:
+          type: string
+          enum:
+            - not_registered
+            - not_logged_in
+            - needs_login
+            - wrong_email
+            - can_accept
+            - already_accepted
+          description: Status of the current user relative to this invitation
+    InviteAcceptance:
+      type: object
+      properties:
+        world:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        player:
+          type: object
+          properties:
+            id:
+              type: integer
+            userId:
+              type: integer
+            worldId:
+              type: integer
+            joinedAt:
+              type: string
+              format: date-time
+            status:
+              type: string
+        invite:
+          type: object
+          properties:
+            id:
+              type: integer
+            acceptedAt:
+              type: string
+              format: date-time
+            status:
+              type: string
+    Language:
+      type: object
+      properties:
+        code:
+          type: string
+          example: de
+        name:
+          type: string
+          example: Deutsch
+        nativeName:
+          type: string
+          example: Deutsch
+        isDefault:
+          type: boolean
+          example: true
+    TranslationData:
+      type: object
+      properties:
+        language:
+          type: string
+          example: de
+        translations:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            buttonLogin: Anmelden
+            buttonRegister: Registrieren
+            welcomeMessage: Willkommen bei Weltenwind!
+    TranslationKey:
+      type: object
+      properties:
+        key:
+          type: string
+          example: buttonLogin
+        description:
+          type: string
+          example: Login button text
+        context:
+          type: string
+          example: auth
+        hasPlaceholders:
+          type: boolean
+          example: false
+        placeholders:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+    WorldEntrypoint:
+      type: object
+      properties:
+        id:
+          type: string
+          description: World identifier
+          example: default
+        name:
+          type: string
+          description: Human-readable world name
+          example: Default World
+        description:
+          type: string
+          description: World description
+          example: Default world with basic theme configuration
+        status:
+          type: string
+          enum:
+            - open
+            - closed
+            - maintenance
+          description: Current world status
+          example: open
+        entrypoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/ThemeEntrypoint'
+          description: Available theme contexts for this world
+          example:
+            - context: pre-game
+              description: Pre-game authentication and setup screens
+            - context: game
+              description: Main game interface
+            - context: loading
+              description: Loading screens and transitions
+    ThemeEntrypoint:
+      type: object
+      properties:
+        context:
+          type: string
+          description: Theme context identifier
+          example: pre-game
+        description:
+          type: string
+          description: Description of this theme context
+          example: Pre-game authentication and setup screens
+        available:
+          type: boolean
+          description: Whether this context is currently available
+          example: true
+    WorldManifest:
+      type: object
+      properties:
+        world:
+          $ref: '#/components/schemas/WorldInfo'
+        theme:
+          $ref: '#/components/schemas/ThemeData'
+    WorldInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          example: default
+        name:
+          type: string
+          example: Default World
+        description:
+          type: string
+          example: Default world with basic theme configuration
+        status:
+          type: string
+          enum:
+            - open
+            - closed
+            - maintenance
+          example: open
+        createdAt:
+          type: string
+          format: date-time
+          example: '2024-01-01T00:00:00Z'
+        startsAt:
+          type: string
+          format: date-time
+          example: '2024-01-01T00:00:00Z'
+    ThemeData:
+      type: object
+      description: Complete theme configuration data
+      properties:
+        colors:
+          $ref: '#/components/schemas/ColorScheme'
+        fonts:
+          $ref: '#/components/schemas/FontConfiguration'
+        typography:
+          $ref: '#/components/schemas/TypographyConfiguration'
+        spacing:
+          $ref: '#/components/schemas/SpacingConfiguration'
+        radius:
+          $ref: '#/components/schemas/RadiusConfiguration'
+        effects:
+          $ref: '#/components/schemas/EffectsConfiguration'
+        borderRadius:
+          type: object
+          description: Border radius configuration
+          additionalProperties:
+            type: string
+        iconStyle:
+          type: object
+          description: Icon style configuration
+          additionalProperties:
+            type: string
+    ColorScheme:
+      type: object
+      properties:
+        primary:
+          $ref: '#/components/schemas/ColorVariant'
+        secondary:
+          $ref: '#/components/schemas/ColorVariant'
+        tertiary:
+          $ref: '#/components/schemas/ColorVariant'
+        background:
+          $ref: '#/components/schemas/ColorVariant'
+        text:
+          $ref: '#/components/schemas/ColorVariant'
+        status:
+          $ref: '#/components/schemas/StatusColors'
+        border:
+          $ref: '#/components/schemas/BorderColors'
+        interactive:
+          $ref: '#/components/schemas/InteractiveColors'
+    ColorVariant:
+      type: object
+      properties:
+        main:
+          type: string
+          description: Main color value
+          example: '#3B82F6'
+        light:
+          type: string
+          description: Light variant
+          example: '#60A5FA'
+        dark:
+          type: string
+          description: Dark variant
+          example: '#2563EB'
+        contrast:
+          type: string
+          description: Contrast color for text/icons
+          example: '#FFFFFF'
+    StatusColors:
+      type: object
+      properties:
+        success:
+          type: string
+          example: '#10B981'
+        warning:
+          type: string
+          example: '#F59E0B'
+        error:
+          type: string
+          example: '#EF4444'
+        info:
+          type: string
+          example: '#3B82F6'
+    BorderColors:
+      type: object
+      properties:
+        default:
+          type: string
+          example: '#E5E7EB'
+        muted:
+          type: string
+          example: '#F3F4F6'
+        accent:
+          type: string
+          example: '#3B82F6'
+    InteractiveColors:
+      type: object
+      properties:
+        hover:
+          type: string
+          example: '#F8FAFC'
+        active:
+          type: string
+          example: '#F1F5F9'
+        focus:
+          type: string
+          example: '#DBEAFE'
+    FontConfiguration:
+      type: object
+      properties:
+        primary:
+          $ref: '#/components/schemas/FontFamily'
+        secondary:
+          $ref: '#/components/schemas/FontFamily'
+    FontFamily:
+      type: object
+      properties:
+        family:
+          type: string
+          example: Inter
+        fallback:
+          type: array
+          items:
+            type: string
+          example:
+            - system-ui
+            - sans-serif
+        weights:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            light: 300
+            normal: 400
+            medium: 500
+            semibold: 600
+            bold: 700
+    TypographyConfiguration:
+      type: object
+      properties:
+        headings:
+          $ref: '#/components/schemas/HeadingSizes'
+        body:
+          $ref: '#/components/schemas/BodySizes'
+        lineHeights:
+          $ref: '#/components/schemas/LineHeights'
+        fontWeights:
+          $ref: '#/components/schemas/FontWeights'
+        letterSpacing:
+          $ref: '#/components/schemas/LetterSpacing'
+    HeadingSizes:
+      type: object
+      properties:
+        h1:
+          type: string
+          example: 2.25rem
+        h2:
+          type: string
+          example: 1.875rem
+        h3:
+          type: string
+          example: 1.5rem
+        h4:
+          type: string
+          example: 1.25rem
+        h5:
+          type: string
+          example: 1.125rem
+        h6:
+          type: string
+          example: 1rem
+    BodySizes:
+      type: object
+      properties:
+        xs:
+          type: string
+          example: 0.75rem
+        sm:
+          type: string
+          example: 0.875rem
+        base:
+          type: string
+          example: 1rem
+        lg:
+          type: string
+          example: 1.125rem
+        xl:
+          type: string
+          example: 1.25rem
+    LineHeights:
+      type: object
+      properties:
+        tight:
+          type: string
+          example: '1.25'
+        normal:
+          type: string
+          example: '1.5'
+        relaxed:
+          type: string
+          example: '1.75'
+    FontWeights:
+      type: object
+      properties:
+        light:
+          type: integer
+          example: 300
+        normal:
+          type: integer
+          example: 400
+        medium:
+          type: integer
+          example: 500
+        semibold:
+          type: integer
+          example: 600
+        bold:
+          type: integer
+          example: 700
+    LetterSpacing:
+      type: object
+      properties:
+        tight:
+          type: string
+          example: '-0.025em'
+        normal:
+          type: string
+          example: 0em
+        wide:
+          type: string
+          example: 0.025em
+    SpacingConfiguration:
+      type: object
+      properties:
+        xs:
+          type: string
+          example: 0.25rem
+        sm:
+          type: string
+          example: 0.5rem
+        md:
+          type: string
+          example: 1rem
+        lg:
+          type: string
+          example: 1.5rem
+        xl:
+          type: string
+          example: 2rem
+        xxl:
+          type: string
+          example: 3rem
+        xxxl:
+          type: string
+          example: 4rem
+        section:
+          type: string
+          example: 6rem
+    RadiusConfiguration:
+      type: object
+      properties:
+        none:
+          type: string
+          example: '0'
+        sm:
+          type: string
+          example: 0.125rem
+        md:
+          type: string
+          example: 0.375rem
+        lg:
+          type: string
+          example: 0.5rem
+        xl:
+          type: string
+          example: 0.75rem
+        full:
+          type: string
+          example: 9999px
+    EffectsConfiguration:
+      type: object
+      properties:
+        animations:
+          $ref: '#/components/schemas/AnimationConfiguration'
+        shadows:
+          $ref: '#/components/schemas/ShadowConfiguration'
+    AnimationConfiguration:
+      type: object
+      properties:
+        easing:
+          type: string
+          example: cubic-bezier(0.4, 0, 0.2, 1)
+        duration:
+          $ref: '#/components/schemas/DurationConfiguration'
+        scale:
+          $ref: '#/components/schemas/ScaleConfiguration'
+    DurationConfiguration:
+      type: object
+      properties:
+        fast:
+          type: string
+          example: 150ms
+        normal:
+          type: string
+          example: 300ms
+        slow:
+          type: string
+          example: 500ms
+    ScaleConfiguration:
+      type: object
+      properties:
+        hover:
+          type: string
+          example: '1.05'
+        active:
+          type: string
+          example: '0.95'
+    ShadowConfiguration:
+      type: object
+      properties:
+        softGlow:
+          type: string
+          example: 0 4px 6px -1px rgba(0, 0, 0, 0.1)
+        focusRing:
+          type: string
+          example: 0 0 0 3px rgba(59, 130, 246, 0.5)
+    LogEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          example: log_12345
+        timestamp:
+          type: string
+          format: date-time
+          example: '2025-01-05T14:30:00Z'
+        level:
+          type: string
+          enum:
+            - error
+            - warn
+            - info
+            - debug
+          example: info
+        category:
+          type: string
+          enum:
+            - system
+            - api
+            - security
+            - error
+            - debug
+          example: api
+        message:
+          type: string
+          example: User login successful
+        userId:
+          type: integer
+          nullable: true
+          example: 123
+        sessionId:
+          type: string
+          nullable: true
+          example: sess_abc123
+        ip:
+          type: string
+          nullable: true
+          example: 192.168.1.100
+        userAgent:
+          type: string
+          nullable: true
+          example: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Additional log context data
+        stackTrace:
+          type: string
+          nullable: true
+          description: Stack trace for error logs
+    LogCategory:
+      type: object
+      properties:
+        name:
+          type: string
+          example: api
+        displayName:
+          type: string
+          example: API Requests
+        description:
+          type: string
+          example: HTTP API request and response logs
+        count:
+          type: integer
+          example: 1234
+        lastEntry:
+          type: string
+          format: date-time
+          example: '2025-01-05T14:30:00Z'
+    LogStats:
+      type: object
+      properties:
+        period:
+          type: string
+          example: day
+        totalEntries:
+          type: integer
+          example: 5678
+        entriesByLevel:
+          type: object
+          properties:
+            error:
+              type: integer
+              example: 12
+            warn:
+              type: integer
+              example: 45
+            info:
+              type: integer
+              example: 4321
+            debug:
+              type: integer
+              example: 1300
+        entriesByCategory:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            system: 234
+            api: 3456
+            security: 67
+            error: 89
+            debug: 1832
+        topErrors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+              count:
+                type: integer
+              lastOccurrence:
+                type: string
+                format: date-time
+        systemHealth:
+          type: object
+          properties:
+            errorRate:
+              type: number
+              format: float
+              description: Error rate as percentage
+              example: 2.5
+            avgResponseTime:
+              type: number
+              format: float
+              description: Average API response time in ms
+              example: 145.6
+            activeUsers:
+              type: integer
+              example: 42
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - OK
+            - DEGRADED
+            - ERROR
+          description: Overall health status
+          example: OK
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp when health check was performed
+          example: 1640995200000
+        uptime:
+          type: integer
+          description: Process uptime in seconds
+          example: 12345
+        environment:
+          type: string
+          description: Runtime environment
+          example: production
+        version:
+          type: string
+          description: API version
+          example: 1.0.0
+        memory:
+          type: object
+          properties:
+            used:
+              type: integer
+              description: Used heap memory in MB
+              example: 45
+            total:
+              type: integer
+              description: Total heap memory in MB
+              example: 128
+            rss:
+              type: integer
+              description: Resident Set Size in MB
+              example: 67
+        pid:
+          type: integer
+          description: Process ID
+          example: 12345
+        database:
+          type: object
+          properties:
+            status:
+              type: string
+              enum:
+                - connected
+                - disconnected
+              example: connected
+            responseTime:
+              type: number
+              format: float
+              description: Database response time in milliseconds
+              example: 12.34
+            error:
+              type: string
+              description: Error message if database is disconnected
+              example: Connection timeout
+        services:
+          type: object
+          properties:
+            api:
+              type: string
+              example: running
+            auth:
+              type: string
+              example: available
+            worlds:
+              type: string
+              example: available
+            invites:
+              type: string
+              example: available
+            themes:
+              type: string
+              example: available
+            logs:
+              type: string
+              example: available
+        responseTime:
+          type: number
+          format: float
+          description: Health check response time in milliseconds
+          example: 45.67
+    DetailedHealthStatus:
+      allOf:
+        - $ref: '#/components/schemas/HealthStatus'
+        - type: object
+          properties:
+            uptime:
+              type: object
+              properties:
+                seconds:
+                  type: integer
+                  description: Uptime in seconds
+                  example: 12345
+                human:
+                  type: string
+                  description: Human-readable uptime
+                  example: 3h 25m 45s
+            system:
+              type: object
+              properties:
+                platform:
+                  type: string
+                  description: Operating system platform
+                  example: linux
+                arch:
+                  type: string
+                  description: CPU architecture
+                  example: x64
+                nodeVersion:
+                  type: string
+                  description: Node.js version
+                  example: v18.17.0
+                memory:
+                  type: object
+                  properties:
+                    used:
+                      type: integer
+                      description: Used heap memory in MB
+                    total:
+                      type: integer
+                      description: Total heap memory in MB
+                    rss:
+                      type: integer
+                      description: Resident Set Size in MB
+                    external:
+                      type: integer
+                      description: External memory usage in MB
+                cpu:
+                  type: object
+                  description: CPU usage statistics
+            database:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - connected
+                    - disconnected
+                responseTime:
+                  type: number
+                  format: float
+                  description: Database response time in milliseconds
+                stats:
+                  type: object
+                  properties:
+                    users:
+                      type: integer
+                      description: Total number of users
+                      example: 150
+                    worlds:
+                      type: integer
+                      description: Total number of worlds
+                      example: 23
+                    activeSessions:
+                      type: integer
+                      description: Number of active user sessions
+                      example: 7
+    HealthStatusError:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - ERROR
+          example: ERROR
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp when error occurred
+          example: 1640995200000
+        uptime:
+          type: integer
+          description: Process uptime in seconds
+          example: 12345
+        error:
+          type: string
+          description: Error message describing the failure
+          example: Database connection failed
+        responseTime:
+          type: number
+          format: float
+          description: Health check response time in milliseconds
+          example: 123.45
+    ClientConfiguration:
+      type: object
+      properties:
+        apiUrl:
+          type: string
+          description: Public API URL for client configuration
+          example: https://api.weltenwind.com/api
+        clientUrl:
+          type: string
+          description: Public client/game URL
+          example: https://game.weltenwind.com
+        assetUrl:
+          type: string
+          description: Public assets URL for static resources
+          example: https://assets.weltenwind.com
+        environment:
+          type: string
+          description: Current environment (development, production, etc.)
+          example: production
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp when configuration was generated
+          example: 1640995200000
+        version:
+          type: string
+          description: API version
+          example: 1.0.0
+      required:
+        - apiUrl
+        - clientUrl
+        - assetUrl
+        - environment
+        - timestamp
+        - version
+    OverallMetrics:
+      type: object
+      properties:
+        api:
+          $ref: '#/components/schemas/ApiMetrics'
+        users:
+          $ref: '#/components/schemas/UserMetrics'
+        game:
+          $ref: '#/components/schemas/GameMetrics'
+        system:
+          $ref: '#/components/schemas/SystemMetrics'
+        sessions:
+          $ref: '#/components/schemas/SessionMetrics'
+        timestamp:
+          type: integer
+          description: Unix timestamp der Datenerhebung
+    MetricsSummary:
+      type: object
+      properties:
+        totalUsers:
+          type: integer
+          description: Gesamtzahl registrierter User
+        activeUsers:
+          type: integer
+          description: Aktive User (24h)
+        totalRequests:
+          type: integer
+          description: Gesamtzahl API Requests
+        avgResponseTime:
+          type: number
+          description: Durchschnittliche Response-Zeit (ms)
+        errorRate:
+          type: number
+          description: Fehlerquote (%)
+        systemHealth:
+          type: string
+          enum:
+            - healthy
+            - degraded
+            - critical
+          description: Allgemeiner System-Status
+        uptime:
+          type: integer
+          description: System-Uptime in Sekunden
+    ApiMetrics:
+      type: object
+      properties:
+        totalRequests:
+          type: integer
+          description: Gesamtzahl API Requests
+        totalErrors:
+          type: integer
+          description: Gesamtzahl Fehler
+        avgResponseTime:
+          type: number
+          description: Durchschnittliche Response-Zeit (ms)
+        errorRate:
+          type: number
+          description: Fehlerquote (%)
+        endpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/EndpointMetric'
+    EndpointMetric:
+      type: object
+      properties:
+        path:
+          type: string
+          description: API Endpoint Pfad
+        method:
+          type: string
+          description: HTTP Method
+        requestCount:
+          type: integer
+          description: Anzahl Requests
+        errorCount:
+          type: integer
+          description: Anzahl Fehler
+        avgResponseTime:
+          type: number
+          description: Durchschnittliche Response-Zeit (ms)
+        errorRate:
+          type: number
+          description: Fehlerquote (%)
+        lastAccess:
+          type: integer
+          description: Letzter Zugriff (Unix timestamp)
+    UserMetrics:
+      type: object
+      properties:
+        totalUsers:
+          type: integer
+          description: Gesamtzahl registrierter User
+        activeUsers:
+          type: integer
+          description: Aktive User (24h)
+        recentLogins:
+          type: integer
+          description: Logins in den letzten 24h
+        accountLockouts:
+          type: integer
+          description: Gesperrte Accounts
+        newRegistrations:
+          type: integer
+          description: Neue Registrierungen (24h)
+        avgSessionDuration:
+          type: number
+          description: Durchschnittliche Session-Dauer (Minuten)
+    GameMetrics:
+      type: object
+      properties:
+        totalWorlds:
+          type: integer
+          description: Gesamtzahl Welten
+        activeWorlds:
+          type: integer
+          description: Aktive Welten (24h)
+        totalPlayers:
+          type: integer
+          description: Gesamtzahl Spieler
+        activePlayers:
+          type: integer
+          description: Aktive Spieler (24h)
+        totalInvites:
+          type: integer
+          description: Gesamtzahl Einladungen
+        pendingInvites:
+          type: integer
+          description: Offene Einladungen
+        worldJoins:
+          type: integer
+          description: Welt-Beitritte (24h)
+    SystemMetrics:
+      type: object
+      properties:
+        uptime:
+          type: integer
+          description: System-Uptime in Sekunden
+        memoryUsage:
+          $ref: '#/components/schemas/MemoryUsage'
+        databaseHealth:
+          $ref: '#/components/schemas/DatabaseHealth'
+        sessionMetrics:
+          $ref: '#/components/schemas/SessionMetrics'
+        diskUsage:
+          $ref: '#/components/schemas/DiskUsage'
+    SessionMetrics:
+      type: object
+      properties:
+        activeSessions:
+          type: integer
+          description: Aktive Sessions
+        totalSessions:
+          type: integer
+          description: Gesamtzahl Sessions
+        expiredSessions:
+          type: integer
+          description: Abgelaufene Sessions
+        avgSessionDuration:
+          type: number
+          description: Durchschnittliche Session-Dauer (Minuten)
+    MemoryUsage:
+      type: object
+      properties:
+        used:
+          type: integer
+          description: Verwendeter Speicher (Bytes)
+        total:
+          type: integer
+          description: Gesamtspeicher (Bytes)
+        percentage:
+          type: number
+          description: Speichernutzung (%)
+    DatabaseHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - healthy
+            - degraded
+            - critical
+          description: Database-Status
+        responseTime:
+          type: number
+          description: Durchschnittliche Response-Zeit (ms)
+        connectionCount:
+          type: integer
+          description: Aktive DB-Verbindungen
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+    DiskUsage:
+      type: object
+      properties:
+        used:
+          type: integer
+          description: Verwendeter Speicherplatz (Bytes)
+        available:
+          type: integer
+          description: Verfügbarer Speicherplatz (Bytes)
+        percentage:
+          type: number
+          description: Nutzung in Prozent
+    BackupOverview:
+      type: object
+      properties:
+        config:
+          $ref: '#/components/schemas/BackupConfig'
+        stats:
+          $ref: '#/components/schemas/BackupStats'
+        health:
+          $ref: '#/components/schemas/BackupHealth'
+        timestamp:
+          type: integer
+          description: Unix timestamp der Datenerhebung
+    BackupConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Backup-System aktiviert
+        backupDir:
+          type: string
+          description: Backup-Verzeichnis
+        retention:
+          $ref: '#/components/schemas/RetentionConfig'
+        compression:
+          $ref: '#/components/schemas/CompressionConfig'
+        autoDiscovery:
+          type: boolean
+          description: Automatische Tabellen-Erkennung
+        smartScheduling:
+          type: boolean
+          description: Intelligente Schedule-Anpassung
+        healthCheckEnabled:
+          type: boolean
+          description: Health-Check aktiviert
+        autoVerification:
+          type: boolean
+          description: Automatische Backup-Verifikation
+        offsite:
+          $ref: '#/components/schemas/OffsiteConfig'
+    RetentionConfig:
+      type: object
+      properties:
+        dailyDays:
+          type: integer
+          description: Tägliche Backups aufbewahren (Tage)
+        weeklyWeeks:
+          type: integer
+          description: Wöchentliche Backups aufbewahren (Wochen)
+        monthlyMonths:
+          type: integer
+          description: Monatliche Backups aufbewahren (Monate)
+    CompressionConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Komprimierung aktiviert
+        level:
+          type: integer
+          description: Komprimierungsgrad (1-9)
+    OffsiteConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Offsite-Backup aktiviert
+        s3Bucket:
+          type: string
+          description: S3-Bucket für Offsite-Backup
+        s3Region:
+          type: string
+          description: AWS Region
+    BackupHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - healthy
+            - degraded
+            - critical
+          description: Allgemeiner Health-Status
+        checks:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthCheck'
+    HealthCheck:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name des Health-Checks
+        status:
+          type: string
+          enum:
+            - pass
+            - fail
+          description: Check-Ergebnis
+        message:
+          type: string
+          description: Detailnachricht
+        threshold:
+          type: number
+          description: Schwellenwert (optional)
+        currentValue:
+          type: number
+          description: Aktueller Wert (optional)
+    BackupJobsList:
+      type: object
+      properties:
+        jobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/BackupJob'
+        summary:
+          $ref: '#/components/schemas/JobsSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+    BackupJob:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Eindeutige Job-ID
+        type:
+          type: string
+          enum:
+            - daily
+            - weekly
+            - monthly
+            - manual
+          description: Backup-Typ
+        status:
+          type: string
+          enum:
+            - pending
+            - running
+            - completed
+            - failed
+          description: Job-Status
+        startTime:
+          type: string
+          format: date-time
+          description: Start-Zeit
+        endTime:
+          type: string
+          format: date-time
+          description: End-Zeit (falls abgeschlossen)
+        duration:
+          type: integer
+          description: Dauer in Millisekunden
+        filePath:
+          type: string
+          description: Pfad zur Backup-Datei
+        fileSize:
+          type: integer
+          description: Dateigröße in Bytes
+        tables:
+          type: array
+          items:
+            type: string
+          description: Liste der gesicherten Tabellen
+        error:
+          type: string
+          description: Fehlermeldung (bei Fehlern)
+        verification:
+          $ref: '#/components/schemas/BackupVerification'
+    BackupVerification:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - pending
+            - passed
+            - failed
+          description: Verifikations-Status
+        error:
+          type: string
+          description: Verifikations-Fehler
+    JobsSummary:
+      type: object
+      properties:
+        active:
+          type: integer
+          description: Aktive Jobs
+        completed:
+          type: integer
+          description: Abgeschlossene Jobs
+        failed:
+          type: integer
+          description: Fehlgeschlagene Jobs
+        total:
+          type: integer
+          description: Gesamtzahl Jobs
+    TablesAnalysis:
+      type: object
+      properties:
+        tables:
+          type: array
+          items:
+            $ref: '#/components/schemas/TableInfo'
+        summary:
+          $ref: '#/components/schemas/TablesSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+    TableInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Tabellenname
+        schema:
+          type: string
+          description: Schema (meist 'public')
+        estimatedRows:
+          type: integer
+          description: Geschätzte Anzahl Zeilen
+        estimatedSizeMB:
+          type: number
+          description: Geschätzte Größe in MB
+        category:
+          type: string
+          enum:
+            - critical
+            - important
+            - optional
+            - logs
+          description: Automatisch erkannte Kategorie
+        changeFrequency:
+          type: string
+          enum:
+            - high
+            - medium
+            - low
+            - static
+          description: Änderungshäufigkeit
+        backupStrategy:
+          type: string
+          enum:
+            - full
+            - incremental
+            - skip
+          description: Empfohlene Backup-Strategie
+        backupPriority:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: Backup-Priorität (1-10)
+        lastBackup:
+          type: string
+          format: date-time
+          description: Letztes Backup (optional)
+    TablesSummary:
+      type: object
+      properties:
+        totalTables:
+          type: integer
+          description: Gesamtzahl Tabellen
+        totalSizeMB:
+          type: number
+          description: Gesamtgröße in MB
+        categories:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Anzahl Tabellen pro Kategorie
+        strategies:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Anzahl Tabellen pro Backup-Strategie
+        priorities:
+          $ref: '#/components/schemas/PrioritiesSummary'
+    PrioritiesSummary:
+      type: object
+      properties:
+        high:
+          type: integer
+          description: Tabellen mit hoher Priorität (8-10)
+        medium:
+          type: integer
+          description: Tabellen mit mittlerer Priorität (5-7)
+        low:
+          type: integer
+          description: Tabellen mit niedriger Priorität (1-4)
+    CreateBackupRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - manual
+            - daily
+            - weekly
+            - monthly
+          default: manual
+          description: Backup-Typ
+        tables:
+          type: array
+          items:
+            type: string
+          description: Spezifische Tabellen (optional, sonst alle)
+    BackupJobResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Erfolgs-Nachricht
+        job:
+          $ref: '#/components/schemas/BackupJobInfo'
+        estimatedDuration:
+          type: string
+          description: Geschätzte Dauer
+    BackupJobInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Job-ID
+        type:
+          type: string
+          description: Backup-Typ
+        status:
+          type: string
+          description: Aktueller Status
+        startTime:
+          type: string
+          format: date-time
+          description: Start-Zeit
+        tables:
+          type: integer
+          description: Anzahl Tabellen
+    BackupStats:
+      type: object
+      properties:
+        totalBackups:
+          type: integer
+          description: Gesamtzahl Backups
+        totalSize:
+          type: integer
+          description: Gesamtgröße aller Backups (Bytes)
+        successRate:
+          type: number
+          description: Erfolgsquote (%)
+        avgDuration:
+          type: integer
+          description: Durchschnittliche Dauer (ms)
+        lastBackup:
+          type: string
+          format: date-time
+          description: Letztes Backup
+        nextScheduled:
+          type: string
+          format: date-time
+          description: Nächstes geplantes Backup
+        diskUsage:
+          $ref: '#/components/schemas/DiskUsage'
+    DiscoveryResult:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Erfolgs-Nachricht
+        duration:
+          type: string
+          description: Analyse-Dauer
+        tablesDiscovered:
+          type: integer
+          description: Anzahl entdeckter Tabellen
+        summary:
+          $ref: '#/components/schemas/DiscoverySummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+    DiscoverySummary:
+      type: object
+      properties:
+        categories:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Anzahl Tabellen pro Kategorie
+        totalSizeMB:
+          type: number
+          description: Gesamtgröße aller Tabellen
+    QueryPerformanceOverview:
+      type: object
+      properties:
+        totalQueries:
+          type: integer
+          description: Gesamtzahl der Queries
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Query-Dauer (ms)
+        medianDuration:
+          type: number
+          description: Median Query-Dauer (ms)
+        maxDuration:
+          type: number
+          description: Maximale Query-Dauer (ms)
+        errorRate:
+          type: number
+          description: Query-Fehlerquote (%)
+        performance:
+          $ref: '#/components/schemas/PerformanceStats'
+        byOperation:
+          $ref: '#/components/schemas/OperationStats'
+        byTable:
+          $ref: '#/components/schemas/TableStats'
+        timestamp:
+          type: integer
+          description: Unix timestamp der Datenerhebung
+        timeframeHours:
+          type: integer
+          description: Zeitraum der Analyse in Stunden
+    QueryHealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - healthy
+            - degraded
+            - critical
+          description: Allgemeiner Query-Performance-Status
+        checks:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthCheck'
+        metrics:
+          $ref: '#/components/schemas/HealthMetrics'
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PerformanceAlert'
+    HealthMetrics:
+      type: object
+      properties:
+        avgResponseTime:
+          type: number
+          description: Durchschnittliche Response-Zeit (ms)
+        slowQueryThreshold:
+          type: number
+          description: Slow-Query-Schwellenwert (ms)
+        slowQueryCount:
+          type: integer
+          description: Anzahl langsamer Queries
+        errorCount:
+          type: integer
+          description: Anzahl Query-Fehler
+        queryVolume:
+          type: integer
+          description: Query-Volumen (Queries/Stunde)
+    PerformanceAlert:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - slow_query
+            - high_error_rate
+            - resource_usage
+            - index_missing
+          description: Alert-Typ
+        severity:
+          type: string
+          enum:
+            - low
+            - medium
+            - high
+            - critical
+          description: Schweregrad
+        message:
+          type: string
+          description: Alert-Nachricht
+        table:
+          type: string
+          description: Betroffene Tabelle (optional)
+        query:
+          type: string
+          description: Betroffene Query (optional)
+        recommendation:
+          type: string
+          description: Empfohlene Aktion
+    SlowQueriesList:
+      type: object
+      properties:
+        slowQueries:
+          type: array
+          items:
+            $ref: '#/components/schemas/SlowQuery'
+        totalCount:
+          type: integer
+          description: Gesamtzahl langsamer Queries
+        thresholdMs:
+          type: integer
+          description: Verwendeter Schwellenwert (ms)
+        summary:
+          $ref: '#/components/schemas/SlowQueriesSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+    SlowQuery:
+      type: object
+      properties:
+        operation:
+          type: string
+          description: Query-Operation (SELECT, INSERT, etc.)
+        table:
+          type: string
+          description: Betroffene Tabelle
+        avgDuration:
+          type: number
+          description: Durchschnittliche Dauer (ms)
+        maxDuration:
+          type: number
+          description: Maximale Dauer (ms)
+        count:
+          type: integer
+          description: Häufigkeit der Query
+        lastOccurrence:
+          type: string
+          format: date-time
+          description: Letztes Auftreten
+        recommendation:
+          type: string
+          description: Optimierungsempfehlung
+        impact:
+          type: string
+          enum:
+            - low
+            - medium
+            - high
+          description: Performance-Impact
+    SlowQueriesSummary:
+      type: object
+      properties:
+        totalSlowQueries:
+          type: integer
+          description: Gesamtzahl langsamer Queries
+        mostAffectedTable:
+          type: string
+          description: Am meisten betroffene Tabelle
+        avgSlowQueryDuration:
+          type: number
+          description: Durchschnittliche Dauer langsamer Queries (ms)
+        recommendations:
+          type: integer
+          description: Anzahl verfügbarer Empfehlungen
+    IndexRecommendations:
+      type: object
+      properties:
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndexRecommendation'
+        totalRecommendations:
+          type: integer
+          description: Gesamtzahl Empfehlungen
+        potentialImpact:
+          $ref: '#/components/schemas/ImpactSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+    IndexRecommendation:
+      type: object
+      properties:
+        table:
+          type: string
+          description: Tabellenname
+        columns:
+          type: array
+          items:
+            type: string
+          description: Empfohlene Index-Spalten
+        indexType:
+          type: string
+          enum:
+            - btree
+            - hash
+            - gin
+            - gist
+          description: Empfohlener Index-Typ
+        reason:
+          type: string
+          description: Begründung für die Empfehlung
+        impact:
+          type: string
+          enum:
+            - low
+            - medium
+            - high
+          description: Erwarteter Performance-Impact
+        query:
+          type: string
+          description: SQL für Index-Erstellung
+        rollback:
+          type: string
+          description: SQL für Index-Entfernung
+        estimatedImprovement:
+          type: number
+          description: Geschätzte Verbesserung (%)
+        affectedQueries:
+          type: integer
+          description: Anzahl betroffener Queries
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: Empfehlungspriorität
+    ImpactSummary:
+      type: object
+      properties:
+        highImpact:
+          type: integer
+          description: Empfehlungen mit hohem Impact
+        mediumImpact:
+          type: integer
+          description: Empfehlungen mit mittlerem Impact
+        lowImpact:
+          type: integer
+          description: Empfehlungen mit niedrigem Impact
+        totalQueries:
+          type: integer
+          description: Gesamtzahl betroffener Queries
+        estimatedImprovement:
+          type: number
+          description: Geschätzte Gesamtverbesserung (%)
+    QueryPerformanceSummary:
+      type: object
+      properties:
+        totalQueries:
+          type: integer
+          description: Gesamtzahl Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Dauer (ms)
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+        errorRate:
+          type: number
+          description: Fehlerquote (%)
+        topTables:
+          type: array
+          items:
+            type: string
+          description: Top 5 meist abgefragte Tabellen
+        recommendations:
+          type: integer
+          description: Verfügbare Index-Empfehlungen
+        healthStatus:
+          type: string
+          enum:
+            - healthy
+            - degraded
+            - critical
+          description: Allgemeiner Performance-Status
+    TablePerformanceAnalysis:
+      type: object
+      properties:
+        tables:
+          type: array
+          items:
+            $ref: '#/components/schemas/TablePerformance'
+        summary:
+          $ref: '#/components/schemas/TablePerformanceSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+    TablePerformance:
+      type: object
+      properties:
+        tableName:
+          type: string
+          description: Tabellenname
+        queryCount:
+          type: integer
+          description: Anzahl Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Query-Dauer (ms)
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+        operations:
+          $ref: '#/components/schemas/TableOperations'
+        lastAccess:
+          type: string
+          format: date-time
+          description: Letzter Zugriff
+        indexRecommendations:
+          type: integer
+          description: Anzahl Index-Empfehlungen
+    TableOperations:
+      type: object
+      properties:
+        select:
+          type: integer
+          description: SELECT-Operationen
+        insert:
+          type: integer
+          description: INSERT-Operationen
+        update:
+          type: integer
+          description: UPDATE-Operationen
+        delete:
+          type: integer
+          description: DELETE-Operationen
+    TablePerformanceSummary:
+      type: object
+      properties:
+        totalTables:
+          type: integer
+          description: Anzahl analysierter Tabellen
+        mostActiveTable:
+          type: string
+          description: Aktivste Tabelle
+        slowestTable:
+          type: string
+          description: Langsamste Tabelle
+        tablesWithRecommendations:
+          type: integer
+          description: Tabellen mit Index-Empfehlungen
+    QueryOperationsAnalysis:
+      type: object
+      properties:
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationPerformance'
+        summary:
+          $ref: '#/components/schemas/OperationsSummary'
+        timestamp:
+          type: integer
+          description: Unix timestamp
+    OperationPerformance:
+      type: object
+      properties:
+        operation:
+          type: string
+          enum:
+            - SELECT
+            - INSERT
+            - UPDATE
+            - DELETE
+          description: Query-Operation
+        count:
+          type: integer
+          description: Anzahl Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Dauer (ms)
+        medianDuration:
+          type: number
+          description: Median Dauer (ms)
+        maxDuration:
+          type: number
+          description: Maximale Dauer (ms)
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+        errorRate:
+          type: number
+          description: Fehlerquote (%)
+    OperationsSummary:
+      type: object
+      properties:
+        totalOperations:
+          type: integer
+          description: Gesamtzahl Operationen
+        slowestOperation:
+          type: string
+          description: Langsamste Operation
+        mostFrequentOperation:
+          type: string
+          description: Häufigste Operation
+        operationDistribution:
+          type: object
+          additionalProperties:
+            type: number
+          description: Verteilung der Operationen (%)
+    PerformanceStats:
+      type: object
+      properties:
+        p50:
+          type: number
+          description: 50. Perzentil (ms)
+        p95:
+          type: number
+          description: 95. Perzentil (ms)
+        p99:
+          type: number
+          description: 99. Perzentil (ms)
+    OperationStats:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/OperationStat'
+    OperationStat:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Anzahl Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Dauer (ms)
+    TableStats:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/TableStat'
+    TableStat:
+      type: object
+      properties:
+        queries:
+          type: integer
+          description: Anzahl Queries
+        avgDuration:
+          type: number
+          description: Durchschnittliche Dauer (ms)
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+  responses:
+    UnauthorizedError:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: AUTH_TOKEN_REQUIRED
+              message: Authentication token required
+    ForbiddenError:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: ACCESS_DENIED
+              message: Insufficient permissions for this operation
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: RESOURCE_NOT_FOUND
+              message: Requested resource not found
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: INTERNAL_SERVER_ERROR
+              message: An internal server error occurred
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User Login
+      description: Authenticate user with username/email and password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: Username or email address
+                  example: player1
+                password:
+                  type: string
+                  format: password
+                  example: securePassword123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            description: JWT authentication token
+                            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: User Registration
+      description: Register a new user account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 50
+                  example: newplayer
+                email:
+                  type: string
+                  format: email
+                  example: newplayer@example.com
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: securePassword123
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            description: JWT authentication token
+        '409':
+          description: Username or email already exists
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User Logout
+      description: Logout current user and invalidate session
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get Current User
+      description: Get information about the currently authenticated user
+      responses:
+        '200':
+          description: Current user information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh Token
+      description: Refresh JWT authentication token
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+                            description: New JWT authentication token
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/request-reset:
+    post:
+      tags:
+        - Authentication
+      summary: Request Password Reset
+      description: Request a password reset email for a user account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+      responses:
+        '200':
+          description: Password reset email sent (always returns success for security)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/reset-password:
+    post:
+      tags:
+        - Authentication
+      summary: Reset Password
+      description: Reset user password using reset token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid or expired reset token
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/change-password:
+    post:
+      tags:
+        - Authentication
+      summary: Change Password
+      description: Change password for logged-in user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Current password incorrect
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/check-password-strength:
+    post:
+      tags:
+        - Authentication
+      summary: Check Password Strength
+      description: Validate password strength without creating account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+                  example: myNewPassword123
+      responses:
+        '200':
+          description: Password strength analysis
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PasswordStrength'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/permissions:
+    get:
+      tags:
+        - Authentication
+      summary: Get User Permissions
+      description: Get detailed permissions for current user
+      responses:
+        '200':
+          description: User permissions
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/UserPermissions'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds:
+    get:
+      tags:
+        - Worlds
+      summary: List Worlds
+      description: Get a list of all available worlds
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - upcoming
+              - open
+              - running
+              - closed
+              - archived
+          description: Filter by world status
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Items per page
+      responses:
+        '200':
+          description: List of worlds
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/World'
+                      pagination:
+                        $ref: '#/components/schemas/PaginationInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+        - Worlds
+      summary: Create World
+      description: Create a new world
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorldRequest'
+      responses:
+        '201':
+          description: World created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/World'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds/{id}:
+    get:
+      tags:
+        - Worlds
+      summary: Get World Details
+      description: Get detailed information about a specific world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: World details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WorldDetails'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+        - Worlds
+      summary: Update World
+      description: Update world settings and configuration
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWorldRequest'
+      responses:
+        '200':
+          description: World updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/World'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags:
+        - Worlds
+      summary: Delete World
+      description: Permanently delete a world (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: World deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds/{id}/join:
+    post:
+      tags:
+        - Worlds
+      summary: Join World
+      description: Join a world as a player
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: Successfully joined world
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PlayerInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          description: Already a member of this world
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds/{id}/players:
+    get:
+      tags:
+        - Worlds
+      summary: List World Players
+      description: Get list of all players in a world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - active
+              - inactive
+          description: Filter by player status
+      responses:
+        '200':
+          description: List of world players
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PlayerInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds/{id}/players/me:
+    get:
+      tags:
+        - Worlds
+      summary: Get My Player Info
+      description: Get current user's player information in this world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: Player information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PlayerInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags:
+        - Worlds
+      summary: Leave World
+      description: Leave a world (remove my player)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: Successfully left world
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /worlds/{id}/state:
+    get:
+      tags:
+        - Worlds
+      summary: Get World State
+      description: Get current state and status information of a world
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: World ID
+      responses:
+        '200':
+          description: World state information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WorldState'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /invites:
+    post:
+      tags:
+        - Invites
+      summary: Create Invite
+      description: Create a new invitation to a world
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInviteRequest'
+      responses:
+        '201':
+          description: Invite created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Invite'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    get:
+      tags:
+        - Invites
+      summary: List My Invites
+      description: Get list of invites created by current user
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - pending
+              - accepted
+              - declined
+              - expired
+          description: Filter by invite status
+        - name: worldId
+          in: query
+          schema:
+            type: integer
+          description: Filter by world ID
+      responses:
+        '200':
+          description: List of invites
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/InviteListItem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /invites/validate/{token}:
+    get:
+      tags:
+        - Invites
+      summary: Validate Invite
+      description: Validate an invitation token and get invite details
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Invitation token
+      responses:
+        '200':
+          description: Valid invitation
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InviteValidation'
+        '400':
+          description: Invalid or expired invitation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /invites/accept/{token}:
+    post:
+      tags:
+        - Invites
+      summary: Accept Invite
+      description: Accept an invitation and join the world
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Invitation token
+      responses:
+        '200':
+          description: Invitation accepted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InviteAcceptance'
+        '400':
+          description: Invalid, expired, or already used invitation
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /invites/decline/{token}:
+    post:
+      tags:
+        - Invites
+      summary: Decline Invite
+      description: Decline an invitation
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Invitation token
+      responses:
+        '200':
+          description: Invitation declined successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid or expired invitation
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /invites/{id}:
+    delete:
+      tags:
+        - Invites
+      summary: Delete Invite
+      description: Delete an invitation (only by creator)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Invitation ID
+      responses:
+        '200':
+          description: Invitation deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /arb/languages:
+    get:
+      tags:
+        - Localization
+      summary: List Available Languages
+      description: Get list of supported languages
+      security: []
+      responses:
+        '200':
+          description: List of supported languages
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Language'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /arb/translations/{language}:
+    get:
+      tags:
+        - Localization
+      summary: Get Translations
+      description: Get all translations for a specific language
+      security: []
+      parameters:
+        - name: language
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - de
+              - en
+          description: Language code
+      responses:
+        '200':
+          description: Translation data
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TranslationData'
+        '404':
+          description: Language not supported
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /arb/keys:
+    get:
+      tags:
+        - Localization
+      summary: List Translation Keys
+      description: Get list of all available translation keys
+      responses:
+        '200':
+          description: List of translation keys
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TranslationKey'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/themes/named-entrypoints:
+    get:
+      tags:
+        - Themes
+      summary: List Available Worlds and Their Entrypoints
+      description: |
+        Get list of all available worlds and their theme entrypoints.
+        This endpoint returns the manifest of all worlds with their available theme contexts.
+      responses:
+        '200':
+          description: List of worlds with their theme entrypoints
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/WorldEntrypoint'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/themes/named-entrypoints/{worldId}/{context}:
+    get:
+      tags:
+        - Themes
+      summary: Get Theme Data for World Context
+      description: |
+        Get theme configuration for a specific world and context (e.g., pre-game, game, loading).
+        Returns the complete theme data including colors, typography, spacing, and effects.
+      parameters:
+        - name: worldId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: World identifier (e.g., "default", "medieval", "sci-fi")
+          example: default
+        - name: context
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Theme context (e.g., "pre-game", "game", "loading")
+          example: pre-game
+      responses:
+        '200':
+          description: Theme data for the specified world and context
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/WorldManifest'
+                          - type: object
+                            properties:
+                              theme:
+                                $ref: '#/components/schemas/ThemeData'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /logs/viewer:
+    get:
+      tags:
+        - Logs
+      summary: Log Viewer Interface
+      description: Access the web-based log viewer interface
+      security: []
+      responses:
+        '200':
+          description: Log viewer HTML interface
+          content:
+            text/html:
+              schema:
+                type: string
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /logs/data:
+    get:
+      tags:
+        - Logs
+      summary: Get Log Data
+      description: Retrieve log entries with filtering and pagination
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum:
+              - system
+              - api
+              - security
+              - error
+              - debug
+          description: Filter by log category
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum:
+              - error
+              - warn
+              - info
+              - debug
+          description: Filter by log level
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start date for log entries
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End date for log entries
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search term in log messages
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+          description: Items per page
+      responses:
+        '200':
+          description: Log entries
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LogEntry'
+                      pagination:
+                        $ref: '#/components/schemas/PaginationInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /logs/categories:
+    get:
+      tags:
+        - Logs
+      summary: Get Log Categories
+      description: Get list of available log categories with counts
+      responses:
+        '200':
+          description: Log categories
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LogCategory'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /logs/stats:
+    get:
+      tags:
+        - Logs
+      summary: Get Log Statistics
+      description: Get statistics about log entries and system health
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum:
+              - hour
+              - day
+              - week
+              - month
+            default: day
+          description: Time period for statistics
+      responses:
+        '200':
+          description: Log statistics
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/LogStats'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /health:
+    get:
+      summary: Basic Health Check
+      description: Returns the basic health status of the Weltenwind Backend API
+      tags:
+        - System
+      operationId: getHealthStatus
+      responses:
+        '200':
+          description: Service is healthy or degraded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+        '503':
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatusError'
+  /health/detailed:
+    get:
+      summary: Detailed Health Check
+      description: Returns detailed health status with system metrics and database statistics
+      tags:
+        - System
+      operationId: getDetailedHealthStatus
+      responses:
+        '200':
+          description: Detailed health information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedHealthStatus'
+        '503':
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatusError'
+  /health/client-config:
+    get:
+      summary: Client Configuration Endpoint
+      description: Returns public URLs for client configuration (no auth required)
+      tags:
+        - System
+      operationId: getClientConfiguration
+      responses:
+        '200':
+          description: Client configuration URLs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientConfiguration'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/metrics:
+    get:
+      summary: Gesamt-Metriken abrufen
+      description: Liefert umfassende System-, API-, User- und Game-Metriken
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Gesamt-Metriken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OverallMetrics'
+        '401':
+          description: Unauthorized - Nicht authentifiziert
+        '403':
+          description: Forbidden - Keine Admin-Berechtigung
+        '500':
+          description: Interner Serverfehler
+  /api/metrics/summary:
+    get:
+      summary: Metriken-Zusammenfassung
+      description: Kompakte Zusammenfassung der wichtigsten Systemmetriken
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Metriken-Zusammenfassung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsSummary'
+  /api/metrics/api:
+    get:
+      summary: API-Performance-Metriken
+      description: Detaillierte Metriken über API-Requests, Response-Zeiten und Fehlerquoten
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - API-Metriken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMetrics'
+  /api/metrics/users:
+    get:
+      summary: User-Activity-Metriken
+      description: Statistiken über User-Aktivitäten, Logins und Account-Status
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - User-Metriken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMetrics'
+  /api/metrics/game:
+    get:
+      summary: Game-spezifische Metriken
+      description: Statistiken über Welten, Spieler und Gaming-Aktivitäten
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Game-Metriken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameMetrics'
+  /api/metrics/system:
+    get:
+      summary: System-Resource-Metriken
+      description: Hardware-Metriken wie Memory, CPU, Uptime und System-Health
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - System-Metriken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemMetrics'
+  /api/backup:
+    get:
+      summary: Backup-System-Übersicht
+      description: Liefert umfassende Informationen über das Backup-System, Konfiguration, Statistiken und Health-Status
+      tags:
+        - Backup Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Backup-System-Übersicht
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupOverview'
+        '401':
+          description: Unauthorized - Nicht authentifiziert
+        '403':
+          description: Forbidden - Keine Admin-Berechtigung
+        '500':
+          description: Interner Serverfehler
+  /api/backup/health:
+    get:
+      summary: Backup-System Health Check
+      description: Detaillierter Health-Status des Backup-Systems mit spezifischen Checks
+      tags:
+        - Backup Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Health-Status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupHealth'
+  /api/backup/jobs:
+    get:
+      summary: Backup-Jobs verwalten
+      description: Liste aller aktiven und kürzlich ausgeführten Backup-Jobs
+      tags:
+        - Backup Jobs
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Job-Liste
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupJobsList'
+  /api/backup/tables:
+    get:
+      summary: Datenbank-Tabellen-Analyse
+      description: Intelligente Analyse aller Datenbank-Tabellen mit Kategorisierung und Backup-Strategien
+      tags:
+        - Database Analysis
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Tabellen-Analyse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TablesAnalysis'
+  /api/backup/create:
+    post:
+      summary: Manuelles Backup erstellen
+      description: Erstellt ein manuelles Backup mit optionaler Tabellen-Auswahl
+      tags:
+        - Backup Jobs
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBackupRequest'
+      responses:
+        '202':
+          description: Accepted - Backup-Job gestartet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupJobResponse'
+        '400':
+          description: Bad Request - Ungültige Parameter
+        '503':
+          description: Service Unavailable - Backup-System deaktiviert
+  /api/backup/stats:
+    get:
+      summary: Backup-Statistiken
+      description: Detaillierte Statistiken über Backups, Speicherplatz und Success-Rate
+      tags:
+        - Backup Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Backup-Statistiken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupStats'
+  /api/backup/discover:
+    post:
+      summary: Datenbank-Struktur neu analysieren
+      description: Führt eine erneute Auto-Discovery der Datenbank-Struktur durch
+      tags:
+        - Database Analysis
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Struktur neu analysiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryResult'
+        '500':
+          description: Fehler bei der Analyse
+  /api/query-performance:
+    get:
+      summary: Query-Performance-Übersicht
+      description: Umfassende Statistiken über Datenbank-Query-Performance mit Performance-Metriken
+      tags:
+        - Query Performance
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: timeframe
+          in: query
+          description: Zeitraum für Statistiken in Stunden (optional)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 168
+            default: 24
+      responses:
+        '200':
+          description: Erfolgreich - Query-Performance-Daten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryPerformanceOverview'
+        '401':
+          description: Unauthorized - Nicht authentifiziert
+        '403':
+          description: Forbidden - Keine Admin-Berechtigung
+        '500':
+          description: Interner Serverfehler
+  /api/query-performance/health:
+    get:
+      summary: Query-Performance Health Check
+      description: Health-Status des Query-Performance-Monitoring-Systems
+      tags:
+        - Query Performance
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Health-Status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryHealthStatus'
+  /api/query-performance/slow-queries:
+    get:
+      summary: Langsame Queries
+      description: Liste der langsamsten Datenbank-Queries mit Details und Optimierungsempfehlungen
+      tags:
+        - Query Analysis
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Maximale Anzahl der zurückgegebenen Queries
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: minDuration
+          in: query
+          description: Minimale Query-Dauer in ms
+          required: false
+          schema:
+            type: integer
+            minimum: 100
+            default: 1000
+      responses:
+        '200':
+          description: Erfolgreich - Langsame Queries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlowQueriesList'
+  /api/query-performance/recommendations:
+    get:
+      summary: Index-Optimierungs-Empfehlungen
+      description: Intelligente Empfehlungen für Datenbank-Index-Optimierungen basierend auf Query-Patterns
+      tags:
+        - Query Optimization
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Index-Empfehlungen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexRecommendations'
+  /api/query-performance/summary:
+    get:
+      summary: Performance-Zusammenfassung
+      description: Kompakte Zusammenfassung der wichtigsten Query-Performance-Metriken
+      tags:
+        - Query Performance
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Performance-Zusammenfassung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryPerformanceSummary'
+  /api/query-performance/tables:
+    get:
+      summary: Tabellen-Performance-Analyse
+      description: Performance-Analyse pro Datenbank-Tabelle mit Query-Statistiken
+      tags:
+        - Query Analysis
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Tabellen-Performance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TablePerformanceAnalysis'
+  /api/query-performance/operations:
+    get:
+      summary: Query-Operations-Analyse
+      description: Analyse der verschiedenen Query-Operationen (SELECT, INSERT, UPDATE, DELETE)
+      tags:
+        - Query Analysis
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Operations-Analyse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryOperationsAnalysis'

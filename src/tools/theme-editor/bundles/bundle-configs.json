@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Weltenwind Theme Bundle Configurations - CLEAN",
+  "description": "Saubere Bundle-Konfigurationen - SINGLE SOURCE OF TRUTH",
+  "version": "2.0.0",
+  "bundles": {
+    "pre-game-minimal": {
+      "name": "Pre-Game Minimal",
+      "description": "Minimales Bundle für Login, Registrierung und Hauptmenü",
+      "context": "pre-game",
+      "priority": "high",
+      "estimatedSize": "15KB",
+      "loadTime": "fast",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing", 
+          "radius"
+        ],
+        "optional": [
+          "effects.animations"
+        ],
+        "excluded": [
+          "gaming.inventory",
+          "gaming.progress", 
+          "gaming.hud",
+          "effects.visual",
+          "gaming.accessibility"
+        ]
+      },
+      "features": {
+        "basicUI": true,
+        "simpleAnimations": true,
+        "responsiveDesign": true,
+        "gamingFeatures": false,
+        "visualEffects": false,
+        "accessibility": "basic"
+      }
+    },
+    "world-preview": {
+      "name": "World Preview",
+      "description": "Bundle für World-Selection mit Preview-Features und ersten Gaming-Elementen",
+      "context": "world-preview", 
+      "priority": "medium",
+      "estimatedSize": "35KB",
+      "loadTime": "medium",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing",
+          "radius",
+          "effects.animations",
+          "gaming.progress"
+        ],
+        "optional": [
+          "effects.visual",
+          "gaming.accessibility"
+        ],
+        "excluded": [
+          "gaming.inventory",
+          "gaming.hud"
+        ]
+      },
+      "features": {
+        "basicUI": true,
+        "enhancedAnimations": true,
+        "responsiveDesign": true,
+        "previewEffects": true,
+        "basicGaming": true,
+        "visualEffects": "limited",
+        "accessibility": "enhanced"
+      }
+    },
+    "full-gaming": {
+      "name": "Full Gaming Experience",
+      "description": "Komplettes Gaming Bundle mit allen Features für In-Game Experience",
+      "context": "in-game",
+      "priority": "low",
+      "estimatedSize": "120KB",
+      "loadTime": "slow",
+      "modules": {
+        "required": [
+          "colors",
+          "typography", 
+          "spacing",
+          "radius",
+          "effects.visual",
+          "effects.animations",
+          "gaming.inventory",
+          "gaming.progress",
+          "gaming.hud",
+          "gaming.accessibility"
+        ],
+        "optional": [],
+        "excluded": []
+      },
+      "features": {
+        "basicUI": true,
+        "fullAnimations": true,
+        "responsiveDesign": true,
+        "allGamingFeatures": true,
+        "fullVisualEffects": true,
+        "accessibility": "complete"
+      }
+    },
+    "performance-optimized": {
+      "name": "Performance Optimized",
+      "description": "Performance-optimiertes Bundle für Low-End Devices mit reduzierten Features",
+      "context": "universal",
+      "priority": "high",
+      "estimatedSize": "25KB",
+      "loadTime": "very-fast",
+      "modules": {
+        "required": [
+          "colors",
+          "typography",
+          "spacing",
+          "radius",
+          "gaming.inventory",
+          "gaming.progress"
+        ],
+        "optional": [
+          "gaming.hud"
+        ],
+        "excluded": [
+          "effects.visual",
+          "effects.animations",
+          "gaming.accessibility"
+        ]
+      },
+      "features": {
+        "basicUI": true,
+        "minimalAnimations": true,
+        "responsiveDesign": true,
+        "coreGaming": true,
+        "visualEffects": false,
+        "accessibility": "minimal"
+      }
+    }
+  },
+  "bundleResolver": {
+    "contextMapping": {
+      "pre-game": "pre-game-minimal",
+      "world-preview": "world-preview", 
+      "in-game": "full-gaming",
+      "performance": "performance-optimized"
+    },
+    "themeMapping": {
+      "default": "pre-game-minimal",
+      "tolkien": "full-gaming",
+      "cyberpunk": "full-gaming", 
+      "roman": "full-gaming",
+      "nature": "full-gaming",
+      "space": "full-gaming"
+    }
+  }
+}

@@ -1,0 +1,139 @@
+paths:
+  /arb/languages:
+    get:
+      tags:
+        - Localization
+      summary: List Available Languages
+      description: Get list of supported languages
+      security: [] # No auth required
+      responses:
+        '200':
+          description: List of supported languages
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Language'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /arb/translations/{language}:
+    get:
+      tags:
+        - Localization
+      summary: Get Translations
+      description: Get all translations for a specific language
+      security: [] # No auth required
+      parameters:
+        - name: language
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [de, en]
+          description: Language code
+      responses:
+        '200':
+          description: Translation data
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TranslationData'
+        '404':
+          description: Language not supported
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /arb/keys:
+    get:
+      tags:
+        - Localization
+      summary: List Translation Keys
+      description: Get list of all available translation keys
+      responses:
+        '200':
+          description: List of translation keys
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TranslationKey'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    Language:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "de"
+        name:
+          type: string
+          example: "Deutsch"
+        nativeName:
+          type: string
+          example: "Deutsch"
+        isDefault:
+          type: boolean
+          example: true
+
+    TranslationData:
+      type: object
+      properties:
+        language:
+          type: string
+          example: "de"
+        translations:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            buttonLogin: "Anmelden"
+            buttonRegister: "Registrieren"
+            welcomeMessage: "Willkommen bei Weltenwind!"
+
+    TranslationKey:
+      type: object
+      properties:
+        key:
+          type: string
+          example: "buttonLogin"
+        description:
+          type: string
+          example: "Login button text"
+        context:
+          type: string
+          example: "auth"
+        hasPlaceholders:
+          type: boolean
+          example: false
+        placeholders:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string

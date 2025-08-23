@@ -1,0 +1,63 @@
+version: "3.9"
+
+x-common-env: &common-env
+  NODE_ENV: production
+  # .env im Host-Verzeichnis; dort DB-URL etc. pflegen
+  # Beispielzeilen siehe unten
+
+services:
+  app:
+    image: node:20-bookworm
+    container_name: weltenwind-app
+    working_dir: /usr/src/app
+    user: "1000:1000"
+    command: bash -lc '
+              [ -d node_modules ] ||  npm install &&
+              npx prisma generate || true &&
+              npm run dev
+              '
+    ports:
+      - "3000:3000"
+      - "5555:5555"
+    environment:
+      NODE_ENV: development
+      INTERNAL_PORT: "3000"
+      BASE_URL: "http://0.0.0.0:3000"
+      LOG_DIR: "/usr/src/logs"
+      BACKUP_DIR: "/srv/weltenwind/backups"
+      TRUST_PROXY: "true"
+      SSL_ENABLED: "false"
+    volumes:
+      - ./src:/usr/src/app:rw
+      - ./docs:/usr/src/app/docs:ro
+      - /srv/weltenwind/logs:/usr/src/logs
+      - /srv/weltenwind/backups:/srv/weltenwind/backups
+    depends_on:
+      - pgbouncer
+      - redis
+    restart: unless-stopped
+
+  pgbouncer:
+    image: edoburu/pgbouncer
+    container_name: weltenwind-pgbouncer
+    ports: ["6432:5432"]
+    environment:
+      LISTEN_PORT: "6432"
+      DB_HOST: "10.10.10.11"
+      DB_PORT: "5432"
+      DB_USER: "ww_app"
+      DB_PASSWORD: "AAbb1234!!"
+      POOL_MODE: "transaction"
+      AUTH_TYPE: "scram-sha-256"
+      AUTH_USER: "postgres"
+      AUTH_QUERY: "SELECT username, passwd FROM pg_shadow WHERE username=$1"
+
+  redis:
+    image: redis:7-alpine
+    container_name: weltenwind-redis
+    command: ["redis-server","--appendonly","yes"]
+    volumes: [ "redis-data:/data" ]
+
+volumes:
+  node_modules:
+  redis-data:

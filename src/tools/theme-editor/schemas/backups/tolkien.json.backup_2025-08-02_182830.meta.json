@@ -1,0 +1,20 @@
+{
+  "themeName": "tolkien",
+  "timestamp": "2025-08-02_182830",
+  "createdBy": "admin",
+  "createdById": 1,
+  "createdAt": "2025-08-02T18:28:30.861Z",
+  "originalSize": 5511,
+  "originalVersion": "1.0.0",
+  "newVersion": "1.0.0",
+  "type": "manual_save",
+  "modulesModified": [
+    "colors",
+    "typography"
+  ],
+  "totalModules": 7,
+  "backupReason": "Theme Editor manual save",
+  "userAgent": "Theme Editor Web Interface",
+  "originalChecksum": "cd1738559ad62aef476a1f00f37c32a7",
+  "category": "fantasy"
+}

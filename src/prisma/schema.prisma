@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  Int               @id @default(autoincrement())
+  username            String            @unique
+  email               String            @unique
+  passwordHash        String            @map("password_hash")
+  isLocked            Boolean           @default(false) @map("is_locked")
+  failedLoginAttempts Int               @default(0) @map("failed_login_attempts")
+  lastFailedLoginAt   DateTime?         @map("last_failed_login_at")
+  lockedUntil         DateTime?         @map("locked_until")
+  invites             Invite[]
+  passwordResets      PasswordReset[]
+  players             Player[]
+  preRegistrations    PreRegistration[]
+  sessions            Session[]
+  roles               UserRole[]
+
+  @@map("users")
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  description String?
+  permissions RolePermission[]
+  users       UserRole[]
+
+  @@map("roles")
+}
+
+model UserRole {
+  id            Int     @id @default(autoincrement())
+  userId        Int
+  roleId        Int
+  scopeType     String  @map("scope_type")
+  scopeObjectId String  @map("scope_object_id")
+  condition     String?
+  role          Role    @relation(fields: [roleId], references: [id])
+  user          User    @relation(fields: [userId], references: [id])
+
+  @@unique([userId, roleId, scopeType, scopeObjectId])
+  @@map("user_roles")
+}
+
+model Permission {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  description String?
+  roles       RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id            Int        @id @default(autoincrement())
+  roleId        Int
+  permissionId  Int
+  scopeType     String     @map("scope_type")
+  scopeObjectId String     @map("scope_object_id")
+  accessLevel   String     @map("access_level")
+  permission    Permission @relation(fields: [permissionId], references: [id])
+  role          Role       @relation(fields: [roleId], references: [id])
+
+  @@unique([roleId, permissionId, scopeType, scopeObjectId])
+  @@map("role_permissions")
+}
+
+// ===========================================
+// Dynamic Page/URL -> Permission mapping (optional, for server-driven guards)
+// ===========================================
+model PagePermission {
+  id         Int      @id @default(autoincrement())
+  path       String // e.g. /worlds/:id
+  method     String   @default("GET")
+  permission String // e.g. world.view
+  scopeType  String // global | world | module | player
+  scopeParam String? // optional param name to extract from route (e.g. id→worldId)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([path, method, permission])
+  @@map("page_permissions")
+}
+
+model Session {
+  id                Int      @id @default(autoincrement())
+  userId            Int
+  token             String
+  createdAt         DateTime @default(now()) @map("created_at")
+  expiresAt         DateTime @map("expires_at")
+  lastAccessedAt    DateTime @default(now()) @map("last_accessed_at")
+  ipHash            String?  @map("ip_hash")
+  deviceFingerprint String?  @map("device_fingerprint")
+  timezone          String?  @default("UTC")
+  user              User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, token])
+  @@map("sessions")
+}
+
+model World {
+  id        Int       @id @default(autoincrement())
+  slug      String    @unique
+  name      String    @unique
+  status    String    @default("upcoming")
+  createdAt DateTime  @default(now())
+  startsAt  DateTime
+  endsAt    DateTime?
+  assets    String    @map("assets")
+
+  invites          Invite[]
+  players          Player[]
+  preRegistrations PreRegistration[]
+  slugHistory      WorldSlugHistory[]
+
+  @@map("worlds")
+}
+
+model WorldSlugHistory {
+  id        Int      @id @default(autoincrement())
+  worldId   Int
+  oldSlug   String   @unique
+  changedAt DateTime @default(now())
+  world     World    @relation(fields: [worldId], references: [id], onDelete: Cascade)
+
+  @@map("world_slug_history")
+}
+
+model Player {
+  id       Int       @id @default(autoincrement())
+  userId   Int
+  worldId  Int
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
+  state    String?
+  user     User      @relation(fields: [userId], references: [id])
+  world    World     @relation(fields: [worldId], references: [id])
+
+  @@unique([userId, worldId])
+  @@map("players")
+}
+
+model Invite {
+  id          Int       @id @default(autoincrement())
+  worldId     Int
+  email       String
+  token       String    @unique
+  invitedById Int?
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+  expiresAt   DateTime?
+  invitedBy   User?     @relation(fields: [invitedById], references: [id])
+  world       World     @relation(fields: [worldId], references: [id])
+
+  @@unique([worldId, email])
+  @@map("invites")
+}
+
+model PasswordReset {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  token     String    @unique
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+  expiresAt DateTime
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@map("password_resets")
+}
+
+model PreRegistration {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  worldId   Int
+  email     String
+  config    Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+  world     World    @relation(fields: [worldId], references: [id])
+
+  @@unique([email, worldId])
+  @@map("pre_registrations")
+}

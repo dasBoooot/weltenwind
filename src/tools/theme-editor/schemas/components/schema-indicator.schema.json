@@ -1,0 +1,425 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/components/schema-indicator.schema.json",
+  "title": "Weltenwind Schema Indicator Schema",
+  "description": "Development helper component for live schema visualization, debugging, and theme analysis",
+  "type": "object",
+  "required": ["display", "content", "interaction", "styling"],
+  "properties": {
+    "display": {
+      "type": "object",
+      "description": "Display behavior and positioning configuration",
+      "required": ["enabled", "position", "visibility"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable schema indicator (development only)"
+        },
+        "position": {
+          "type": "string",
+          "enum": ["top-left", "top-right", "bottom-left", "bottom-right", "center", "floating"],
+          "default": "bottom-right",
+          "description": "Indicator position on screen"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["always", "on-hover", "on-tap", "toggle"],
+          "default": "on-hover",
+          "description": "When to show the indicator"
+        },
+        "size": {
+          "type": "string",
+          "enum": ["compact", "normal", "expanded"],
+          "default": "normal",
+          "description": "Indicator size mode"
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 1.0,
+          "default": 0.8,
+          "description": "Indicator opacity"
+        },
+        "zIndex": {
+          "type": "number",
+          "minimum": 1000,
+          "maximum": 9999,
+          "default": 9999,
+          "description": "Z-index for overlay positioning"
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "description": "Content and information display configuration",
+      "required": ["showCurrentTheme", "showActiveSchema", "showComponentInfo"],
+      "properties": {
+        "showCurrentTheme": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display current active theme name"
+        },
+        "showActiveSchema": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display currently loaded schema modules"
+        },
+        "showComponentInfo": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show component-specific schema info"
+        },
+        "showColorPalette": {
+          "type": "boolean",
+          "default": false,
+          "description": "Display color palette preview"
+        },
+        "showExtensions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show theme extensions (magic gradients, etc.)"
+        },
+        "showBreakpoints": {
+          "type": "boolean",
+          "default": false,
+          "description": "Display responsive breakpoints"
+        },
+        "showPerformance": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show theme loading performance metrics"
+        },
+        "maxItems": {
+          "type": "number",
+          "minimum": 5,
+          "maximum": 50,
+          "default": 20,
+          "description": "Maximum items to display in lists"
+        },
+        "refreshInterval": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 5000,
+          "default": 1000,
+          "description": "Auto-refresh interval in milliseconds"
+        }
+      }
+    },
+    "interaction": {
+      "type": "object",
+      "description": "User interaction and control configuration",
+      "required": ["draggable", "resizable", "collapsible"],
+      "properties": {
+        "draggable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow dragging the indicator around"
+        },
+        "resizable": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow resizing the indicator"
+        },
+        "collapsible": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow collapsing/expanding content"
+        },
+        "dismissible": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow dismissing the indicator"
+        },
+        "hotkey": {
+          "type": "string",
+          "pattern": "^(Ctrl|Alt|Shift)\\+[A-Z]$",
+          "default": "Ctrl+D",
+          "description": "Keyboard shortcut to toggle indicator"
+        },
+        "doubleClickAction": {
+          "type": "string",
+          "enum": ["expand", "collapse", "copy", "export", "none"],
+          "default": "expand",
+          "description": "Action on double-click"
+        },
+        "contextMenu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show context menu on right-click"
+        }
+      }
+    },
+    "styling": {
+      "type": "object",
+      "description": "Visual styling and appearance configuration",
+      "required": ["theme", "colors", "typography"],
+      "properties": {
+        "theme": {
+          "type": "string",
+          "enum": ["light", "dark", "auto", "contrast", "debug"],
+          "default": "auto",
+          "description": "Indicator theme style"
+        },
+        "colors": {
+          "type": "object",
+          "description": "Color scheme for the indicator",
+          "properties": {
+            "background": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{8}$",
+              "default": "#00000090",
+              "description": "Background color with alpha"
+            },
+            "foreground": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FFFFFF",
+              "description": "Text and icon color"
+            },
+            "accent": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#007AFF",
+              "description": "Accent color for highlights"
+            },
+            "warning": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FF9500",
+              "description": "Warning color for issues"
+            },
+            "error": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#FF3B30",
+              "description": "Error color for problems"
+            }
+          }
+        },
+        "typography": {
+          "type": "object",
+          "description": "Typography settings",
+          "properties": {
+            "fontFamily": {
+              "type": "string",
+              "default": "monospace",
+              "description": "Font family for code/data display"
+            },
+            "fontSize": {
+              "type": "number",
+              "minimum": 8,
+              "maximum": 16,
+              "default": 11,
+              "description": "Base font size"
+            },
+            "lineHeight": {
+              "type": "number",
+              "minimum": 1.0,
+              "maximum": 2.0,
+              "default": 1.4,
+              "description": "Line height multiplier"
+            }
+          }
+        },
+        "borderRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 8,
+          "description": "Border radius for rounded corners"
+        },
+        "backdropBlur": {
+          "type": "boolean",
+          "default": true,
+          "description": "Apply backdrop blur effect"
+        },
+        "shadow": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show drop shadow"
+        },
+        "border": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show border around indicator"
+        }
+      }
+    },
+    "features": {
+      "type": "object",
+      "description": "Advanced features and tools configuration",
+      "properties": {
+        "inspector": {
+          "type": "object",
+          "description": "Schema inspector functionality",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable schema inspector mode"
+            },
+            "highlightComponents": {
+              "type": "boolean",
+              "default": true,
+              "description": "Highlight components on hover"
+            },
+            "showPath": {
+              "type": "boolean",
+              "default": true,
+              "description": "Show schema path for selected elements"
+            },
+            "showValues": {
+              "type": "boolean",
+              "default": true,
+              "description": "Show current schema values"
+            }
+          }
+        },
+        "validator": {
+          "type": "object",
+          "description": "Schema validation functionality",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable real-time schema validation"
+            },
+            "showErrors": {
+              "type": "boolean",
+              "default": true,
+              "description": "Display validation errors"
+            },
+            "showWarnings": {
+              "type": "boolean",
+              "default": true,
+              "description": "Display validation warnings"
+            },
+            "autoFix": {
+              "type": "boolean",
+              "default": false,
+              "description": "Attempt to auto-fix simple issues"
+            }
+          }
+        },
+        "exporter": {
+          "type": "object",
+          "description": "Schema export functionality",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable schema export features"
+            },
+            "formats": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["json", "yaml", "css", "dart", "typescript"]
+              },
+              "default": ["json", "css"],
+              "description": "Available export formats"
+            },
+            "includeDefaults": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include default values in exports"
+            },
+            "minify": {
+              "type": "boolean",
+              "default": false,
+              "description": "Minify exported output"
+            }
+          }
+        },
+        "history": {
+          "type": "object",
+          "description": "Theme/schema change history",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Track theme change history"
+            },
+            "maxEntries": {
+              "type": "number",
+              "minimum": 10,
+              "maximum": 1000,
+              "default": 50,
+              "description": "Maximum history entries to keep"
+            },
+            "showTimestamps": {
+              "type": "boolean",
+              "default": true,
+              "description": "Show timestamps in history"
+            }
+          }
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "description": "Environment-specific behavior",
+      "properties": {
+        "development": {
+          "type": "object",
+          "description": "Development environment settings",
+          "properties": {
+            "autoEnable": {
+              "type": "boolean",
+              "default": true,
+              "description": "Auto-enable in development mode"
+            },
+            "verboseLogging": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable verbose console logging"
+            },
+            "showAllSchemas": {
+              "type": "boolean",
+              "default": true,
+              "description": "Show all loaded schemas, not just active ones"
+            }
+          }
+        },
+        "production": {
+          "type": "object",
+          "description": "Production environment settings",
+          "properties": {
+            "autoDisable": {
+              "type": "boolean",
+              "default": true,
+              "description": "Auto-disable in production builds"
+            },
+            "allowManualEnable": {
+              "type": "boolean",
+              "default": false,
+              "description": "Allow manual enabling with hotkey"
+            },
+            "showWarning": {
+              "type": "boolean",
+              "default": true,
+              "description": "Show warning when enabled in production"
+            }
+          }
+        },
+        "testing": {
+          "type": "object",
+          "description": "Testing environment settings",
+          "properties": {
+            "mockData": {
+              "type": "boolean",
+              "default": false,
+              "description": "Use mock schema data for testing"
+            },
+            "simulateErrors": {
+              "type": "boolean",
+              "default": false,
+              "description": "Simulate schema validation errors"
+            }
+          }
+        }
+      }
+    }
+  }
+}

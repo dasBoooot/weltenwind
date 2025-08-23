@@ -1,0 +1,850 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/gaming/accessibility.schema.json",
+  "title": "Weltenwind Gaming Accessibility Schema",
+  "description": "Umfassende Barrierefreiheit für Gaming-UI: ColorBlind Support, Focus Indicators, Motor/Cognitive Disabilities, Performance Adaptations",
+  "type": "object",
+  "required": ["colorBlind", "focus", "motor", "cognitive"],
+  "properties": {
+    "colorBlind": {
+      "type": "object",
+      "description": "Farbenblindheits-Unterstützung für Gaming-Elemente",
+      "required": ["enabled", "type", "adaptations"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Farbenblindheits-Unterstützung aktiviert"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["protanopia", "deuteranopia", "tritanopia", "achromatopsia", "auto-detect"],
+          "default": "auto-detect",
+          "description": "Art der Farbenblindheit"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["mild", "moderate", "severe"],
+          "default": "moderate",
+          "description": "Schweregrad der Farbenblindheit"
+        },
+        "adaptations": {
+          "type": "object",
+          "description": "Farbanpassungen für verschiedene UI-Elemente",
+          "required": ["rarity", "health", "status"],
+          "properties": {
+            "rarity": {
+              "type": "object",
+              "description": "Item-Rarity Farbanpassungen",
+              "properties": {
+                "useShapes": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Geometrische Formen zusätzlich zu Farben verwenden"
+                },
+                "usePatterns": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Muster/Texturen für Rarity-Unterscheidung"
+                },
+                "increasedContrast": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Kontrast für Rarity-Farben erhöhen"
+                },
+                "alternativeColors": {
+                  "type": "object",
+                  "properties": {
+                    "common": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FFFFFF" },
+                    "uncommon": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FFD700" },
+                    "rare": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FF6B35" },
+                    "epic": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#8E44AD" },
+                    "legendary": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#000000" },
+                    "mythic": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#E74C3C" }
+                  },
+                  "description": "Farbenblind-sichere Rarity-Farben"
+                },
+                "symbols": {
+                  "type": "object",
+                  "properties": {
+                    "common": { "type": "string", "default": "○", "description": "Symbol für Common Items" },
+                    "uncommon": { "type": "string", "default": "△", "description": "Symbol für Uncommon Items" },
+                    "rare": { "type": "string", "default": "◇", "description": "Symbol für Rare Items" },
+                    "epic": { "type": "string", "default": "◆", "description": "Symbol für Epic Items" },
+                    "legendary": { "type": "string", "default": "★", "description": "Symbol für Legendary Items" },
+                    "mythic": { "type": "string", "default": "※", "description": "Symbol für Mythic Items" }
+                  }
+                }
+              }
+            },
+            "health": {
+              "type": "object",
+              "description": "Health/Mana Bar Farbanpassungen",
+              "properties": {
+                "useGradients": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Gradients vermeiden (schwer unterscheidbar)"
+                },
+                "highContrast": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Hoher Kontrast für Health/Mana"
+                },
+                "alternativeColors": {
+                  "type": "object",
+                  "properties": {
+                    "health": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#000000" },
+                    "mana": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#4A4A4A" },
+                    "stamina": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#8A8A8A" },
+                    "experience": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FFFFFF" }
+                  }
+                },
+                "useTextures": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Texturen für Progress Bars verwenden"
+                }
+              }
+            },
+            "status": {
+              "type": "object",
+              "description": "Status-Effekt Farbanpassungen",
+              "properties": {
+                "useIcons": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Icons zusätzlich zu Farben für Status"
+                },
+                "alternativeColors": {
+                  "type": "object",
+                  "properties": {
+                    "positive": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#FFFFFF" },
+                    "negative": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#000000" },
+                    "neutral": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#808080" }
+                  }
+                },
+                "useShapes": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Verschiedene Formen für Status-Arten"
+                }
+              }
+            },
+            "ui": {
+              "type": "object",
+              "description": "Allgemeine UI-Farbanpassungen",
+              "properties": {
+                "increaseContrast": {
+                  "type": "number",
+                  "minimum": 1.0,
+                  "maximum": 3.0,
+                  "default": 1.5,
+                  "description": "Kontrast-Erhöhungsfaktor"
+                },
+                "avoidProblematicColors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^#[0-9A-Fa-f]{6}$"
+                  },
+                  "default": ["#FF0000", "#00FF00", "#0000FF"],
+                  "description": "Problematische Farben für Farbenblinde"
+                },
+                "safeColorPalette": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^#[0-9A-Fa-f]{6}$"
+                  },
+                  "default": ["#000000", "#FFFFFF", "#FFD700", "#FF6B35", "#8E44AD"],
+                  "description": "Farbenblind-sichere Farbpalette"
+                }
+              }
+            }
+          }
+        },
+        "simulation": {
+          "type": "object",
+          "description": "Farbenblindheits-Simulation für Entwickler",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Farbenblindheits-Simulation aktiviert"
+            },
+            "previewMode": {
+              "type": "string",
+              "enum": ["protanopia", "deuteranopia", "tritanopia", "achromatopsia"],
+              "default": "deuteranopia",
+              "description": "Simulationsmodus für Vorschau"
+            }
+          }
+        }
+      }
+    },
+    "focus": {
+      "type": "object",
+      "description": "Focus-Indikatoren für Keyboard-Navigation in Gaming-UI",
+      "required": ["enabled", "style", "gaming"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Focus-Indikatoren aktiviert"
+        },
+        "style": {
+          "type": "object",
+          "description": "Focus-Indikator Styling",
+          "required": ["type", "color", "width"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["outline", "glow", "border", "underline", "background"],
+              "default": "glow",
+              "description": "Art des Focus-Indikators"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#A594D1",
+              "description": "Focus-Indikator Farbe"
+            },
+            "width": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 8,
+              "default": 3,
+              "description": "Focus-Indikator Breite"
+            },
+            "offset": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 10,
+              "default": 2,
+              "description": "Focus-Indikator Abstand zum Element"
+            },
+            "animated": {
+              "type": "boolean",
+              "default": true,
+              "description": "Animierte Focus-Indikatoren"
+            },
+            "highContrast": {
+              "type": "boolean",
+              "default": false,
+              "description": "Hoher Kontrast für Focus-Indikatoren"
+            }
+          }
+        },
+        "gaming": {
+          "type": "object",
+          "description": "Gaming-spezifische Focus-Konfigurationen",
+          "properties": {
+            "inventory": {
+              "type": "object",
+              "properties": {
+                "slotFocus": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Focus für Inventory Slots"
+                },
+                "itemPreview": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Item-Vorschau bei Focus"
+                },
+                "tooltipDelay": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 2000,
+                  "default": 500,
+                  "description": "Tooltip-Verzögerung bei Focus (ms)"
+                }
+              }
+            },
+            "hud": {
+              "type": "object",
+              "properties": {
+                "skipNonInteractive": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Nicht-interaktive HUD-Elemente überspringen"
+                },
+                "focusOrder": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["health", "mana", "inventory", "minimap", "buffs", "notifications"]
+                  },
+                  "default": ["health", "mana", "inventory", "buffs"],
+                  "description": "Tab-Reihenfolge für HUD-Elemente"
+                }
+              }
+            },
+            "combat": {
+              "type": "object",
+              "properties": {
+                "actionFocus": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Focus für Combat Actions"
+                },
+                "targetFocus": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Focus für Target Selection"
+                },
+                "quickActions": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Keyboard-Shortcuts für Combat Actions"
+                }
+              }
+            }
+          }
+        },
+        "navigation": {
+          "type": "object",
+          "description": "Keyboard-Navigation Verhalten",
+          "properties": {
+            "trapFocus": {
+              "type": "boolean",
+              "default": true,
+              "description": "Focus in Modals/Dialogs einschließen"
+            },
+            "skipLinks": {
+              "type": "boolean",
+              "default": true,
+              "description": "Skip-Links für schnelle Navigation"
+            },
+            "customShortcuts": {
+              "type": "boolean",
+              "default": true,
+              "description": "Benutzerdefinierte Keyboard-Shortcuts"
+            }
+          }
+        }
+      }
+    },
+    "motor": {
+      "type": "object",
+      "description": "Unterstützung für motorische Beeinträchtigungen",
+      "required": ["enabled", "interactions"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Motor Accessibility Unterstützung aktiviert"
+        },
+        "interactions": {
+          "type": "object",
+          "description": "Interaktions-Anpassungen",
+          "properties": {
+            "clickDelay": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2000,
+              "default": 300,
+              "description": "Verzögerung für Doppelklick-Vermeidung (ms)"
+            },
+            "hoverDelay": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 3000,
+              "default": 800,
+              "description": "Hover-Aktivierungs-Verzögerung (ms)"
+            },
+            "largerTargets": {
+              "type": "boolean",
+              "default": true,
+              "description": "Vergrößerte Klick-Targets"
+            },
+            "targetSizeMultiplier": {
+              "type": "number",
+              "minimum": 1.2,
+              "maximum": 2.0,
+              "default": 1.5,
+              "description": "Vergrößerungsfaktor für Klick-Targets"
+            },
+            "reducedPrecision": {
+              "type": "boolean",
+              "default": true,
+              "description": "Reduzierte Präzisions-Anforderungen"
+            }
+          }
+        },
+        "gaming": {
+          "type": "object",
+          "description": "Gaming-spezifische Motor-Anpassungen",
+          "properties": {
+            "dragDrop": {
+              "type": "object",
+              "properties": {
+                "snapToGrid": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Automatisches Grid-Snapping"
+                },
+                "magneticTargets": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Magnetische Drop-Targets"
+                },
+                "assistedDragging": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Drag-Assistenz aktiviert"
+                }
+              }
+            },
+            "inventory": {
+              "type": "object",
+              "properties": {
+                "autoSort": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Automatische Inventory-Sortierung"
+                },
+                "oneClickActions": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Ein-Klick Actions für Items"
+                },
+                "contextMenus": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Kontext-Menüs für einfache Aktionen"
+                }
+              }
+            },
+            "combat": {
+              "type": "object",
+              "properties": {
+                "autoTarget": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Automatische Ziel-Auswahl"
+                },
+                "assistedAiming": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Ziel-Assistenz"
+                },
+                "simplifiedControls": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Vereinfachte Kampf-Steuerung"
+                }
+              }
+            }
+          }
+        },
+        "alternatives": {
+          "type": "object",
+          "description": "Alternative Eingabemethoden",
+          "properties": {
+            "voiceCommands": {
+              "type": "boolean",
+              "default": false,
+              "description": "Sprach-Steuerung aktiviert"
+            },
+            "eyeTracking": {
+              "type": "boolean",
+              "default": false,
+              "description": "Eye-Tracking Unterstützung"
+            },
+            "switchControl": {
+              "type": "boolean",
+              "default": false,
+              "description": "Switch-Control Unterstützung"
+            },
+            "singleHanded": {
+              "type": "boolean",
+              "default": false,
+              "description": "Einhändige Bedienung optimiert"
+            }
+          }
+        }
+      }
+    },
+    "cognitive": {
+      "type": "object",
+      "description": "Unterstützung für kognitive Beeinträchtigungen",
+      "required": ["enabled", "complexity", "memory"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Cognitive Accessibility Unterstützung aktiviert"
+        },
+        "complexity": {
+          "type": "object",
+          "description": "Komplexitäts-Reduktion",
+          "properties": {
+            "simplifiedUI": {
+              "type": "boolean",
+              "default": false,
+              "description": "Vereinfachte UI aktiviert"
+            },
+            "reducedAnimations": {
+              "type": "boolean",
+              "default": false,
+              "description": "Reduzierte Animationen"
+            },
+            "clearLabels": {
+              "type": "boolean",
+              "default": true,
+              "description": "Klare, verständliche Labels"
+            },
+            "consistentLayout": {
+              "type": "boolean",
+              "default": true,
+              "description": "Konsistentes Layout beibehalten"
+            },
+            "minimizeDistractions": {
+              "type": "boolean",
+              "default": false,
+              "description": "Ablenkungen minimieren"
+            }
+          }
+        },
+        "memory": {
+          "type": "object",
+          "description": "Gedächtnis-Unterstützung",
+          "properties": {
+            "persistentTooltips": {
+              "type": "boolean",
+              "default": false,
+              "description": "Dauerhafte Tooltips/Hilfen"
+            },
+            "progressIndicators": {
+              "type": "boolean",
+              "default": true,
+              "description": "Fortschritts-Indikatoren"
+            },
+            "breadcrumbs": {
+              "type": "boolean",
+              "default": true,
+              "description": "Navigation-Breadcrumbs"
+            },
+            "recentActions": {
+              "type": "boolean",
+              "default": true,
+              "description": "Letzte Aktionen anzeigen"
+            },
+            "confirmations": {
+              "type": "boolean",
+              "default": true,
+              "description": "Bestätigungen für wichtige Aktionen"
+            }
+          }
+        },
+        "gaming": {
+          "type": "object",
+          "description": "Gaming-spezifische kognitive Anpassungen",
+          "properties": {
+            "questReminders": {
+              "type": "boolean",
+              "default": true,
+              "description": "Quest-Erinnerungen aktiviert"
+            },
+            "objectiveHighlights": {
+              "type": "boolean",
+              "default": true,
+              "description": "Ziel-Hervorhebungen"
+            },
+            "itemDescriptions": {
+              "type": "boolean",
+              "default": true,
+              "description": "Detaillierte Item-Beschreibungen"
+            },
+            "tutorialMode": {
+              "type": "boolean",
+              "default": false,
+              "description": "Erweiterte Tutorial-Unterstützung"
+            },
+            "pauseOnFocus": {
+              "type": "boolean",
+              "default": false,
+              "description": "Spiel pausieren bei Focus-Verlust"
+            }
+          }
+        },
+        "readability": {
+          "type": "object",
+          "description": "Lesbarkeits-Verbesserungen",
+          "properties": {
+            "largerText": {
+              "type": "boolean",
+              "default": false,
+              "description": "Vergrößerte Texte"
+            },
+            "textScaleFactor": {
+              "type": "number",
+              "minimum": 1.0,
+              "maximum": 2.0,
+              "default": 1.2,
+              "description": "Text-Skalierungsfaktor"
+            },
+            "dyslexiaFont": {
+              "type": "boolean",
+              "default": false,
+              "description": "Legasthenie-freundliche Schriftart"
+            },
+            "increasedSpacing": {
+              "type": "boolean",
+              "default": false,
+              "description": "Vergrößerte Abstände"
+            },
+            "highlightedText": {
+              "type": "boolean",
+              "default": false,
+              "description": "Text-Hervorhebungen aktiviert"
+            }
+          }
+        }
+      }
+    },
+    "audio": {
+      "type": "object",
+      "description": "Audio-Accessibility für Hörbeeinträchtigungen",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Audio-Accessibility aktiviert"
+        },
+        "visualFeedback": {
+          "type": "object",
+          "properties": {
+            "soundIndicators": {
+              "type": "boolean",
+              "default": true,
+              "description": "Visuelle Sound-Indikatoren"
+            },
+            "vibration": {
+              "type": "boolean",
+              "default": true,
+              "description": "Vibrations-Feedback (mobile)"
+            },
+            "flashingAlerts": {
+              "type": "boolean",
+              "default": false,
+              "description": "Blinkende Warnungen"
+            }
+          }
+        },
+        "gaming": {
+          "type": "object",
+          "properties": {
+            "combatIndicators": {
+              "type": "boolean",
+              "default": true,
+              "description": "Visuelle Kampf-Indikatoren"
+            },
+            "environmentalCues": {
+              "type": "boolean",
+              "default": true,
+              "description": "Visuelle Umgebungshinweise"
+            },
+            "dialogSubtitles": {
+              "type": "boolean",
+              "default": true,
+              "description": "Dialog-Untertitel"
+            }
+          }
+        }
+      }
+    },
+    "visual": {
+      "type": "object",
+      "description": "Visual-Accessibility für Sehbeeinträchtigungen",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Visual-Accessibility aktiviert"
+        },
+        "highContrast": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Hoher Kontrast aktiviert"
+            },
+            "level": {
+              "type": "string",
+              "enum": ["moderate", "high", "maximum"],
+              "default": "high",
+              "description": "Kontrast-Level"
+            },
+            "customColors": {
+              "type": "boolean",
+              "default": false,
+              "description": "Benutzerdefinierte Kontrast-Farben"
+            }
+          }
+        },
+        "magnification": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "UI-Vergrößerung aktiviert"
+            },
+            "factor": {
+              "type": "number",
+              "minimum": 1.2,
+              "maximum": 3.0,
+              "default": 1.5,
+              "description": "Vergrößerungsfaktor"
+            },
+            "zoomMode": {
+              "type": "string",
+              "enum": ["full", "interface", "text-only"],
+              "default": "interface",
+              "description": "Zoom-Modus"
+            }
+          }
+        },
+        "screenReader": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Screen Reader Unterstützung"
+            },
+            "announcements": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wichtige Ereignisse ankündigen"
+            },
+            "structuredContent": {
+              "type": "boolean",
+              "default": true,
+              "description": "Strukturierter Content für Screen Reader"
+            }
+          }
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "description": "Performance-Anpassungen für Accessibility-Features",
+      "properties": {
+        "adaptiveQuality": {
+          "type": "boolean",
+          "default": true,
+          "description": "Adaptive Qualität basierend auf Accessibility-Bedürfnissen"
+        },
+        "prioritizeAccessibility": {
+          "type": "boolean",
+          "default": true,
+          "description": "Accessibility über Performance priorisieren"
+        },
+        "reducedEffects": {
+          "type": "boolean",
+          "default": false,
+          "description": "Effekte für bessere Performance reduzieren"
+        },
+        "batteryOptimization": {
+          "type": "boolean",
+          "default": false,
+          "description": "Batterie-Optimierung für mobile Devices"
+        }
+      }
+    },
+    "testing": {
+      "type": "object",
+      "description": "Accessibility-Testing und Validation",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Accessibility-Testing aktiviert"
+        },
+        "wcagLevel": {
+          "type": "string",
+          "enum": ["A", "AA", "AAA"],
+          "default": "AA",
+          "description": "WCAG Compliance Level"
+        },
+        "automaticChecks": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatische Accessibility-Checks"
+        },
+        "contrastValidation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Kontrast-Validierung aktiviert"
+        },
+        "keyboardTesting": {
+          "type": "boolean",
+          "default": true,
+          "description": "Keyboard-Navigation Testing"
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "colorBlind": {
+        "enabled": true,
+        "type": "deuteranopia",
+        "adaptations": {
+          "rarity": {
+            "useShapes": true,
+            "alternativeColors": {
+              "legendary": "#000000",
+              "mythic": "#FFFFFF"
+            }
+          }
+        }
+      },
+      "focus": {
+        "enabled": true,
+        "style": {
+          "type": "glow",
+          "color": "#A594D1",
+          "width": 3,
+          "animated": true
+        },
+        "gaming": {
+          "inventory": {
+            "slotFocus": true,
+            "tooltipDelay": 500
+          }
+        }
+      },
+      "motor": {
+        "enabled": true,
+        "interactions": {
+          "largerTargets": true,
+          "targetSizeMultiplier": 1.5
+        },
+        "gaming": {
+          "dragDrop": {
+            "snapToGrid": true,
+            "magneticTargets": true
+          }
+        }
+      },
+      "cognitive": {
+        "enabled": true,
+        "complexity": {
+          "simplifiedUI": false,
+          "clearLabels": true
+        },
+        "memory": {
+          "progressIndicators": true,
+          "confirmations": true
+        }
+      }
+    }
+  ]
+}

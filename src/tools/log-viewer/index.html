@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weltenwind Logs</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="log-viewer.css">
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginContainer" class="login-container">
+        <h1>🔐 Weltenwind Log-Viewer</h1>
+        <p>Admin-Login erforderlich</p>
+        <div id="loginError" class="error hidden"></div>
+        <form id="loginForm">
+            <div>
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <div>
+                <button type="submit">🔓 Anmelden</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Log Viewer (hidden initially) -->
+    <div id="logViewer" class="hidden">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔍 Weltenwind Log Viewer</h1>
+            <div class="user-section">
+                <span id="userInfo"></span>
+                <button onclick="logout()">🚪 Abmelden</button>
+            </div>
+        </div>
+        
+        <!-- Log-Info-Panel -->
+        <div id="logInfo" class="log-info-panel">
+            <div id="logInfoContent">Lade Log-Informationen...</div>
+            <button onclick="toggleLogInfo()" id="logInfoToggle">ℹ️ Info</button>
+        </div>
+
+        <div class="controls">
+            <label>Log-Datei:</label>
+            <select id="logFile" onchange="loadLogs()">
+                <option value="app.log">Lade Kategorien...</option>
+            </select>
+
+            <label>Filter:</label>
+            <input type="text" id="filter" placeholder="Suchbegriff..." onkeyup="filterLogs()">
+
+            <label>Zeilen:</label>
+            <select id="lines" onchange="loadLogs()">
+                <option value="50">50</option>
+                <option value="100" selected>100</option>
+                <option value="200">200</option>
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+            </select>
+
+            <button onclick="loadLogs()">🔄 Aktualisieren</button>
+            <button onclick="autoRefresh()">⏰ Auto-Refresh</button>
+            <button onclick="loadLatestLogs()">🆕 Neueste Logs</button>
+            <button onclick="clearLogs()">🗑️ Leeren</button>
+            <button onclick="scrollToBottom()">⬇️ Nach unten</button>
+            <button onclick="scrollToTop()">⬆️ Nach oben</button>
+        </div>
+
+        <div id="logContainer" class="log-container">
+            Lade Logs...
+        </div>
+    </div>
+
+    <script src="log-viewer.js"></script>
+</body>
+</html>

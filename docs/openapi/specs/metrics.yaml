@@ -1,0 +1,323 @@
+paths:
+  /api/metrics:
+    get:
+      summary: Gesamt-Metriken abrufen
+      description: Liefert umfassende System-, API-, User- und Game-Metriken
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Gesamt-Metriken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OverallMetrics'
+        '401':
+          description: Unauthorized - Nicht authentifiziert
+        '403':
+          description: Forbidden - Keine Admin-Berechtigung
+        '500':
+          description: Interner Serverfehler
+
+  /api/metrics/summary:
+    get:
+      summary: Metriken-Zusammenfassung
+      description: Kompakte Zusammenfassung der wichtigsten Systemmetriken
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Metriken-Zusammenfassung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsSummary'
+
+  /api/metrics/api:
+    get:
+      summary: API-Performance-Metriken
+      description: Detaillierte Metriken über API-Requests, Response-Zeiten und Fehlerquoten
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - API-Metriken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMetrics'
+
+  /api/metrics/users:
+    get:
+      summary: User-Activity-Metriken
+      description: Statistiken über User-Aktivitäten, Logins und Account-Status
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - User-Metriken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMetrics'
+
+  /api/metrics/game:
+    get:
+      summary: Game-spezifische Metriken
+      description: Statistiken über Welten, Spieler und Gaming-Aktivitäten
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - Game-Metriken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameMetrics'
+
+  /api/metrics/system:
+    get:
+      summary: System-Resource-Metriken
+      description: Hardware-Metriken wie Memory, CPU, Uptime und System-Health
+      tags:
+        - Metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Erfolgreich - System-Metriken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemMetrics'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    OverallMetrics:
+      type: object
+      properties:
+        api:
+          $ref: '#/components/schemas/ApiMetrics'
+        users:
+          $ref: '#/components/schemas/UserMetrics'
+        game:
+          $ref: '#/components/schemas/GameMetrics'
+        system:
+          $ref: '#/components/schemas/SystemMetrics'
+        sessions:
+          $ref: '#/components/schemas/SessionMetrics'
+        timestamp:
+          type: integer
+          description: Unix timestamp der Datenerhebung
+
+    MetricsSummary:
+      type: object
+      properties:
+        totalUsers:
+          type: integer
+          description: Gesamtzahl registrierter User
+        activeUsers:
+          type: integer
+          description: Aktive User (24h)
+        totalRequests:
+          type: integer
+          description: Gesamtzahl API Requests
+        avgResponseTime:
+          type: number
+          description: Durchschnittliche Response-Zeit (ms)
+        errorRate:
+          type: number
+          description: Fehlerquote (%)
+        systemHealth:
+          type: string
+          enum: [healthy, degraded, critical]
+          description: Allgemeiner System-Status
+        uptime:
+          type: integer
+          description: System-Uptime in Sekunden
+
+    ApiMetrics:
+      type: object
+      properties:
+        totalRequests:
+          type: integer
+          description: Gesamtzahl API Requests
+        totalErrors:
+          type: integer
+          description: Gesamtzahl Fehler
+        avgResponseTime:
+          type: number
+          description: Durchschnittliche Response-Zeit (ms)
+        errorRate:
+          type: number
+          description: Fehlerquote (%)
+        endpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/EndpointMetric'
+
+    EndpointMetric:
+      type: object
+      properties:
+        path:
+          type: string
+          description: API Endpoint Pfad
+        method:
+          type: string
+          description: HTTP Method
+        requestCount:
+          type: integer
+          description: Anzahl Requests
+        errorCount:
+          type: integer
+          description: Anzahl Fehler
+        avgResponseTime:
+          type: number
+          description: Durchschnittliche Response-Zeit (ms)
+        errorRate:
+          type: number
+          description: Fehlerquote (%)
+        lastAccess:
+          type: integer
+          description: Letzter Zugriff (Unix timestamp)
+
+    UserMetrics:
+      type: object
+      properties:
+        totalUsers:
+          type: integer
+          description: Gesamtzahl registrierter User
+        activeUsers:
+          type: integer
+          description: Aktive User (24h)
+        recentLogins:
+          type: integer
+          description: Logins in den letzten 24h
+        accountLockouts:
+          type: integer
+          description: Gesperrte Accounts
+        newRegistrations:
+          type: integer
+          description: Neue Registrierungen (24h)
+        avgSessionDuration:
+          type: number
+          description: Durchschnittliche Session-Dauer (Minuten)
+
+    GameMetrics:
+      type: object
+      properties:
+        totalWorlds:
+          type: integer
+          description: Gesamtzahl Welten
+        activeWorlds:
+          type: integer
+          description: Aktive Welten (24h)
+        totalPlayers:
+          type: integer
+          description: Gesamtzahl Spieler
+        activePlayers:
+          type: integer
+          description: Aktive Spieler (24h)
+        totalInvites:
+          type: integer
+          description: Gesamtzahl Einladungen
+        pendingInvites:
+          type: integer
+          description: Offene Einladungen
+        worldJoins:
+          type: integer
+          description: Welt-Beitritte (24h)
+
+    SystemMetrics:
+      type: object
+      properties:
+        uptime:
+          type: integer
+          description: System-Uptime in Sekunden
+        memoryUsage:
+          $ref: '#/components/schemas/MemoryUsage'
+        databaseHealth:
+          $ref: '#/components/schemas/DatabaseHealth'
+        sessionMetrics:
+          $ref: '#/components/schemas/SessionMetrics'
+        diskUsage:
+          $ref: '#/components/schemas/DiskUsage'
+
+    SessionMetrics:
+      type: object
+      properties:
+        activeSessions:
+          type: integer
+          description: Aktive Sessions
+        totalSessions:
+          type: integer
+          description: Gesamtzahl Sessions
+        expiredSessions:
+          type: integer
+          description: Abgelaufene Sessions
+        avgSessionDuration:
+          type: number
+          description: Durchschnittliche Session-Dauer (Minuten)
+
+    MemoryUsage:
+      type: object
+      properties:
+        used:
+          type: integer
+          description: Verwendeter Speicher (Bytes)
+        total:
+          type: integer
+          description: Gesamtspeicher (Bytes)
+        percentage:
+          type: number
+          description: Speichernutzung (%)
+        
+    DatabaseHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, critical]
+          description: Database-Status
+        responseTime:
+          type: number
+          description: Durchschnittliche Response-Zeit (ms)
+        connectionCount:
+          type: integer
+          description: Aktive DB-Verbindungen
+        slowQueries:
+          type: integer
+          description: Anzahl langsamer Queries
+
+    DiskUsage:
+      type: object
+      properties:
+        used:
+          type: integer
+          description: Verwendeter Speicherplatz (Bytes)
+        available:
+          type: integer
+          description: Verfügbarer Speicherplatz (Bytes)
+        percentage:
+          type: number
+          description: Speicherplatznutzung (%)
+
+tags:
+  - name: Metrics
+    description: System-Metriken und Performance-Monitoring

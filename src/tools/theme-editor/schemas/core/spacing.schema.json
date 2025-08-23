@@ -1,0 +1,559 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://weltenwind.game/schemas/core/spacing.schema.json",
+  "title": "Weltenwind Core Spacing Schema",
+  "description": "Konsistentes Spacing-System für Layout, Padding, Margin und Gaming-UI Abstände",
+  "type": "object",
+  "required": ["base", "semantic", "responsive"],
+  "properties": {
+    "base": {
+      "type": "object",
+      "description": "Basis-Spacing Einheiten",
+      "required": ["unit", "scale"],
+      "properties": {
+        "unit": {
+          "type": "number",
+          "minimum": 2,
+          "maximum": 16,
+          "default": 4,
+          "description": "Basis-Spacing Einheit in Pixeln"
+        },
+        "scale": {
+          "type": "object",
+          "description": "Spacing-Skala basierend auf der Basis-Einheit",
+          "required": ["xs", "sm", "md", "lg", "xl"],
+          "properties": {
+            "xs": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 3,
+              "default": 1,
+              "description": "Extra Small: 1 × base unit"
+            },
+            "sm": {
+              "type": "number",
+              "minimum": 1.5,
+              "maximum": 4,
+              "default": 2,
+              "description": "Small: 2 × base unit"
+            },
+            "md": {
+              "type": "number",
+              "minimum": 3,
+              "maximum": 6,
+              "default": 4,
+              "description": "Medium: 4 × base unit"
+            },
+            "lg": {
+              "type": "number",
+              "minimum": 5,
+              "maximum": 8,
+              "default": 6,
+              "description": "Large: 6 × base unit"
+            },
+            "xl": {
+              "type": "number",
+              "minimum": 7,
+              "maximum": 12,
+              "default": 8,
+              "description": "Extra Large: 8 × base unit"
+            },
+            "xxl": {
+              "type": "number",
+              "minimum": 10,
+              "maximum": 16,
+              "default": 12,
+              "description": "Extra Extra Large: 12 × base unit"
+            },
+            "xxxl": {
+              "type": "number",
+              "minimum": 14,
+              "maximum": 20,
+              "default": 16,
+              "description": "Triple Extra Large: 16 × base unit"  
+            }
+          }
+        }
+      }
+    },
+    "semantic": {
+      "type": "object",
+      "description": "Semantische Spacing-Definitionen für spezifische UI-Kontexte",
+      "required": ["components", "layout", "content"],
+      "properties": {
+        "components": {
+          "type": "object",
+          "description": "Component-spezifische Spacing-Werte",
+          "properties": {
+            "button": {
+              "type": "object",
+              "properties": {
+                "paddingHorizontal": {
+                  "type": "object",
+                  "properties": {
+                    "small": { "type": "number", "default": 12, "description": "Small Button horizontal padding" },
+                    "medium": { "type": "number", "default": 16, "description": "Medium Button horizontal padding" },
+                    "large": { "type": "number", "default": 24, "description": "Large Button horizontal padding" }
+                  }
+                },
+                "paddingVertical": {
+                  "type": "object",
+                  "properties": {
+                    "small": { "type": "number", "default": 8, "description": "Small Button vertical padding" },
+                    "medium": { "type": "number", "default": 12, "description": "Medium Button vertical padding" },
+                    "large": { "type": "number", "default": 16, "description": "Large Button vertical padding" }
+                  }
+                },
+                "gap": {
+                  "type": "number",
+                  "default": 8,
+                  "description": "Abstand zwischen Button-Icon und Text"
+                },
+                "groupSpacing": {
+                  "type": "number",
+                  "default": 8,
+                  "description": "Abstand zwischen Buttons in einer Gruppe"
+                }
+              }
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "paddingHorizontal": { "type": "number", "default": 16, "description": "Input horizontal padding" },
+                "paddingVertical": { "type": "number", "default": 12, "description": "Input vertical padding" },
+                "labelSpacing": { "type": "number", "default": 8, "description": "Abstand zwischen Label und Input" },
+                "helperSpacing": { "type": "number", "default": 4, "description": "Abstand zwischen Input und Helper Text" },
+                "groupSpacing": { "type": "number", "default": 16, "description": "Abstand zwischen Input-Gruppen" }
+              }
+            },
+            "card": {
+              "type": "object",
+              "properties": {
+                "padding": {
+                  "type": "object",
+                  "properties": {
+                    "small": { "type": "number", "default": 12, "description": "Small Card padding" },
+                    "medium": { "type": "number", "default": 16, "description": "Medium Card padding" },
+                    "large": { "type": "number", "default": 24, "description": "Large Card padding" }
+                  }
+                },
+                "margin": { "type": "number", "default": 8, "description": "Card margin" },
+                "contentSpacing": { "type": "number", "default": 16, "description": "Abstand zwischen Card-Content Elementen" },
+                "headerSpacing": { "type": "number", "default": 12, "description": "Abstand zwischen Header und Content" }
+              }
+            },
+            "modal": {
+              "type": "object",
+              "properties": {
+                "padding": { "type": "number", "default": 24, "description": "Modal content padding" },
+                "headerSpacing": { "type": "number", "default": 16, "description": "Modal header spacing" },
+                "footerSpacing": { "type": "number", "default": 16, "description": "Modal footer spacing" },
+                "margin": { "type": "number", "default": 20, "description": "Modal margin from viewport edge" }
+              }
+            },
+            "navigation": {
+              "type": "object",
+              "properties": {
+                "itemPadding": { "type": "number", "default": 12, "description": "Navigation item padding" },
+                "itemSpacing": { "type": "number", "default": 4, "description": "Space between navigation items" },
+                "groupSpacing": { "type": "number", "default": 24, "description": "Space between navigation groups" },
+                "iconSpacing": { "type": "number", "default": 8, "description": "Space between icon and text" }
+              }
+            },
+            "tooltip": {
+              "type": "object",
+              "properties": {
+                "padding": { "type": "number", "default": 8, "description": "Tooltip padding" },
+                "offset": { "type": "number", "default": 8, "description": "Tooltip offset from target" },
+                "arrowSize": { "type": "number", "default": 6, "description": "Tooltip arrow size" }
+              }
+            }
+          }
+        },
+        "layout": {
+          "type": "object",
+          "description": "Layout-spezifische Spacing-Werte",
+          "properties": {
+            "page": {
+              "type": "object",
+              "properties": {
+                "paddingHorizontal": {
+                  "type": "object",
+                  "properties": {
+                    "mobile": { "type": "number", "default": 16, "description": "Page horizontal padding mobile" },
+                    "tablet": { "type": "number", "default": 24, "description": "Page horizontal padding tablet" },
+                    "desktop": { "type": "number", "default": 32, "description": "Page horizontal padding desktop" }
+                  }
+                },
+                "paddingVertical": { "type": "number", "default": 20, "description": "Page vertical padding" },
+                "maxWidth": { "type": "number", "default": 1200, "description": "Page max width" },
+                "sectionSpacing": { "type": "number", "default": 48, "description": "Space between page sections" }
+              }
+            },
+            "grid": {
+              "type": "object",
+              "properties": {
+                "gap": {
+                  "type": "object",
+                  "properties": {
+                    "mobile": { "type": "number", "default": 16, "description": "Grid gap mobile" },
+                    "tablet": { "type": "number", "default": 20, "description": "Grid gap tablet" },
+                    "desktop": { "type": "number", "default": 24, "description": "Grid gap desktop" }
+                  }
+                },
+                "columnGap": { "type": "number", "default": 20, "description": "Grid column gap" },
+                "rowGap": { "type": "number", "default": 20, "description": "Grid row gap" }
+              }
+            },
+            "container": {
+              "type": "object",
+              "properties": {
+                "paddingHorizontal": { "type": "number", "default": 16, "description": "Container horizontal padding" },
+                "maxWidth": { "type": "number", "default": 1140, "description": "Container max width" },
+                "centerMargin": { "type": "string", "default": "auto", "description": "Container centering margin" }
+              }
+            }
+          }
+        },
+        "content": {
+          "type": "object",
+          "description": "Content-spezifische Spacing-Werte",
+          "properties": {
+            "text": {
+              "type": "object",
+              "properties": {
+                "paragraphSpacing": { "type": "number", "default": 16, "description": "Paragraph spacing" },
+                "headingSpacing": {
+                  "type": "object",
+                  "properties": {
+                    "top": { "type": "number", "default": 24, "description": "Heading top margin" },
+                    "bottom": { "type": "number", "default": 12, "description": "Heading bottom margin" }
+                  }
+                },
+                "listSpacing": { "type": "number", "default": 8, "description": "List item spacing" },
+                "blockquoteSpacing": { "type": "number", "default": 20, "description": "Blockquote spacing" }
+              }
+            },
+            "media": {
+              "type": "object",
+              "properties": {
+                "imageSpacing": { "type": "number", "default": 16, "description": "Image spacing" },
+                "captionSpacing": { "type": "number", "default": 8, "description": "Caption spacing" },
+                "galleryGap": { "type": "number", "default": 12, "description": "Gallery item gap" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "gaming": {
+      "type": "object",
+      "description": "Gaming-spezifische Spacing-Definitionen",
+      "properties": {
+        "inventory": {
+          "type": "object",
+          "properties": {
+            "slotSpacing": { "type": "number", "default": 4, "description": "Space between inventory slots" },
+            "categorySpacing": { "type": "number", "default": 16, "description": "Space between inventory categories" },
+            "tooltipOffset": { "type": "number", "default": 8, "description": "Tooltip offset from inventory items" },
+            "dragOffset": { "type": "number", "default": 2, "description": "Drag preview offset" }
+          }
+        },
+        "hud": {
+          "type": "object",
+          "properties": {
+            "elementSpacing": { "type": "number", "default": 12, "description": "Space between HUD elements" },
+            "edgeMargin": { "type": "number", "default": 16, "description": "Margin from screen edges" },
+            "groupSpacing": { "type": "number", "default": 20, "description": "Space between HUD groups" },
+            "minimapMargin": { "type": "number", "default": 16, "description": "Minimap margin from edges" }
+          }
+        },
+        "progress": {
+          "type": "object",
+          "properties": {
+            "barSpacing": { "type": "number", "default": 8, "description": "Space between progress bars" },
+            "labelSpacing": { "type": "number", "default": 4, "description": "Space between bar and label" },
+            "groupSpacing": { "type": "number", "default": 12, "description": "Space between progress groups" }
+          }
+        },
+        "dialog": {
+          "type": "object",
+          "properties": {
+            "npcSpacing": { "type": "number", "default": 16, "description": "NPC dialog spacing" },
+            "choiceSpacing": { "type": "number", "default": 8, "description": "Dialog choice spacing" },
+            "portraitSpacing": { "type": "number", "default": 12, "description": "Portrait to text spacing" }
+          }
+        },
+        "combat": {
+          "type": "object",
+          "properties": {
+            "actionSpacing": { "type": "number", "default": 8, "description": "Combat action spacing" },
+            "targetSpacing": { "type": "number", "default": 12, "description": "Target selection spacing" },
+            "effectSpacing": { "type": "number", "default": 4, "description": "Combat effect spacing" }
+          }
+        }
+      }
+    },
+    "responsive": {
+      "type": "object",
+      "description": "Responsive Spacing-Anpassungen",
+      "required": ["enabled", "breakpoints"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Responsive Spacing aktiviert"
+        },
+        "breakpoints": {
+          "type": "object",
+          "description": "Spacing-Anpassungen pro Breakpoint",
+          "properties": {
+            "mobile": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 0.5,
+                  "maximum": 1.0,
+                  "default": 0.8,
+                  "description": "Spacing-Skalierung für Mobile"
+                },
+                "minSpacing": {
+                  "type": "number",
+                  "minimum": 4,
+                  "maximum": 12,
+                  "default": 8,
+                  "description": "Minimales Spacing auf Mobile"
+                },
+                "touchOptimized": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Touch-optimierte Spacing-Werte"
+                }
+              }
+            },
+            "tablet": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 0.7,
+                  "maximum": 1.1,
+                  "default": 0.9,
+                  "description": "Spacing-Skalierung für Tablet"
+                }
+              }
+            },
+            "desktop": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 0.9,
+                  "maximum": 1.2,
+                  "default": 1.0,
+                  "description": "Spacing-Skalierung für Desktop"
+                }
+              }
+            },
+            "wide": {
+              "type": "object",
+              "properties": {
+                "scaleFactor": {
+                  "type": "number",
+                  "minimum": 1.0,
+                  "maximum": 1.4,
+                  "default": 1.1,
+                  "description": "Spacing-Skalierung für Wide Screens"
+                }
+              }
+            }
+          }
+        },
+        "adaptive": {
+          "type": "object",
+          "description": "Adaptive Spacing basierend auf Content-Dichte",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Adaptive Spacing aktiviert"
+            },
+            "densityLevels": {
+              "type": "object",
+              "properties": {
+                "compact": {
+                  "type": "number",
+                  "minimum": 0.6,
+                  "maximum": 0.9,
+                  "default": 0.75,
+                  "description": "Compact density scaling"
+                },
+                "comfortable": {
+                  "type": "number",
+                  "minimum": 0.9,
+                  "maximum": 1.1,
+                  "default": 1.0,
+                  "description": "Comfortable density scaling"
+                },
+                "spacious": {
+                  "type": "number",
+                  "minimum": 1.1,
+                  "maximum": 1.5,
+                  "default": 1.25,
+                  "description": "Spacious density scaling"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "description": "Accessibility-konforme Spacing-Richtlinien",
+      "properties": {
+        "touchTargets": {
+          "type": "object",
+          "properties": {
+            "minSize": {
+              "type": "number",
+              "minimum": 44,
+              "maximum": 60,
+              "default": 48,
+              "description": "Minimale Touch-Target Größe (WCAG 2.1)"
+            },
+            "minSpacing": {
+              "type": "number",
+              "minimum": 8,
+              "maximum": 16,
+              "default": 12,
+              "description": "Minimaler Abstand zwischen Touch-Targets"
+            }
+          }
+        },
+        "focusIndicators": {
+          "type": "object",
+          "properties": {
+            "offset": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 8,
+              "default": 4,
+              "description": "Focus-Indikator Offset"
+            },
+            "clearance": {
+              "type": "number",
+              "minimum": 4,
+              "maximum": 12,
+              "default": 8,
+              "description": "Focus-Indikator Clearance"
+            }
+          }
+        },
+        "readability": {
+          "type": "object",
+          "properties": {
+            "paragraphSpacing": {
+              "type": "number",
+              "minimum": 16,
+              "maximum": 32,
+              "default": 20,
+              "description": "Accessibility-optimiertes Paragraph Spacing"
+            },
+            "lineSpacing": {
+              "type": "number",
+              "minimum": 1.4,
+              "maximum": 2.0,
+              "default": 1.6,
+              "description": "Accessibility-optimiertes Line Spacing"
+            }
+          }
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "description": "Performance-Optimierungen für Spacing",
+      "properties": {
+        "css": {
+          "type": "object",
+          "properties": {
+            "useCustomProperties": {
+              "type": "boolean",
+              "default": true,
+              "description": "CSS Custom Properties für Spacing verwenden"
+            },
+            "optimize": {
+              "type": "boolean",
+              "default": true,
+              "description": "Spacing-Werte für CSS-Performance optimieren"
+            }
+          }
+        },
+        "rendering": {
+          "type": "object",
+          "properties": {
+            "avoidSubpixel": {
+              "type": "boolean",
+              "default": true,
+              "description": "Subpixel-Spacing vermeiden für bessere Performance"
+            },
+            "roundValues": {
+              "type": "boolean",
+              "default": true,
+              "description": "Spacing-Werte auf ganze Pixel runden"
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "base": {
+        "unit": 4,
+        "scale": {
+          "xs": 1,
+          "sm": 2,
+          "md": 4,
+          "lg": 6,
+          "xl": 8,
+          "xxl": 12
+        }
+      },
+      "semantic": {
+        "components": {
+          "button": {
+            "paddingHorizontal": {
+              "medium": 16
+            },
+            "paddingVertical": {
+              "medium": 12
+            }
+          }
+        }
+      },
+      "gaming": {
+        "inventory": {
+          "slotSpacing": 4,
+          "tooltipOffset": 8
+        },
+        "hud": {
+          "elementSpacing": 12,
+          "edgeMargin": 16
+        }
+      },
+      "responsive": {
+        "enabled": true,
+        "breakpoints": {
+          "mobile": {
+            "scaleFactor": 0.8,
+            "touchOptimized": true
+          }
+        }
+      }
+    }
+  ]
+}

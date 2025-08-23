@@ -1,0 +1,264 @@
+{
+  "$schema": "./main.schema.json",
+  "name": "Cyberpunk 2177 Theme",
+  "filename": "cyberpunk",
+  "version": "1.0.0",
+  "description": "Düsteres Cyberpunk-Theme mit Neon-Akzenten, Tech-Aesthetik und dystopischer Atmosphäre",
+  "category": "sci-fi",
+  "author": "Weltenwind Team",
+  "bundle": {
+    "name": "full-gaming",
+    "type": "sci_fi_world_bundle",
+    "context": "world-scifi",
+    "modules": ["colors", "typography", "spacing", "radius", "effects.visual", "effects.animations", "gaming.inventory", "gaming.progress", "gaming.hud"]
+  },
+  "colors": {
+    "primary": {
+      "value": "#00FFFF",
+      "description": "Helles Neon-Cyan für primäre UI-Elemente"
+    },
+    "secondary": {
+      "value": "#FF00FF",
+      "description": "Elektrisierendes Magenta für Akzente"
+    },
+    "tertiary": {
+      "value": "#00CED1",
+      "description": "Dunkleres Cyan für Sekundärfarben"
+    },
+    "background": {
+      "surface_dark": "#0A0A0A",
+      "surface_medium": "#1A1A2E",
+      "surface_light": "#16213E",
+      "surface_lighter": "#0F3460",
+      "surface_gray": "#533A71"
+    },
+    "text": {
+      "primary": "#E6E6FA",
+      "secondary": "#B0C4DE",
+      "muted": "#708090",
+      "inverse": "#000000"
+    },
+    "accent": {
+      "success": "#00FF00",
+      "warning": "#FFFF00",
+      "error": "#FF0040",
+      "info": "#00BFFF"
+    },
+    "neon": {
+      "cyan": "#00FFFF",
+      "magenta": "#FF00FF",
+      "lime": "#00FF00",
+      "orange": "#FF8C00",
+      "purple": "#8A2BE2",
+      "pink": "#FF1493"
+    },
+    "tech": {
+      "circuit": "#00CED1", 
+      "matrix": "#00FF41",
+      "hologram": "#40E0D0",
+      "laser": "#FF4500",
+      "plasma": "#DA70D6"
+    }
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Orbitron, monospace",
+      "secondary": "Exo 2, sans-serif",
+      "mono": "Source Code Pro, monospace",
+      "display": "Audiowide, cursive",
+      "ui": "Roboto, sans-serif"
+    },
+    "textStyles": {
+      "heading": {
+        "fontSize": 32,
+        "fontWeight": "bold",
+        "fontFamily": "Orbitron, monospace",
+        "letterSpacing": 2.0,
+        "lineHeight": 1.1,
+        "textTransform": "uppercase"
+      },
+      "subheading": {
+        "fontSize": 22,
+        "fontWeight": "semi-bold",
+        "fontFamily": "Exo 2, sans-serif",
+        "letterSpacing": 1.5,
+        "lineHeight": 1.2
+      },
+      "body": {
+        "fontSize": 16,
+        "fontWeight": "normal",
+        "fontFamily": "Exo 2, sans-serif",
+        "letterSpacing": 0.5,
+        "lineHeight": 1.4
+      },
+      "caption": {
+        "fontSize": 12,
+        "fontWeight": "normal",
+        "fontFamily": "Source Code Pro, monospace",
+        "letterSpacing": 0.3,
+        "lineHeight": 1.3
+      },
+      "display": {
+        "fontSize": 36,
+        "fontWeight": "bold",
+        "fontFamily": "Audiowide, cursive",
+        "letterSpacing": 3.0,
+        "lineHeight": 1.0,
+        "textTransform": "uppercase"
+      }
+    }
+  },
+  "spacing": {
+    "xs": 2,
+    "sm": 6,
+    "md": 12,
+    "lg": 20,
+    "xl": 32,
+    "xxl": 48,
+    "semantic": {
+      "padding": {
+        "small": 8,
+        "medium": 16,
+        "large": 24
+      },
+      "margin": {
+        "small": 6,
+        "medium": 12,
+        "large": 20
+      },
+      "tech": {
+        "panelGap": 16,
+        "circuitSpacing": 8,
+        "hologramPadding": 20
+      }
+    }
+  },
+  "radius": {
+    "sm": 2,
+    "md": 4,
+    "lg": 6,
+    "xl": 8,
+    "round": 9999,
+    "tech": {
+      "panel": 2,
+      "screen": 6,
+      "hologram": 12,
+      "circuit": 0
+    }
+  },
+  "effects": {
+    "shadows": {
+      "small": "0 2px 4px rgba(0, 255, 255, 0.3)",
+      "medium": "0 4px 8px rgba(0, 255, 255, 0.4)",
+      "large": "0 8px 16px rgba(0, 255, 255, 0.5)",
+      "neon": "0 0 20px rgba(0, 255, 255, 0.8)"
+    },
+    "glows": {
+      "cyan": "0 0 15px rgba(0, 255, 255, 0.9)",
+      "magenta": "0 0 15px rgba(255, 0, 255, 0.9)",
+      "matrix": "0 0 12px rgba(0, 255, 65, 0.8)",
+      "error": "0 0 15px rgba(255, 0, 64, 0.9)"
+    },
+    "animations": {
+      "duration": {
+        "fast": 150,
+        "medium": 300,
+        "slow": 600,
+        "glitch": 100,
+        "scan": 2000
+      },
+      "easing": {
+        "standard": "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        "tech": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        "glitch": "steps(4, end)"
+      }
+    },
+    "particles": {
+      "data": {
+        "color": "#00FFFF",
+        "size": 1,
+        "density": 0.8,
+        "speed": 2.0
+      },
+      "sparks": {
+        "color": "#FF00FF",
+        "size": 2,
+        "density": 0.4,
+        "speed": 1.5
+      }
+    },
+    "distortion": {
+      "glitch": {
+        "intensity": 0.2,
+        "frequency": 0.1,
+        "type": "digital"
+      },
+      "chromatic": {
+        "intensity": 0.3,
+        "offset": 2
+      }
+    }
+  },
+  "gaming": {
+    "inventory": {
+      "slotSize": 48,
+      "slotSpacing": 2,
+      "backgroundColor": "#1A1A2E",
+      "borderColor": "#00FFFF",
+      "hoverColor": "#FF00FF",
+      "glowEffect": true
+    },
+    "progress": {
+      "barHeight": 6,
+      "backgroundColor": "#0A0A0A",
+      "fillColor": "#00FFFF",
+      "textColor": "#E6E6FA",
+      "animated": true,
+      "neonGlow": true
+    },
+    "hud": {
+      "backgroundColor": "rgba(26, 26, 46, 0.95)",
+      "borderColor": "#00FFFF",
+      "textColor": "#E6E6FA",
+      "accentColor": "#FF00FF",
+      "scanlines": true,
+      "glitchEffect": true
+    }
+  },
+  "extensions": {
+    "worldTheme": {
+      "atmosphere": "neon-rain",
+      "timeOfDay": "eternal-night",
+      "weather": "acid-rain",
+      "ambientSound": "city-hum"
+    },
+    "cyberpunk": {
+      "districts": {
+        "corporate": {
+          "primaryColor": "#00CED1",
+          "accentColor": "#1E90FF"
+        },
+        "underground": {
+          "primaryColor": "#FF00FF",
+          "accentColor": "#8A2BE2"
+        },
+        "wasteland": {
+          "primaryColor": "#FF4500",
+          "accentColor": "#DC143C"
+        }
+      },
+      "tech": {
+        "interface": "#00FFFF",
+        "warning": "#FFFF00",
+        "critical": "#FF0040",
+        "hacking": "#00FF41"
+      },
+      "neural": {
+        "connection": "#40E0D0",
+        "dataStream": "#00FF65",
+        "malware": "#FF1493",
+        "firewall": "#FFD700"
+      }
+    }
+  }
+}
